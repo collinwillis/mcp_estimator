@@ -1,0 +1,1142 @@
+[
+    {
+        "wbsDatabaseId": 10000,
+        "phaseDatabaseId": 10001,
+        "description": "EQUIPMENT SETUP"
+    },
+    {
+        "wbsDatabaseId": 10000,
+        "phaseDatabaseId": 10002,
+        "description": "TRAILER SETUP"
+    },
+    {
+        "wbsDatabaseId": 10000,
+        "phaseDatabaseId": 10003,
+        "description": "TRAVEL IN"
+    },
+    {
+        "wbsDatabaseId": 10000,
+        "phaseDatabaseId": 10004,
+        "description": "SAFETY ORIENTATION"
+    },
+    {
+        "wbsDatabaseId": 10000,
+        "phaseDatabaseId": 10005,
+        "description": "WELDER TEST / QUALIFICATION"
+    },
+    {
+        "wbsDatabaseId": 10000,
+        "phaseDatabaseId": 10006,
+        "description": "WELD PROCEDURE (WPS)"
+    },
+    {
+        "wbsDatabaseId": 10000,
+        "phaseDatabaseId": 10007,
+        "description": "CONNECT UTILITIES"
+    },
+    {
+        "wbsDatabaseId": 10000,
+        "phaseDatabaseId": 10008,
+        "description": "FREIGHT IN"
+    },
+    {
+        "wbsDatabaseId": 10000,
+        "phaseDatabaseId": 10009,
+        "description": "LICENSES & FEES"
+    },
+    {
+        "wbsDatabaseId": 10000,
+        "phaseDatabaseId": 10010,
+        "description": "BONDING"
+    },
+    {
+        "wbsDatabaseId": 10000,
+        "phaseDatabaseId": 10011,
+        "description": "IT SETUP"
+    },
+    {
+        "wbsDatabaseId": 10000,
+        "phaseDatabaseId": 19999,
+        "description": "MATERIAL"
+    },
+    {
+        "wbsDatabaseId": 20000,
+        "phaseDatabaseId": 20001,
+        "description": "SURVEYING & LAYOUT"
+    },
+    {
+        "wbsDatabaseId": 20000,
+        "phaseDatabaseId": 20002,
+        "description": "MACHINE EXCAVATION (≤10 CY)"
+    },
+    {
+        "wbsDatabaseId": 20000,
+        "phaseDatabaseId": 20003,
+        "description": "MACHINE EXCAVATION (11-49 CY)"
+    },
+    {
+        "wbsDatabaseId": 20000,
+        "phaseDatabaseId": 20004,
+        "description": "MACHINE EXCAVATION (≥50 CY)"
+    },
+    {
+        "wbsDatabaseId": 20000,
+        "phaseDatabaseId": 20005,
+        "description": "HAND EXCAVATION (≤10 CY)"
+    },
+    {
+        "wbsDatabaseId": 20000,
+        "phaseDatabaseId": 20006,
+        "description": "HAND EXCAVATION (≥11 CY)"
+    },
+    {
+        "wbsDatabaseId": 20000,
+        "phaseDatabaseId": 20007,
+        "description": "SPOIL HAULING & STOCKPILING"
+    },
+    {
+        "wbsDatabaseId": 20000,
+        "phaseDatabaseId": 20008,
+        "description": "FILL MATERIAL HAULING & STOCKPILING"
+    },
+    {
+        "wbsDatabaseId": 20000,
+        "phaseDatabaseId": 20009,
+        "description": "MACHINE BACKFILL & COMPACTION (≤10 CY)"
+    },
+    {
+        "wbsDatabaseId": 20000,
+        "phaseDatabaseId": 20010,
+        "description": "MACHINE BACKFILL & COMPACTION (11-49 CY)"
+    },
+    {
+        "wbsDatabaseId": 20000,
+        "phaseDatabaseId": 20011,
+        "description": "MACHINE BACKFILL & COMPACTION (≥50 CY)"
+    },
+    {
+        "wbsDatabaseId": 20000,
+        "phaseDatabaseId": 20012,
+        "description": "HAND BACKFILL & COMPACTION (≤10 CY)"
+    },
+    {
+        "wbsDatabaseId": 20000,
+        "phaseDatabaseId": 20013,
+        "description": "HAND BACKFILL & COMPACTION (≥11 CY)"
+    },
+    {
+        "wbsDatabaseId": 20000,
+        "phaseDatabaseId": 20014,
+        "description": "SITE GRADING"
+    },
+    {
+        "wbsDatabaseId": 20000,
+        "phaseDatabaseId": 20015,
+        "description": "LANDSCAPING"
+    },
+    {
+        "wbsDatabaseId": 20000,
+        "phaseDatabaseId": 29987,
+        "description": "SHORING (≤6' DEEP)"
+    },
+    {
+        "wbsDatabaseId": 20000,
+        "phaseDatabaseId": 29998,
+        "description": "ENGINEERING / TESTING SERVICES"
+    },
+    {
+        "wbsDatabaseId": 20000,
+        "phaseDatabaseId": 29999,
+        "description": "MATERIAL"
+    },
+    {
+        "wbsDatabaseId": 30000,
+        "phaseDatabaseId": 30001,
+        "description": "EQUIPMENT FOUNDATIONS (≤3 CY)"
+    },
+    {
+        "wbsDatabaseId": 30000,
+        "phaseDatabaseId": 30002,
+        "description": "EQUIPMENT FOUNDATIONS (4-10 CY)"
+    },
+    {
+        "wbsDatabaseId": 30000,
+        "phaseDatabaseId": 30003,
+        "description": "EQUIPMENT FOUNDATIONS (11-49 CY)"
+    },
+    {
+        "wbsDatabaseId": 30000,
+        "phaseDatabaseId": 30004,
+        "description": "EQUIPMENT FOUNDATIONS (≥50 CY)"
+    },
+    {
+        "wbsDatabaseId": 30000,
+        "phaseDatabaseId": 30005,
+        "description": "BUILDING FOUNDATIONS"
+    },
+    {
+        "wbsDatabaseId": 30000,
+        "phaseDatabaseId": 30006,
+        "description": "FOUNDATION WALLS"
+    },
+    {
+        "wbsDatabaseId": 30000,
+        "phaseDatabaseId": 30007,
+        "description": "SLABS ON GRADE - 4\" THK"
+    },
+    {
+        "wbsDatabaseId": 30000,
+        "phaseDatabaseId": 30008,
+        "description": "SLABS ON GRADE - 6\" THK"
+    },
+    {
+        "wbsDatabaseId": 30000,
+        "phaseDatabaseId": 30009,
+        "description": "ELEVATED SLABS"
+    },
+    {
+        "wbsDatabaseId": 30000,
+        "phaseDatabaseId": 30010,
+        "description": "COMPLEX FOUNDATIONS"
+    },
+    {
+        "wbsDatabaseId": 30000,
+        "phaseDatabaseId": 30011,
+        "description": "DRILLED PIERS (≤12” DIA. / ≤10' DEEP)"
+    },
+    {
+        "wbsDatabaseId": 30000,
+        "phaseDatabaseId": 30012,
+        "description": "DRILLED PIERS (14”-24” DIA. / 8'-12' DEEP)"
+    },
+    {
+        "wbsDatabaseId": 30000,
+        "phaseDatabaseId": 30013,
+        "description": "DRILLED PIERS (24”-48” DIA. / ≤25' DEEP)"
+    },
+    {
+        "wbsDatabaseId": 30000,
+        "phaseDatabaseId": 30014,
+        "description": "CURB & GUTTER"
+    },
+    {
+        "wbsDatabaseId": 30000,
+        "phaseDatabaseId": 30015,
+        "description": "PRECAST ITEMS"
+    },
+    {
+        "wbsDatabaseId": 30000,
+        "phaseDatabaseId": 39982,
+        "description": "GROUTING"
+    },
+    {
+        "wbsDatabaseId": 30000,
+        "phaseDatabaseId": 39987,
+        "description": "SHORING (≤6' DEEP)"
+    },
+    {
+        "wbsDatabaseId": 30000,
+        "phaseDatabaseId": 39991,
+        "description": "BUSH HAMMER"
+    },
+    {
+        "wbsDatabaseId": 30000,
+        "phaseDatabaseId": 39998,
+        "description": "ENGINEERING / TESTING SERVICES"
+    },
+    {
+        "wbsDatabaseId": 30000,
+        "phaseDatabaseId": 39999,
+        "description": "MATERIAL"
+    },
+    {
+        "wbsDatabaseId": 40000,
+        "phaseDatabaseId": 40001,
+        "description": "T/V/E INSTALL (≤20K LBS)"
+    },
+    {
+        "wbsDatabaseId": 40000,
+        "phaseDatabaseId": 40002,
+        "description": "T/V/E INSTALL (21K-49K LBS)"
+    },
+    {
+        "wbsDatabaseId": 40000,
+        "phaseDatabaseId": 40003,
+        "description": "T/V/E INSTALL (50K-99K LBS)"
+    },
+    {
+        "wbsDatabaseId": 40000,
+        "phaseDatabaseId": 40004,
+        "description": "T/V/E INSTALL (≥100K LBS)"
+    },
+    {
+        "wbsDatabaseId": 40000,
+        "phaseDatabaseId": 40005,
+        "description": "T/V/E FABRICATION (CS)"
+    },
+    {
+        "wbsDatabaseId": 40000,
+        "phaseDatabaseId": 40006,
+        "description": "T/V/E FABRICATION (SS)"
+    },
+    {
+        "wbsDatabaseId": 40000,
+        "phaseDatabaseId": 40007,
+        "description": "TOWER MAINTENANCE"
+    },
+    {
+        "wbsDatabaseId": 40000,
+        "phaseDatabaseId": 40008,
+        "description": "DRUM MAINTENANCE"
+    },
+    {
+        "wbsDatabaseId": 40000,
+        "phaseDatabaseId": 40009,
+        "description": "EXCHANGER MAINTENANCE"
+    },
+    {
+        "wbsDatabaseId": 40000,
+        "phaseDatabaseId": 40010,
+        "description": "REACTOR MAINTENANCE"
+    },
+    {
+        "wbsDatabaseId": 40000,
+        "phaseDatabaseId": 40011,
+        "description": "FURNACE / HEATER MAINTENANCE"
+    },
+    {
+        "wbsDatabaseId": 40000,
+        "phaseDatabaseId": 40012,
+        "description": "TANK MAINTENANCE"
+    },
+    {
+        "wbsDatabaseId": 40000,
+        "phaseDatabaseId": 40013,
+        "description": "EXCHANGER RE-TUBING"
+    },
+    {
+        "wbsDatabaseId": 40000,
+        "phaseDatabaseId": 49982,
+        "description": "GROUTING"
+    },
+    {
+        "wbsDatabaseId": 40000,
+        "phaseDatabaseId": 49988,
+        "description": "STEAM TRACING"
+    },
+    {
+        "wbsDatabaseId": 40000,
+        "phaseDatabaseId": 49991,
+        "description": "BUSH HAMMER"
+    },
+    {
+        "wbsDatabaseId": 40000,
+        "phaseDatabaseId": 49992,
+        "description": "HOT TAPS"
+    },
+    {
+        "wbsDatabaseId": 40000,
+        "phaseDatabaseId": 49993,
+        "description": "NDT / NDE"
+    },
+    {
+        "wbsDatabaseId": 40000,
+        "phaseDatabaseId": 49994,
+        "description": "POST WELD HEAT TREATMENT"
+    },
+    {
+        "wbsDatabaseId": 40000,
+        "phaseDatabaseId": 49995,
+        "description": "DEGAS"
+    },
+    {
+        "wbsDatabaseId": 40000,
+        "phaseDatabaseId": 49996,
+        "description": "HYDROTESTING"
+    },
+    {
+        "wbsDatabaseId": 40000,
+        "phaseDatabaseId": 49998,
+        "description": "ENGINEERING / TESTING SERVICES"
+    },
+    {
+        "wbsDatabaseId": 40000,
+        "phaseDatabaseId": 49999,
+        "description": "MATERIAL"
+    },
+    {
+        "wbsDatabaseId": 50000,
+        "phaseDatabaseId": 50001,
+        "description": "PUMP INSTALL (≤500 LBS)"
+    },
+    {
+        "wbsDatabaseId": 50000,
+        "phaseDatabaseId": 50002,
+        "description": "PUMP INSTALL (501-2K LBS)"
+    },
+    {
+        "wbsDatabaseId": 50000,
+        "phaseDatabaseId": 50003,
+        "description": "PUMP INSTALL (2K-10K LBS)"
+    },
+    {
+        "wbsDatabaseId": 50000,
+        "phaseDatabaseId": 50004,
+        "description": "PUMP INSTALL (≥10K LBS)"
+    },
+    {
+        "wbsDatabaseId": 50000,
+        "phaseDatabaseId": 50005,
+        "description": "PUMP MAINTENANCE"
+    },
+    {
+        "wbsDatabaseId": 50000,
+        "phaseDatabaseId": 59982,
+        "description": "GROUTING"
+    },
+    {
+        "wbsDatabaseId": 50000,
+        "phaseDatabaseId": 59991,
+        "description": "BUSH HAMMER"
+    },
+    {
+        "wbsDatabaseId": 50000,
+        "phaseDatabaseId": 59998,
+        "description": "ENGINEERING / TESTING SERVICES"
+    },
+    {
+        "wbsDatabaseId": 50000,
+        "phaseDatabaseId": 59999,
+        "description": "MATERIAL"
+    },
+    {
+        "wbsDatabaseId": 60000,
+        "phaseDatabaseId": 60001,
+        "description": "STRUCTURAL STEEL FABRICATION"
+    },
+    {
+        "wbsDatabaseId": 60000,
+        "phaseDatabaseId": 60002,
+        "description": "PLATFORM FABRICATION"
+    },
+    {
+        "wbsDatabaseId": 60000,
+        "phaseDatabaseId": 60003,
+        "description": "STILE FABRICATION"
+    },
+    {
+        "wbsDatabaseId": 60000,
+        "phaseDatabaseId": 60004,
+        "description": "SKphaseDatabaseId FABRICATION"
+    },
+    {
+        "wbsDatabaseId": 60000,
+        "phaseDatabaseId": 60005,
+        "description": "GRATING FABRICATION"
+    },
+    {
+        "wbsDatabaseId": 60000,
+        "phaseDatabaseId": 60006,
+        "description": "HANDRAIL FABRICATION"
+    },
+    {
+        "wbsDatabaseId": 60000,
+        "phaseDatabaseId": 60007,
+        "description": "STAIRWAY FABRICATION"
+    },
+    {
+        "wbsDatabaseId": 60000,
+        "phaseDatabaseId": 60008,
+        "description": "LADDER & CAGE FABRICATION"
+    },
+    {
+        "wbsDatabaseId": 60000,
+        "phaseDatabaseId": 60009,
+        "description": "ERECT STEEL (EL. ≤30') NEW BLDG"
+    },
+    {
+        "wbsDatabaseId": 60000,
+        "phaseDatabaseId": 60010,
+        "description": "ERECT STEEL (EL. ≥31') NEW BLDG"
+    },
+    {
+        "wbsDatabaseId": 60000,
+        "phaseDatabaseId": 60011,
+        "description": "ERECT STEEL (EL. ≤30') EXIST BLDG"
+    },
+    {
+        "wbsDatabaseId": 60000,
+        "phaseDatabaseId": 60012,
+        "description": "ERECT STEEL (EL. ≥31') EXIST BLDG"
+    },
+    {
+        "wbsDatabaseId": 60000,
+        "phaseDatabaseId": 60013,
+        "description": "SKphaseDatabaseId INSTALL"
+    },
+    {
+        "wbsDatabaseId": 60000,
+        "phaseDatabaseId": 60014,
+        "description": "GRATING INSTALL"
+    },
+    {
+        "wbsDatabaseId": 60000,
+        "phaseDatabaseId": 60015,
+        "description": "LADDER & CAGE INSTALL"
+    },
+    {
+        "wbsDatabaseId": 60000,
+        "phaseDatabaseId": 60016,
+        "description": "HANDRAIL INSTALL"
+    },
+    {
+        "wbsDatabaseId": 60000,
+        "phaseDatabaseId": 60017,
+        "description": "TOEPLATE INSTALL"
+    },
+    {
+        "wbsDatabaseId": 60000,
+        "phaseDatabaseId": 60018,
+        "description": "STAIRWAY INSTALL"
+    },
+    {
+        "wbsDatabaseId": 60000,
+        "phaseDatabaseId": 60019,
+        "description": "METAL WALL PANELS"
+    },
+    {
+        "wbsDatabaseId": 60000,
+        "phaseDatabaseId": 60020,
+        "description": "ROOF JOISTS"
+    },
+    {
+        "wbsDatabaseId": 60000,
+        "phaseDatabaseId": 60021,
+        "description": "ROOF DECKING"
+    },
+    {
+        "wbsDatabaseId": 60000,
+        "phaseDatabaseId": 69982,
+        "description": "GROUTING"
+    },
+    {
+        "wbsDatabaseId": 60000,
+        "phaseDatabaseId": 69990,
+        "description": "PIPE SUPPORTS"
+    },
+    {
+        "wbsDatabaseId": 60000,
+        "phaseDatabaseId": 69998,
+        "description": "ENGINEERING / TESTING SERVICES"
+    },
+    {
+        "wbsDatabaseId": 60000,
+        "phaseDatabaseId": 69999,
+        "description": "MATERIAL"
+    },
+    {
+        "wbsDatabaseId": 70000,
+        "phaseDatabaseId": 70001,
+        "description": "CARBON STEEL - A106/A53 (SCH 10/40)"
+    },
+    {
+        "wbsDatabaseId": 70000,
+        "phaseDatabaseId": 70002,
+        "description": "CARBON STEEL - A106/A53 (SCH 80/XS)"
+    },
+    {
+        "wbsDatabaseId": 70000,
+        "phaseDatabaseId": 70003,
+        "description": "CARBON STEEL - A106/A53 (SCH 120)"
+    },
+    {
+        "wbsDatabaseId": 70000,
+        "phaseDatabaseId": 70004,
+        "description": "CARBON STEEL - A106/A53 (SCH 40 TIG WELD)"
+    },
+    {
+        "wbsDatabaseId": 70000,
+        "phaseDatabaseId": 70005,
+        "description": "CARBON STEEL - A106/A53 (VICTAULIC)"
+    },
+    {
+        "wbsDatabaseId": 70000,
+        "phaseDatabaseId": 70006,
+        "description": "STAINLESS STEEL - TP304/304L, TP316/316L (SCH 10S)"
+    },
+    {
+        "wbsDatabaseId": 70000,
+        "phaseDatabaseId": 70007,
+        "description": "STAINLESS STEEL - TP304/304L, TP316/316L (SCH 40S)"
+    },
+    {
+        "wbsDatabaseId": 70000,
+        "phaseDatabaseId": 70008,
+        "description": "STAINLESS STEEL - TP304/304L, TP316/316L (SCH 80S)"
+    },
+    {
+        "wbsDatabaseId": 70000,
+        "phaseDatabaseId": 70009,
+        "description": "LOW TEMP CARBON STEEL - A333"
+    },
+    {
+        "wbsDatabaseId": 70000,
+        "phaseDatabaseId": 70010,
+        "description": "LOW TEMP CARBON STEEL - A333 (TIG WELD)"
+    },
+    {
+        "wbsDatabaseId": 70000,
+        "phaseDatabaseId": 70011,
+        "description": "CHROME - SA335 (SCH 80)"
+    },
+    {
+        "wbsDatabaseId": 70000,
+        "phaseDatabaseId": 70012,
+        "description": "MONEL - B165 (SCH 80)"
+    },
+    {
+        "wbsDatabaseId": 70000,
+        "phaseDatabaseId": 70013,
+        "description": "TITANIUM - B337 (SCH 40)"
+    },
+    {
+        "wbsDatabaseId": 70000,
+        "phaseDatabaseId": 70014,
+        "description": "ALUMINUM - 6061 (SCH 40)"
+    },
+    {
+        "wbsDatabaseId": 70000,
+        "phaseDatabaseId": 70015,
+        "description": "HDPE - D2239"
+    },
+    {
+        "wbsDatabaseId": 70000,
+        "phaseDatabaseId": 70016,
+        "description": "FIBERGLASS"
+    },
+    {
+        "wbsDatabaseId": 70000,
+        "phaseDatabaseId": 70017,
+        "description": "PVC / CPVC"
+    },
+    {
+        "wbsDatabaseId": 70000,
+        "phaseDatabaseId": 70018,
+        "description": "COPPER - B88"
+    },
+    {
+        "wbsDatabaseId": 70000,
+        "phaseDatabaseId": 79984,
+        "description": "FRESH AIR SUPPLY"
+    },
+    {
+        "wbsDatabaseId": 70000,
+        "phaseDatabaseId": 79988,
+        "description": "STEAM TRACING"
+    },
+    {
+        "wbsDatabaseId": 70000,
+        "phaseDatabaseId": 79989,
+        "description": "OFFLOAD / RECEIVE"
+    },
+    {
+        "wbsDatabaseId": 70000,
+        "phaseDatabaseId": 79990,
+        "description": "PIPE SUPPORTS"
+    },
+    {
+        "wbsDatabaseId": 70000,
+        "phaseDatabaseId": 79992,
+        "description": "HOT TAPS"
+    },
+    {
+        "wbsDatabaseId": 70000,
+        "phaseDatabaseId": 79993,
+        "description": "NDT / NDE"
+    },
+    {
+        "wbsDatabaseId": 70000,
+        "phaseDatabaseId": 79994,
+        "description": "POST WELD HEAT TREATMENT"
+    },
+    {
+        "wbsDatabaseId": 70000,
+        "phaseDatabaseId": 79995,
+        "description": "DEGAS"
+    },
+    {
+        "wbsDatabaseId": 70000,
+        "phaseDatabaseId": 79996,
+        "description": "HYDROTESTING"
+    },
+    {
+        "wbsDatabaseId": 70000,
+        "phaseDatabaseId": 79997,
+        "description": "PNEUMATIC TESTING"
+    },
+    {
+        "wbsDatabaseId": 70000,
+        "phaseDatabaseId": 79998,
+        "description": "ENGINEERING / TESTING SERVICES"
+    },
+    {
+        "wbsDatabaseId": 70000,
+        "phaseDatabaseId": 79999,
+        "description": "MATERIAL"
+    },
+    {
+        "wbsDatabaseId": 80000,
+        "phaseDatabaseId": 80001,
+        "description": "ELECTRICAL"
+    },
+    {
+        "wbsDatabaseId": 80000,
+        "phaseDatabaseId": 89999,
+        "description": "MATERIAL"
+    },
+    {
+        "wbsDatabaseId": 90000,
+        "phaseDatabaseId": 90001,
+        "description": "CV - CONTROL VALVE"
+    },
+    {
+        "wbsDatabaseId": 90000,
+        "phaseDatabaseId": 90002,
+        "description": "TI - TEMPERATURE INDICATOR"
+    },
+    {
+        "wbsDatabaseId": 90000,
+        "phaseDatabaseId": 90003,
+        "description": "DP - TRANSMITTER"
+    },
+    {
+        "wbsDatabaseId": 90000,
+        "phaseDatabaseId": 90004,
+        "description": "LG - LEVEL GLASS"
+    },
+    {
+        "wbsDatabaseId": 90000,
+        "phaseDatabaseId": 90005,
+        "description": "LT - LEVEL TRANSMITTER"
+    },
+    {
+        "wbsDatabaseId": 90000,
+        "phaseDatabaseId": 90006,
+        "description": "FE - ORIFICE PLATE"
+    },
+    {
+        "wbsDatabaseId": 90000,
+        "phaseDatabaseId": 90007,
+        "description": "FS - FLOW SWITCH"
+    },
+    {
+        "wbsDatabaseId": 90000,
+        "phaseDatabaseId": 90008,
+        "description": "PI - PRESSURE INDICATOR"
+    },
+    {
+        "wbsDatabaseId": 90000,
+        "phaseDatabaseId": 90009,
+        "description": "PS - PRESSURE SWITCH"
+    },
+    {
+        "wbsDatabaseId": 90000,
+        "phaseDatabaseId": 90010,
+        "description": "PT - PRESSURE TRANSMITTER"
+    },
+    {
+        "wbsDatabaseId": 90000,
+        "phaseDatabaseId": 90011,
+        "description": "HY - SHUTDOWN VALVE"
+    },
+    {
+        "wbsDatabaseId": 90000,
+        "phaseDatabaseId": 90012,
+        "description": "TT - TEMPERATURE TRANSMITTER"
+    },
+    {
+        "wbsDatabaseId": 90000,
+        "phaseDatabaseId": 90013,
+        "description": "TE - THERMOCOUPLE"
+    },
+    {
+        "wbsDatabaseId": 90000,
+        "phaseDatabaseId": 90014,
+        "description": "TW - THERMOWELL"
+    },
+    {
+        "wbsDatabaseId": 90000,
+        "phaseDatabaseId": 90015,
+        "description": "HEATER INSTRUMENTS"
+    },
+    {
+        "wbsDatabaseId": 90000,
+        "phaseDatabaseId": 90016,
+        "description": "TUBING"
+    },
+    {
+        "wbsDatabaseId": 90000,
+        "phaseDatabaseId": 99986,
+        "description": "CALIBRATING"
+    },
+    {
+        "wbsDatabaseId": 90000,
+        "phaseDatabaseId": 99990,
+        "description": "TUBING SUPPORTS"
+    },
+    {
+        "wbsDatabaseId": 90000,
+        "phaseDatabaseId": 99998,
+        "description": "ENGINEERING / TESTING SERVICES"
+    },
+    {
+        "wbsDatabaseId": 90000,
+        "phaseDatabaseId": 99999,
+        "description": "MATERIAL"
+    },
+    {
+        "wbsDatabaseId": 100000,
+        "phaseDatabaseId": 100001,
+        "description": "INSULATION"
+    },
+    {
+        "wbsDatabaseId": 100000,
+        "phaseDatabaseId": 109999,
+        "description": "MATERIAL"
+    },
+    {
+        "wbsDatabaseId": 110000,
+        "phaseDatabaseId": 110001,
+        "description": "PAINTING"
+    },
+    {
+        "wbsDatabaseId": 110000,
+        "phaseDatabaseId": 119999,
+        "description": "MATERIAL"
+    },
+    {
+        "wbsDatabaseId": 120000,
+        "phaseDatabaseId": 120001,
+        "description": "PIPE REMOVAL"
+    },
+    {
+        "wbsDatabaseId": 120000,
+        "phaseDatabaseId": 120002,
+        "description": "STEEL REMOVAL"
+    },
+    {
+        "wbsDatabaseId": 120000,
+        "phaseDatabaseId": 120003,
+        "description": "T/V/E REMOVAL"
+    },
+    {
+        "wbsDatabaseId": 120000,
+        "phaseDatabaseId": 120004,
+        "description": "ASPHALT REMOVAL"
+    },
+    {
+        "wbsDatabaseId": 120000,
+        "phaseDatabaseId": 120005,
+        "description": "CONCRETE SLAB REMOVAL"
+    },
+    {
+        "wbsDatabaseId": 120000,
+        "phaseDatabaseId": 120006,
+        "description": "ELEVATED CONCRETE SLAB REMOVAL"
+    },
+    {
+        "wbsDatabaseId": 120000,
+        "phaseDatabaseId": 120007,
+        "description": "CONCRETE FOUNDATION REMOVAL"
+    },
+    {
+        "wbsDatabaseId": 120000,
+        "phaseDatabaseId": 120008,
+        "description": "CUT CONCRETE OPENINGS"
+    },
+    {
+        "wbsDatabaseId": 120000,
+        "phaseDatabaseId": 120009,
+        "description": "BUILDING DEMO"
+    },
+    {
+        "wbsDatabaseId": 120000,
+        "phaseDatabaseId": 120010,
+        "description": "ELECTRICAL DEMO"
+    },
+    {
+        "wbsDatabaseId": 120000,
+        "phaseDatabaseId": 129998,
+        "description": "ENGINEERING / TESTING SERVICES"
+    },
+    {
+        "wbsDatabaseId": 120000,
+        "phaseDatabaseId": 129999,
+        "description": "MATERIAL"
+    },
+    {
+        "wbsDatabaseId": 130000,
+        "phaseDatabaseId": 130001,
+        "description": "CARBON STEEL - A106/A53 (SCH 40)"
+    },
+    {
+        "wbsDatabaseId": 130000,
+        "phaseDatabaseId": 130002,
+        "description": "HDPE - D2239"
+    },
+    {
+        "wbsDatabaseId": 130000,
+        "phaseDatabaseId": 130003,
+        "description": "PVC / CPVC"
+    },
+    {
+        "wbsDatabaseId": 130000,
+        "phaseDatabaseId": 139983,
+        "description": "HOLphaseDatabaseIdAY DETECTION (JEEP TEST)"
+    },
+    {
+        "wbsDatabaseId": 130000,
+        "phaseDatabaseId": 139984,
+        "description": "FRESH AIR SUPPLY"
+    },
+    {
+        "wbsDatabaseId": 130000,
+        "phaseDatabaseId": 139985,
+        "description": "COAT & WRAP"
+    },
+    {
+        "wbsDatabaseId": 130000,
+        "phaseDatabaseId": 139989,
+        "description": "OFFLOAD / RECEIVE"
+    },
+    {
+        "wbsDatabaseId": 130000,
+        "phaseDatabaseId": 139990,
+        "description": "PIPE SUPPORTS"
+    },
+    {
+        "wbsDatabaseId": 130000,
+        "phaseDatabaseId": 139992,
+        "description": "HOT TAPS"
+    },
+    {
+        "wbsDatabaseId": 130000,
+        "phaseDatabaseId": 139993,
+        "description": "NDT / NDE"
+    },
+    {
+        "wbsDatabaseId": 130000,
+        "phaseDatabaseId": 139994,
+        "description": "POST WELD HEAT TREATMENT"
+    },
+    {
+        "wbsDatabaseId": 130000,
+        "phaseDatabaseId": 139995,
+        "description": "DEGAS"
+    },
+    {
+        "wbsDatabaseId": 130000,
+        "phaseDatabaseId": 139996,
+        "description": "HYDROTESTING"
+    },
+    {
+        "wbsDatabaseId": 130000,
+        "phaseDatabaseId": 139997,
+        "description": "PNEUMATIC TESTING"
+    },
+    {
+        "wbsDatabaseId": 130000,
+        "phaseDatabaseId": 139998,
+        "description": "ENGINEERING / TESTING SERVICES"
+    },
+    {
+        "wbsDatabaseId": 130000,
+        "phaseDatabaseId": 139999,
+        "description": "MATERIAL"
+    },
+    {
+        "wbsDatabaseId": 140000,
+        "phaseDatabaseId": 140001,
+        "description": "REFRACTORY"
+    },
+    {
+        "wbsDatabaseId": 140000,
+        "phaseDatabaseId": 149999,
+        "description": "MATERIAL"
+    },
+    {
+        "wbsDatabaseId": 150000,
+        "phaseDatabaseId": 150001,
+        "description": "BUILDINGS"
+    },
+    {
+        "wbsDatabaseId": 150000,
+        "phaseDatabaseId": 159999,
+        "description": "MATERIAL"
+    },
+    {
+        "wbsDatabaseId": 180000,
+        "phaseDatabaseId": 180001,
+        "description": "SCAFFOLDING"
+    },
+    {
+        "wbsDatabaseId": 180000,
+        "phaseDatabaseId": 180002,
+        "description": "FIREWATCH"
+    },
+    {
+        "wbsDatabaseId": 180000,
+        "phaseDatabaseId": 180003,
+        "description": "MANWATCH"
+    },
+    {
+        "wbsDatabaseId": 180000,
+        "phaseDatabaseId": 180004,
+        "description": "TOOLS & EQUIPMENT RUNNER"
+    },
+    {
+        "wbsDatabaseId": 180000,
+        "phaseDatabaseId": 189999,
+        "description": "MATERIAL"
+    },
+    {
+        "wbsDatabaseId": 190000,
+        "phaseDatabaseId": 190001,
+        "description": "SITE CLEAN UP"
+    },
+    {
+        "wbsDatabaseId": 190000,
+        "phaseDatabaseId": 190002,
+        "description": "EQUIPMENT REMOVAL"
+    },
+    {
+        "wbsDatabaseId": 190000,
+        "phaseDatabaseId": 190003,
+        "description": "TRAILER REMOVAL"
+    },
+    {
+        "wbsDatabaseId": 190000,
+        "phaseDatabaseId": 190004,
+        "description": "TRAVEL OUT"
+    },
+    {
+        "wbsDatabaseId": 190000,
+        "phaseDatabaseId": 190005,
+        "description": "DISCONNECT UTILITIES"
+    },
+    {
+        "wbsDatabaseId": 190000,
+        "phaseDatabaseId": 190006,
+        "description": "FREIGHT OUT"
+    },
+    {
+        "wbsDatabaseId": 190000,
+        "phaseDatabaseId": 190007,
+        "description": "MECHANICAL COMPLETION & PRE-COMMISSIONING"
+    },
+    {
+        "wbsDatabaseId": 190000,
+        "phaseDatabaseId": 199999,
+        "description": "MATERIAL"
+    },
+    {
+        "wbsDatabaseId": 200000,
+        "phaseDatabaseId": 200100,
+        "description": "PROJECT MANAGER"
+    },
+    {
+        "wbsDatabaseId": 200000,
+        "phaseDatabaseId": 200200,
+        "description": "PROJECT SUPERINTENDENT"
+    },
+    {
+        "wbsDatabaseId": 200000,
+        "phaseDatabaseId": 200300,
+        "description": "PLANNER / SCHEDULER"
+    },
+    {
+        "wbsDatabaseId": 200000,
+        "phaseDatabaseId": 200400,
+        "description": "FIELD ENGINEER / ESTIMATOR"
+    },
+    {
+        "wbsDatabaseId": 200000,
+        "phaseDatabaseId": 200500,
+        "description": "CONTRACT MANAGER"
+    },
+    {
+        "wbsDatabaseId": 200000,
+        "phaseDatabaseId": 200600,
+        "description": "SAFETY"
+    },
+    {
+        "wbsDatabaseId": 200000,
+        "phaseDatabaseId": 200700,
+        "description": "PROCUREMENT"
+    },
+    {
+        "wbsDatabaseId": 200000,
+        "phaseDatabaseId": 200800,
+        "description": "PROJECT CONTROLS"
+    },
+    {
+        "wbsDatabaseId": 200000,
+        "phaseDatabaseId": 200900,
+        "description": "QUALITY CONTROL"
+    },
+    {
+        "wbsDatabaseId": 200000,
+        "phaseDatabaseId": 201010,
+        "description": "FIELD OFFICE"
+    },
+    {
+        "wbsDatabaseId": 200000,
+        "phaseDatabaseId": 201020,
+        "description": "DRAFTSMAN / PIPING DESIGNER"
+    },
+    {
+        "wbsDatabaseId": 200000,
+        "phaseDatabaseId": 201030,
+        "description": "TOOLS / EQUIPMENT RUNNER"
+    },
+    {
+        "wbsDatabaseId": 200000,
+        "phaseDatabaseId": 201040,
+        "description": "INSTRUMENT TECH"
+    },
+    {
+        "wbsDatabaseId": 200000,
+        "phaseDatabaseId": 201050,
+        "description": "TOOL ROOM"
+    },
+    {
+        "wbsDatabaseId": 200000,
+        "phaseDatabaseId": 201060,
+        "description": "MATERIAL ROOM"
+    },
+    {
+        "wbsDatabaseId": 200000,
+        "phaseDatabaseId": 209980,
+        "description": "IT SERVICES"
+    },
+    {
+        "wbsDatabaseId": 200000,
+        "phaseDatabaseId": 209981,
+        "description": "LIFT PROCEDURES"
+    },
+    {
+        "wbsDatabaseId": 200000,
+        "phaseDatabaseId": 209982,
+        "description": "ASME INSPECTION SERVICE (HARTFORD)"
+    },
+    {
+        "wbsDatabaseId": 200000,
+        "phaseDatabaseId": 209998,
+        "description": "ENGINEERING / TESTING SERVICES"
+    },
+    {
+        "wbsDatabaseId": 200000,
+        "phaseDatabaseId": 209999,
+        "description": "EQUIPMENT"
+    }
+]

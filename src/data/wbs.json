@@ -1,0 +1,74 @@
+[
+    {
+        "id": 10000,
+        "name": "MOBILIZE"
+    },
+    {
+        "id": 100000,
+        "name": "INSULATION"
+    },
+    {
+        "id": 110000,
+        "name": "PAINTING"
+    },
+    {
+        "id": 120000,
+        "name": "DISMANTLING"
+    },
+    {
+        "id": 130000,
+        "name": "BG PIPING"
+    },
+    {
+        "id": 140000,
+        "name": "REFRACTORY"
+    },
+    {
+        "id": 150000,
+        "name": "BUILDINGS"
+    },
+    {
+        "id": 180000,
+        "name": "SPECIALTY SERVICES"
+    },
+    {
+        "id": 190000,
+        "name": "DEMOBILIZE"
+    },
+    {
+        "id": 20000,
+        "name": "SITE PREPARATION"
+    },
+    {
+        "id": 200000,
+        "name": "SUPPORT"
+    },
+    {
+        "id": 30000,
+        "name": "CONCRETE"
+    },
+    {
+        "id": 40000,
+        "name": "TOWERS / VESSELS / EQUIPMENT"
+    },
+    {
+        "id": 50000,
+        "name": "PUMPS & DRIVERS"
+    },
+    {
+        "id": 60000,
+        "name": "STRUCTURAL"
+    },
+    {
+        "id": 70000,
+        "name": "AG PIPING"
+    },
+    {
+        "id": 80000,
+        "name": "ELECTRICAL"
+    },
+    {
+        "id": 90000,
+        "name": "INSTRUMENTS"
+    }
+]
