@@ -60,6 +60,9 @@ export default function AddEquipmentDialog({
         price: equipment.dayRate,
         craftBaseRate: null,
         subsistenceRate: null,
+        craftCost: null,
+        equipmentCost: null,
+        materialCost: null,
       });
       temp.push(newActivity);
     });

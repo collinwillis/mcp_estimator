@@ -18,21 +18,21 @@ export default function AddProposalDialog({
   open,
   toggleAddDialog,
 }: AddProposalDialogProps) {
-  const existingProposals = useProposals();
+  const { data, loading } = useProposals();
 
   const [proposalDescription, setProposalDescription] = useState("");
   const [proposalNumber, setProposalNumber] = useState("");
 
   useEffect(() => {
-    if (existingProposals.length > 0) {
-      const highestProposalNumber = existingProposals.reduce((prev, current) =>
+    if (data.length > 0) {
+      const highestProposalNumber = data.reduce((prev, current) =>
         prev.proposalNumber! > current.proposalNumber! ? prev : current
       );
       setProposalNumber((highestProposalNumber.proposalNumber! + 1).toString());
     } else {
       setProposalNumber("1300");
     }
-  }, [existingProposals, open]);
+  }, [data, open]);
 
   const handleProposalCreate = async () => {
     await insertProposal(proposalDescription, proposalNumber);

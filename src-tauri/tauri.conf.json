@@ -28,7 +28,7 @@
         "icons/icon.icns",
         "icons/icon.ico"
       ],
-      "identifier": "com.tauri.dev",
+      "identifier": "com.mcpestimator",
       "longDescription": "",
       "macOS": {
         "entitlements": null,
@@ -50,7 +50,7 @@
       "csp": null
     },
     "updater": {
-      "active": true,
+      "active": false,
       "dialog": true,
       "endpoints": [
         "https://gist.githubusercontent.com/collinwillis/ce914c06da2b6e946cdb326544ec5cf1/raw/479fcd6749ea83e901aeae4885169797f069c0ec/mcp_estimator_current_release.json"

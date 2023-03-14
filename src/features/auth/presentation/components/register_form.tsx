@@ -1,17 +1,36 @@
 import { Button, Divider, Stack, TextField, Typography } from "@mui/material";
+import { createUserWithEmailAndPassword, getAuth } from "firebase/auth";
 import React, { useRef } from "react";
+import { useNavigate } from "react-router-dom";
 
 interface RegisterFormProps {
   setFormValue: (value: number) => void;
 }
 export default function RegisterForm(props: RegisterFormProps) {
   const [email, setEmail] = React.useState("");
+  const navigate = useNavigate();
   const [password, setPassword] = React.useState("");
   const styles = {
     textField: {
       width: "80%",
       backgroundColor: "#f0f4f4",
     },
+  };
+
+  const onRegister = () => {
+    console.log("login");
+    const auth = getAuth();
+    createUserWithEmailAndPassword(auth, email, password)
+      .then((userCredential) => {
+        // Signed in
+        const user = userCredential.user;
+        navigate("/");
+        // ...
+      })
+      .catch((error) => {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+      });
   };
   return (
     <>
@@ -46,7 +65,7 @@ export default function RegisterForm(props: RegisterFormProps) {
           }}
           variant="contained"
           color="secondary"
-          onClick={() => {}}
+          onClick={onRegister}
         >
           Register
         </Button>
