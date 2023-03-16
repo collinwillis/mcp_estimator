@@ -1,6 +1,7 @@
 import { Box } from "@mui/material";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { getCraftLoadedRate } from "../../api/totals";
 import BottomPanel from "../../components/bottom_pannel";
 import { useCurrentProposal } from "../../hooks/current_proposal_hook";
 import { useUserPreferences } from "../../hooks/user_preferences_hook";
@@ -13,12 +14,21 @@ import WbsDataGrid from "./components/wbs_data_grid";
 const ProposalHomeScreen = () => {
   const navigate = useNavigate();
   const { proposalId } = useParams();
-  const currentProposal = useCurrentProposal({
-    proposalId: proposalId ?? "",
-  });
 
   const [isSelectWbsDialogOpen, setIsSelectWbsDialogOpen] = useState(false);
   const userPreferences = useUserPreferences(auth?.currentUser?.uid!);
+  const currentProposal = useCurrentProposal({
+    proposalId: proposalId ?? "",
+  });
+  useEffect(() => {
+    if (currentProposal) {
+      const craftLoadedRate = getCraftLoadedRate({
+        proposal: currentProposal,
+      });
+      console.log(craftLoadedRate);
+    }
+  }, [currentProposal]);
+
   return (
     <Box
       sx={{
@@ -28,8 +38,8 @@ const ProposalHomeScreen = () => {
         flexDirection: "column",
       }}
     >
-      <ProposalInfoAccordion currentProposal={currentProposal!} />
-      <ProposalRatesAccordion currentProposal={currentProposal!} />
+      <ProposalInfoAccordion proposalId={proposalId ?? ""} />
+      <ProposalRatesAccordion proposalId={proposalId ?? ""} />
       <WbsDataGrid openSelectWbsDialog={() => setIsSelectWbsDialogOpen(true)} />
       <SelectWbsDialog
         isOpen={isSelectWbsDialogOpen}

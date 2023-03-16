@@ -110,10 +110,11 @@ const WbsDataGrid = ({
           return true;
         }}
         getCellClassName={(params: GridCellParams<number>) => {
-          if (!notEditableCells.includes(params.field)) {
+          if (notEditableCells.includes(params.field)) {
+            return "";
+          } else {
             return "editable-cell";
           }
-          return "true";
         }}
       />
     </Box>
@@ -159,6 +160,16 @@ const columns: GridColumns = [
     flex: 1,
     minWidth: 100,
     headerAlign: "center",
+    valueFormatter: (params: GridValueFormatterParams<number>) => {
+      if (params.value == null) {
+        return "";
+      }
+      const valueFormatted = params.value.toLocaleString(undefined, {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      });
+      return `${valueFormatted}`;
+    },
   },
   {
     field: "craftCost",
@@ -168,6 +179,16 @@ const columns: GridColumns = [
     align: "right",
     flex: 1,
     headerAlign: "center",
+    valueFormatter: (params: GridValueFormatterParams<number>) => {
+      if (params.value == null) {
+        return "";
+      }
+      const valueFormatted = params.value.toLocaleString(undefined, {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      });
+      return `$${valueFormatted}`;
+    },
   },
 
   {
@@ -178,6 +199,16 @@ const columns: GridColumns = [
     align: "right",
     flex: 1,
     headerAlign: "center",
+    valueFormatter: (params: GridValueFormatterParams<number>) => {
+      if (params.value == null) {
+        return "";
+      }
+      const valueFormatted = params.value.toLocaleString(undefined, {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      });
+      return `${valueFormatted}`;
+    },
   },
 
   {
@@ -192,7 +223,10 @@ const columns: GridColumns = [
       if (params.value == null) {
         return "";
       }
-      const valueFormatted = Number(params.value).toLocaleString();
+      const valueFormatted = params.value.toLocaleString(undefined, {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      });
       return `$${valueFormatted}`;
     },
   },
@@ -209,7 +243,10 @@ const columns: GridColumns = [
       if (params.value == null) {
         return "";
       }
-      const valueFormatted = Number(params.value).toLocaleString();
+      const valueFormatted = params.value.toLocaleString(undefined, {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      });
       return `$${valueFormatted}`;
     },
   },
@@ -226,7 +263,10 @@ const columns: GridColumns = [
       if (params.value == null) {
         return "";
       }
-      const valueFormatted = Number(params.value).toLocaleString();
+      const valueFormatted = params.value.toLocaleString(undefined, {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      });
       return `$${valueFormatted}`;
     },
   },
@@ -244,7 +284,10 @@ const columns: GridColumns = [
       if (params.value == null) {
         return "";
       }
-      const valueFormatted = Number(params.value).toLocaleString();
+      const valueFormatted = params.value.toLocaleString(undefined, {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      });
       return `$${valueFormatted}`;
     },
   },
@@ -261,7 +304,10 @@ const columns: GridColumns = [
       if (params.value == null) {
         return "";
       }
-      const valueFormatted = Number(params.value).toLocaleString();
+      const valueFormatted = params.value.toLocaleString(undefined, {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      });
       return `$${valueFormatted}`;
     },
   },
@@ -277,7 +323,10 @@ const columns: GridColumns = [
       if (params.value == null) {
         return "";
       }
-      const valueFormatted = Number(params.value).toLocaleString();
+      const valueFormatted = params.value.toLocaleString(undefined, {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      });
       return `$${valueFormatted}`;
     },
   },

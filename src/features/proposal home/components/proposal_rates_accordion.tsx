@@ -13,14 +13,19 @@ import {
 import React, { useEffect, useState } from "react";
 import * as CurrencyFormat from "react-currency-format";
 import { updateSingleProposal } from "../../../api/proposal";
+import FormattedNumberInput from "../../../components/formatted_number_input";
+import { useCurrentProposal } from "../../../hooks/current_proposal_hook";
 import { FirestoreProposal } from "../../../models/firestore models/proposal_firestore";
 import { Proposal } from "../../../models/proposal";
 interface ProposalRatesAccordionProps {
-  currentProposal: Proposal;
+  proposalId: string;
 }
 export default function ProposalRatesAccordion({
-  currentProposal,
+  proposalId,
 }: ProposalRatesAccordionProps) {
+  const currentProposal = useCurrentProposal({
+    proposalId: proposalId,
+  });
   //Initialize the States of all of the markups
   const [craftbaseState, setCraftbaseState] = useState<string>("0");
   const [weldbaseState, setWeldbaseState] = useState<string>("0");
@@ -41,11 +46,6 @@ export default function ProposalRatesAccordion({
 
   //Success Dialog State
   const [successDialogOpen, setSuccessDialogOpen] = useState(false);
-
-  //Set the States of the Markups to the Current Markups
-  useEffect(() => {}, []);
-
-  //Create an Updated Markups object
 
   //If the user submits, update the Markups
   const onSubmit = async () => {
@@ -68,7 +68,7 @@ export default function ProposalRatesAccordion({
       rigProfitRate: parseFloat(rigProfit),
     });
     await updateSingleProposal({
-      proposalId: currentProposal.id!,
+      proposalId: proposalId,
       proposal: updatedProposal,
     });
     setSuccessDialogOpen(true);
@@ -109,14 +109,7 @@ export default function ProposalRatesAccordion({
                 width: "25%",
                 justifyContent: "space-between",
               }}
-            >
-              {/* <Typography>
-                Craft Loaded Rate: ${parseFloat(craftLoadedRate).toFixed(2)}
-              </Typography>
-              <Typography>
-                Weld Loaded Rate: ${parseFloat(weldLoadedRate).toFixed(2)}
-              </Typography> */}
-            </div>
+            ></div>
             <div style={{ display: "flex", flexDirection: "row" }}>
               <div
                 style={{
@@ -125,80 +118,49 @@ export default function ProposalRatesAccordion({
                   padding: "10px",
                   display: "flex",
                   flexDirection: "column",
+
+                  gap: "10px",
                 }}
               >
-                <CurrencyFormat
-                  customInput={(props) => <TextField {...props} />}
-                  thousandSeparator
-                  variant="filled"
+                <FormattedNumberInput
                   prefix="$"
-                  suffix="/hr"
-                  decimalScale={2}
-                  placeholder="Craft Base"
                   label="Craft Base"
-                  fixedDecimalScale={true}
-                  onValueChange={(values) => {
-                    setCraftbaseState(values.value);
-                  }}
                   value={craftbaseState}
+                  setValue={(_) => {
+                    setCraftbaseState(_);
+                  }}
                 />
-                <CurrencyFormat
-                  customInput={(props) => <TextField {...props} />}
-                  thousandSeparator
-                  variant="filled"
+                <FormattedNumberInput
                   prefix="$"
-                  suffix="/hr"
-                  decimalScale={2}
-                  placeholder="Weld Base"
                   label="Weld Base"
-                  fixedDecimalScale={true}
-                  onValueChange={(values: CurrencyFormat.Values) => {
-                    setWeldbaseState(values.value);
-                  }}
                   value={weldbaseState}
+                  setValue={(_) => {
+                    setWeldbaseState(_);
+                  }}
                 />
-                <CurrencyFormat
-                  customInput={(props) => <TextField {...props} />}
-                  thousandSeparator
-                  variant="filled"
+                <FormattedNumberInput
                   prefix="$"
-                  suffix="/hr"
-                  decimalScale={2}
-                  placeholder="Subsistence"
                   label="Subsistence"
-                  fixedDecimalScale={true}
-                  onValueChange={(values) => {
-                    setSubsistState(values.value);
-                  }}
                   value={subsistState}
+                  setValue={(_) => {
+                    setSubsistState(_);
+                  }}
                 />
-                <CurrencyFormat
-                  customInput={(props) => <TextField {...props} />}
-                  thousandSeparator
-                  variant="filled"
+                <FormattedNumberInput
                   suffix="%"
-                  decimalScale={2}
-                  fixedDecimalScale={true}
-                  placeholder="Use Tax"
                   label="Use Tax"
-                  onValueChange={(values) => {
-                    setUseTaxState(values.value);
-                  }}
                   value={useTaxState}
-                />
-                <CurrencyFormat
-                  customInput={(props) => <TextField {...props} />}
-                  thousandSeparator
-                  variant="filled"
-                  suffix="%"
-                  decimalScale={2}
-                  fixedDecimalScale={true}
-                  placeholder="Sales Tax"
-                  label="Sales Tax"
-                  onValueChange={(values) => {
-                    setSalesTaxState(values.value);
+                  setValue={(_) => {
+                    setUseTaxState(_);
                   }}
+                />
+                <FormattedNumberInput
+                  suffix="%"
+                  label="Sales Tax"
                   value={salesTaxState}
+                  setValue={(_) => {
+                    setSalesTaxState(_);
+                  }}
                 />
               </div>
               <div
@@ -208,78 +170,49 @@ export default function ProposalRatesAccordion({
                   padding: "10px",
                   display: "flex",
                   flexDirection: "column",
+                  gap: "10px",
                 }}
                 // value={updatedMakrup}
               >
-                <CurrencyFormat
-                  customInput={(props) => <TextField {...props} />}
-                  thousandSeparator
-                  variant="filled"
+                <FormattedNumberInput
                   suffix="%"
-                  decimalScale={2}
-                  fixedDecimalScale={true}
-                  placeholder="Overhead"
                   label="Overhead"
-                  onValueChange={(values) => {
-                    setOverheadState(values.value);
-                  }}
                   value={overheadState}
+                  setValue={(_) => {
+                    setOverheadState(_);
+                  }}
                 />
-                <CurrencyFormat
-                  customInput={(props) => <TextField {...props} />}
-                  thousandSeparator
-                  variant="filled"
+                <FormattedNumberInput
                   suffix="%"
-                  decimalScale={2}
-                  fixedDecimalScale={true}
-                  placeholder="Consumables"
                   label="Consumables"
-                  onValueChange={(values) => {
-                    setConsumableState(values.value);
-                  }}
                   value={consumableState}
+                  setValue={(_) => {
+                    setConsumableState(_);
+                  }}
                 />
-                <CurrencyFormat
-                  customInput={(props) => <TextField {...props} />}
-                  thousandSeparator
-                  variant="filled"
+                <FormattedNumberInput
                   suffix="%"
-                  decimalScale={2}
-                  fixedDecimalScale={true}
-                  placeholder="Burden"
                   label="Burden"
-                  onValueChange={(values) => {
-                    setBurdenState(values.value);
-                  }}
                   value={burdenState}
+                  setValue={(_) => {
+                    setBurdenState(_);
+                  }}
                 />
-                <CurrencyFormat
-                  customInput={(props) => <TextField {...props} />}
-                  thousandSeparator
-                  variant="filled"
+                <FormattedNumberInput
                   suffix="%"
-                  decimalScale={2}
-                  fixedDecimalScale={true}
-                  placeholder="Fuel"
                   label="Fuel"
-                  onValueChange={(values) => {
-                    setFuelState(values.value);
-                  }}
                   value={fuelState}
-                />
-                <CurrencyFormat
-                  customInput={(props) => <TextField {...props} />}
-                  thousandSeparator
-                  variant="filled"
-                  prefix="$"
-                  decimalScale={2}
-                  fixedDecimalScale={true}
-                  placeholder="Rig"
-                  label="Rig"
-                  onValueChange={(values) => {
-                    setRigState(values.value);
+                  setValue={(_) => {
+                    setFuelState(_);
                   }}
+                />
+                <FormattedNumberInput
+                  suffix="%"
+                  label="Rig"
                   value={rigState}
+                  setValue={(_) => {
+                    setRigState(_);
+                  }}
                 />
               </div>
               <div
@@ -289,77 +222,48 @@ export default function ProposalRatesAccordion({
                   padding: "10px",
                   display: "flex",
                   flexDirection: "column",
+                  gap: "10px",
                 }}
               >
-                <CurrencyFormat
-                  customInput={(props) => <TextField {...props} />}
-                  thousandSeparator
-                  variant="filled"
+                <FormattedNumberInput
                   suffix="%"
-                  decimalScale={2}
-                  fixedDecimalScale={true}
-                  placeholder="Labor Profit"
                   label="Labor Profits"
-                  onValueChange={(values) => {
-                    setLaborProfitsState(values.value);
-                  }}
                   value={laborprofitsState}
+                  setValue={(_) => {
+                    setLaborProfitsState(_);
+                  }}
                 />
-                <CurrencyFormat
-                  customInput={(props) => <TextField {...props} />}
-                  thousandSeparator
-                  variant="filled"
+                <FormattedNumberInput
                   suffix="%"
-                  decimalScale={2}
-                  fixedDecimalScale={true}
-                  placeholder="Material Profit"
                   label="Material Profit"
-                  onValueChange={(values) => {
-                    setMaterialProfitsState(values.value);
-                  }}
                   value={materialProfitsState}
+                  setValue={(_) => {
+                    setMaterialProfitsState(_);
+                  }}
                 />
-                <CurrencyFormat
-                  customInput={(props) => <TextField {...props} />}
-                  thousandSeparator
-                  variant="filled"
+                <FormattedNumberInput
                   suffix="%"
-                  decimalScale={2}
-                  fixedDecimalScale={true}
-                  placeholder="Equipment Profit"
                   label="Equipment Profit"
-                  onValueChange={(values) => {
-                    setEquipmentProfitsState(values.value);
-                  }}
                   value={equipmentProfitsState}
+                  setValue={(_) => {
+                    setEquipmentProfitsState(_);
+                  }}
                 />
-                <CurrencyFormat
-                  customInput={(props) => <TextField {...props} />}
-                  thousandSeparator
-                  variant="filled"
+                <FormattedNumberInput
                   suffix="%"
-                  decimalScale={2}
-                  fixedDecimalScale={true}
-                  placeholder="Subcontractor Profit"
                   label="Subcontractor Profit"
-                  onValueChange={(values) => {
-                    setSubProfitsState(values.value);
-                  }}
                   value={subProfitsState}
-                />
-                <CurrencyFormat
-                  customInput={(props) => <TextField {...props} />}
-                  thousandSeparator
-                  variant="filled"
-                  suffix="%"
-                  decimalScale={2}
-                  fixedDecimalScale={true}
-                  placeholder="Sub Profit"
-                  label="Rig Profit"
-                  onValueChange={(values) => {
-                    setRigProfit(values.value);
+                  setValue={(_) => {
+                    setSubProfitsState(_);
                   }}
+                />
+                <FormattedNumberInput
+                  suffix="%"
+                  label="Rig Profit"
                   value={rigProfit}
+                  setValue={(_) => {
+                    setRigProfit(_);
+                  }}
                 />
               </div>
             </div>

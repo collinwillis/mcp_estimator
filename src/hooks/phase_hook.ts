@@ -39,6 +39,7 @@ export const usePhases = ({
           phaseId: phase.id ?? "",
           proposalId: currentProposalId,
         });
+        
         activities.forEach((activity) => {
           costOnlyCost = costOnlyCost + activity.costOnlyCost;
           subCost = subCost + activity.subContractorCost;

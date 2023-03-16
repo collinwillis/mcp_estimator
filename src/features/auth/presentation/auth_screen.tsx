@@ -24,13 +24,13 @@ export default function Welcome() {
           top: "20px",
           position: "absolute",
           left: "20px",
-          fontFamily: "nunito",
-          fontWeight: "600",
-          color: "text.light",
+          color: "primary.main",
+          fontWeight: "700",
+
         }}
-        variant="h4"
+        variant="h5"
       >
-        Estimator
+        MCP ESTIMATOR
       </Typography>
       <Stack spacing={2}>
         <Header text={formValue === 1 ? "Welcome Back!" : "Welcome!"} />

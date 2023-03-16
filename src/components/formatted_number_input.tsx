@@ -1,8 +1,8 @@
 import { TextField, TextFieldProps } from "@mui/material";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { NumericFormat } from "react-number-format";
 
-interface CurrencyInputProps {
+interface FormattedNumberInput {
   value?: string;
   label: string;
   setValue: (value: string) => void;
@@ -10,14 +10,14 @@ interface CurrencyInputProps {
   suffix?: string;
   disabled?: boolean;
 }
-const FormattedInput = ({
+const FormattedNumberInput = ({
   value,
   label,
   setValue,
   prefix,
   suffix,
   disabled,
-}: CurrencyInputProps) => {
+}: FormattedNumberInput) => {
   const materialUITextFieldProps = {
     id: "filled-multiline-flexible",
     label: label,
@@ -29,16 +29,17 @@ const FormattedInput = ({
   type MaterialUITextFieldProps = Partial<
     Pick<TextFieldProps, keyof typeof materialUITextFieldProps>
   >;
-  const [formattedValue, setFormattedValue] = useState(value);
+
   const textFieldProps: MaterialUITextFieldProps = materialUITextFieldProps;
+
   return (
     <NumericFormat
+      valueIsNumericString={true}
       onValueChange={(_) => {
-        setFormattedValue(_.formattedValue);
         setValue(_.value);
       }}
       decimalScale={2}
-      value={formattedValue}
+      value={value}
       customInput={TextField}
       thousandSeparator={true}
       prefix={prefix}
@@ -48,4 +49,4 @@ const FormattedInput = ({
   );
 };
 
-export default FormattedInput;
+export default FormattedNumberInput;

@@ -32,7 +32,7 @@ export const getCraftLoadedRate = ({
         (consumablesRate ?? 0) / 100) +
     (subsistence ?? 0);
 
-  return parseFloat(tempCraftLoadedRate.toFixed(2));
+  return tempCraftLoadedRate;
 };
 
 export const getWelderLoadedRate = ({
@@ -63,7 +63,7 @@ export const getWelderLoadedRate = ({
     (subsistenceRate ?? 0) +
     ((rigRate ?? 0) + (rigRate ?? 0) * ((rigProfitRate ?? 0) / 100));
 
-  return parseFloat(tempWeldLoadedRate.toFixed(2));
+  return tempWeldLoadedRate;
 };
 
 export const getMaterialCost = ({
@@ -81,7 +81,7 @@ export const getMaterialCost = ({
     (price +
       price * ((materialProfitRate ?? 0) / 100 + (salesTaxRate ?? 0) / 100));
 
-  return parseFloat(tempMaterialCost.toFixed(2));
+  return tempMaterialCost;
 };
 
 export const getEquipmentCost = ({
@@ -100,7 +100,7 @@ export const getEquipmentCost = ({
       (price +
         price * ((equipmentProfitRate ?? 0) / 100 + (useTaxRate ?? 0) / 100)));
 
-  return parseFloat(tempEquipmentCost.toFixed(2));
+  return tempEquipmentCost;
 };
 
 export const getSubcontractorCost = ({
@@ -127,7 +127,7 @@ export const getSubcontractorCost = ({
       (materialCost + materialProfit) +
       (equipmentCost + equipmentProfit));
 
-  return parseFloat(tempSubcontractorCost.toFixed(2));
+  return tempSubcontractorCost;
 };
 
 export const getCostOnlyCost = ({
@@ -139,7 +139,7 @@ export const getCostOnlyCost = ({
 
   let tempCostOnlyCost = quantity * price;
 
-  return parseFloat(tempCostOnlyCost.toFixed(2));
+  return tempCostOnlyCost;
 };
 
 export const getTotalCost = ({ activity }: { activity: Activity }): number => {
@@ -160,5 +160,5 @@ export const getTotalCost = ({ activity }: { activity: Activity }): number => {
     subContractorCost +
     costOnlyCost;
 
-  return parseFloat(tempTotalCost.toFixed(2));
+  return tempTotalCost;
 };

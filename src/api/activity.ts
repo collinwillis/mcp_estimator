@@ -18,6 +18,7 @@ import { FirestoreProposal } from "../models/firestore models/proposal_firestore
 import { Phase } from "../models/phase";
 import { Proposal } from "../models/proposal";
 import { firestore } from "../setup/config/firebase";
+import { currencyRound } from "./helpers";
 import { getSingleProposal } from "./proposal";
 import {
   getCostOnlyCost,
@@ -261,104 +262,28 @@ export const getActivitiesForPhase = async ({
     collection(firestore, "activities"),
     where("phaseId", "==", phaseId)
   );
-  const temp: Activity[] = [];
+  var temp: Activity[] = [];
   var proposal = await getSingleProposal({
     proposalId: proposalId,
   });
   const querySnapshot = await getDocs(q);
-  querySnapshot.forEach((doc) => {
-    if (proposal) {
-      const rawActivity = doc.data() as FirestoreActivity;
-      var craftConstant =
-        rawActivity.craftConstant ?? rawActivity.constant?.craftConstant ?? 0;
-      var welderConstant =
-        rawActivity.welderConstant ?? rawActivity.constant?.weldConstant ?? 0;
-      let cmh = parseFloat(
-        ((rawActivity.quantity ?? 0) * craftConstant).toFixed(2)
-      );
-      let wmh = parseFloat(
-        ((rawActivity.quantity ?? 0) * welderConstant).toFixed(2)
-      );
-      var proposalCraftBase = proposal?.craftBaseRate;
-      var proposalSubsistenceRate = proposal?.subsistenceRate;
 
-      const newActivity = new Activity(
-        doc.id,
-        rawActivity.description ?? "",
-        rawActivity.proposalId ?? "",
-        rawActivity.wbsId ?? "",
-        rawActivity.phaseId ?? "",
-        rawActivity.constant ?? null,
-        rawActivity.equipment ?? null,
-        rawActivity.quantity ?? 0,
-        rawActivity.constant?.sortOrder ?? 0,
-        rawActivity.activityType ?? ActivityType.laborItem,
-        rawActivity.unit ?? rawActivity.constant?.craftUnits ?? "",
-        craftConstant,
-        welderConstant,
-        cmh,
-        rawActivity.craftCost ?? 0,
-        wmh,
-        0,
-        rawActivity.price ?? 0,
-        rawActivity.time ?? 0,
-        rawActivity.materialCost ?? 0,
-        rawActivity.equipmentCost ?? 0,
-        0,
-        0,
-        0,
-        rawActivity.craftBaseRate ?? proposalCraftBase,
-        rawActivity.subsistenceRate ?? proposalSubsistenceRate
-      );
-
-      let craftLoadedRate = getCraftLoadedRate({
-        proposal: proposal,
-        customCraftBaseRate: newActivity.craftBaseRate!,
-        customSubsistenceRate: newActivity.subsistenceRate!,
-      });
-      let welderLoadedRate = getWelderLoadedRate({
-        proposal: proposal,
-      });
-      if (newActivity.activityType != ActivityType.subContractorItem) {
-        newActivity.craftCost = parseFloat(
-          (newActivity.craftManHours * craftLoadedRate).toFixed(2)
-        );
-      }
-      if (newActivity.activityType == ActivityType.equipmentItem) {
-        newActivity.equipmentCost = getEquipmentCost({
-          activity: newActivity,
-          proposal: proposal,
-        });
-      }
-      if (newActivity.activityType == ActivityType.materialItem) {
-        newActivity.materialCost = getMaterialCost({
-          activity: newActivity,
-          proposal: proposal,
-        });
-      }
-      newActivity.welderCost = parseFloat(
-        (newActivity.welderManHours * welderLoadedRate).toFixed(2)
-      );
-
-      if (newActivity.activityType == ActivityType.costOnlyItem) {
-        newActivity.costOnlyCost = getCostOnlyCost({
-          activity: newActivity,
-        });
-      }
-      if (newActivity.activityType == ActivityType.subContractorItem) {
-        newActivity.subContractorCost = getSubcontractorCost({
-          activity: newActivity,
-          proposal: proposal,
-        });
-      }
-      if (newActivity.activityType != ActivityType.subContractorItem) {
-        newActivity.totalCost = getTotalCost({ activity: newActivity });
-      } else {
-        newActivity.totalCost = newActivity.subContractorCost;
-      }
-      temp.push(newActivity);
-    }
+  const activityPromises = querySnapshot.docs.map((doc) => {
+    const rawActivity = doc.data() as FirestoreActivity;
+    return proposal
+      ? calculateActivityData(doc.id, rawActivity, proposal)
+      : null;
   });
+  let activities: (Activity | null)[] = [];
+  if (activityPromises != null) {
+    activities = await Promise.all(activityPromises);
+  }
+  temp = activities
+    .filter((activity): activity is Activity => activity !== null)
+    .sort((a: Activity, b: Activity) => {
+      return a.sortOrder! - b.sortOrder!;
+    });
+
   return temp;
 };
 
@@ -373,104 +298,27 @@ export const getActivitiesForWbs = async ({
     collection(firestore, "activities"),
     where("wbsId", "==", wbsId)
   );
-  const temp: Activity[] = [];
+  var temp: Activity[] = [];
   var proposal = await getSingleProposal({
     proposalId: proposalId,
   });
   const querySnapshot = await getDocs(q);
-  querySnapshot.forEach((doc) => {
-    if (proposal) {
-      const rawActivity = doc.data() as FirestoreActivity;
-      var craftConstant =
-        rawActivity.craftConstant ?? rawActivity.constant?.craftConstant ?? 0;
-      var welderConstant =
-        rawActivity.welderConstant ?? rawActivity.constant?.weldConstant ?? 0;
-      let cmh = parseFloat(
-        ((rawActivity.quantity ?? 0) * craftConstant).toFixed(2)
-      );
-      let wmh = parseFloat(
-        ((rawActivity.quantity ?? 0) * welderConstant).toFixed(2)
-      );
-      var proposalCraftBase = proposal?.craftBaseRate;
-      var proposalSubsistenceRate = proposal?.subsistenceRate;
-
-      const newActivity = new Activity(
-        doc.id,
-        rawActivity.description ?? "",
-        rawActivity.proposalId ?? "",
-        rawActivity.wbsId ?? "",
-        rawActivity.phaseId ?? "",
-        rawActivity.constant ?? null,
-        rawActivity.equipment ?? null,
-        rawActivity.quantity ?? 0,
-        rawActivity.constant?.sortOrder ?? 0,
-        rawActivity.activityType ?? ActivityType.laborItem,
-        rawActivity.unit ?? rawActivity.constant?.craftUnits ?? "",
-        craftConstant,
-        welderConstant,
-        cmh,
-        rawActivity.craftCost ?? 0,
-        wmh,
-        0,
-        rawActivity.price ?? 0,
-        rawActivity.time ?? 0,
-        rawActivity.materialCost ?? 0,
-        rawActivity.equipmentCost ?? 0,
-        0,
-        0,
-        0,
-        rawActivity.craftBaseRate ?? proposalCraftBase,
-        rawActivity.subsistenceRate ?? proposalSubsistenceRate
-      );
-
-      let craftLoadedRate = getCraftLoadedRate({
-        proposal: proposal,
-        customCraftBaseRate: newActivity.craftBaseRate!,
-        customSubsistenceRate: newActivity.subsistenceRate!,
-      });
-      let welderLoadedRate = getWelderLoadedRate({
-        proposal: proposal,
-      });
-      if (newActivity.activityType != ActivityType.subContractorItem) {
-        newActivity.craftCost = parseFloat(
-          (newActivity.craftManHours * craftLoadedRate).toFixed(2)
-        );
-      }
-      if (newActivity.activityType == ActivityType.equipmentItem) {
-        newActivity.equipmentCost = getEquipmentCost({
-          activity: newActivity,
-          proposal: proposal,
-        });
-      }
-      if (newActivity.activityType == ActivityType.materialItem) {
-        newActivity.materialCost = getMaterialCost({
-          activity: newActivity,
-          proposal: proposal,
-        });
-      }
-      newActivity.welderCost = parseFloat(
-        (newActivity.welderManHours * welderLoadedRate).toFixed(2)
-      );
-
-      if (newActivity.activityType == ActivityType.costOnlyItem) {
-        newActivity.costOnlyCost = getCostOnlyCost({
-          activity: newActivity,
-        });
-      }
-      if (newActivity.activityType == ActivityType.subContractorItem) {
-        newActivity.subContractorCost = getSubcontractorCost({
-          activity: newActivity,
-          proposal: proposal,
-        });
-      }
-      if (newActivity.activityType != ActivityType.subContractorItem) {
-        newActivity.totalCost = getTotalCost({ activity: newActivity });
-      } else {
-        newActivity.totalCost = newActivity.subContractorCost;
-      }
-      temp.push(newActivity);
-    }
+  const activityPromises = querySnapshot.docs.map((doc) => {
+    const rawActivity = doc.data() as FirestoreActivity;
+    return proposal
+      ? calculateActivityData(doc.id, rawActivity, proposal)
+      : null;
   });
+  let activities: (Activity | null)[] = [];
+  if (activityPromises != null) {
+    activities = await Promise.all(activityPromises);
+  }
+  temp = activities
+    .filter((activity): activity is Activity => activity !== null)
+    .sort((a: Activity, b: Activity) => {
+      return a.sortOrder! - b.sortOrder!;
+    });
+
   return temp;
 };
 
@@ -501,12 +349,8 @@ export const calculateActivityData = async (
     rawActivity.craftConstant ?? rawActivity.constant?.craftConstant ?? 0;
   var welderConstant =
     rawActivity.welderConstant ?? rawActivity.constant?.weldConstant ?? 0;
-  let cmh = parseFloat(
-    ((rawActivity.quantity ?? 0) * craftConstant).toFixed(2)
-  );
-  let wmh = parseFloat(
-    ((rawActivity.quantity ?? 0) * welderConstant).toFixed(2)
-  );
+  let cmh = (rawActivity.quantity ?? 0) * craftConstant;
+  let wmh = (rawActivity.quantity ?? 0) * welderConstant;
   var proposalCraftBase = proposal?.craftBaseRate;
   var proposalSubsistenceRate = proposal?.subsistenceRate;
 
@@ -544,13 +388,12 @@ export const calculateActivityData = async (
     customCraftBaseRate: newActivity.craftBaseRate!,
     customSubsistenceRate: newActivity.subsistenceRate!,
   });
+
   let welderLoadedRate = getWelderLoadedRate({
     proposal: proposal,
   });
   if (newActivity.activityType != ActivityType.subContractorItem) {
-    newActivity.craftCost = parseFloat(
-      (newActivity.craftManHours * craftLoadedRate).toFixed(2)
-    );
+    newActivity.craftCost = newActivity.craftManHours * craftLoadedRate;
   }
   if (newActivity.activityType == ActivityType.equipmentItem) {
     newActivity.equipmentCost = getEquipmentCost({
@@ -564,9 +407,7 @@ export const calculateActivityData = async (
       proposal: proposal,
     });
   }
-  newActivity.welderCost = parseFloat(
-    (newActivity.welderManHours * welderLoadedRate).toFixed(2)
-  );
+  newActivity.welderCost = newActivity.welderManHours * welderLoadedRate;
 
   if (newActivity.activityType == ActivityType.costOnlyItem) {
     newActivity.costOnlyCost = getCostOnlyCost({

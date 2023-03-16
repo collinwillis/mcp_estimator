@@ -6,7 +6,7 @@ import { getSingleActivity, updateActivityRates } from "../api/activity";
 import { useCurrentProposal } from "../hooks/current_proposal_hook";
 import { useCurrentWbs } from "../hooks/current_wbs_hook";
 import { Activity, ActivityType } from "../models/activity";
-import FormattedInput from "./number_format";
+import FormattedNumberInput from "./formatted_number_input";
 
 interface Props {
   open: boolean;
@@ -120,14 +120,14 @@ export default function EditBaseRateDialog({
               justifyContent: "space-around",
             }}
           >
-            <FormattedInput
+            <FormattedNumberInput
               disabled={disabled}
               value={baseRate?.toString()}
               label="Base Rate"
               prefix="$"
               setValue={(_) => setBaseRate(parseFloat(_))}
             />
-            <FormattedInput
+            <FormattedNumberInput
               disabled={disabled}
               value={subsistence?.toString()}
               label="Subsistence"

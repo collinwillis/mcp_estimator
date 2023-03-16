@@ -1,5 +1,6 @@
+import { ControlPointDuplicate } from "@mui/icons-material";
 import TrashIcon from "@mui/icons-material/DeleteForever";
-import { Button, Divider } from "@mui/material";
+import { Button, Divider, Typography } from "@mui/material";
 import { Box } from "@mui/system";
 import {
   GridCellEditCommitParams,
@@ -19,8 +20,13 @@ import {
   deleteActivityBatch,
   getActivitiesForPhase,
 } from "../../../api/activity";
-import { deletePhaseBatch, updatePhase } from "../../../api/phase";
+import {
+  deletePhaseBatch,
+  duplicatePhases,
+  updatePhase,
+} from "../../../api/phase";
 import { StyledDataGrid } from "../../../components/custom_data_grid";
+import { useCurrentPhase } from "../../../hooks/current_phase_hook";
 import { Phase } from "../../../models/phase";
 import { Wbs } from "../../../models/wbs";
 
@@ -33,6 +39,9 @@ const PhaseDataGrid = ({
 }) => {
   const [selectedRows, setSelectedRows] = React.useState<GridRowId[]>([]);
   const { proposalId, wbsId, phaseId } = useParams();
+  const currentPhase = useCurrentPhase({
+    phaseId: phaseId ?? "",
+  });
   function CustomToolbar() {
     return (
       <GridToolbarContainer
@@ -67,6 +76,29 @@ const PhaseDataGrid = ({
               flexDirection: "row",
             }}
           >
+            <Button
+              color="error"
+              sx={{ color: "#424242", fontSize: "14px" }}
+              onClick={async () => {
+                let ids: string[] = [];
+                selectedRows.map((row) => {
+                  ids.push(row.toString());
+                });
+                await duplicatePhases(ids);
+              }}
+              startIcon={<ControlPointDuplicate />}
+            >
+              Duplicate
+            </Button>
+            <Divider
+              light
+              orientation="vertical"
+              sx={{
+                width: "1px",
+                backgroundColor: "lightgray",
+                margin: "0px 14px",
+              }}
+            />
             <Button
               color="error"
               sx={{ color: "#424242", fontSize: "14px" }}
@@ -284,6 +316,16 @@ const columns: GridColumns = [
     flex: 1,
     minWidth: 100,
     headerAlign: "center",
+    valueFormatter: (params: GridValueFormatterParams<number>) => {
+      if (params.value == null) {
+        return "";
+      }
+      const valueFormatted = params.value.toLocaleString(undefined, {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      });
+      return `${valueFormatted}`;
+    },
   },
   {
     field: "craftCost",
@@ -297,7 +339,9 @@ const columns: GridColumns = [
       if (params.value == null) {
         return "";
       }
-      const valueFormatted = Number(params.value).toLocaleString();
+      const valueFormatted = params.value.toLocaleString(undefined, {
+        minimumFractionDigits: 2,
+      });
       return `$${valueFormatted}`;
     },
   },
@@ -310,6 +354,16 @@ const columns: GridColumns = [
     align: "right",
     flex: 1,
     headerAlign: "center",
+    valueFormatter: (params: GridValueFormatterParams<number>) => {
+      if (params.value == null) {
+        return "";
+      }
+      const valueFormatted = params.value.toLocaleString(undefined, {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      });
+      return `${valueFormatted}`;
+    },
   },
 
   {
@@ -324,7 +378,9 @@ const columns: GridColumns = [
       if (params.value == null) {
         return "";
       }
-      const valueFormatted = Number(params.value).toLocaleString();
+      const valueFormatted = params.value.toLocaleString(undefined, {
+        minimumFractionDigits: 2,
+      });
       return `$${valueFormatted}`;
     },
   },
@@ -341,7 +397,9 @@ const columns: GridColumns = [
       if (params.value == null) {
         return "";
       }
-      const valueFormatted = Number(params.value).toLocaleString();
+      const valueFormatted = params.value.toLocaleString(undefined, {
+        minimumFractionDigits: 2,
+      });
       return `$${valueFormatted}`;
     },
   },
@@ -358,7 +416,9 @@ const columns: GridColumns = [
       if (params.value == null) {
         return "";
       }
-      const valueFormatted = Number(params.value).toLocaleString();
+      const valueFormatted = params.value.toLocaleString(undefined, {
+        minimumFractionDigits: 2,
+      });
       return `$${valueFormatted}`;
     },
   },
@@ -376,7 +436,9 @@ const columns: GridColumns = [
       if (params.value == null) {
         return "";
       }
-      const valueFormatted = Number(params.value).toLocaleString();
+      const valueFormatted = params.value.toLocaleString(undefined, {
+        minimumFractionDigits: 2,
+      });
       return `$${valueFormatted}`;
     },
   },
@@ -393,7 +455,9 @@ const columns: GridColumns = [
       if (params.value == null) {
         return "";
       }
-      const valueFormatted = Number(params.value).toLocaleString();
+      const valueFormatted = params.value.toLocaleString(undefined, {
+        minimumFractionDigits: 2,
+      });
       return `$${valueFormatted}`;
     },
   },
@@ -409,7 +473,9 @@ const columns: GridColumns = [
       if (params.value == null) {
         return "";
       }
-      const valueFormatted = Number(params.value).toLocaleString();
+      const valueFormatted = params.value.toLocaleString(undefined, {
+        minimumFractionDigits: 2,
+      });
       return `$${valueFormatted}`;
     },
   },

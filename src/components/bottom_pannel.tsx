@@ -180,7 +180,11 @@ const BottomPanel: React.FC = () => {
                     Total Cost:
                   </Typography>
                   <Typography variant={"subtitle2"}>
-                    ${totalCost.toLocaleString()}
+                    $
+                    {totalCost.toLocaleString(undefined, {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                    })}
                   </Typography>
                 </Stack>
               </Stack>
@@ -197,7 +201,11 @@ const BottomPanel: React.FC = () => {
                     Total Hours:
                   </Typography>
                   <Typography variant={"subtitle2"}>
-                    {totalManHours} hrs.
+                    {totalManHours.toLocaleString(undefined, {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                    })}{" "}
+                    hrs.
                   </Typography>
                 </Stack>
               </Stack>
@@ -208,20 +216,37 @@ const BottomPanel: React.FC = () => {
               <Typography variant="subtitle2" noWrap sx={{ width: "150px" }}>
                 Craft Hours
               </Typography>
-              <Typography variant="body2">{totalCraftHours} hrs</Typography>
+
+              <Typography variant="body2">
+                {totalCraftHours.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                })}{" "}
+                hrs
+              </Typography>
             </Grid>
             <Grid item xs={12} sm={12} md={6} lg={4}>
               <Typography variant="subtitle2" noWrap sx={{ width: "150px" }}>
                 Welder Hours
               </Typography>
-              <Typography variant="body2">{totalWelderHours} hrs</Typography>
+              <Typography variant="body2">
+                {totalWelderHours.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                })}{" "}
+                hrs
+              </Typography>
             </Grid>
             <Grid item xs={12} sm={612} md={6} lg={4}>
               <Typography variant="subtitle2" noWrap sx={{ width: "200px" }}>
                 Subcontractor Hours
               </Typography>
               <Typography variant="body2">
-                {totalSubcontractorHours} hrs
+                {totalSubcontractorHours.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                })}{" "}
+                hrs
               </Typography>
             </Grid>
             <Grid item xs={12} sm={12} md={6} lg={4}>
@@ -229,7 +254,11 @@ const BottomPanel: React.FC = () => {
                 Craft Total
               </Typography>
               <Typography variant="body2">
-                ${craftCost.toLocaleString()}
+                $
+                {craftCost.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                })}
               </Typography>
             </Grid>
             <Grid item xs={12} sm={12} md={6} lg={4}>
@@ -237,7 +266,11 @@ const BottomPanel: React.FC = () => {
                 Weld & Rig Total
               </Typography>
               <Typography variant="body2">
-                ${welderCost.toLocaleString()}
+                $
+                {welderCost.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                })}
               </Typography>
             </Grid>
             <Grid item xs={12} sm={12} md={6} lg={4}>
@@ -245,7 +278,11 @@ const BottomPanel: React.FC = () => {
                 Subcontractor Total
               </Typography>
               <Typography variant="body2">
-                ${subcontractorCost.toLocaleString()}
+                $
+                {subcontractorCost.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                })}
               </Typography>
             </Grid>
             <Grid item xs={12} sm={12} md={6} lg={4}>
@@ -253,7 +290,11 @@ const BottomPanel: React.FC = () => {
                 Equipment Total
               </Typography>
               <Typography variant="body2">
-                ${equipmentCost.toLocaleString()}
+                $
+                {equipmentCost.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                })}
               </Typography>
             </Grid>
             <Grid item xs={12} sm={12} md={6} lg={4}>
@@ -261,7 +302,11 @@ const BottomPanel: React.FC = () => {
                 Cost Only Total
               </Typography>
               <Typography variant="body2">
-                ${costOnlyCost.toLocaleString()}
+                $
+                {costOnlyCost.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                })}
               </Typography>
             </Grid>
             <Grid item xs={12} sm={12} md={6} lg={4}>
@@ -269,7 +314,11 @@ const BottomPanel: React.FC = () => {
                 Material Total
               </Typography>
               <Typography variant="body2">
-                ${materialCost.toLocaleString()}
+                $
+                {materialCost.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                })}
               </Typography>
             </Grid>
           </Grid>
@@ -278,6 +327,7 @@ const BottomPanel: React.FC = () => {
           <Grid container spacing={2}>
             <Grid item xs={12} sm={12} md={12} lg={6} xl={4}>
               <Button
+                disabled={phaseId == null}
                 fullWidth
                 variant="contained"
                 onClick={() => setOpenAddActivityDialog(true)}
@@ -287,6 +337,7 @@ const BottomPanel: React.FC = () => {
             </Grid>
             <Grid item xs={12} sm={12} md={12} lg={6} xl={4}>
               <Button
+                disabled={phaseId == null}
                 fullWidth
                 variant="contained"
                 onClick={() => setOpenEquipmentDialog(true)}
@@ -296,6 +347,7 @@ const BottomPanel: React.FC = () => {
             </Grid>
             <Grid item xs={12} sm={12} md={12} lg={6} xl={4}>
               <Button
+                disabled={phaseId == null}
                 fullWidth
                 variant="contained"
                 onClick={() => addMaterial(proposalId!, wbsId!, phaseId!)}
@@ -305,6 +357,7 @@ const BottomPanel: React.FC = () => {
             </Grid>
             <Grid item xs={12} sm={12} md={12} lg={6} xl={4}>
               <Button
+                disabled={phaseId == null}
                 fullWidth
                 variant="contained"
                 onClick={() => addCostOnly(proposalId!, wbsId!, phaseId!)}
@@ -314,6 +367,7 @@ const BottomPanel: React.FC = () => {
             </Grid>
             <Grid item xs={12} sm={12} md={12} lg={6} xl={4}>
               <Button
+                disabled={phaseId == null}
                 fullWidth
                 sx={{
                   whiteSpace: "nowrap",
@@ -328,6 +382,7 @@ const BottomPanel: React.FC = () => {
             </Grid>
             <Grid item xs={12} sm={12} md={12} lg={6} xl={4}>
               <Button
+                disabled={phaseId == null}
                 fullWidth
                 variant="contained"
                 onClick={() => addSubcontractor(proposalId!, wbsId!, phaseId!)}

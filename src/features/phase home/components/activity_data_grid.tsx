@@ -3,7 +3,7 @@ import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
 import TrashIcon from "@mui/icons-material/DeleteForever";
 import RefreshIcon from "@mui/icons-material/Refresh";
-import { Button, Divider, MenuItem, Select } from "@mui/material";
+import { Button, Divider, MenuItem, Select, Typography } from "@mui/material";
 import { Box } from "@mui/system";
 import {
   GridCellParams,
@@ -26,6 +26,7 @@ import {
 import { StyledDataGrid } from "../../../components/custom_data_grid";
 import EditBaseRateDialog from "../../../components/edit_base_rate_dialog";
 import useActivities from "../../../hooks/activity_hook";
+import { useCurrentPhase } from "../../../hooks/current_phase_hook";
 import { Activity, ActivityType } from "../../../models/activity";
 import {
   costOnlyItemAvailableCells,
@@ -48,6 +49,9 @@ const ActivityDataGrid = () => {
     currentProposalId: proposalId ?? "",
     currentWbsId: wbsId ?? "",
     currentPhaseId: phaseId ?? "",
+  });
+  const currentPhase = useCurrentPhase({
+    phaseId: phaseId ?? "",
   });
   const [selectedRows, setSelectedRows] = React.useState<GridRowId[]>([]);
   const [columns, setColumns] = React.useState<GridColumns>([]);
@@ -81,6 +85,7 @@ const ActivityDataGrid = () => {
             />
             <GridToolbarExport sx={{ color: "#424242" }} />
           </div>
+          <Typography variant="h5">{currentPhase?.phaseDatabaseName}</Typography>
           <div
             style={{
               display: "flex",
@@ -175,6 +180,7 @@ const ActivityDataGrid = () => {
         },
       }}
     >
+     
       <StyledDataGrid
         density="compact"
         columns={columns}

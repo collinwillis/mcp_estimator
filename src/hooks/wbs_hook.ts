@@ -1,5 +1,5 @@
 import { ref as databaseRef, off, onValue } from "firebase/database";
-import { collection, onSnapshot, query, where } from "firebase/firestore";
+import { collection, doc, onSnapshot, query, where } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { getActivitiesForWbs } from "../api/activity";
 import { Proposal } from "../models/proposal";
@@ -15,6 +15,29 @@ export const useWbs = ({
   const [data, setData] = useState<Wbs[]>([]);
   const [loading, setLoading] = useState(true);
   const userPreferences = useUserPreferences(auth.currentUser?.uid!);
+
+  const [currentProposal, setCurrentProposal] = useState<Proposal>();
+
+  useEffect(() => {
+    let unsubscribe: (() => void) | undefined;
+    if (currentProposalId != null && currentProposalId.length > 0) {
+      const proposalRef = doc(firestore, "proposals", currentProposalId);
+
+      unsubscribe = onSnapshot(proposalRef, (snapshot) => {
+        const proposal = snapshot.data() as Proposal;
+        setCurrentProposal(proposal);
+      });
+    } else {
+      setCurrentProposal(undefined);
+    }
+
+    return () => {
+      if (unsubscribe) {
+        unsubscribe();
+      }
+    };
+  }, [currentProposalId]);
+
   useEffect(() => {
     const wbsRef = collection(firestore, "wbs");
     const wbsQuery = query(
@@ -77,6 +100,6 @@ export const useWbs = ({
       setLoading(false);
     });
     return unsubscribe;
-  }, [userPreferences]);
+  }, [userPreferences, currentProposal]);
   return { data, loading };
 };

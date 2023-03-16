@@ -6,8 +6,8 @@
     "distDir": "../dist"
   },
   "package": {
-    "productName": "mcp_estimator",
-    "version": "1.0.0"
+    "productName": "MCP Estimator",
+    "version": "0.1.1"
   },
   "tauri": {
     "allowlist": {
@@ -50,11 +50,12 @@
       "csp": null
     },
     "updater": {
-      "active": false,
+      "active": true,
       "dialog": true,
       "endpoints": [
-        "https://gist.githubusercontent.com/collinwillis/ce914c06da2b6e946cdb326544ec5cf1/raw/479fcd6749ea83e901aeae4885169797f069c0ec/mcp_estimator_current_release.json"
-      ]
+        "https://gist.githubusercontent.com/collinwillis/40b8751c25f6d48248e78aafb33cb638/raw"
+      ],
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEY4RUE4QjdGQ0FGQkJFNUMKUldSY3Z2dktmNHZxK0tTekp6YXJRWStna3VEZmh2S0M0TjVtV0NPZzM0M3FYTGNWNWgzZWNqaDkK"
     },
     "windows": [
       {

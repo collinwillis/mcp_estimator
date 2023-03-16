@@ -90,6 +90,7 @@ import {
   QuerySnapshot,
   Unsubscribe,
   collection,
+  doc,
   onSnapshot,
   query,
   where,
@@ -99,7 +100,9 @@ import { calculateActivityData } from "../api/activity";
 import { getSingleProposal } from "../api/proposal";
 import { Activity } from "../models/activity";
 import { FirestoreActivity } from "../models/firestore models/activity_firestore";
+import { Proposal } from "../models/proposal";
 import { firestore } from "../setup/config/firebase";
+import { useProposals } from "./proposals_hook";
 
 interface UseActivitiesOptions {
   currentPhaseId?: string;
@@ -114,6 +117,27 @@ const useActivities = ({
 }: UseActivitiesOptions) => {
   const [data, setData] = useState<Activity[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+  const [currentProposal, setCurrentProposal] = useState<Proposal>();
+
+  useEffect(() => {
+    let unsubscribe: (() => void) | undefined;
+    if (currentProposalId != null && currentProposalId.length > 0) {
+      const proposalRef = doc(firestore, "proposals", currentProposalId);
+
+      unsubscribe = onSnapshot(proposalRef, (snapshot) => {
+        const proposal = snapshot.data() as Proposal;
+        setCurrentProposal(proposal);
+      });
+    } else {
+      setCurrentProposal(undefined);
+    }
+
+    return () => {
+      if (unsubscribe) {
+        unsubscribe();
+      }
+    };
+  }, [currentProposalId]);
 
   const onSnapshotCallback = useCallback(
     async (querySnapshot: QuerySnapshot) => {
@@ -177,7 +201,7 @@ const useActivities = ({
         unsubscribe();
       };
     }
-  }, [currentPhaseId, currentWbsId, currentProposalId, onSnapshotCallback]);
+  }, [currentPhaseId, currentWbsId, currentProposal, onSnapshotCallback]);
 
   return { data, loading }; // Return loading state as well
 };

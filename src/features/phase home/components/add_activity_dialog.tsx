@@ -67,8 +67,6 @@ export default function AddActivityDialog({
     await insertActivityBatch(temp);
     setChecked([]);
     setConstants([]);
-    setSearch("");
-    setSearchResults([]);
     onClose();
   }
 
@@ -95,7 +93,7 @@ export default function AddActivityDialog({
     });
     temp = temp.sort((a, b) => a.sortOrder - b.sortOrder);
     setConstants(temp);
-  }, [currentPhase]);
+  }, [currentPhase, open]);
 
   //Filter the activities based on the search input
   useEffect(() => {

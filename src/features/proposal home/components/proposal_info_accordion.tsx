@@ -31,11 +31,14 @@ import {
 } from "../../../models/proposal";
 
 interface ProposalInfoAccordionProps {
-  currentProposal: Proposal;
+  proposalId: string;
 }
 export default function ProposalInfoAccordion({
-  currentProposal,
+  proposalId,
 }: ProposalInfoAccordionProps) {
+  const currentProposal = useCurrentProposal({
+    proposalId: proposalId,
+  });
   //Proposal States
   const [proposalNumber, setProposalNumber] = useState(0);
   const [job, setJob] = useState("");
@@ -121,7 +124,7 @@ export default function ProposalInfoAccordion({
       proposalStatus: status,
     });
     await updateSingleProposal({
-      proposalId: currentProposal.id!,
+      proposalId: proposalId,
       proposal: newProposal,
     });
     setAlertOpen(true);

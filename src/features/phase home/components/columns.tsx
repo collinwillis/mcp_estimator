@@ -106,6 +106,16 @@ export const getActivityColumns = ({
       align: "right",
       flex: 1,
       headerAlign: "center",
+      valueFormatter: (params: GridValueFormatterParams<number>) => {
+        if (params.value == null) {
+          return "";
+        }
+        const valueFormatted = params.value.toLocaleString(undefined, {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        });
+        return `${valueFormatted}`;
+      },
     },
 
     {
@@ -125,6 +135,16 @@ export const getActivityColumns = ({
       align: "right",
       flex: 1,
       headerAlign: "center",
+      valueFormatter: (params: GridValueFormatterParams<number>) => {
+        if (params.value == null) {
+          return "";
+        }
+        const valueFormatted = params.value.toLocaleString(undefined, {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        });
+        return `${valueFormatted}`;
+      },
     },
     {
       field: "craftCost",
@@ -138,7 +158,10 @@ export const getActivityColumns = ({
         if (params.value == null) {
           return "";
         }
-        const valueFormatted = Number(params.value).toLocaleString();
+        const valueFormatted = params.value.toLocaleString(undefined, {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        });
         return `$${valueFormatted}`;
       },
     },
@@ -153,7 +176,10 @@ export const getActivityColumns = ({
         if (params.value == null) {
           return "";
         }
-        const valueFormatted = Number(params.value).toLocaleString();
+        const valueFormatted = params.value.toLocaleString(undefined, {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        });
         return `$${valueFormatted}`;
       },
     },
@@ -200,7 +226,10 @@ export const getActivityColumns = ({
         if (params.value == null) {
           return "";
         }
-        const valueFormatted = Number(params.value).toLocaleString();
+        const valueFormatted = params.value.toLocaleString(undefined, {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        });
         return `$${valueFormatted}`;
       },
     },
@@ -233,7 +262,10 @@ export const getActivityColumns = ({
         if (params.value == null) {
           return "";
         }
-        const valueFormatted = Number(params.value).toLocaleString();
+        const valueFormatted = params.value.toLocaleString(undefined, {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        });
         return `$${valueFormatted}`;
       },
     });
@@ -251,7 +283,10 @@ export const getActivityColumns = ({
         if (params.value == null) {
           return "";
         }
-        const valueFormatted = Number(params.value).toLocaleString();
+        const valueFormatted = params.value.toLocaleString(undefined, {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        });
         return `$${valueFormatted}`;
       },
     });
@@ -270,7 +305,10 @@ export const getActivityColumns = ({
         if (params.value == null) {
           return "";
         }
-        const valueFormatted = Number(params.value).toLocaleString();
+        const valueFormatted = params.value.toLocaleString(undefined, {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        });
         return `$${valueFormatted}`;
       },
     });
@@ -299,7 +337,10 @@ export const getActivityColumns = ({
           if (params.value == null) {
             return "";
           }
-          const valueFormatted = Number(params.value).toLocaleString();
+          const valueFormatted = params.value.toLocaleString(undefined, {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          });
           return `$${valueFormatted}`;
         },
       });
@@ -318,7 +359,10 @@ export const getActivityColumns = ({
           if (params.value == null) {
             return "";
           }
-          const valueFormatted = Number(params.value).toLocaleString();
+          const valueFormatted = params.value.toLocaleString(undefined, {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          });
           return `$${valueFormatted}`;
         },
       });
@@ -335,7 +379,10 @@ export const getActivityColumns = ({
         if (params.value == null) {
           return "";
         }
-        const valueFormatted = Number(params.value).toLocaleString();
+        const valueFormatted = params.value.toLocaleString(undefined, {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        });
         return `$${valueFormatted}`;
       },
     });
@@ -354,7 +401,10 @@ export const getActivityColumns = ({
         if (params.value == null) {
           return "";
         }
-        const valueFormatted = Number(params.value).toLocaleString();
+        const valueFormatted = params.value.toLocaleString(undefined, {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        });
         return `$${valueFormatted}`;
       },
     });
