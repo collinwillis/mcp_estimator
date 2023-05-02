@@ -1,89 +1,3 @@
-// import {
-//   Query,
-//   collection,
-//   onSnapshot,
-//   query,
-//   where,
-// } from "firebase/firestore";
-// import { useCallback, useEffect, useState } from "react";
-// import { calculateActivityData } from "../api/activity";
-// import { getSingleProposal } from "../api/proposal";
-// import {
-//   getCostOnlyCost,
-//   getCraftLoadedRate,
-//   getEquipmentCost,
-//   getMaterialCost,
-//   getSubcontractorCost,
-//   getTotalCost,
-//   getWelderLoadedRate,
-// } from "../api/totals";
-// import { Activity, ActivityType } from "../models/activity";
-// import { Constant } from "../models/constant";
-// import { FirestoreActivity } from "../models/firestore models/activity_firestore";
-// import { auth, firestore } from "../setup/config/firebase";
-// export const useActivities = ({
-//   currentPhaseId,
-//   currentWbsId,
-//   currentProposalId,
-// }: {
-//   currentPhaseId?: string;
-//   currentWbsId?: string;
-//   currentProposalId: string;
-// }) => {
-//   const [data, setData] = useState<Activity[]>([]);
-
-//   useEffect(() => {
-//     const activitiesRef = collection(firestore, "activities");
-//     let proposalQuery = query(
-//       activitiesRef,
-//       where("proposalId", "==", currentProposalId)
-//     );
-//     let phaseQuery = query(
-//       activitiesRef,
-//       where("phaseId", "==", currentPhaseId ?? "")
-//     );
-//     let wbsQuery = query(
-//       activitiesRef,
-//       where("wbsId", "==", currentWbsId ?? "")
-//     );
-//     let activityQuery = currentPhaseId
-//       ? phaseQuery
-//       : currentWbsId
-//       ? wbsQuery
-//       : currentProposalId
-//       ? proposalQuery
-//       : null;
-//     if (activityQuery != null) {
-//       const unsubscribe = onSnapshot(activityQuery, async (querySnapshot) => {
-//         const temp: Activity[] = [];
-//         var proposal = await getSingleProposal({
-//           proposalId: currentProposalId,
-//         });
-
-//         querySnapshot.docs.forEach(async (doc) => {
-//           if (proposal) {
-//             const rawActivity = doc.data() as FirestoreActivity;
-//             const newActivity = await calculateActivityData(
-//               doc.id,
-//               rawActivity,
-//               proposal
-//             );
-//             temp.push(newActivity);
-//           }
-//         });
-
-//         setData(
-//           temp.sort((a, b) => {
-//             return a.sortOrder! - b.sortOrder!;
-//           })
-//         );
-//       });
-//       return unsubscribe;
-//     }
-//   }, [currentPhaseId, currentWbsId, currentProposalId]);
-//   return data;
-// };
-
 import {
   DocumentData,
   Query,
@@ -98,7 +12,7 @@ import {
 import { useCallback, useEffect, useState } from "react";
 import { calculateActivityData } from "../api/activity";
 import { getSingleProposal } from "../api/proposal";
-import { Activity } from "../models/activity";
+import { Activity, ActivityType } from "../models/activity";
 import { FirestoreActivity } from "../models/firestore models/activity_firestore";
 import { Proposal } from "../models/proposal";
 import { firestore } from "../setup/config/firebase";
@@ -156,11 +70,56 @@ const useActivities = ({
       if (activityPromises != null) {
         activities = await Promise.all(activityPromises);
       }
+      const equipmentIndex: number[] = [];
+      const equipment: Activity[] = [];
+      activities
+        .filter((activity): activity is Activity => activity !== null)
+        .sort((a: Activity, b: Activity) => {
+          return a.sortOrder! - b.sortOrder!;
+        });
+      activities.forEach((activity, index) => {
+        if (activity?.activityType === ActivityType.equipmentItem) {
+          equipmentIndex.push(index);
+          equipment.push(activity);
+        }
+      });
+      equipment.sort((a, b) => {
+        if (a.equipment === null && b.equipment === null) {
+          return 0;
+        } else if (a.equipment === null) {
+          return 1;
+        } else if (b.equipment === null) {
+          return -1;
+        } else {
+          return a.equipment.id - b.equipment.id;
+        }
+      });
+      for (let i = equipmentIndex.length - 1; i >= 0; i--) {
+        activities.splice(equipmentIndex[i], 1);
+      }
+      activities
+        .filter((activity): activity is Activity => activity !== null)
+        .sort((a: Activity, b: Activity) => {
+          return a.sortOrder - b.sortOrder;
+        });
+      const sortedActivities = [...activities, ...equipment];
       setData(
-        activities
+        sortedActivities
           .filter((activity): activity is Activity => activity !== null)
           .sort((a: Activity, b: Activity) => {
-            return a.sortOrder! - b.sortOrder!;
+            if (
+              a.activityType === ActivityType.laborItem &&
+              b.activityType === ActivityType.equipmentItem
+            ) {
+              return -1;
+            } else if (
+              a.activityType === ActivityType.equipmentItem &&
+              b.activityType === ActivityType.laborItem
+            ) {
+              return 1;
+            } else {
+              return a.sortOrder - b.sortOrder;
+            }
           })
       );
       setLoading(false); // Set loading to false when data is fetched

@@ -48,14 +48,6 @@
         "monthRate": 2304
     },
     {
-        "id": 6,
-        "description": "CARGILL REBATE",
-        "hourRate": 0,
-        "dayRate": 0,
-        "weekRate": 0,
-        "monthRate": 0
-    },
-    {
         "id": 7,
         "description": "CONCRETE - 3/4 CY BUCKET",
         "hourRate": 6,

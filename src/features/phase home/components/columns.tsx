@@ -1,8 +1,11 @@
 import { MenuItem, Select } from "@mui/material";
 import { GridColumns, GridValueFormatterParams } from "@mui/x-data-grid";
-import { updateEquipmentUnit } from "../../../api/activity";
+import {
+  updateEquipmentOwnership,
+  updateEquipmentUnit,
+} from "../../../api/activity";
 import { Activity, ActivityType } from "../../../models/activity";
-import { EquipmentUnit } from "../../../models/equipment";
+import { EquipmentOwnership, EquipmentUnit } from "../../../models/equipment";
 
 export const getActivityColumns = ({
   activities,
@@ -269,6 +272,60 @@ export const getActivityColumns = ({
         return `$${valueFormatted}`;
       },
     });
+    baseColumns.splice(1, 0, {
+      field: "equipmentOwnership",
+      renderCell: (params) => {
+        const fullActivity = activities.find(
+          (activity) => activity.id === params.id
+        );
+        if (fullActivity?.activityType == ActivityType.equipmentItem) {
+          return (
+            <Select
+              sx={{
+                width: "100%",
+                flex: 1,
+                minWidth: 50,
+                color: "primary.dark",
+                boxShadow: "none",
+                ".MuiOutlinedInput-notchedOutline": { border: 0 },
+                "&.MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline":
+                  {
+                    border: 0,
+                  },
+                "&.MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline":
+                  {
+                    border: 0,
+                  },
+              }}
+              labelId="demo-simple-select-label"
+              id="demo-simple-select"
+              value={
+                fullActivity.equipmentOwnership ?? EquipmentOwnership.rental
+              }
+              onChange={(event) =>
+                updateEquipmentOwnership({
+                  activity: fullActivity,
+                  ownership: event.target.value,
+                })
+              }
+            >
+              <MenuItem value={EquipmentOwnership.rental}>
+                {EquipmentOwnership.rental}
+              </MenuItem>
+              <MenuItem value={EquipmentOwnership.owned}>
+                {EquipmentOwnership.owned}
+              </MenuItem>
+            </Select>
+          );
+        }
+      },
+      headerName: "Ownership",
+      editable: true,
+      align: "right",
+      flex: 1,
+      minWidth: 150,
+      headerAlign: "center",
+    });
   }
   if (hasMaterial) {
     baseColumns.splice(baseColumns.length - 2, 0, {
@@ -410,7 +467,7 @@ export const getActivityColumns = ({
     });
   }
   if (hasEquipment || hasSubcontractor) {
-    baseColumns.splice(2, 0, {
+    baseColumns.splice(3, 0, {
       field: "time",
       headerName: "Duration",
       editable: true,
@@ -460,6 +517,7 @@ export const equipmentItemAvailableCells = [
   "totalCost",
   "craftBaseRate",
   "subsistenceRate",
+  "equipmentOwnership",
 ];
 
 export const costOnlyItemAvailableCells = [
@@ -515,6 +573,7 @@ export const editableEquipmentItemCells = [
   "price",
   "time",
   "unit",
+  "equipmentOwnership",
 ];
 
 export const editableMaterialItemCells = [

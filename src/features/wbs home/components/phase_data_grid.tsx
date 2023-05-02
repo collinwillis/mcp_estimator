@@ -19,6 +19,7 @@ import { useParams } from "react-router-dom";
 import {
   deleteActivityBatch,
   getActivitiesForPhase,
+  insertActivitiesFromFile,
 } from "../../../api/activity";
 import {
   deletePhaseBatch,
@@ -123,6 +124,25 @@ const PhaseDataGrid = ({
               startIcon={<TrashIcon />}
             >
               Delete
+            </Button>
+            <Divider
+              light
+              orientation="vertical"
+              sx={{
+                width: "1px",
+                backgroundColor: "lightgray",
+                margin: "0px 14px",
+              }}
+            />
+            <Button
+              color="error"
+              sx={{ color: "#424242", fontSize: "14px" }}
+              onClick={async () => {
+                await insertActivitiesFromFile();
+              }}
+              startIcon={<TrashIcon />}
+            >
+              Add From File
             </Button>
           </div>
         </div>

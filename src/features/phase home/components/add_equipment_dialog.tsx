@@ -21,7 +21,11 @@ import rawEquipment from "../../../data/equipment.json";
 import { useCurrentPhase } from "../../../hooks/current_phase_hook";
 import { Activity, ActivityType } from "../../../models/activity";
 import { Constant } from "../../../models/constant";
-import { Equipment, EquipmentUnit } from "../../../models/equipment";
+import {
+  Equipment,
+  EquipmentOwnership,
+  EquipmentUnit,
+} from "../../../models/equipment";
 import { FirestoreActivity } from "../../../models/firestore models/activity_firestore";
 
 export default function AddEquipmentDialog({
@@ -56,13 +60,14 @@ export default function AddEquipmentDialog({
         description: equipment.description,
         quantity: 0,
         time: 0,
-        unit: EquipmentUnit.days,
+        unit: EquipmentUnit.months,
         price: equipment.dayRate,
         craftBaseRate: null,
         subsistenceRate: null,
         craftCost: null,
         equipmentCost: null,
         materialCost: null,
+        equipmentOwnership: EquipmentOwnership.rental,
       });
       temp.push(newActivity);
     });

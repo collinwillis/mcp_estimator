@@ -63,7 +63,7 @@ const BottomPanel: React.FC = () => {
       tempCraftCost = tempCraftCost + activity.craftCost;
       tempSubCost = tempSubCost + activity.subContractorCost;
       tempEquipmentCost = tempEquipmentCost + activity.equipmentCost;
-      tempMaterialCost = tempMaterialCost + activity.materialCost;
+      tempMaterialCost = tempMaterialCost + (activity.materialCost ?? 0);
       tempCostOnlyCost = tempCostOnlyCost + activity.costOnlyCost;
     });
     setTotalCost(parseFloat(tempTotalCost.toFixed(2)));
@@ -205,7 +205,7 @@ const BottomPanel: React.FC = () => {
                       minimumFractionDigits: 2,
                       maximumFractionDigits: 2,
                     })}{" "}
-                    hrs.
+                    
                   </Typography>
                 </Stack>
               </Stack>
@@ -222,7 +222,7 @@ const BottomPanel: React.FC = () => {
                   minimumFractionDigits: 2,
                   maximumFractionDigits: 2,
                 })}{" "}
-                hrs
+                
               </Typography>
             </Grid>
             <Grid item xs={12} sm={12} md={6} lg={4}>
@@ -234,7 +234,7 @@ const BottomPanel: React.FC = () => {
                   minimumFractionDigits: 2,
                   maximumFractionDigits: 2,
                 })}{" "}
-                hrs
+                
               </Typography>
             </Grid>
             <Grid item xs={12} sm={612} md={6} lg={4}>
@@ -246,7 +246,7 @@ const BottomPanel: React.FC = () => {
                   minimumFractionDigits: 2,
                   maximumFractionDigits: 2,
                 })}{" "}
-                hrs
+                
               </Typography>
             </Grid>
             <Grid item xs={12} sm={12} md={6} lg={4}>

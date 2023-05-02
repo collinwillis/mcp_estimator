@@ -10,6 +10,8 @@ import {
   where,
   writeBatch,
 } from "firebase/firestore";
+import agPiping from "../data/agPiping.json";
+import rawPhases from "../data/phases.json";
 import { Activity, ActivityType } from "../models/activity";
 import { EquipmentUnit } from "../models/equipment";
 import { FirestoreActivity } from "../models/firestore models/activity_firestore";
@@ -110,6 +112,24 @@ export const updateEquipmentUnit = async ({
     });
 };
 
+export const updateEquipmentOwnership = async ({
+  activity,
+  ownership,
+}: {
+  activity: Activity;
+  ownership: string;
+}) => {
+  await updateDoc(doc(firestore, "activities", activity.id), {
+    equipmentOwnership: ownership,
+  })
+    .then((docRef) => {
+      console.log("Value of an Existing Document Field has been updated");
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+};
+
 function isNumber(value: string | number): boolean {
   return value != null && value !== "" && !isNaN(Number(value.toString()));
 }
@@ -137,6 +157,7 @@ export const addCustomLabor = async (
     craftCost: null,
     equipmentCost: null,
     materialCost: null,
+    equipmentOwnership: null,
   });
   const docRef = await addDoc(collection(firestore, "activities"), {
     ...activity,
@@ -166,6 +187,7 @@ export const addCostOnly = async (
     craftCost: null,
     equipmentCost: null,
     materialCost: null,
+    equipmentOwnership: null,
   });
   const docRef = await addDoc(collection(firestore, "activities"), {
     ...activity,
@@ -195,6 +217,7 @@ export const addMaterial = async (
     craftCost: null,
     equipmentCost: null,
     materialCost: null,
+    equipmentOwnership: null,
   });
   const docRef = await addDoc(collection(firestore, "activities"), {
     ...activity,
@@ -225,6 +248,7 @@ export const addSubcontractor = async (
     craftCost: 0,
     equipmentCost: 0,
     materialCost: 0,
+    equipmentOwnership: null,
   });
   const docRef = await addDoc(collection(firestore, "activities"), {
     ...activity,
@@ -380,7 +404,8 @@ export const calculateActivityData = async (
     0,
     0,
     rawActivity.craftBaseRate ?? proposalCraftBase,
-    rawActivity.subsistenceRate ?? proposalSubsistenceRate
+    rawActivity.subsistenceRate ?? proposalSubsistenceRate,
+    rawActivity.equipmentOwnership ?? null
   );
 
   let craftLoadedRate = getCraftLoadedRate({
@@ -428,3 +453,67 @@ export const calculateActivityData = async (
 
   return newActivity;
 };
+
+// export async function insertActivitiesFromFile() {
+//   let phasesToAdd: FirestorePhase[] = [];
+//   agPiping.forEach((phase) => {
+//     var localPhase = rawPhases.find((item) => {
+//       return item.phaseDatabaseId == phase.phaseDatabaseId;
+//     });
+//     var newPhase = new FirestorePhase({
+//       description: phase.description,
+//       phaseDatabaseId: phase.phaseDatabaseId,
+//       phaseDatabaseName: localPhase?.description,
+//       phaseNumber: phase.phaseNumber,
+//       wbsId: "0Qy1yBkK3wa2fjycSSp5",
+//       proposalId: "tms3XRwF8R3SXaqkjbqd",
+//       area: phase.area,
+//     });
+//     phasesToAdd.push(newPhase);
+//   });
+//   const batch = writeBatch(firestore);
+
+//   phasesToAdd.forEach((phase) => {
+//     var ref = doc(collection(firestore, "phase"));
+//     batch.set(ref, { ...phase });
+//   });
+
+//   await batch.commit();
+// }
+
+export async function insertActivitiesFromFile() {
+  const phasesToAdd: FirestorePhase[] = [];
+  agPiping.forEach((phase) => {
+    const localPhase = rawPhases.find((item) => {
+      return item.phaseDatabaseId == phase.phaseDatabaseId;
+    });
+    const newPhase = new FirestorePhase({
+      description: phase.description,
+      phaseDatabaseId: phase.phaseDatabaseId,
+      phaseDatabaseName: localPhase?.description,
+      phaseNumber: phase.phaseNumber,
+      wbsId: "0Qy1yBkK3wa2fjycSSp5",
+      proposalId: "tms3XRwF8R3SXaqkjbqd",
+      area: phase.area,
+    });
+    phasesToAdd.push(newPhase);
+  });
+
+  const batchSize = 500;
+  const numBatches = Math.ceil(phasesToAdd.length / batchSize);
+
+  for (let i = 0; i < numBatches; i++) {
+    const batch = writeBatch(firestore);
+
+    const batchStart = i * batchSize;
+    const batchEnd = Math.min(batchStart + batchSize, phasesToAdd.length);
+    const batchPhases = phasesToAdd.slice(batchStart, batchEnd);
+
+    batchPhases.forEach((phase) => {
+      const docRef = doc(collection(firestore, "phase"));
+      batch.set(docRef, { ...phase });
+    });
+
+    await batch.commit();
+  }
+}

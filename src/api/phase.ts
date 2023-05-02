@@ -52,7 +52,7 @@ export const updateSingleProposal = async ({
 
 export const updatePhase = async (id: string, field: string, value: string) => {
   let newValue;
-  if (isNumber(value) == true) {
+  if (isNumber(value) == true && field != "area") {
     newValue = parseFloat(value);
   } else {
     newValue = value;
@@ -119,7 +119,7 @@ export const duplicatePhases = async (phaseIds: string[]) => {
   // Duplicate all phases and their activities
   for (const phase of phasesToDuplicate) {
     var firestorePhase = phase as FirestorePhase;
-    var newId = `${phase.id}Copy`;
+    var newId = guid();
 
     // Duplicate activities for this phase
     const activitiesForPhase = activitiesToDuplicate.filter(
@@ -138,55 +138,26 @@ export const duplicatePhases = async (phaseIds: string[]) => {
   }
 };
 
-// export const duplicatePhases = async (phaseIds: string[]) => {
-//   const batch = writeBatch(firestore);
-//   const phasesToDuplicate: Phase[] = [];
-//   const activitiesToDuplicate: FirestoreActivity[] = [];
-
-//   // Loop through the array of phaseIds and get each phase and its activities
-//   for (const phaseId of phaseIds) {
-//     // Get the phase document from Firestore
-//     const phaseDocRef = doc(firestore, "phase", phaseId);
-//     const phaseDocSnap = await getDoc(phaseDocRef);
-//     if (phaseDocSnap.exists()) {
-//       // Convert Firestore document to FirestorePhase object
-//       const phase = phaseDocSnap.data() as Phase;
-//       phasesToDuplicate.push(phase);
-
-//       // Get all activities for this phase
-//       const activitiesQuery = query(
-//         collection(firestore, "activities"),
-//         where("phaseId", "==", phaseId)
-//       );
-//       const activitiesQuerySnapshot = await getDocs(activitiesQuery);
-//       activitiesQuerySnapshot.forEach((activityDocSnap) => {
-//         // Convert Firestore document to FirestoreActivity object and add it to the activitiesToDuplicate array
-//         const activity = activityDocSnap.data() as FirestoreActivity;
-//         activitiesToDuplicate.push(activity);
-//       });
-//     }
-//   }
-
-//   // Duplicate all phases and their activities in batch
-//   for (const phase of phasesToDuplicate) {
-//     const newPhaseRef = collection(firestore, "phases").doc();
-
-//     // Duplicate activities for this phase
-//     const activitiesForPhase = activitiesToDuplicate.filter(
-//       (activity) => activity.phaseId === phase.id
-//     );
-//     activitiesForPhase.forEach((activity) => {
-//       // Update the phaseId to point to the new phase
-//       activity.phaseId = newPhaseRef.id;
-
-//       // Add the activity to the batch
-//       batch.set(collection(db, "activities").doc(), activity);
-//     });
-
-//     // Add the new phase to the batch
-//     batch.set(newPhaseRef, phase);
-//   }
-
-//   // Commit the batch
-//   await batch.commit();
-// };
+//generates random id;
+const guid = () => {
+  let s4 = () => {
+    return Math.floor((1 + Math.random()) * 0x10000)
+      .toString(16)
+      .substring(1);
+  };
+  //return id of format 'aaaaaaaa'-'aaaa'-'aaaa'-'aaaa'-'aaaaaaaaaaaa'
+  return (
+    s4() +
+    s4() +
+    "-" +
+    s4() +
+    "-" +
+    s4() +
+    "-" +
+    s4() +
+    "-" +
+    s4() +
+    s4() +
+    s4()
+  );
+};

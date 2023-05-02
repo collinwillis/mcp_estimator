@@ -207,8 +207,8 @@ export default function ProposalRatesAccordion({
                   }}
                 />
                 <FormattedNumberInput
-                  suffix="%"
-                  label="Rig"
+                  prefix="$"
+                  label="Rig Pay"
                   value={rigState}
                   setValue={(_) => {
                     setRigState(_);

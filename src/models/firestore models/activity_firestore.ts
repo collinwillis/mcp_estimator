@@ -22,6 +22,7 @@ export class FirestoreActivity {
   equipmentCost: number | null;
   materialCost: number | null;
   craftCost: number | null;
+  equipmentOwnership: string | null;
 
   constructor({
     proposalId,
@@ -42,6 +43,7 @@ export class FirestoreActivity {
     equipmentCost,
     materialCost,
     craftCost,
+    equipmentOwnership,
   }: {
     proposalId?: string | null;
     wbsId?: string | null;
@@ -61,6 +63,7 @@ export class FirestoreActivity {
     equipmentCost: number | null;
     materialCost: number | null;
     craftCost: number | null;
+    equipmentOwnership: string | null;
   }) {
     this.proposalId = proposalId ?? null;
     this.wbsId = wbsId ?? null;
@@ -80,5 +83,6 @@ export class FirestoreActivity {
     this.equipmentCost = equipmentCost ?? null;
     this.materialCost = materialCost ?? null;
     this.craftCost = craftCost ?? null;
+    this.equipmentOwnership = equipmentOwnership ?? null;
   }
 }

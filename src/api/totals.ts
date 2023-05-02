@@ -1,4 +1,5 @@
 import { Activity } from "../models/activity";
+import { EquipmentOwnership } from "../models/equipment";
 import { Proposal } from "../models/proposal";
 
 export const getCraftLoadedRate = ({
@@ -91,16 +92,20 @@ export const getEquipmentCost = ({
   activity: Activity;
   proposal: Proposal;
 }): number => {
-  const { quantity, time, price } = activity;
+  const { quantity, time, price, equipmentOwnership } = activity;
   const { equipmentProfitRate, useTaxRate } = proposal;
-
-  let tempEquipmentCost =
-    quantity *
-    (time *
-      (price +
-        price * ((equipmentProfitRate ?? 0) / 100 + (useTaxRate ?? 0) / 100)));
-
-  return tempEquipmentCost;
+  let tempCost = 0;
+  if (equipmentOwnership == EquipmentOwnership.owned) {
+    tempCost = quantity * price;
+  } else {
+    tempCost =
+      quantity *
+      (time *
+        (price +
+          price *
+            ((equipmentProfitRate ?? 0) / 100 + (useTaxRate ?? 0) / 100)));
+  }
+  return tempCost;
 };
 
 export const getSubcontractorCost = ({

@@ -1,5 +1,5 @@
 import { Constant } from "./constant";
-import { Equipment } from "./equipment";
+import { Equipment, EquipmentOwnership } from "./equipment";
 
 export class Activity {
   id: string;
@@ -28,6 +28,7 @@ export class Activity {
   totalCost: number;
   craftBaseRate: number;
   subsistenceRate: number;
+  equipmentOwnership: string | null;
 
   constructor(
     id: string,
@@ -55,7 +56,8 @@ export class Activity {
     costOnlyCost: number = 0,
     totalCost: number = 0,
     craftBaseRate: number = 0,
-    subsistenceRate: number = 0
+    subsistenceRate: number = 0,
+    equipmentOwnership: string | null
   ) {
     this.id = id;
     this.description = description;
@@ -83,6 +85,7 @@ export class Activity {
     this.totalCost = totalCost;
     this.craftBaseRate = craftBaseRate;
     this.subsistenceRate = subsistenceRate;
+    this.equipmentOwnership = equipmentOwnership;
   }
 }
 

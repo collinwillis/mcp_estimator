@@ -28,3 +28,8 @@ export enum EquipmentUnit {
   weeks = "Weeks",
   months = "Months",
 }
+
+export enum EquipmentOwnership {
+  rental = "Rental",
+  owned = "Owned",
+}
