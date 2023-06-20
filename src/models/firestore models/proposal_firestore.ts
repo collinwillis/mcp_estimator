@@ -6,7 +6,7 @@ export class FirestoreProposal {
   proposalOwner: string | null;
   projectCity: string | null;
   projectState: string | null;
-  proposalEstimators: string[] | null;
+  proposalEstimators: string | null;
   proposalDateReceived: string | null;
   proposalDateDue: string | null;
   projectStartDate: string | null;
@@ -85,7 +85,7 @@ export class FirestoreProposal {
     proposalOwner?: string | null;
     projectCity?: string | null;
     projectState?: string | null;
-    proposalEstimators?: string[] | null;
+    proposalEstimators?: string | null;
     proposalDateReceived?: string | null;
     proposalDateDue?: string | null;
     projectStartDate?: string | null;

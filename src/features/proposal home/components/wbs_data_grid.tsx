@@ -94,7 +94,6 @@ const WbsDataGrid = ({
         columns={columns}
         rows={data}
         pageSize={100}
-        checkboxSelection
         onSelectionModelChange={(newSelectionModel) => {
           setSelectedRows(newSelectionModel);
         }}

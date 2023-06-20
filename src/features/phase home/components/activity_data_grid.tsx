@@ -85,7 +85,9 @@ const ActivityDataGrid = () => {
             />
             <GridToolbarExport sx={{ color: "#424242" }} />
           </div>
-          <Typography variant="h5">{currentPhase?.phaseDatabaseName}</Typography>
+          <Typography variant="h5">
+            {currentPhase?.phaseDatabaseName}
+          </Typography>
           <div
             style={{
               display: "flex",
@@ -180,7 +182,6 @@ const ActivityDataGrid = () => {
         },
       }}
     >
-     
       <StyledDataGrid
         density="compact"
         columns={columns}
@@ -191,7 +192,6 @@ const ActivityDataGrid = () => {
         rows={data}
         loading={loading}
         pageSize={100}
-        checkboxSelection
         onSelectionModelChange={(newSelectionModel) => {
           setSelectedRows(newSelectionModel);
         }}

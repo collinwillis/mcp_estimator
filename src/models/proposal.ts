@@ -7,7 +7,7 @@ export class Proposal {
   proposalOwner?: string;
   projectCity?: string;
   projectState?: string;
-  proposalEstimators?: string[];
+  proposalEstimators?: string;
   proposalDateReceived?: string;
   proposalDateDue?: string;
   projectStartDate?: string;

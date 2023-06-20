@@ -134,16 +134,6 @@ const PhaseDataGrid = ({
                 margin: "0px 14px",
               }}
             />
-            <Button
-              color="error"
-              sx={{ color: "#424242", fontSize: "14px" }}
-              onClick={async () => {
-                await insertActivitiesFromFile();
-              }}
-              startIcon={<TrashIcon />}
-            >
-              Add From File
-            </Button>
           </div>
         </div>
       </GridToolbarContainer>
@@ -176,7 +166,6 @@ const PhaseDataGrid = ({
         columns={columns}
         rows={phaseList}
         pageSize={100}
-        checkboxSelection
         onSelectionModelChange={(newSelectionModel: GridSelectionModel) => {
           setSelectedRows(newSelectionModel);
         }}
@@ -360,6 +349,7 @@ const columns: GridColumns = [
         return "";
       }
       const valueFormatted = params.value.toLocaleString(undefined, {
+        maximumFractionDigits: 2,
         minimumFractionDigits: 2,
       });
       return `$${valueFormatted}`;
@@ -399,6 +389,7 @@ const columns: GridColumns = [
         return "";
       }
       const valueFormatted = params.value.toLocaleString(undefined, {
+        maximumFractionDigits: 2,
         minimumFractionDigits: 2,
       });
       return `$${valueFormatted}`;
@@ -418,6 +409,7 @@ const columns: GridColumns = [
         return "";
       }
       const valueFormatted = params.value.toLocaleString(undefined, {
+        maximumFractionDigits: 2,
         minimumFractionDigits: 2,
       });
       return `$${valueFormatted}`;
@@ -437,6 +429,7 @@ const columns: GridColumns = [
         return "";
       }
       const valueFormatted = params.value.toLocaleString(undefined, {
+        maximumFractionDigits: 2,
         minimumFractionDigits: 2,
       });
       return `$${valueFormatted}`;
@@ -457,6 +450,7 @@ const columns: GridColumns = [
         return "";
       }
       const valueFormatted = params.value.toLocaleString(undefined, {
+        maximumFractionDigits: 2,
         minimumFractionDigits: 2,
       });
       return `$${valueFormatted}`;
@@ -476,6 +470,7 @@ const columns: GridColumns = [
         return "";
       }
       const valueFormatted = params.value.toLocaleString(undefined, {
+        maximumFractionDigits: 2,
         minimumFractionDigits: 2,
       });
       return `$${valueFormatted}`;
@@ -494,6 +489,7 @@ const columns: GridColumns = [
         return "";
       }
       const valueFormatted = params.value.toLocaleString(undefined, {
+        maximumFractionDigits: 2,
         minimumFractionDigits: 2,
       });
       return `$${valueFormatted}`;

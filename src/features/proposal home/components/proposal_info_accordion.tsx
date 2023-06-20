@@ -83,7 +83,7 @@ export default function ProposalInfoAccordion({
     setZip(currentProposal?.contactZip!);
     setPhone(currentProposal?.contactPhone!);
     setEmail(currentProposal?.contactEmail!);
-    setEstimator("");
+    setEstimator(currentProposal?.proposalEstimators!);
     setDateReceived(currentProposal?.proposalDateReceived!);
     setDateDue(currentProposal?.proposalDateDue!);
     setProjectStartDate(currentProposal?.projectStartDate!);
@@ -92,21 +92,13 @@ export default function ProposalInfoAccordion({
     setStatus(currentProposal?.proposalStatus!);
   }, [currentProposal]);
 
-  const handlePhoneInput = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    // this is where we'll call our future formatPhoneNumber function that we haven't written yet.
-    // const formattedPhoneNumber = formatPhoneNumber(e.target.value);
-    // we'll set the input value using our setInputValue
-    // setPhone(formattedPhoneNumber);
-  };
-
   const onSubmit = async () => {
     const newProposal: FirestoreProposal = new FirestoreProposal({
       ...currentProposal,
       proposalNumber: proposalNumber,
       job: job,
       coNumber: coNumber,
+      proposalEstimators: estimator,
       proposalDescription: desctription,
       proposalOwner: owner,
       projectCity: jobLocationCity,
@@ -445,7 +437,7 @@ export default function ProposalInfoAccordion({
                   type="text"
                   label="Phone"
                   sx={{ width: "100%" }}
-                  onChange={(e) => handlePhoneInput(e)}
+                  onChange={(e) => setPhone(e.target.value)}
                   value={phone ?? ""}
                 ></TextField>
                 <TextField

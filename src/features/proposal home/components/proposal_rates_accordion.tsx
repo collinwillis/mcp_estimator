@@ -77,21 +77,21 @@ export default function ProposalRatesAccordion({
 
   useEffect(() => {
     if (currentProposal) {
-      setCraftbaseState(currentProposal.craftBaseRate!.toString());
-      setWeldbaseState(currentProposal.weldBaseRate!.toString());
-      setBurdenState(currentProposal.burdenRate!.toString());
-      setOverheadState(currentProposal.overheadRate!.toString());
-      setLaborProfitsState(currentProposal.laborProfitRate!.toString());
-      setFuelState(currentProposal.fuelRate!.toString());
-      setConsumableState(currentProposal.consumablesRate!.toString());
-      setSubsistState(currentProposal.subsistenceRate!.toString());
-      setRigState(currentProposal.rigRate!.toString());
-      setMaterialProfitsState(currentProposal.materialProfitRate!.toString());
-      setEquipmentProfitsState(currentProposal.equipmentProfitRate!.toString());
-      setSubProfitsState(currentProposal.subContractorProfitRate!.toString());
-      setUseTaxState(currentProposal.useTaxRate!.toString());
-      setSalesTaxState(currentProposal.salesTaxRate!.toString());
-      setRigProfit(currentProposal.rigProfitRate!.toString());
+      setCraftbaseState(currentProposal.craftBaseRate!.toFixed(2));
+      setWeldbaseState(currentProposal.weldBaseRate!.toFixed(2));
+      setBurdenState(currentProposal.burdenRate!.toFixed(2));
+      setOverheadState(currentProposal.overheadRate!.toFixed(2));
+      setLaborProfitsState(currentProposal.laborProfitRate!.toFixed(2));
+      setFuelState(currentProposal.fuelRate!.toFixed(2));
+      setConsumableState(currentProposal.consumablesRate!.toFixed(2));
+      setSubsistState(currentProposal.subsistenceRate!.toFixed(2));
+      setRigState(currentProposal.rigRate!.toFixed(2));
+      setMaterialProfitsState(currentProposal.materialProfitRate!.toFixed(2));
+      setEquipmentProfitsState(currentProposal.equipmentProfitRate!.toFixed(2));
+      setSubProfitsState(currentProposal.subContractorProfitRate!.toFixed(2));
+      setUseTaxState(currentProposal.useTaxRate!.toFixed(2));
+      setSalesTaxState(currentProposal.salesTaxRate!.toFixed(2));
+      setRigProfit(currentProposal.rigProfitRate!.toFixed(2));
     }
   }, [currentProposal]);
 
@@ -119,7 +119,6 @@ export default function ProposalRatesAccordion({
                   padding: "10px",
                   display: "flex",
                   flexDirection: "column",
-
                   gap: "10px",
                 }}
               >
@@ -228,7 +227,7 @@ export default function ProposalRatesAccordion({
               >
                 <FormattedNumberInput
                   suffix="%"
-                  label="Labor Profits"
+                  label="Labor Profit"
                   value={laborprofitsState}
                   setValue={(_) => {
                     setLaborProfitsState(_);
