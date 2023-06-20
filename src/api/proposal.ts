@@ -42,6 +42,7 @@ export const updateSingleProposal = async ({
   proposalId: string;
   proposal: FirestoreProposal;
 }) => {
+  console.log(proposalId, proposal);
   const proposalRef = doc(firestore, "proposals", proposalId);
   await setDoc(proposalRef, {
     ...proposal,

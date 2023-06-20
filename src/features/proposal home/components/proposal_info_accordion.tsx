@@ -39,6 +39,7 @@ export default function ProposalInfoAccordion({
   const currentProposal = useCurrentProposal({
     proposalId: proposalId,
   });
+  console.log("INFORMATION ACCORDION", currentProposal);
   //Proposal States
   const [proposalNumber, setProposalNumber] = useState(0);
   const [job, setJob] = useState("");
@@ -102,6 +103,7 @@ export default function ProposalInfoAccordion({
 
   const onSubmit = async () => {
     const newProposal: FirestoreProposal = new FirestoreProposal({
+      ...currentProposal,
       proposalNumber: proposalNumber,
       job: job,
       coNumber: coNumber,

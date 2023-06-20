@@ -26,6 +26,7 @@ export default function ProposalRatesAccordion({
   const currentProposal = useCurrentProposal({
     proposalId: proposalId,
   });
+  console.log(currentProposal);
   //Initialize the States of all of the markups
   const [craftbaseState, setCraftbaseState] = useState<string>("0");
   const [weldbaseState, setWeldbaseState] = useState<string>("0");

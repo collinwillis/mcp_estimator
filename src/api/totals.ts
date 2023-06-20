@@ -96,7 +96,7 @@ export const getEquipmentCost = ({
   const { equipmentProfitRate, useTaxRate } = proposal;
   let tempCost = 0;
   if (equipmentOwnership == EquipmentOwnership.owned) {
-    tempCost = quantity * price;
+    tempCost = quantity * (time * price);
   } else {
     tempCost =
       quantity *

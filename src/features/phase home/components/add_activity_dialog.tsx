@@ -61,6 +61,7 @@ export default function AddActivityDialog({
         equipmentCost: null,
         craftCost: null,
         materialCost: null,
+        equipmentOwnership: null,
       });
       temp.push(newActivity);
     });
