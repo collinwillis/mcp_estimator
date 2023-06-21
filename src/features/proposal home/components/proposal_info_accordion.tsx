@@ -22,6 +22,7 @@ import PhoneInput from "react-phone-number-input";
 import "react-phone-number-input/style.css";
 import { updateSingleProposal } from "../../../api/proposal";
 import { useCurrentProposal } from "../../../hooks/current_proposal_hook";
+import { useCurrentProposalListener } from "../../../hooks/current_proposal_listener_hook";
 import { FirestoreProposal } from "../../../models/firestore models/proposal_firestore";
 import {
   BidType,
@@ -36,7 +37,7 @@ interface ProposalInfoAccordionProps {
 export default function ProposalInfoAccordion({
   proposalId,
 }: ProposalInfoAccordionProps) {
-  const currentProposal = useCurrentProposal({
+  const currentProposal = useCurrentProposalListener({
     proposalId: proposalId,
   });
   console.log("INFORMATION ACCORDION", currentProposal);

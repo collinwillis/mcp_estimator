@@ -8,25 +8,18 @@ import { auth, firestore } from "../setup/config/firebase";
 interface CurrentProposalProps {
   proposalId: string;
 }
-
 export const useCurrentProposal = ({ proposalId }: CurrentProposalProps) => {
-  const [data, setData] = useState<Proposal | undefined>(undefined);
-
+  const [data, setData] = useState<Proposal>();
   useEffect(() => {
-    if (proposalId) {
-      const unsubscribe = onSnapshot(
-        doc(firestore, "proposals", proposalId),
-        (snapshot) => {
-          if (snapshot.exists()) {
-            setData(snapshot.data() as Proposal);
-          } else {
-            setData(undefined);
-          }
-        }
-      );
-      return () => unsubscribe();
+    if (proposalId != null && proposalId.length > 0) {
+      getData();
+    } else {
+      setData(undefined);
     }
   }, [proposalId]);
-
+  const getData = async () => {
+    const proposal = await getSingleProposal({ proposalId });
+    setData(proposal);
+  };
   return data;
 };

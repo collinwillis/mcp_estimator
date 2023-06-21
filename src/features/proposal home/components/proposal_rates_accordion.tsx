@@ -15,6 +15,7 @@ import * as CurrencyFormat from "react-currency-format";
 import { updateSingleProposal } from "../../../api/proposal";
 import FormattedNumberInput from "../../../components/formatted_number_input";
 import { useCurrentProposal } from "../../../hooks/current_proposal_hook";
+import { useCurrentProposalListener } from "../../../hooks/current_proposal_listener_hook";
 import { FirestoreProposal } from "../../../models/firestore models/proposal_firestore";
 import { Proposal } from "../../../models/proposal";
 interface ProposalRatesAccordionProps {
@@ -23,7 +24,7 @@ interface ProposalRatesAccordionProps {
 export default function ProposalRatesAccordion({
   proposalId,
 }: ProposalRatesAccordionProps) {
-  const currentProposal = useCurrentProposal({
+  const currentProposal = useCurrentProposalListener({
     proposalId: proposalId,
   });
   console.log(currentProposal);
