@@ -4,7 +4,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { getCraftLoadedRate } from "../../api/totals";
 import BottomPanel from "../../components/bottom_pannel";
 import { useCurrentProposal } from "../../hooks/current_proposal_hook";
-import { useUserPreferences } from "../../hooks/user_preferences_hook";
+import { useProposalPreferences } from "../../hooks/proposal_preferences_hook";
 import { auth } from "../../setup/config/firebase";
 import ProposalInfoAccordion from "./components/proposal_info_accordion";
 import ProposalRatesAccordion from "./components/proposal_rates_accordion";
@@ -16,7 +16,7 @@ const ProposalHomeScreen = () => {
   const { proposalId } = useParams();
 
   const [isSelectWbsDialogOpen, setIsSelectWbsDialogOpen] = useState(false);
-  const userPreferences = useUserPreferences(auth?.currentUser?.uid!);
+  const proposalPreferences = useProposalPreferences(proposalId ?? "");
   const currentProposal = useCurrentProposal({
     proposalId: proposalId ?? "",
   });
@@ -46,7 +46,7 @@ const ProposalHomeScreen = () => {
         onClose={() => {
           setIsSelectWbsDialogOpen(false);
         }}
-        userPreferences={userPreferences}
+        proposalPreferences={proposalPreferences}
       />
       <BottomPanel />
     </Box>

@@ -5,7 +5,7 @@ import { getActivitiesForWbs } from "../api/activity";
 import { Proposal } from "../models/proposal";
 import { Wbs } from "../models/wbs";
 import { auth, firestore } from "../setup/config/firebase";
-import { useUserPreferences } from "./user_preferences_hook";
+import { useProposalPreferences } from "./proposal_preferences_hook";
 
 export const useWbs = ({
   currentProposalId,
@@ -14,7 +14,7 @@ export const useWbs = ({
 }) => {
   const [data, setData] = useState<Wbs[]>([]);
   const [loading, setLoading] = useState(true);
-  const userPreferences = useUserPreferences(auth.currentUser?.uid!);
+  const proposalPreferences = useProposalPreferences(currentProposalId);
 
   const [currentProposal, setCurrentProposal] = useState<Proposal>();
 
@@ -53,7 +53,7 @@ export const useWbs = ({
       });
       //filter wbs based on user preferences
       let filteredWbs = temp.filter((wbs) =>
-        userPreferences?.wbsToDisplay?.includes(wbs.name!)
+        proposalPreferences?.wbsToDisplay?.includes(wbs.name!)
       );
       //order wbs based on wbsDatabaseId
       filteredWbs = filteredWbs.sort((a, b) => {
@@ -100,6 +100,6 @@ export const useWbs = ({
       setLoading(false);
     });
     return unsubscribe;
-  }, [userPreferences, currentProposal]);
+  }, [proposalPreferences, currentProposal]);
   return { data, loading };
 };

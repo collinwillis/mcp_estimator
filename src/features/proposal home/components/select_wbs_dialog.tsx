@@ -13,31 +13,31 @@ import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import React, { useEffect, useState } from "react";
-import { updateUserPreferences } from "../../../api/user_preferences";
-import { useUserPreferences } from "../../../hooks/user_preferences_hook";
-import { FirestoreUserPreferences } from "../../../models/firestore models/user_preferences_firestore";
-import { UserPreferences } from "../../../models/user_preferences";
+import { updateProposalPreferences } from "../../../api/proposal_preferences";
+import { useProposalPreferences } from "../../../hooks/proposal_preferences_hook";
+import { FirestoreProposalPreferences } from "../../../models/firestore models/proposal_preferences_firestore";
+import { ProposalPreferences } from "../../../models/proposal_preferences";
 import { auth } from "../../../setup/config/firebase";
 import { WbsArray, WbsEnum } from "../../../utils/enums";
 
 interface Props {
   isOpen: boolean;
   onClose: () => void;
-  userPreferences?: UserPreferences;
+  proposalPreferences?: ProposalPreferences;
 }
 export default function SelectWbsDialog({
   isOpen,
   onClose,
-  userPreferences,
+  proposalPreferences,
 }: Props) {
   const [search, setSearch] = useState("");
   const [checked, setChecked] = useState<string[]>([]);
 
   useEffect(() => {
-    if (userPreferences) {
-      setChecked(userPreferences?.wbsToDisplay!);
+    if (proposalPreferences) {
+      setChecked(proposalPreferences?.wbsToDisplay!);
     }
-  }, [userPreferences]);
+  }, [proposalPreferences]);
 
   const styles = {
     dialogPaper: {
@@ -54,11 +54,11 @@ export default function SelectWbsDialog({
   };
 
   const handleSave = async () => {
-    const updatedUserPreferences: UserPreferences = {
-      ...userPreferences!,
+    const updatedProposalPreferences: ProposalPreferences = {
+      ...proposalPreferences!,
       wbsToDisplay: checked!,
     };
-    await updateUserPreferences(updatedUserPreferences);
+    await updateProposalPreferences(updatedProposalPreferences);
     onClose();
   };
 

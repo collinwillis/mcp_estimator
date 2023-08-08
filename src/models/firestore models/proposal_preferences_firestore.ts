@@ -1,6 +1,6 @@
 import { DocumentReference } from "firebase/firestore";
 
-export class FirestoreUserPreferences {
+export class FirestoreProposalPreferences {
   wbsToDisplay: string[] | null;
 
   constructor({ wbsToDisplay }: { wbsToDisplay?: string[] | null }) {

@@ -8,7 +8,7 @@ import ProposalSelectScreen from "./features/home/proposal_select";
 import PhaseHomeScreen from "./features/phase home/phase_home";
 import ProposalHomeScreen from "./features/proposal home/proposal_home";
 import WbsHomeScreen from "./features/wbs home/wbs_home";
-import { useUserPreferences } from "./hooks/user_preferences_hook";
+import { useProposalPreferences } from "./hooks/proposal_preferences_hook";
 import { auth } from "./setup/config/firebase";
 
 const onSignOut = () => {
