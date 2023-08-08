@@ -53,19 +53,20 @@ const BottomPanel: React.FC = () => {
     let tempEquipmentCost = 0;
     let tempMaterialCost = 0;
     let tempCostOnlyCost = 0;
+
     data.forEach((activity) => {
-      tempTotalCost = tempTotalCost + activity.totalCost;
-      tempTotalManHours =
-        tempTotalManHours + activity.craftManHours + activity.welderManHours;
-      tempCraftHours = tempCraftHours + activity.craftManHours;
-      tempWelderHours = tempWelderHours + activity.welderManHours;
-      // tempSubHours = tempSubHours + activity.sub
-      tempCraftCost = tempCraftCost + activity.craftCost;
-      tempSubCost = tempSubCost + activity.subContractorCost;
-      tempEquipmentCost = tempEquipmentCost + activity.equipmentCost;
-      tempMaterialCost = tempMaterialCost + (activity.materialCost ?? 0);
-      tempCostOnlyCost = tempCostOnlyCost + activity.costOnlyCost;
+      tempTotalCost += activity.totalCost || 0;
+      tempTotalManHours += (activity.craftManHours || 0) + (activity.welderManHours || 0);
+      tempCraftHours += activity.craftManHours || 0;
+      tempWelderHours += activity.welderManHours || 0;
+      // tempSubHours += activity.sub || 0;
+      tempCraftCost += activity.craftCost || 0;
+      tempSubCost += activity.subContractorCost || 0;
+      tempEquipmentCost += activity.equipmentCost || 0;
+      tempMaterialCost += activity.materialCost || 0;
+      tempCostOnlyCost += activity.costOnlyCost || 0;
     });
+
     setTotalCost(parseFloat(tempTotalCost.toFixed(2)));
     setTotalManHours(parseFloat(tempTotalManHours.toFixed(2)));
     setCraftCost(parseFloat(tempCraftCost.toFixed(2)));
@@ -205,7 +206,7 @@ const BottomPanel: React.FC = () => {
                       minimumFractionDigits: 2,
                       maximumFractionDigits: 2,
                     })}{" "}
-                    
+
                   </Typography>
                 </Stack>
               </Stack>
@@ -222,7 +223,7 @@ const BottomPanel: React.FC = () => {
                   minimumFractionDigits: 2,
                   maximumFractionDigits: 2,
                 })}{" "}
-                
+
               </Typography>
             </Grid>
             <Grid item xs={12} sm={12} md={6} lg={4}>
@@ -234,7 +235,7 @@ const BottomPanel: React.FC = () => {
                   minimumFractionDigits: 2,
                   maximumFractionDigits: 2,
                 })}{" "}
-                
+
               </Typography>
             </Grid>
             <Grid item xs={12} sm={612} md={6} lg={4}>
@@ -246,7 +247,7 @@ const BottomPanel: React.FC = () => {
                   minimumFractionDigits: 2,
                   maximumFractionDigits: 2,
                 })}{" "}
-                
+
               </Typography>
             </Grid>
             <Grid item xs={12} sm={12} md={6} lg={4}>
