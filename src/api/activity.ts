@@ -377,6 +377,7 @@ export const calculateActivityData = async (
   let wmh = (rawActivity.quantity ?? 0) * welderConstant;
   var proposalCraftBase = proposal?.craftBaseRate;
   var proposalSubsistenceRate = proposal?.subsistenceRate;
+  var proposalWeldBase = proposal?.weldBaseRate;
 
   const newActivity = new Activity(
     docId,
@@ -405,6 +406,9 @@ export const calculateActivityData = async (
     0,
     rawActivity.craftBaseRate ?? proposalCraftBase,
     rawActivity.subsistenceRate ?? proposalSubsistenceRate,
+    proposalWeldBase,
+    rawActivity.craftBaseRate ?? null,
+    rawActivity.subsistenceRate ?? null,
     rawActivity.equipmentOwnership ?? null
   );
 

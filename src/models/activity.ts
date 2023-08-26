@@ -28,6 +28,9 @@ export class Activity {
   totalCost: number;
   craftBaseRate: number;
   subsistenceRate: number;
+  weldBaseRate: number;
+  customCraftRate: number | null;
+  customSubsistenceRate: number | null;
   equipmentOwnership: string | null;
 
   constructor(
@@ -57,6 +60,9 @@ export class Activity {
     totalCost: number = 0,
     craftBaseRate: number = 0,
     subsistenceRate: number = 0,
+    weldBaseRate: number = 0,
+    customCraftRate: number | null,
+    customSubsistenceRate: number | null,
     equipmentOwnership: string | null
   ) {
     this.id = id;
@@ -85,6 +91,9 @@ export class Activity {
     this.totalCost = totalCost;
     this.craftBaseRate = craftBaseRate;
     this.subsistenceRate = subsistenceRate;
+    this.weldBaseRate = weldBaseRate;
+    this.customCraftRate = customCraftRate;
+    this.customSubsistenceRate = customSubsistenceRate;
     this.equipmentOwnership = equipmentOwnership;
   }
 }

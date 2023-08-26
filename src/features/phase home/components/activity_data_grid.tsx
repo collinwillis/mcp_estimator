@@ -83,7 +83,6 @@ const ActivityDataGrid = () => {
               nonce={undefined}
               onResizeCapture={undefined}
             />
-            <GridToolbarExport sx={{ color: "#424242" }} />
           </div>
           <Typography variant="h5">
             {currentPhase?.phaseDatabaseName}

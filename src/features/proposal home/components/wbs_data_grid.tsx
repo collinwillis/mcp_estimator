@@ -1,4 +1,4 @@
-import { Button, Divider } from "@mui/material";
+import {Backdrop, Button, CircularProgress, Divider} from "@mui/material";
 import { Box } from "@mui/system";
 import {
   GridCellEditCommitParams,
@@ -17,6 +17,13 @@ import { updateWbs } from "../../../api/wbs";
 import { StyledDataGrid } from "../../../components/custom_data_grid";
 import { useWbs } from "../../../hooks/wbs_hook";
 import { Wbs } from "../../../models/wbs";
+import {deleteActivityBatch} from "../../../api/activity";
+import TrashIcon from "@mui/icons-material/DeleteForever";
+import ExportIcon from "@mui/icons-material/SaveAlt";
+import {Menu, MenuButton, MenuItem, MenuList, Image} from "@chakra-ui/react";
+import {Button as ChakraButton} from "@chakra-ui/react";
+import {useProposalPreferences} from "../../../hooks/proposal_preferences_hook";
+import ExportMenu from "./export_menu";
 
 const WbsDataGrid = ({
   openSelectWbsDialog,
@@ -25,6 +32,7 @@ const WbsDataGrid = ({
 }) => {
   const { proposalId, wbsId, phaseId } = useParams();
   const { data, loading } = useWbs({ currentProposalId: proposalId ?? "" });
+  const proposalPreferences = useProposalPreferences(proposalId ?? "");
   const [selectedRows, setSelectedRows] = React.useState<GridRowId[]>([]);
   function CustomToolbar() {
     return (
@@ -39,7 +47,11 @@ const WbsDataGrid = ({
             width: "100%",
           }}
         >
-          <div>
+          <div style={{
+            display: "flex",
+            flexDirection: "row",
+            gap: 15,
+          }}>
             <GridToolbarColumnsButton
               sx={{ color: "#424242" }}
               onResize={undefined}
@@ -52,7 +64,7 @@ const WbsDataGrid = ({
               nonce={undefined}
               onResizeCapture={undefined}
             />
-            <GridToolbarExport sx={{ color: "#424242" }} />
+            <ExportMenu proposalId={proposalId!} proposalPreferences={proposalPreferences!} />
           </div>
           <div
             style={{
@@ -116,6 +128,7 @@ const WbsDataGrid = ({
           }
         }}
       />
+
     </Box>
   );
 };

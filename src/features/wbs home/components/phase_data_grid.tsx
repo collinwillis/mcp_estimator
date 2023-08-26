@@ -69,7 +69,6 @@ const PhaseDataGrid = ({
               nonce={undefined}
               onResizeCapture={undefined}
             />
-            <GridToolbarExport sx={{ color: "#424242" }} />
           </div>
           <div
             style={{

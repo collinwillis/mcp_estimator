@@ -35,7 +35,10 @@
     "react-number-format": "^5.1.4",
     "react-phone-number-input": "^3.2.16",
     "react-resizable": "^3.0.4",
-    "react-router-dom": "^6.4.1"
+    "react-router-dom": "^6.4.1",
+    "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.0/xlsx-0.20.0.tgz",
+    "xlsx-js-style": "^1.2.0",
+    "xlsx-style-vite": "^0.0.2"
   },
   "devDependencies": {
     "@tauri-apps/cli": "^1.1.0",
