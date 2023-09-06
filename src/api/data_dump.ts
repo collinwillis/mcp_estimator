@@ -41,6 +41,7 @@ export const fetchDD = async (
     const activities = await fetchDDActivities(proposalId);
     const phases = await fetchDDPhases(proposalId, activities);
     const wbs = await fetchDDWbs(proposalId, phases, preferences);
+    wbs.sort((a, b) => a.wbs! - b.wbs!);
     const wb = utils.book_new();
 
     let style = {
@@ -323,6 +324,15 @@ const fetchDDPhases = async (
                 salesTax += activity.salesTax ?? 0;
                 total += activity.total ?? 0;
                 activity.phase = phase.phaseNumber;
+                activity.size = phase.size;
+                activity.flc = phase.flc;
+                activity.lineDescription = phase.description;
+                activity.specification = phase.spec;
+                activity.insulation = phase.insulation;
+                activity.insulationSize = phase.insulationSize;
+                activity.sheet = phase.sheet;
+                activity.area = phase.area;
+                activity.status = phase.status;
             });
             let newPhase: DataDumpPhase = {
                 phaseId: phase.id,
@@ -382,7 +392,11 @@ const fetchDDWbs = async (
     const querySnapshot = await getDocs(q);
     let returnMe: DataDumpWbs[] = [];
     const wbs: Wbs[] = await Promise.all(
-        querySnapshot.docs.map(async (doc) => {
+        querySnapshot.docs.sort((a, b) => {
+            let first = a.data() as Wbs;
+            let second = a.data() as Wbs;
+            return first.wbsDatabaseId! - second.wbsDatabaseId!;
+        }).map(async (doc) => {
             const curr = doc.data() as Wbs;
             curr.id = doc.id;
 
@@ -486,6 +500,15 @@ const fetchDDWbs = async (
 };
 
 const activityToDataDumpItem = (baseActivity: Activity, proposal: Proposal) => {
+    const getSubProfit = () => {
+        let subProfit = proposal.subContractorProfitRate! / 100;
+        let salesTax = proposal.salesTaxRate! / 100;
+        let useTax = proposal.useTaxRate! / 100;
+        let craftProfit = baseActivity.craftCost * subProfit;
+        let materialProfit = baseActivity.craftCost * (subProfit + salesTax);
+        let equipmentProfit = baseActivity.equipmentCost * subProfit;
+        return (craftProfit + materialProfit + equipmentProfit);
+    };
     let isEquip = baseActivity.activityType == ActivityType.equipmentItem;
     let isMat = baseActivity.activityType == ActivityType.materialItem;
     let isCostOnly = baseActivity.activityType == ActivityType.costOnlyItem;
@@ -501,11 +524,12 @@ const activityToDataDumpItem = (baseActivity: Activity, proposal: Proposal) => {
     let consumables = ((proposal.consumablesRate ?? 0) / 100) * craftBase;
     let subsistence = (baseActivity.craftManHours + baseActivity.welderManHours) * ((baseActivity.customSubsistenceRate ?? proposal.subsistenceRate) ?? 0);
     let rig = (proposal.rigRate ?? 0) * baseActivity.welderManHours;
-    let subCost = baseActivity.activityType == ActivityType.subContractorItem ?  (baseActivity.craftCost + baseActivity.equipmentCost + baseActivity.materialCost) : 0;
+    let subCost = baseActivity.activityType == ActivityType.subContractorItem ?  currencyRound(baseActivity.quantity * (baseActivity.craftCost + (baseActivity.equipmentCost + baseActivity.materialCost))) : 0;
     let profitTotal = ((((proposal.materialProfitRate ?? 0) / 100) * materialCost) + (((proposal.rigProfitRate ?? 0) / 100) * rig) + (((proposal.equipmentProfitRate ?? 0) / 100) * equipmentCost) + (((proposal.subContractorProfitRate ?? 0) / 100) * (subCost)));
     let salesTax = (materialCost * ((proposal.salesTaxRate ?? 0) / 100)) + (equipmentCost * ((proposal.useTaxRate ?? 0) / 100));
-
     let laborCost = craftBase + burden + overhead + laborProfit + fuel + consumables + subsistence;
+
+
     let newActivity: DataDumpActivity = {
         phaseId: baseActivity.phaseId,
         wbsId: baseActivity.wbsId,
@@ -541,7 +565,7 @@ const activityToDataDumpItem = (baseActivity: Activity, proposal: Proposal) => {
         rigCost:  currencyRound(rig),
         materialCost:  isMat ? currencyRound(materialCost) : null,
         equipmentCost:  isEquip ? isOwnedEquip ? null : currencyRound(equipmentCost) : null,
-        subcontractorCost: isSub ? currencyRound(baseActivity.craftCost + baseActivity.equipmentCost + baseActivity.materialCost) : null,
+        subcontractorCost: isSub ? currencyRound(baseActivity.quantity * (baseActivity.craftCost + (baseActivity.equipmentCost + baseActivity.materialCost))) : null,
         costOnlyCost: isOwnedEquip ? equipmentCost : isCostOnly ? currencyRound(baseActivity.costOnlyCost) : null,
         profitTotal:  isOwnedEquip ? null : currencyRound(profitTotal),
         salesTax:  currencyRound(salesTax),
