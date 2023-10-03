@@ -13,10 +13,9 @@ import {EquipmentOwnership} from "../models/equipment";
 import {Proposal} from "../models/proposal";
 import {DataDumpPhase} from "../models/data_dump/data_dump_phase";
 import {DataDumpWbs} from "../models/data_dump/data_dump_wbs";
-import {BookType, utils, WorkBook} from 'xlsx-js-style';
-import { write } from 'xlsx-js-style';
-import { save } from '@tauri-apps/api/dialog';
-import { writeBinaryFile, writeFile } from '@tauri-apps/api/fs';
+import {BookType, utils, WorkBook, write} from 'xlsx-js-style';
+import {save} from '@tauri-apps/api/dialog';
+import {writeBinaryFile} from '@tauri-apps/api/fs';
 import {DataDumpItem} from "../models/data_dump/data_dump_item";
 
 
@@ -25,7 +24,8 @@ interface UseActivitiesOptions {
     phaseId?: string;
     wbsId?: string;
 }
-interface Cell{
+
+interface Cell {
     v?: any;
     s?: any;
     t?: any;
@@ -40,17 +40,21 @@ export const fetchDD = async (
     const proposal = await getSingleProposal({proposalId: proposalId});
     const activities = await fetchDDActivities(proposalId);
     const phases = await fetchDDPhases(proposalId, activities);
-    const wbs = await fetchDDWbs(proposalId, phases, preferences);
+    const wbs = (await fetchDDWbs(proposalId, phases, preferences))
+        .filter(item => item.phases && item.phases.length > 0);
     wbs.sort((a, b) => a.wbs! - b.wbs!);
+
+    console.log(wbs);
+
     const wb = utils.book_new();
 
     let style = {
-        font: { name: "Calibri (Body)", sz: 10 },
-        alignment: { vertical: 'center', horizontal: 'center', wrapText: true },
+        font: {name: "Calibri (Body)", sz: 10},
+        alignment: {vertical: 'center', horizontal: 'center', wrapText: true},
         border: {
-            top: { style: 'thin', color: '#000000' },
-            bottom: { style: 'thin', color: '#000000' },
-            right: { style: 'thin', color: '#000000' }
+            top: {style: 'thin', color: '#000000'},
+            bottom: {style: 'thin', color: '#000000'},
+            right: {style: 'thin', color: '#000000'}
         }
     };
     let top = topMarkups;
@@ -100,7 +104,7 @@ export const fetchDD = async (
 
     p1[31].v = proposal!.proposalNumber ?? "";
     p2[31].v = proposal!.job ?? "";
-   // p3[31].v = proposal
+    // p3[31].v = proposal
     p4[31].v = proposal!.proposalDescription ?? "";
     p5[31].v = proposal!.proposalOwner ?? "";
     p6[31].v = (proposal!.projectCity ?? "") + ", " + (proposal!.projectState ?? "");
@@ -117,44 +121,44 @@ export const fetchDD = async (
         proposalInfo6,
         proposalInfo7,
         topMarkupLabels,
-            top,
+        top,
         [
-            { v: "WBS", t: "s", s: style },
-            { v: "PHASE", t: "s", s: style },
-            { v: "SIZE", t: "s", s: style },
-            { v: "FLC", t: "s", s: style },
-            { v: "LINE / DESCRIP", t: "s", s: style },
-            { v: "SPEC", t: "s", s: style },
-            { v: "INSUL", t: "s", s: style },
-            { v: "INSL. SIZE", t: "s", s: style },
-            { v: "SHT", t: "s", s: style },
-            { v: "AREA", t: "s", s: style },
-            { v: "STATUS", t: "s", s: style },
-            { v: "SPCL RATE", t: "s", s: style },
-            { v: "SPCL SUB", t: "s", s: style },
-            { v: "OWNERSHIP", t: "s", s: style },
-            { v: "QTY", t: "s", s: style },
-            { v: "UNIT", t: "s", s: style },
-            { v: "CRAFT", t: "s", s: style },
-            { v: "WELD", t: "s", s: style },
-            { v: "SUB", t: "s", s: style },
-            { v: "TOTAL", t: "s", s: style },
-            { v: "BASE", t: "s", s: style },
-            { v: "BURDEN", t: "s", s: style },
-            { v: "OVERHEAD", t: "s", s: style },
-            { v: "LABOR PROFIT", t: "s", s: style },
-            { v: "FUEL", t: "s", s: style },
-            { v: "CNSMBLE", t: "s", s: style },
-            { v: "SUBSIST", t: "s", s: style },
-            { v: "LABOR", t: "s", s: style },
-            { v: "RIGS", t: "s", s: style },
-            { v: "MATERIAL", t: "s", s: style },
-            { v: "EQUIP", t: "s", s: style },
-            { v: "SUBS", t: "s", s: style },
-            { v: "COST ONLY", t: "s", s: style },
-            { v: "PROFIT TOTAL (R/M/E/S)", t: "s", s: style },
-            { v: "SALES TAX", t: "s", s: style },
-            { v: "TOTAL", t: "s", s: style }
+            {v: "WBS", t: "s", s: style},
+            {v: "PHASE", t: "s", s: style},
+            {v: "SIZE", t: "s", s: style},
+            {v: "FLC", t: "s", s: style},
+            {v: "LINE / DESCRIP", t: "s", s: style},
+            {v: "SPEC", t: "s", s: style},
+            {v: "INSUL", t: "s", s: style},
+            {v: "INSL. SIZE", t: "s", s: style},
+            {v: "SHT", t: "s", s: style},
+            {v: "AREA", t: "s", s: style},
+            {v: "STATUS", t: "s", s: style},
+            {v: "SPCL RATE", t: "s", s: style},
+            {v: "SPCL SUB", t: "s", s: style},
+            {v: "OWNERSHIP", t: "s", s: style},
+            {v: "QTY", t: "s", s: style},
+            {v: "UNIT", t: "s", s: style},
+            {v: "CRAFT", t: "s", s: style},
+            {v: "WELD", t: "s", s: style},
+            {v: "SUB", t: "s", s: style},
+            {v: "TOTAL", t: "s", s: style},
+            {v: "BASE", t: "s", s: style},
+            {v: "BURDEN", t: "s", s: style},
+            {v: "OVERHEAD", t: "s", s: style},
+            {v: "LABOR PROFIT", t: "s", s: style},
+            {v: "FUEL", t: "s", s: style},
+            {v: "CNSMBLE", t: "s", s: style},
+            {v: "SUBSIST", t: "s", s: style},
+            {v: "LABOR", t: "s", s: style},
+            {v: "RIGS", t: "s", s: style},
+            {v: "MATERIAL", t: "s", s: style},
+            {v: "EQUIP", t: "s", s: style},
+            {v: "SUBS", t: "s", s: style},
+            {v: "COST ONLY", t: "s", s: style},
+            {v: "PROFIT TOTAL (R/M/E/S)", t: "s", s: style},
+            {v: "SALES TAX", t: "s", s: style},
+            {v: "TOTAL", t: "s", s: style}
         ],
         bm,
         ...data
@@ -162,76 +166,76 @@ export const fetchDD = async (
     const ws = utils.aoa_to_sheet(rows);
 
     ws['!cols'] = [
-        {'width' : 10},
-        {'width' : 10},
-        {'width' : 8.5},
-        {'width' : 7},
-        {'width' : 55},
-        {'width' : 11},
-        {'width' : 8},
-        {'width' : 8},
-        {'width' : 7},
-        {'width' : 15},
-        {'width' : 15},
-        {'width' : 15},
-        {'width' : 15},
-        {'width' : 15},
-        {'width' : 15},
-        {'width' : 15},
-        {'width' : 15},
-        {'width' : 15},
-        {'width' : 15},
-        {'width' : 15},
-        {'width' : 15},
-        {'width' : 15},
-        {'width' : 15},
-        {'width' : 15},
-        {'width' : 15},
-        {'width' : 15},
-        {'width' : 15},
-        {'width' : 15},
-        {'width' : 15},
-        {'width' : 15},
-        {'width' : 15},
-        {'width' : 15},
-        {'width' : 15},
-        {'width' : 15},
-        {'width' : 15},
-        {'width' : 18},
+        {'width': 10},
+        {'width': 10},
+        {'width': 8.5},
+        {'width': 7},
+        {'width': 55},
+        {'width': 11},
+        {'width': 8},
+        {'width': 8},
+        {'width': 7},
+        {'width': 15},
+        {'width': 15},
+        {'width': 15},
+        {'width': 15},
+        {'width': 15},
+        {'width': 15},
+        {'width': 15},
+        {'width': 15},
+        {'width': 15},
+        {'width': 15},
+        {'width': 15},
+        {'width': 15},
+        {'width': 15},
+        {'width': 15},
+        {'width': 15},
+        {'width': 15},
+        {'width': 15},
+        {'width': 15},
+        {'width': 15},
+        {'width': 15},
+        {'width': 15},
+        {'width': 15},
+        {'width': 15},
+        {'width': 15},
+        {'width': 15},
+        {'width': 15},
+        {'width': 18},
 
     ];
     ws['!rows'] = [
-        {'hpx' : 15},
-        {'hpx' : 15},
-        {'hpx' : 15},
-        {'hpx' : 15},
-        {'hpx' : 15},
-        {'hpx' : 15},
-        {'hpx' : 15},
-        {'hpx' : 23},// height for row 1
-        {'hpx' : 16},
-        {'hpx' : 31},
-        {'hpx' : 16},
+        {'hpx': 15},
+        {'hpx': 15},
+        {'hpx': 15},
+        {'hpx': 15},
+        {'hpx': 15},
+        {'hpx': 15},
+        {'hpx': 15},
+        {'hpx': 23},// height for row 1
+        {'hpx': 16},
+        {'hpx': 31},
+        {'hpx': 16},
     ];
     /* merge cells A1:B1 */
     var merge = [
-        { s: {r:10, c:32}, e: {r:10, c:33} },
-        { s: {r:0, c:31}, e: {r:0, c:35} },
-        { s: {r:1, c:31}, e: {r:1, c:35} },
-        { s: {r:2, c:31}, e: {r:2, c:35} },
-        { s: {r:3, c:31}, e: {r:3, c:35} },
-        { s: {r:4, c:31}, e: {r:4, c:35} },
-        { s: {r:5, c:31}, e: {r:5, c:35} },
-        { s: {r:6, c:31}, e: {r:6, c:35} },
+        {s: {r: 10, c: 32}, e: {r: 10, c: 33}},
+        {s: {r: 0, c: 31}, e: {r: 0, c: 35}},
+        {s: {r: 1, c: 31}, e: {r: 1, c: 35}},
+        {s: {r: 2, c: 31}, e: {r: 2, c: 35}},
+        {s: {r: 3, c: 31}, e: {r: 3, c: 35}},
+        {s: {r: 4, c: 31}, e: {r: 4, c: 35}},
+        {s: {r: 5, c: 31}, e: {r: 5, c: 35}},
+        {s: {r: 6, c: 31}, e: {r: 6, c: 35}},
     ];
 //var merge = XLSX.utils.decode_range("A1:B1"); // this is equivalent
 
     /* add merges */
-    if(!ws['!merges']) ws['!merges'] = [];
+    if (!ws['!merges']) ws['!merges'] = [];
     ws['!merges'] = merge;
 
     utils.book_append_sheet(wb, ws, "readme demo");
-   await saveFile(wb, proposal!.proposalNumber!);
+    await saveFile(wb, proposal!.proposalNumber!);
 };
 
 
@@ -245,7 +249,7 @@ export const fetchDDActivities = async (
     );
 
     const querySnapshot = await getDocs(activityQuery);
-    const proposal = await getSingleProposal({ proposalId });
+    const proposal = await getSingleProposal({proposalId});
 
 
     const activityPromises = querySnapshot.docs.map(async (doc) => {
@@ -326,7 +330,6 @@ const fetchDDPhases = async (
                 activity.phase = phase.phaseNumber;
                 activity.size = phase.size;
                 activity.flc = phase.flc;
-                activity.lineDescription = phase.description;
                 activity.specification = phase.spec;
                 activity.insulation = phase.insulation;
                 activity.insulationSize = phase.insulationSize;
@@ -358,21 +361,21 @@ const fetchDDPhases = async (
                 weldMH: currencyRound(weldMH),
                 subMH: null,
                 totalMH: currencyRound((craftMH + weldMH)),
-                baseCost:  baseCost,
-                burden:  burden,
-                overhead:  overhead,
-                laborProfit:  laborProfit,
-                fuel:  fuel,
-                consumables:  consumables,
-                subsistence:  subsistence,
-                laborCost:  laborCost,
-                rigCost:  rigCost,
-                materialCost:  materialCost,
-                equipmentCost:  equipmentCost,
+                baseCost: baseCost,
+                burden: burden,
+                overhead: overhead,
+                laborProfit: laborProfit,
+                fuel: fuel,
+                consumables: consumables,
+                subsistence: subsistence,
+                laborCost: laborCost,
+                rigCost: rigCost,
+                materialCost: materialCost,
+                equipmentCost: equipmentCost,
                 subcontractorCost: subcontractorCost,
                 costOnlyCost: costOnlyCost,
-                profitTotal:  profitTotal,
-                salesTax:  salesTax,
+                profitTotal: profitTotal,
+                salesTax: salesTax,
                 total: total,
                 activities: activities,
             }
@@ -420,8 +423,7 @@ const fetchDDWbs = async (
             let salesTax = 0;
             let total = 0;
 
-            if(preferences.wbsToDisplay?.includes(curr.name!))
-            {
+            if (preferences.wbsToDisplay?.includes(curr.name!)) {
                 const phases = allPhases.filter(
                     (phase) => phase.wbsId === doc.id
                 );
@@ -471,21 +473,21 @@ const fetchDDWbs = async (
                     weldMH: currencyRound(weldMH),
                     subMH: null,
                     totalMH: currencyRound((craftMH + weldMH)),
-                    baseCost:  baseCost,
-                    burden:  burden,
-                    overhead:  overhead,
-                    laborProfit:  laborProfit,
-                    fuel:  fuel,
-                    consumables:  consumables,
-                    subsistence:  subsistence,
-                    laborCost:  laborCost,
-                    rigCost:  rigCost,
-                    materialCost:  materialCost,
-                    equipmentCost:  equipmentCost,
+                    baseCost: baseCost,
+                    burden: burden,
+                    overhead: overhead,
+                    laborProfit: laborProfit,
+                    fuel: fuel,
+                    consumables: consumables,
+                    subsistence: subsistence,
+                    laborCost: laborCost,
+                    rigCost: rigCost,
+                    materialCost: materialCost,
+                    equipmentCost: equipmentCost,
                     subcontractorCost: subcontractorCost,
                     costOnlyCost: costOnlyCost,
-                    profitTotal:  profitTotal,
-                    salesTax:  salesTax,
+                    profitTotal: profitTotal,
+                    salesTax: salesTax,
                     total: total,
                     phases: phases,
                 }
@@ -524,7 +526,7 @@ const activityToDataDumpItem = (baseActivity: Activity, proposal: Proposal) => {
     let consumables = ((proposal.consumablesRate ?? 0) / 100) * craftBase;
     let subsistence = (baseActivity.craftManHours + baseActivity.welderManHours) * ((baseActivity.customSubsistenceRate ?? proposal.subsistenceRate) ?? 0);
     let rig = (proposal.rigRate ?? 0) * baseActivity.welderManHours;
-    let subCost = baseActivity.activityType == ActivityType.subContractorItem ?  currencyRound(baseActivity.quantity * (baseActivity.craftCost + (baseActivity.equipmentCost + baseActivity.materialCost))) : 0;
+    let subCost = baseActivity.activityType == ActivityType.subContractorItem ? currencyRound(baseActivity.quantity * (baseActivity.craftCost + (baseActivity.equipmentCost + baseActivity.materialCost))) : 0;
     let profitTotal = ((((proposal.materialProfitRate ?? 0) / 100) * materialCost) + (((proposal.rigProfitRate ?? 0) / 100) * rig) + (((proposal.equipmentProfitRate ?? 0) / 100) * equipmentCost) + (((proposal.subContractorProfitRate ?? 0) / 100) * (subCost)));
     let salesTax = (materialCost * ((proposal.salesTaxRate ?? 0) / 100)) + (equipmentCost * ((proposal.useTaxRate ?? 0) / 100));
     let laborCost = craftBase + burden + overhead + laborProfit + fuel + consumables + subsistence;
@@ -554,32 +556,32 @@ const activityToDataDumpItem = (baseActivity: Activity, proposal: Proposal) => {
         weldMH: currencyRound(baseActivity.welderManHours),
         subMH: null,
         totalMH: currencyRound((baseActivity.craftManHours + baseActivity.welderManHours)),
-        baseCost:  currencyRound(craftBase),
-        burden:  currencyRound(burden),
-        overhead:  currencyRound(overhead),
-        laborProfit:  currencyRound(laborProfit),
-        fuel:  currencyRound(fuel),
-        consumables:  currencyRound(consumables),
-        subsistence:  currencyRound(subsistence),
-        laborCost:  currencyRound(craftBase + burden + overhead + laborProfit + fuel + consumables + subsistence),
-        rigCost:  currencyRound(rig),
-        materialCost:  isMat ? currencyRound(materialCost) : null,
-        equipmentCost:  isEquip ? isOwnedEquip ? null : currencyRound(equipmentCost) : null,
+        baseCost: currencyRound(craftBase),
+        burden: currencyRound(burden),
+        overhead: currencyRound(overhead),
+        laborProfit: currencyRound(laborProfit),
+        fuel: currencyRound(fuel),
+        consumables: currencyRound(consumables),
+        subsistence: currencyRound(subsistence),
+        laborCost: currencyRound(craftBase + burden + overhead + laborProfit + fuel + consumables + subsistence),
+        rigCost: currencyRound(rig),
+        materialCost: isMat ? currencyRound(materialCost) : null,
+        equipmentCost: isEquip ? isOwnedEquip ? equipmentCost : currencyRound(equipmentCost) : null,
         subcontractorCost: isSub ? currencyRound(baseActivity.quantity * (baseActivity.craftCost + (baseActivity.equipmentCost + baseActivity.materialCost))) : null,
-        costOnlyCost: isOwnedEquip ? equipmentCost : isCostOnly ? currencyRound(baseActivity.costOnlyCost) : null,
-        profitTotal:  isOwnedEquip ? null : currencyRound(profitTotal),
-        salesTax:  currencyRound(salesTax),
+        costOnlyCost: isCostOnly ? currencyRound(baseActivity.costOnlyCost) : null,
+        profitTotal: isOwnedEquip ? null : currencyRound(profitTotal),
+        salesTax: currencyRound(salesTax),
         total: isOwnedEquip ? equipmentCost : currencyRound(laborCost + rig + materialCost + equipmentCost + subCost + baseActivity.costOnlyCost + profitTotal + salesTax),
     }
     return newActivity;
 }
 
 
-
 const filters = [
     {name: "Excel Workbook", extensions: ["xlsx"]},
     // ... other desired formats ...
 ];
+
 async function saveFile(wb: WorkBook, proposalNumber: number) {
     /* show save file dialog */
     const selected = await save({
@@ -587,7 +589,7 @@ async function saveFile(wb: WorkBook, proposalNumber: number) {
         title: "Save to Spreadsheet",
         filters
     });
-    if(!selected) return;
+    if (!selected) return;
     /* Generate workbook */
     const extension = selected.slice(selected.lastIndexOf(".") + 1);
     const bookType: BookType = 'xlsx' as BookType;
@@ -606,83 +608,83 @@ interface StyleDefinition {
 
 const styles: Record<string, StyleDefinition> = {
     wbs: {
-        font: { name: "Calibri", sz: 14, bold: true },
-        fill: { fgColor: { rgb: "ddebf7" } },
+        font: {name: "Calibri", sz: 14, bold: true},
+        fill: {fgColor: {rgb: "ddebf7"}},
         alignment: {horizontal: 'right'}
     },
     wbsCenter: {
-        font: { name: "Calibri", sz: 14, bold: true },
-        fill: { fgColor: { rgb: "ddebf7" } },
+        font: {name: "Calibri", sz: 14, bold: true},
+        fill: {fgColor: {rgb: "ddebf7"}},
         alignment: {horizontal: 'center'}
     },
     wbsLeft: {
-        font: { name: "Calibri", sz: 14, bold: true },
-        fill: { fgColor: { rgb: "ddebf7" } },
+        font: {name: "Calibri", sz: 14, bold: true},
+        fill: {fgColor: {rgb: "ddebf7"}},
         alignment: {horizontal: 'left'}
     },
     phaseLeft: {
-        font: { name: "Calibri", sz: 12, bold: true },
-        fill: { fgColor: { rgb: "fff2cc" } },
+        font: {name: "Calibri", sz: 12, bold: true},
+        fill: {fgColor: {rgb: "fff2cc"}},
         alignment: {horizontal: 'left'}
     },
     activityLeft: {
-        font: { name: "Calibri", sz: 10 },
+        font: {name: "Calibri", sz: 10},
         alignment: {horizontal: 'left'}
     },
     wbsBorder: {
-        border: { right: { style: "medium", color: "#000000" } },
-        font: { name: "Calibri", sz: 14, bold: true },
-        fill: { fgColor: { rgb: "ddebf7" } },
+        border: {right: {style: "medium", color: "#000000"}},
+        font: {name: "Calibri", sz: 14, bold: true},
+        fill: {fgColor: {rgb: "ddebf7"}},
         alignment: {horizontal: 'right'}
     },
     phase: {
-        font: { name: "Calibri", sz: 12, bold: true },
-        fill: { fgColor: { rgb: "fff2cc" } },
+        font: {name: "Calibri", sz: 12, bold: true},
+        fill: {fgColor: {rgb: "fff2cc"}},
         alignment: {horizontal: 'right'}
     },
     phaseBorder: {
-        border: { right: { style: "medium", color: "#000000" } },
-        font: { name: "Calibri", sz: 12, bold: true },
-        fill: { fgColor: { rgb: "fff2cc" } },
+        border: {right: {style: "medium", color: "#000000"}},
+        font: {name: "Calibri", sz: 12, bold: true},
+        fill: {fgColor: {rgb: "fff2cc"}},
         alignment: {horizontal: 'right'}
     },
     activity: {
-        font: { name: "Calibri", sz: 10 },
+        font: {name: "Calibri", sz: 10},
         alignment: {horizontal: 'right'}
     },
     activityBorder: {
-        border: { right: { style: "medium", color: "#000000" } },
-        font: { name: "Calibri", sz: 10 },
+        border: {right: {style: "medium", color: "#000000"}},
+        font: {name: "Calibri", sz: 10},
         alignment: {horizontal: 'right'}
     },
     activityBorderAll: {
         border: {
-            right: { style: "medium", color: "#000000" },
-            left: { style: "medium", color: "#000000" },
-            top: { style: "medium", color: "#000000" },
-            bottom: { style: "medium", color: "#000000" }
+            right: {style: "medium", color: "#000000"},
+            left: {style: "medium", color: "#000000"},
+            top: {style: "medium", color: "#000000"},
+            bottom: {style: "medium", color: "#000000"}
         },
-        font: { name: "Calibri", sz: 10 },
+        font: {name: "Calibri", sz: 10},
         alignment: {horizontal: 'right'}
     },
     summary: {
         border: {
-            bottom: { style: "medium", color: "#000000" },
-            top: { style: "medium", color: "#000000" },
+            bottom: {style: "medium", color: "#000000"},
+            top: {style: "medium", color: "#000000"},
         },
-        font: { name: "Calibri", sz: 14, bold: true },
+        font: {name: "Calibri", sz: 14, bold: true},
         alignment: {horizontal: 'right'},
-        fill: { fgColor: { rgb: "e2eeda" } },
+        fill: {fgColor: {rgb: "e2eeda"}},
     },
     summaryBorder: {
         border: {
-            right: { style: "medium", color: "#000000" },
-            bottom: { style: "medium", color: "#000000" },
-            top: { style: "medium", color: "#000000" },
+            right: {style: "medium", color: "#000000"},
+            bottom: {style: "medium", color: "#000000"},
+            top: {style: "medium", color: "#000000"},
         },
-        font: { name: "Calibri", sz: 14, bold: true },
+        font: {name: "Calibri", sz: 14, bold: true},
         alignment: {horizontal: 'right'},
-        fill: { fgColor: { rgb: "e2eeda" } },
+        fill: {fgColor: {rgb: "e2eeda"}},
     },
 };
 
@@ -717,30 +719,23 @@ let regNumItems = [
 
 async function mapModelsToRows(wbs: DataDumpWbs[]): Promise<Cell[][]> {
     const rows: Cell[][] = [];
+
     function applyStyle(styleKey: string, cellValue: any, key: any): Cell {
         let style = styles[styleKey];
-        let isCurrency = currencyItems.includes(key) &&  !isNaN(Number(cellValue)) && cellValue != 0 && cellValue != null;
-        let isRegNum = regNumItems.includes(key) &&  !isNaN(Number(cellValue)) && cellValue != 0 && cellValue != null;
+        let isCurrency = currencyItems.includes(key) && !isNaN(Number(cellValue)) && cellValue != 0 && cellValue != null;
+        let isRegNum = regNumItems.includes(key) && !isNaN(Number(cellValue)) && cellValue != 0 && cellValue != null;
         let val = cellValue == 0 || cellValue == null ? currencyItems.includes(key) ? '-' : '' : cellValue;
-        if(key === 'wbs' && styleKey == 'wbs')
-        {
+        if (key === 'wbs' && styleKey == 'wbs') {
             style = styles['wbsCenter'];
-        }
-        else if(((key === 'lineDescription' || key === 'unit') && styleKey != 'summary'))
-        {
+        } else if (((key === 'lineDescription' || key === 'unit') && styleKey != 'summary')) {
             style = styles[`${styleKey}Left`];
-        }
-        else if((key === 'specialCraftRate' || key === 'specialSubRate') && styleKey == 'activity' && (cellValue != null && cellValue !== 0))
-        {
+        } else if ((key === 'specialCraftRate' || key === 'specialSubRate') && styleKey == 'activity' && (cellValue != null && cellValue !== 0)) {
             style = styles['activityBorderAll'];
         }
         let format = '';
-        if(isCurrency)
-        {
+        if (isCurrency) {
             format = '_("$"* #,##0.00_);_("$"* \\(#,##0.00\\);_("$"* "-"??_);_(@_)';
-        }
-        else if(isRegNum)
-        {
+        } else if (isRegNum) {
             format = '_(* #,##0.00_);_(* \\\\(#,##0.00\\\\);_(* "-"??_);_(@_)';
         }
         return {
@@ -752,20 +747,19 @@ async function mapModelsToRows(wbs: DataDumpWbs[]): Promise<Cell[][]> {
     }
 
     function processRow(data: Record<string, any>, styleKey: string): void {
-        if (data.total !== 0 && data.total !== null) {
-            const row: Cell[] = [];
-            for (const [key, value] of Object.entries(data)) {
-                if (!doNotInclude.includes(key)) {
-                    const cellStyleKey = rightBorderedCells.includes(key)
-                        ? `${styleKey}Border`
-                        : styleKey;
-                    const cell = applyStyle(cellStyleKey, value, key);
-                    row.push(cell);
-                }
+        const row: Cell[] = [];
+        for (const [key, value] of Object.entries(data)) {
+            if (!doNotInclude.includes(key)) {
+                const cellStyleKey = rightBorderedCells.includes(key)
+                    ? `${styleKey}Border`
+                    : styleKey;
+                const cell = applyStyle(cellStyleKey, value, key);
+                row.push(cell);
             }
-            rows.push(row);
         }
+        rows.push(row);
     }
+
     for (const wbsItem of wbs) {
         processRow(wbsItem, "wbs");
 
@@ -852,480 +846,480 @@ const createSummaryRow = (wbs: DataDumpWbs[]) => {
         weldMH: currencyRound(weldMH),
         subMH: null,
         totalMH: currencyRound((craftMH + weldMH)),
-        baseCost:  baseCost,
-        burden:  burden,
-        overhead:  overhead,
-        laborProfit:  laborProfit,
-        fuel:  fuel,
-        consumables:  consumables,
-        subsistence:  subsistence,
-        laborCost:  laborCost,
-        rigCost:  rigCost,
-        materialCost:  materialCost,
-        equipmentCost:  equipmentCost,
+        baseCost: baseCost,
+        burden: burden,
+        overhead: overhead,
+        laborProfit: laborProfit,
+        fuel: fuel,
+        consumables: consumables,
+        subsistence: subsistence,
+        laborCost: laborCost,
+        rigCost: rigCost,
+        materialCost: materialCost,
+        equipmentCost: equipmentCost,
         subcontractorCost: subcontractorCost,
         costOnlyCost: costOnlyCost,
-        profitTotal:  profitTotal,
-        salesTax:  salesTax,
+        profitTotal: profitTotal,
+        salesTax: salesTax,
         total: total,
     }
     return summaryRow;
 };
 
 let markupLabelStyle = {
-    font: { name: "Calibri", sz: 10 },
-    alignment: { vertical: 'center', horizontal: 'center', wrapText: true },
+    font: {name: "Calibri", sz: 10},
+    alignment: {vertical: 'center', horizontal: 'center', wrapText: true},
 };
 let markupStyle = {
-    font: { name: "Calibri", sz: 10, color: {rgb: "0011ff"}, bold: true},
-    alignment: { vertical: 'center', horizontal: 'right', wrapText: true },
+    font: {name: "Calibri", sz: 10, color: {rgb: "0011ff"}, bold: true},
+    alignment: {vertical: 'center', horizontal: 'right', wrapText: true},
     border: {
-        top: { style: 'medium', color: '#000000' },
-        bottom: { style: 'medium', color: '#000000' },
-        right: { style: 'medium', color: '#000000' },
-        left: { style: 'medium', color: '#000000' }
+        top: {style: 'medium', color: '#000000'},
+        bottom: {style: 'medium', color: '#000000'},
+        right: {style: 'medium', color: '#000000'},
+        left: {style: 'medium', color: '#000000'}
     },
-    fill: { fgColor: { rgb: "ededed" } },
+    fill: {fgColor: {rgb: "ededed"}},
 };
 let markupLeftBorder = {
-    font: { name: "Calibri", sz: 10, color: {rgb: "0011ff"}, bold: true},
-    alignment: { vertical: 'center', horizontal: 'right', wrapText: true },
+    font: {name: "Calibri", sz: 10, color: {rgb: "0011ff"}, bold: true},
+    alignment: {vertical: 'center', horizontal: 'right', wrapText: true},
     border: {
-        top: { style: 'medium', color: '#000000' },
-        bottom: { style: 'medium', color: '#000000' },
-        left: { style: 'medium', color: '#000000' }
+        top: {style: 'medium', color: '#000000'},
+        bottom: {style: 'medium', color: '#000000'},
+        left: {style: 'medium', color: '#000000'}
     },
-    fill: { fgColor: { rgb: "ededed" } },
+    fill: {fgColor: {rgb: "ededed"}},
 };
 let markupRightBorder = {
-    font: { name: "Calibri", sz: 10, color: {rgb: "0011ff"}, bold: true},
-    alignment: { vertical: 'center', horizontal: 'right', wrapText: true },
+    font: {name: "Calibri", sz: 10, color: {rgb: "0011ff"}, bold: true},
+    alignment: {vertical: 'center', horizontal: 'right', wrapText: true},
     border: {
-        top: { style: 'medium', color: '#000000' },
-        bottom: { style: 'medium', color: '#000000' },
-        right: { style: 'medium', color: '#000000' },
+        top: {style: 'medium', color: '#000000'},
+        bottom: {style: 'medium', color: '#000000'},
+        right: {style: 'medium', color: '#000000'},
     },
-    fill: { fgColor: { rgb: "ededed" } },
+    fill: {fgColor: {rgb: "ededed"}},
 };
 let markupTBBorder = {
-    font: { name: "Calibri", sz: 10, color: {rgb: "0011ff"}, bold: true},
-    alignment: { vertical: 'center', horizontal: 'right', wrapText: true },
+    font: {name: "Calibri", sz: 10, color: {rgb: "0011ff"}, bold: true},
+    alignment: {vertical: 'center', horizontal: 'right', wrapText: true},
     border: {
-        top: { style: 'medium', color: '#000000' },
-        bottom: { style: 'medium', color: '#000000' },
+        top: {style: 'medium', color: '#000000'},
+        bottom: {style: 'medium', color: '#000000'},
     },
-    fill: { fgColor: { rgb: "ededed" } },
+    fill: {fgColor: {rgb: "ededed"}},
 };
 let markupAllBorder = {
-    font: { name: "Calibri", sz: 10, color: {rgb: "0011ff"}, bold: true},
-    alignment: { vertical: 'center', horizontal: 'right', wrapText: true },
+    font: {name: "Calibri", sz: 10, color: {rgb: "0011ff"}, bold: true},
+    alignment: {vertical: 'center', horizontal: 'right', wrapText: true},
     border: {
-        top: { style: 'medium', color: '#000000' },
-        bottom: { style: 'medium', color: '#000000' },
-        right: { style: 'medium', color: '#000000' },
-        left: { style: 'medium', color: '#000000' }
+        top: {style: 'medium', color: '#000000'},
+        bottom: {style: 'medium', color: '#000000'},
+        right: {style: 'medium', color: '#000000'},
+        left: {style: 'medium', color: '#000000'}
     },
-    fill: { fgColor: { rgb: "ededed" } },
+    fill: {fgColor: {rgb: "ededed"}},
 };
 
 let markupNoBoarder = {
-    font: { name: "Calibri", sz: 11},
-    alignment: { vertical: 'center', horizontal: 'left', wrapText: true },
+    font: {name: "Calibri", sz: 11},
+    alignment: {vertical: 'center', horizontal: 'left', wrapText: true},
 };
 let proposalInfoLabel = {
-    font: { name: "Calibri", sz: 11},
+    font: {name: "Calibri", sz: 11},
     alignment: {horizontal: 'right'},
 };
 let proposalInfoBottomBorder = {
-    font: { name: "Calibri", sz: 11},
+    font: {name: "Calibri", sz: 11},
     alignment: {horizontal: 'left'},
     border: {
-        bottom: { style: 'thin', color: '#000000' },
+        bottom: {style: 'thin', color: '#000000'},
     }
 };
 
 let topMarkups: Cell[] = [
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "WELD", t: "s", s: markupStyle },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "SALES TAX", t: "s", s: markupStyle },
-    { v: "", t: "s" }
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "WELD", t: "s", s: markupStyle},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "SALES TAX", t: "s", s: markupStyle},
+    {v: "", t: "s"}
 ];
 
 let topMarkupLabels: Cell[] = [
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "RIG", t: "s", s: markupLabelStyle },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "USE TAX", t: "s", s: markupLabelStyle },
-    { v: "", t: "s" }
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "RIG", t: "s", s: markupLabelStyle},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "USE TAX", t: "s", s: markupLabelStyle},
+    {v: "", t: "s"}
 ];
 
 let bottomMarkups: Cell[] = [
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "WELD", t: "s", s: markupLeftBorder }, //17
-    { v: "", t: "s", s: markupTBBorder },
-    { v: "", t: "s", s: markupTBBorder },
-    { v: "BASE", t: "s", s: markupTBBorder }, //20
-    { v: "BURDEN", t: "s", s: markupTBBorder }, //21
-    { v: "OVERHEAD", t: "s", s: markupTBBorder }, //22
-    { v: "LABOR PROFIT", t: "s", s: markupTBBorder }, //23
-    { v: "FUEL", t: "s", s: markupTBBorder }, //24
-    { v: "CONSUMABLES", t: "s", s: markupTBBorder }, //25
-    { v: "SUBSIST", t: "s", s: markupRightBorder}, //26
-    { v: "", t: "s" },
-    { v: "RIGS", t: "s", s: markupLeftBorder }, //28
-    { v: "MATERIAL", t: "s", s: markupTBBorder }, //29
-    { v: "EQUIP", t: "s", s: markupTBBorder }, //30
-    { v: "SUBS", t: "s", s: markupRightBorder }, //31
-    { v: "(no tax or mu)", t: "s", s: markupNoBoarder }, //32
-    { v: "", t: "s" },
-    { v: "SALES TAX", t: "s", s: markupAllBorder }, //34
-    { v: "", t: "s" }
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "WELD", t: "s", s: markupLeftBorder}, //17
+    {v: "", t: "s", s: markupTBBorder},
+    {v: "", t: "s", s: markupTBBorder},
+    {v: "BASE", t: "s", s: markupTBBorder}, //20
+    {v: "BURDEN", t: "s", s: markupTBBorder}, //21
+    {v: "OVERHEAD", t: "s", s: markupTBBorder}, //22
+    {v: "LABOR PROFIT", t: "s", s: markupTBBorder}, //23
+    {v: "FUEL", t: "s", s: markupTBBorder}, //24
+    {v: "CONSUMABLES", t: "s", s: markupTBBorder}, //25
+    {v: "SUBSIST", t: "s", s: markupRightBorder}, //26
+    {v: "", t: "s"},
+    {v: "RIGS", t: "s", s: markupLeftBorder}, //28
+    {v: "MATERIAL", t: "s", s: markupTBBorder}, //29
+    {v: "EQUIP", t: "s", s: markupTBBorder}, //30
+    {v: "SUBS", t: "s", s: markupRightBorder}, //31
+    {v: "(no tax or mu)", t: "s", s: markupNoBoarder}, //32
+    {v: "", t: "s"},
+    {v: "SALES TAX", t: "s", s: markupAllBorder}, //34
+    {v: "", t: "s"}
 ];
 
 let proposalInfo1: Cell[] = [
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "Proposal #:", t: "s", s: proposalInfoLabel },
-    { v: "", t: "s", s: proposalInfoBottomBorder },
-    { v: "", t: "s", s: proposalInfoBottomBorder },
-    { v: "", t: "s", s: proposalInfoBottomBorder },
-    { v: "", t: "s", s: proposalInfoBottomBorder },
-    { v: "", t: "s", s: proposalInfoBottomBorder },
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "Proposal #:", t: "s", s: proposalInfoLabel},
+    {v: "", t: "s", s: proposalInfoBottomBorder},
+    {v: "", t: "s", s: proposalInfoBottomBorder},
+    {v: "", t: "s", s: proposalInfoBottomBorder},
+    {v: "", t: "s", s: proposalInfoBottomBorder},
+    {v: "", t: "s", s: proposalInfoBottomBorder},
 ];
 let proposalInfo2: Cell[] = [
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "Job #:", t: "s", s: proposalInfoLabel },
-    { v: "", t: "s", s: proposalInfoBottomBorder },
-    { v: "", t: "s", s: proposalInfoBottomBorder },
-    { v: "", t: "s", s: proposalInfoBottomBorder },
-    { v: "", t: "s", s: proposalInfoBottomBorder },
-    { v: "", t: "s", s: proposalInfoBottomBorder },
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "Job #:", t: "s", s: proposalInfoLabel},
+    {v: "", t: "s", s: proposalInfoBottomBorder},
+    {v: "", t: "s", s: proposalInfoBottomBorder},
+    {v: "", t: "s", s: proposalInfoBottomBorder},
+    {v: "", t: "s", s: proposalInfoBottomBorder},
+    {v: "", t: "s", s: proposalInfoBottomBorder},
 ];
 let proposalInfo3: Cell[] = [
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "Change #:", t: "s", s: proposalInfoLabel },
-    { v: "", t: "s", s: proposalInfoBottomBorder },
-    { v: "", t: "s", s: proposalInfoBottomBorder },
-    { v: "", t: "s", s: proposalInfoBottomBorder },
-    { v: "", t: "s", s: proposalInfoBottomBorder },
-    { v: "", t: "s", s: proposalInfoBottomBorder },
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "Change #:", t: "s", s: proposalInfoLabel},
+    {v: "", t: "s", s: proposalInfoBottomBorder},
+    {v: "", t: "s", s: proposalInfoBottomBorder},
+    {v: "", t: "s", s: proposalInfoBottomBorder},
+    {v: "", t: "s", s: proposalInfoBottomBorder},
+    {v: "", t: "s", s: proposalInfoBottomBorder},
 ];
 let proposalInfo4: Cell[] = [
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "Description:", t: "s", s: proposalInfoLabel },
-    { v: "", t: "s", s: proposalInfoBottomBorder },
-    { v: "", t: "s", s: proposalInfoBottomBorder },
-    { v: "", t: "s", s: proposalInfoBottomBorder },
-    { v: "", t: "s", s: proposalInfoBottomBorder },
-    { v: "", t: "s", s: proposalInfoBottomBorder },
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "Description:", t: "s", s: proposalInfoLabel},
+    {v: "", t: "s", s: proposalInfoBottomBorder},
+    {v: "", t: "s", s: proposalInfoBottomBorder},
+    {v: "", t: "s", s: proposalInfoBottomBorder},
+    {v: "", t: "s", s: proposalInfoBottomBorder},
+    {v: "", t: "s", s: proposalInfoBottomBorder},
 ];
 let proposalInfo5: Cell[] = [
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "Owner:", t: "s", s: proposalInfoLabel },
-    { v: "", t: "s", s: proposalInfoBottomBorder },
-    { v: "", t: "s", s: proposalInfoBottomBorder },
-    { v: "", t: "s", s: proposalInfoBottomBorder },
-    { v: "", t: "s", s: proposalInfoBottomBorder },
-    { v: "", t: "s", s: proposalInfoBottomBorder },
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "Owner:", t: "s", s: proposalInfoLabel},
+    {v: "", t: "s", s: proposalInfoBottomBorder},
+    {v: "", t: "s", s: proposalInfoBottomBorder},
+    {v: "", t: "s", s: proposalInfoBottomBorder},
+    {v: "", t: "s", s: proposalInfoBottomBorder},
+    {v: "", t: "s", s: proposalInfoBottomBorder},
 ];
 let proposalInfo6: Cell[] = [
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "Location:", t: "s", s: proposalInfoLabel },
-    { v: "", t: "s", s: proposalInfoBottomBorder },
-    { v: "", t: "s", s: proposalInfoBottomBorder },
-    { v: "", t: "s", s: proposalInfoBottomBorder },
-    { v: "", t: "s", s: proposalInfoBottomBorder },
-    { v: "", t: "s", s: proposalInfoBottomBorder },
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "Location:", t: "s", s: proposalInfoLabel},
+    {v: "", t: "s", s: proposalInfoBottomBorder},
+    {v: "", t: "s", s: proposalInfoBottomBorder},
+    {v: "", t: "s", s: proposalInfoBottomBorder},
+    {v: "", t: "s", s: proposalInfoBottomBorder},
+    {v: "", t: "s", s: proposalInfoBottomBorder},
 ];
 let proposalInfo7: Cell[] = [
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "", t: "s" },
-    { v: "Date:", t: "s", s: proposalInfoLabel },
-    { v: "", t: "s", s: proposalInfoBottomBorder },
-    { v: "", t: "s", s: proposalInfoBottomBorder },
-    { v: "", t: "s", s: proposalInfoBottomBorder },
-    { v: "", t: "s", s: proposalInfoBottomBorder },
-    { v: "", t: "s", s: proposalInfoBottomBorder },
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "", t: "s"},
+    {v: "Date:", t: "s", s: proposalInfoLabel},
+    {v: "", t: "s", s: proposalInfoBottomBorder},
+    {v: "", t: "s", s: proposalInfoBottomBorder},
+    {v: "", t: "s", s: proposalInfoBottomBorder},
+    {v: "", t: "s", s: proposalInfoBottomBorder},
+    {v: "", t: "s", s: proposalInfoBottomBorder},
 ];
 
 
