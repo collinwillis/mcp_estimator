@@ -24,6 +24,7 @@ import {StyledDataGrid} from "../../../components/custom_data_grid";
 import {useCurrentPhase} from "../../../hooks/current_phase_hook";
 import {Phase} from "../../../models/phase";
 import DeleteConfirmationDialog from "../../../components/alert_dialog";
+import {useUserProfile} from "../../../hooks/user_profile_hook";
 
 const PhaseDataGrid = ({
                            phaseList,
@@ -32,6 +33,7 @@ const PhaseDataGrid = ({
     phaseList: Phase[];
     isLoading: boolean;
 }) => {
+    const {hasWritePermissions} = useUserProfile();
     const [selectedRows, setSelectedRows] = React.useState<GridRowId[]>([]);
     const {proposalId, wbsId, phaseId} = useParams();
     const currentPhase = useCurrentPhase({
@@ -103,55 +105,58 @@ const PhaseDataGrid = ({
                             onResizeCapture={undefined}
                         />
                     </div>
-                    <div
-                        style={{
-                            display: "flex",
-                            flexDirection: "row",
-                        }}
-                    >
-                        <Button
-                            disabled={selectedRows == null || selectedRows.length <= 0}
-                            color="error"
-                            sx={{color: "#424242", fontSize: "14px"}}
-                            onClick={async () => {
-                                let ids: string[] = [];
-                                selectedRows.map((row) => {
-                                    ids.push(row.toString());
-                                });
-                                await duplicatePhases(ids);
+                    {hasWritePermissions && (
+                        <div
+                            style={{
+                                display: "flex",
+                                flexDirection: "row",
                             }}
-                            startIcon={<ControlPointDuplicate/>}
                         >
-                            Duplicate
-                        </Button>
-                        <Divider
-                            light
-                            orientation="vertical"
-                            sx={{
-                                width: "1px",
-                                backgroundColor: "lightgray",
-                                margin: "0px 14px",
-                            }}
-                        />
-                        <Button
-                            disabled={selectedRows == null || selectedRows.length <= 0}
-                            color="error"
-                            sx={{color: "#424242", fontSize: "14px"}}
-                            onClick={() => setDeleteDialogOpen(true)}
-                            startIcon={<TrashIcon/>}
-                        >
-                            Delete
-                        </Button>
-                        <Divider
-                            light
-                            orientation="vertical"
-                            sx={{
-                                width: "1px",
-                                backgroundColor: "lightgray",
-                                margin: "0px 14px",
-                            }}
-                        />
-                    </div>
+                            <Button
+                                disabled={selectedRows == null || selectedRows.length <= 0}
+                                color="error"
+                                sx={{color: "#424242", fontSize: "14px"}}
+                                onClick={async () => {
+                                    let ids: string[] = [];
+                                    selectedRows.map((row) => {
+                                        ids.push(row.toString());
+                                    });
+                                    await duplicatePhases(ids);
+                                }}
+                                startIcon={<ControlPointDuplicate/>}
+                            >
+                                Duplicate
+                            </Button>
+                            <Divider
+                                light
+                                orientation="vertical"
+                                sx={{
+                                    width: "1px",
+                                    backgroundColor: "lightgray",
+                                    margin: "0px 14px",
+                                }}
+                            />
+                            <Button
+                                disabled={selectedRows == null || selectedRows.length <= 0}
+                                color="error"
+                                sx={{color: "#424242", fontSize: "14px"}}
+                                onClick={() => setDeleteDialogOpen(true)}
+                                startIcon={<TrashIcon/>}
+                            >
+                                Delete
+                            </Button>
+                            <Divider
+                                light
+                                orientation="vertical"
+                                sx={{
+                                    width: "1px",
+                                    backgroundColor: "lightgray",
+                                    margin: "0px 14px",
+                                }}
+                            />
+                        </div>
+                    )}
+                    
                 </div>
             </GridToolbarContainer>
         );
@@ -208,12 +213,18 @@ const PhaseDataGrid = ({
                     updatePhase(id.toString(), field, value);
                 }}
                 isCellEditable={(params: GridCellParams<number>) => {
+                    if (!hasWritePermissions) {
+                        return false;
+                    }
                     if (notEditableCells.includes(params.field)) {
                         return false;
                     }
                     return true;
                 }}
                 getCellClassName={(params: GridCellParams<number>) => {
+                    if (!hasWritePermissions) {
+                        return '';
+                    }
                     if (!notEditableCells.includes(params.field)) {
                         return "editable-cell";
                     }

@@ -1,8 +1,8 @@
-import {ArrowBack, ContentCopy, EditRounded} from "@mui/icons-material";
+import {AdminPanelSettings, ArrowBack, ContentCopy, EditRounded, ExitToApp, Settings} from "@mui/icons-material";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import MenuIcon from "@mui/icons-material/Menu";
-import {Breadcrumbs, Button, Link, ListItemText, Stack} from "@mui/material";
+import {Breadcrumbs, Button, Link, ListItemIcon, ListItemText, Stack} from "@mui/material";
 import MuiAppBar, {AppBarProps as MuiAppBarProps} from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import CssBaseline from "@mui/material/CssBaseline";
@@ -30,6 +30,9 @@ import {auth} from "../setup/config/firebase";
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import AddIcon from "@mui/icons-material/Add";
+import {useUserProfile} from "../hooks/user_profile_hook";
+import DrawerIcon from "./drawer_icon";
+import EditProposalsDialog from "../features/home/components/edit_proposals_dialog";
 
 const drawerWidth = 300;
 const appBar = document.querySelector("header.MuiAppBar-root");
@@ -92,6 +95,7 @@ interface EstimatorDrawerProps {
 }
 
 export default function EstimatorDrawer({children}: EstimatorDrawerProps) {
+    const {isAdmin, hasWritePermissions} = useUserProfile();
     const theme = useTheme();
     const [addProposalDialogOpen, setAddProposalDialogOpen] =
         React.useState(false);
@@ -126,6 +130,19 @@ export default function EstimatorDrawer({children}: EstimatorDrawerProps) {
 
     const [isEditProposals, setIsEditProposals] = React.useState<boolean>(false);
 
+    // New state for managing the menu's open/close state
+    const [mainMenuAnchorEl, setMainMenuAnchorEl] = React.useState<null | HTMLElement>(null);
+
+    // Corrected function to handle menu open
+    const handleMenuOpen = (event: React.MouseEvent<HTMLButtonElement>) => {
+        setMainMenuAnchorEl(event.currentTarget);
+    };
+
+    // Corrected function to handle menu close
+    const handleMenuClose = () => {
+        setMainMenuAnchorEl(null);
+    };
+
     return (
         <Box sx={{display: "flex", overflow: "hidden"}}>
             <CssBaseline/>
@@ -138,7 +155,7 @@ export default function EstimatorDrawer({children}: EstimatorDrawerProps) {
                         edge="start"
                         sx={{mr: 2, ...(open && {display: "none"})}}
                     >
-                        <MenuIcon/>
+                        <DrawerIcon color={'white'}/>
                     </IconButton>
 
                     <Breadcrumbs aria-label="breadcrumb" aria-activedescendant="">
@@ -186,7 +203,46 @@ export default function EstimatorDrawer({children}: EstimatorDrawerProps) {
                             </Link>
                         )}
                     </Breadcrumbs>
-                    <Button onClick={() => auth.signOut()} sx={{color: 'white', marginLeft: 'auto'}}>Logout</Button>
+                    <IconButton
+                        color="inherit"
+                        aria-label="menu"
+                        onClick={handleMenuOpen}
+                        edge="end"
+                        sx={{ml: 'auto'}}  // Adjust the margin to position the button on the right
+                    >
+                        <MenuIcon/>
+                    </IconButton>
+
+                    {/* New Menu for admin console and logout options */}
+                    <Menu
+                        anchorEl={mainMenuAnchorEl}
+                        open={Boolean(mainMenuAnchorEl)}
+                        onClose={handleMenuClose}
+                    >
+                        {isAdmin && (
+                            <MenuItem onClick={() => {
+                                handleMenuClose();
+                                navigate("/admin");
+                            }}>
+                                <ListItemIcon>
+                                    <AdminPanelSettings fontSize="small"/>
+                                </ListItemIcon>
+                                <ListItemText primary="Admin Console"/>
+                            </MenuItem>
+                        )}
+                        <MenuItem
+                            onClick={() => {
+                                handleMenuClose();
+                                auth.signOut();
+                            }}
+                            sx={{color: 'red'}}  // This line changes the text color to red
+                        >
+                            <ListItemIcon>
+                                <ExitToApp fontSize="small" sx={{color: 'inherit'}}/>
+                            </ListItemIcon>
+                            <ListItemText primary="Logout"/>
+                        </MenuItem>
+                    </Menu>
                 </Toolbar>
 
             </AppBar>
@@ -257,22 +313,38 @@ export default function EstimatorDrawer({children}: EstimatorDrawerProps) {
                                 )}
                             </IconButton>
                         )}
+                        {!proposalId && !currentProposal && (
+                            <Box sx={{display: 'flex', width: '100%'}}>
+                                <Typography
+                                    variant="h6"
+                                    color="inherit"
+                                    component="div"
+                                    sx={{
+                                        flexGrow: 1,
+                                        textAlign: 'center',
+                                        justifySelf: 'center',
+                                        alignSelf: 'center'
+                                    }}
+                                >
+                                    {!proposalId && "MCP Estimator"}
+                                </Typography>
+                                {!proposalId && !currentProposal && hasWritePermissions &&
+                                    <Box sx={{marginLeft: 'auto'}}>
+                                        <IconButton
+                                            onClick={(e) => setMenuAnchorEl(e.currentTarget)}
+                                        >
+                                            <Settings/>
+                                        </IconButton>
+                                    </Box>
+                                }
+                            </Box>
+                        )}
 
-                        {!proposalId && !currentProposal &&
-                            <IconButton
-                                onClick={(e) => setMenuAnchorEl(e.currentTarget)}
-                                sx={{
-                                    alignSelf: "flex-end",
-                                    textAlign: "flex-end",
-                                    marginLeft: 'auto'
-                                }}
-                            >
-                                <MenuIcon/>
-                            </IconButton>
-                        }
+
                     </div>
                     <ProposalMenu anchorEl={menuAnchorEl} setAnchorEl={setMenuAnchorEl}
-                                  openAddProposalDialog={() => setAddProposalDialogOpen(true)}/>
+                                  openAddProposalDialog={() => setAddProposalDialogOpen(true)}
+                                  onEditClicked={() => setIsEditProposals(true)}/>
                 </DrawerHeader>
 
                 <Divider/>
@@ -332,9 +404,11 @@ export default function EstimatorDrawer({children}: EstimatorDrawerProps) {
                             justifyItems: "center",
                         }}
                     >
-                        <AddPhaseButton
-                            toggleAddDialog={() => setAddPhaseDialogOpen(true)}
-                        />
+                        {hasWritePermissions && (
+                            <AddPhaseButton
+                                toggleAddDialog={() => setAddPhaseDialogOpen(true)}
+                            />
+                        )}
                     </Box>
                 )}
                 <Box sx={{height: "calc(100% - 64px)", overflowY: "auto"}}>
@@ -361,6 +435,12 @@ export default function EstimatorDrawer({children}: EstimatorDrawerProps) {
                     onClose={() => setAddPhaseDialogOpen(false)}
                 />
             )}
+            <EditProposalsDialog
+                open={isEditProposals}
+                onClose={() => setIsEditProposals(false)}
+                onDelete={() => {
+                }}
+            />
         </Box>
     );
 }
@@ -369,9 +449,10 @@ interface ProposalMenuProps {
     anchorEl: null | HTMLElement;
     setAnchorEl: React.Dispatch<React.SetStateAction<null | HTMLElement>>;
     openAddProposalDialog: () => void;
+    onEditClicked: () => void;
 }
 
-const ProposalMenu: React.FC<ProposalMenuProps> = ({anchorEl, setAnchorEl, openAddProposalDialog}) => {
+const ProposalMenu: React.FC<ProposalMenuProps> = ({anchorEl, setAnchorEl, openAddProposalDialog, onEditClicked}) => {
     const open = Boolean(anchorEl);
 
     const handleClose = () => {
@@ -397,7 +478,10 @@ const ProposalMenu: React.FC<ProposalMenuProps> = ({anchorEl, setAnchorEl, openA
                 </AddIcon>
                 <ListItemText>Add</ListItemText>
             </MenuItem>
-            <MenuItem sx={{gap: 2}} disabled={true}>
+            <MenuItem sx={{gap: 2}} disabled={false} onClick={() => {
+                handleClose();
+                onEditClicked();
+            }}>
                 <EditRounded>
                     <ContentCopy fontSize="small"/>
                 </EditRounded>

@@ -10,6 +10,7 @@ interface FormattedNumberInput {
     suffix?: string;
     disabled?: boolean;
     onBlur?: () => void;
+    readOnly?: boolean;
 }
 
 const FormattedNumberInput = ({
@@ -20,6 +21,7 @@ const FormattedNumberInput = ({
                                   suffix,
                                   disabled,
                                   onBlur,
+                                  readOnly
                               }: FormattedNumberInput) => {
     const materialUITextFieldProps = {
         id: "filled-multiline-flexible",
@@ -37,6 +39,9 @@ const FormattedNumberInput = ({
 
     return (
         <NumericFormat
+            InputProps={{
+                readOnly: readOnly
+            }}
             valueIsNumericString={true}
             onValueChange={(_) => {
                 setValue(_.value);

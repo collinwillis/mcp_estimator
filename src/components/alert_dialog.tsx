@@ -7,7 +7,7 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 
 interface DeleteConfirmationDialogProps {
-    title: string;
+    title: React.ReactNode;
     content: string;
     open: boolean;
     onClose: () => void;

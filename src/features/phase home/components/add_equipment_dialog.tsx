@@ -54,7 +54,7 @@ export default function AddEquipmentDialog({
                 equipmentCost: null,
                 materialCost: null,
                 equipmentOwnership: EquipmentOwnership.rental,
-                dateAdded: Date.now().toString(),
+                dateAdded: Date.now(),
             });
             temp.push(newActivity);
         });

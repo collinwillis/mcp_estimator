@@ -1,169 +1,120 @@
-import { Activity } from "../models/activity";
-import { EquipmentOwnership } from "../models/equipment";
-import { Proposal } from "../models/proposal";
+import {Activity} from "../models/activity";
+import {EquipmentOwnership} from "../models/equipment";
+import {Proposal} from "../models/proposal";
 
+// Calculates and returns the craft loaded rate.
 export const getCraftLoadedRate = ({
-  proposal,
-  customCraftBaseRate,
-  customSubsistenceRate,
-}: {
-  proposal: Proposal;
-  customCraftBaseRate?: number;
-  customSubsistenceRate?: number;
+                                       proposal,
+                                       customCraftBaseRate = 0,
+                                       customSubsistenceRate = 0,
+                                   }: {
+    proposal: Proposal;
+    customCraftBaseRate?: number;
+    customSubsistenceRate?: number;
 }): number => {
-  const {
-    craftBaseRate,
-    burdenRate,
-    overheadRate,
-    laborProfitRate,
-    fuelRate,
-    consumablesRate,
-    subsistenceRate,
-  } = proposal;
-  let craftBase = customCraftBaseRate ?? craftBaseRate;
-  let subsistence = customSubsistenceRate ?? subsistenceRate;
+    const {
+        craftBaseRate = 0,
+        burdenRate = 0,
+        overheadRate = 0,
+        laborProfitRate = 0,
+        fuelRate = 0,
+        consumablesRate = 0,
+        subsistenceRate = 0,
+    } = proposal;
 
-  let tempCraftLoadedRate =
-    (craftBase ?? 0) +
-    (craftBase ?? 0) *
-      ((burdenRate ?? 0) / 100 +
-        (overheadRate ?? 0) / 100 +
-        (laborProfitRate ?? 0) / 100 +
-        (fuelRate ?? 0) / 100 +
-        (consumablesRate ?? 0) / 100) +
-    (subsistence ?? 0);
+    // Applying custom rates if provided, else default to proposal rates.
+    const craftBase = customCraftBaseRate || craftBaseRate;
+    const subsistence = customSubsistenceRate || subsistenceRate;
 
-  return tempCraftLoadedRate;
+    // Calculate and return the craft loaded rate.
+    return (
+        craftBase +
+        craftBase *
+        (burdenRate + overheadRate + laborProfitRate + fuelRate + consumablesRate) / 100 +
+        subsistence
+    );
 };
 
-export const getWelderLoadedRate = ({
-  proposal,
-}: {
-  proposal: Proposal;
-}): number => {
-  const {
-    weldBaseRate,
-    burdenRate,
-    overheadRate,
-    laborProfitRate,
-    fuelRate,
-    consumablesRate,
-    subsistenceRate,
-    rigProfitRate,
-    rigRate,
-  } = proposal;
+// Calculates and returns the welder loaded rate.
+export const getWelderLoadedRate = ({proposal}: { proposal: Proposal }): number => {
+    const {
+        weldBaseRate = 0,
+        burdenRate = 0,
+        overheadRate = 0,
+        laborProfitRate = 0,
+        fuelRate = 0,
+        consumablesRate = 0,
+        subsistenceRate = 0,
+        rigProfitRate = 0,
+        rigRate = 0,
+    } = proposal;
 
-  let tempWeldLoadedRate =
-    (weldBaseRate ?? 0) +
-    (weldBaseRate ?? 0) *
-      ((burdenRate ?? 0) / 100 +
-        (overheadRate ?? 0) / 100 +
-        (laborProfitRate ?? 0) / 100 +
-        (fuelRate ?? 0) / 100 +
-        (consumablesRate ?? 0) / 100) +
-    (subsistenceRate ?? 0) +
-    ((rigRate ?? 0) + (rigRate ?? 0) * ((rigProfitRate ?? 0) / 100));
-
-  return tempWeldLoadedRate;
+    return (
+        weldBaseRate +
+        weldBaseRate *
+        (burdenRate + overheadRate + laborProfitRate + fuelRate + consumablesRate) / 100 +
+        subsistenceRate +
+        rigRate +
+        rigRate * rigProfitRate / 100
+    );
 };
 
+// Calculates and returns the material cost.
 export const getMaterialCost = ({
-  activity,
-  proposal,
-}: {
-  activity: Activity;
-  proposal: Proposal;
-}): number => {
-  const { price, quantity } = activity;
-  const { salesTaxRate, materialProfitRate } = proposal;
+                                    activity: {price = 0, quantity = 0},
+                                    proposal: {salesTaxRate = 0, materialProfitRate = 0},
+                                }: {
+    activity: Activity;
+    proposal: Proposal;
+}): number => quantity * price * (1 + (materialProfitRate + salesTaxRate) / 100);
 
-  let tempMaterialCost =
-    quantity *
-    (price +
-      price * ((materialProfitRate ?? 0) / 100 + (salesTaxRate ?? 0) / 100));
-
-  return tempMaterialCost;
-};
-
+// Calculates and returns the equipment cost.
 export const getEquipmentCost = ({
-  activity,
-  proposal,
-}: {
-  activity: Activity;
-  proposal: Proposal;
-}): number => {
-  const { quantity, time, price, equipmentOwnership } = activity;
-  const { equipmentProfitRate, useTaxRate } = proposal;
-  let tempCost = 0;
-  if (equipmentOwnership == EquipmentOwnership.owned) {
-    tempCost = quantity * (time * price);
-  } else {
-    tempCost =
-      quantity *
-      (time *
-        (price +
-          price *
-            ((equipmentProfitRate ?? 0) / 100 + (useTaxRate ?? 0) / 100)));
-  }
-  return tempCost;
-};
+                                     activity: {quantity = 0, time = 0, price = 0, equipmentOwnership},
+                                     proposal: {equipmentProfitRate = 0, useTaxRate = 0},
+                                 }: {
+    activity: Activity;
+    proposal: Proposal;
+}): number =>
+    equipmentOwnership === EquipmentOwnership.owned
+        ? quantity * time * price
+        : quantity * time * price * (1 + (equipmentProfitRate + useTaxRate) / 100);
 
+// Calculates and returns the subcontractor cost.
 export const getSubcontractorCost = ({
-  activity,
-  proposal,
-}: {
-  activity: Activity;
-  proposal: Proposal;
+                                         activity: {materialCost = 0, quantity = 0, equipmentCost = 0, craftCost = 0},
+                                         proposal: {subContractorProfitRate = 0, salesTaxRate = 0, useTaxRate = 0},
+                                     }: {
+    activity: Activity;
+    proposal: Proposal;
 }): number => {
-  const { materialCost, quantity, equipmentCost, craftCost } = activity;
-  const { subContractorProfitRate, salesTaxRate, useTaxRate } = proposal;
+    const subProfit = subContractorProfitRate / 100;
+    const salesTax = salesTaxRate / 100;
 
-  let subProfit = subContractorProfitRate! / 100;
-  let salesTax = salesTaxRate! / 100;
-  let useTax = useTaxRate! / 100;
-  let craftProfit = craftCost * subProfit;
-  let materialProfit = materialCost * (subProfit + salesTax);
-  let equipmentProfit = equipmentCost * subProfit;
-
-  let tempSubcontractorCost =
-    quantity *
-    (craftCost +
-      craftProfit +
-      (materialCost + materialProfit) +
-      (equipmentCost + equipmentProfit));
-
-  return tempSubcontractorCost;
+    return quantity * (
+        craftCost * (1 + subProfit) +
+        materialCost * (1 + subProfit + salesTax) +
+        equipmentCost * (1 + subProfit)
+    );
 };
 
+// Calculates and returns the cost-only cost.
 export const getCostOnlyCost = ({
-  activity,
-}: {
-  activity: Activity;
-}): number => {
-  const { price, quantity } = activity;
+                                    activity: {price = 0, quantity = 0},
+                                }: {
+    activity: Activity;
+}): number => quantity * price;
 
-  let tempCostOnlyCost = quantity * price;
+// Calculates and returns the total cost.
+export const getTotalCost = ({activity}: { activity: Activity }): number => {
+    const {
+        craftCost = 0,
+        welderCost = 0,
+        materialCost = 0,
+        equipmentCost = 0,
+        subContractorCost = 0,
+        costOnlyCost = 0,
+    } = activity;
 
-  return tempCostOnlyCost;
-};
-
-export const getTotalCost = ({ activity }: { activity: Activity }): number => {
-  const {
-    craftCost,
-    welderCost,
-    materialCost,
-    equipmentCost,
-    subContractorCost,
-    costOnlyCost,
-  } = activity;
-
-  let tempTotalCost =
-    craftCost +
-    welderCost +
-    materialCost +
-    equipmentCost +
-    subContractorCost +
-    costOnlyCost;
-
-  return tempTotalCost;
+    return craftCost + welderCost + materialCost + equipmentCost + subContractorCost + costOnlyCost;
 };

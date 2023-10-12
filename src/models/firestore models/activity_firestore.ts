@@ -22,7 +22,7 @@ export class FirestoreActivity {
     materialCost: number | null;
     craftCost: number | null;
     equipmentOwnership: string | null;
-    dateAdded: string | null;
+    dateAdded: number | null;
 
     constructor({
                     proposalId,
@@ -65,7 +65,7 @@ export class FirestoreActivity {
         materialCost: number | null;
         craftCost: number | null;
         equipmentOwnership: string | null;
-        dateAdded: string | null;
+        dateAdded: number | null;
     }) {
         this.proposalId = proposalId ?? null;
         this.wbsId = wbsId ?? null;

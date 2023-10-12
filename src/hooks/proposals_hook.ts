@@ -9,25 +9,23 @@ export const useProposals = () => {
 
     useEffect(() => {
         const proposalsRef = collection(firestore, "proposals");
-        const unsubscribe = onSnapshot(proposalsRef, (querySnapshot) => {
-            const temp: Proposal[] = [];
-            querySnapshot.docs.forEach((doc) => {
-                const proposal = doc.data() as Proposal;
-                proposal.id = doc.id;
-                temp.push(proposal);
+
+        // Utilize the onSnapshot function directly without creating a temporary array
+        // This makes the code more concise and readable.
+        const unsubscribe = onSnapshot(proposalsRef, querySnapshot => {
+            const proposals = querySnapshot.docs.map(doc => {
+                return {...doc.data(), id: doc.id} as Proposal;
             });
-            //set data to temp ordered by proposal number
-            setData(
-                temp.sort((a, b) => {
-                    return b.proposalNumber! - a.proposalNumber!;
-                })
-            );
-            setLoading(false); // set loading to false once the data is retrieved
+            // Use the sort function inline within the setData call
+            setData(proposals.sort((a, b) => (b.proposalNumber ?? 0) - (a.proposalNumber ?? 0)));
+            setLoading(false);
         });
 
-        return unsubscribe;
-    }, []);
+        // Clean up function to unsubscribe the onSnapshot when the component unmounts
+        return () => {
+            unsubscribe();
+        };
+    }, []);  // Empty dependency array means this useEffect runs once when component mounts
 
-    // return both the data and the loading state
     return {data, loading};
 };

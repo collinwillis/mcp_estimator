@@ -5,6 +5,7 @@ import {updateProposalField, updateSingleProposal} from "../../../api/proposal";
 import FormattedNumberInput from "../../../components/formatted_number_input";
 import {useCurrentProposalListener} from "../../../hooks/current_proposal_listener_hook";
 import {FirestoreProposal} from "../../../models/firestore models/proposal_firestore";
+import {useUserProfile} from "../../../hooks/user_profile_hook";
 
 interface ProposalRatesAccordionProps {
     proposalId: string;
@@ -34,6 +35,8 @@ export default function ProposalRatesAccordion({
     const [useTaxState, setUseTaxState] = useState<string>("0");
     const [salesTaxState, setSalesTaxState] = useState<string>("0");
     const [rigProfit, setRigProfit] = useState<string>("0");
+
+    const {hasWritePermissions} = useUserProfile();
 
     //Success Dialog State
     const [successDialogOpen, setSuccessDialogOpen] = useState(false);
@@ -120,40 +123,40 @@ export default function ProposalRatesAccordion({
                                     gap: "10px",
                                 }}
                             >
-                                <FormattedNumberInput
-                                    prefix="$"
-                                    label="Craft Base"
-                                    value={craftbaseState}
-                                    setValue={setCraftbaseState}
-                                    onBlur={() => autoSaveField('craftBaseRate', parseFloat(craftbaseState))}
+                                <FormattedNumberInput readOnly={!hasWritePermissions}
+                                                      prefix="$"
+                                                      label="Craft Base"
+                                                      value={craftbaseState}
+                                                      setValue={setCraftbaseState}
+                                                      onBlur={() => autoSaveField('craftBaseRate', parseFloat(craftbaseState))}
                                 />
-                                <FormattedNumberInput
-                                    prefix="$"
-                                    label="Weld Base"
-                                    value={weldbaseState}
-                                    setValue={setWeldbaseState}
-                                    onBlur={() => autoSaveField('weldBaseRate', parseFloat(weldbaseState))}
+                                <FormattedNumberInput readOnly={!hasWritePermissions}
+                                                      prefix="$"
+                                                      label="Weld Base"
+                                                      value={weldbaseState}
+                                                      setValue={setWeldbaseState}
+                                                      onBlur={() => autoSaveField('weldBaseRate', parseFloat(weldbaseState))}
                                 />
-                                <FormattedNumberInput
-                                    prefix="$"
-                                    label="Subsistence"
-                                    value={subsistState}
-                                    setValue={setSubsistState}
-                                    onBlur={() => autoSaveField('subsistenceRate', parseFloat(subsistState))}
+                                <FormattedNumberInput readOnly={!hasWritePermissions}
+                                                      prefix="$"
+                                                      label="Subsistence"
+                                                      value={subsistState}
+                                                      setValue={setSubsistState}
+                                                      onBlur={() => autoSaveField('subsistenceRate', parseFloat(subsistState))}
                                 />
-                                <FormattedNumberInput
-                                    suffix="%"
-                                    label="Use Tax"
-                                    value={useTaxState}
-                                    setValue={setUseTaxState}
-                                    onBlur={() => autoSaveField('useTaxRate', parseFloat(useTaxState))}
+                                <FormattedNumberInput readOnly={!hasWritePermissions}
+                                                      suffix="%"
+                                                      label="Use Tax"
+                                                      value={useTaxState}
+                                                      setValue={setUseTaxState}
+                                                      onBlur={() => autoSaveField('useTaxRate', parseFloat(useTaxState))}
                                 />
-                                <FormattedNumberInput
-                                    suffix="%"
-                                    label="Sales Tax"
-                                    value={salesTaxState}
-                                    setValue={setSalesTaxState}
-                                    onBlur={() => autoSaveField('salesTaxRate', parseFloat(salesTaxState))}
+                                <FormattedNumberInput readOnly={!hasWritePermissions}
+                                                      suffix="%"
+                                                      label="Sales Tax"
+                                                      value={salesTaxState}
+                                                      setValue={setSalesTaxState}
+                                                      onBlur={() => autoSaveField('salesTaxRate', parseFloat(salesTaxState))}
                                 />
                             </div>
                             <div
@@ -167,50 +170,50 @@ export default function ProposalRatesAccordion({
                                 }}
                                 // value={updatedMakrup}
                             >
-                                <FormattedNumberInput
-                                    suffix="%"
-                                    label="Overhead"
-                                    value={overheadState}
-                                    setValue={(_) => {
-                                        setOverheadState(_);
-                                    }}
-                                    onBlur={() => autoSaveField('overheadRate', parseFloat(overheadState))}
+                                <FormattedNumberInput readOnly={!hasWritePermissions}
+                                                      suffix="%"
+                                                      label="Overhead"
+                                                      value={overheadState}
+                                                      setValue={(_) => {
+                                                          setOverheadState(_);
+                                                      }}
+                                                      onBlur={() => autoSaveField('overheadRate', parseFloat(overheadState))}
                                 />
-                                <FormattedNumberInput
-                                    suffix="%"
-                                    label="Consumables"
-                                    value={consumableState}
-                                    setValue={(_) => {
-                                        setConsumableState(_);
-                                    }}
-                                    onBlur={() => autoSaveField('consumablesRate', parseFloat(consumableState))}
+                                <FormattedNumberInput readOnly={!hasWritePermissions}
+                                                      suffix="%"
+                                                      label="Consumables"
+                                                      value={consumableState}
+                                                      setValue={(_) => {
+                                                          setConsumableState(_);
+                                                      }}
+                                                      onBlur={() => autoSaveField('consumablesRate', parseFloat(consumableState))}
                                 />
-                                <FormattedNumberInput
-                                    suffix="%"
-                                    label="Burden"
-                                    value={burdenState}
-                                    setValue={(_) => {
-                                        setBurdenState(_);
-                                    }}
-                                    onBlur={() => autoSaveField('burdenRate', parseFloat(burdenState))}
+                                <FormattedNumberInput readOnly={!hasWritePermissions}
+                                                      suffix="%"
+                                                      label="Burden"
+                                                      value={burdenState}
+                                                      setValue={(_) => {
+                                                          setBurdenState(_);
+                                                      }}
+                                                      onBlur={() => autoSaveField('burdenRate', parseFloat(burdenState))}
                                 />
-                                <FormattedNumberInput
-                                    suffix="%"
-                                    label="Fuel"
-                                    value={fuelState}
-                                    setValue={(_) => {
-                                        setFuelState(_);
-                                    }}
-                                    onBlur={() => autoSaveField('fuelRate', parseFloat(fuelState))}
+                                <FormattedNumberInput readOnly={!hasWritePermissions}
+                                                      suffix="%"
+                                                      label="Fuel"
+                                                      value={fuelState}
+                                                      setValue={(_) => {
+                                                          setFuelState(_);
+                                                      }}
+                                                      onBlur={() => autoSaveField('fuelRate', parseFloat(fuelState))}
                                 />
-                                <FormattedNumberInput
-                                    prefix="$"
-                                    label="Rig Pay"
-                                    value={rigState}
-                                    setValue={(_) => {
-                                        setRigState(_);
-                                    }}
-                                    onBlur={() => autoSaveField('rigRate', parseFloat(rigState))}
+                                <FormattedNumberInput readOnly={!hasWritePermissions}
+                                                      prefix="$"
+                                                      label="Rig Pay"
+                                                      value={rigState}
+                                                      setValue={(_) => {
+                                                          setRigState(_);
+                                                      }}
+                                                      onBlur={() => autoSaveField('rigRate', parseFloat(rigState))}
                                 />
                             </div>
                             <div
@@ -223,50 +226,50 @@ export default function ProposalRatesAccordion({
                                     gap: "10px",
                                 }}
                             >
-                                <FormattedNumberInput
-                                    suffix="%"
-                                    label="Labor Profit"
-                                    value={laborprofitsState}
-                                    setValue={(_) => {
-                                        setLaborProfitsState(_);
-                                    }}
-                                    onBlur={() => autoSaveField('laborProfitRate', parseFloat(laborprofitsState))}
+                                <FormattedNumberInput readOnly={!hasWritePermissions}
+                                                      suffix="%"
+                                                      label="Labor Profit"
+                                                      value={laborprofitsState}
+                                                      setValue={(_) => {
+                                                          setLaborProfitsState(_);
+                                                      }}
+                                                      onBlur={() => autoSaveField('laborProfitRate', parseFloat(laborprofitsState))}
                                 />
-                                <FormattedNumberInput
-                                    suffix="%"
-                                    label="Material Profit"
-                                    value={materialProfitsState}
-                                    setValue={(_) => {
-                                        setMaterialProfitsState(_);
-                                    }}
-                                    onBlur={() => autoSaveField('materialProfitRate', parseFloat(materialProfitsState))}
+                                <FormattedNumberInput readOnly={!hasWritePermissions}
+                                                      suffix="%"
+                                                      label="Material Profit"
+                                                      value={materialProfitsState}
+                                                      setValue={(_) => {
+                                                          setMaterialProfitsState(_);
+                                                      }}
+                                                      onBlur={() => autoSaveField('materialProfitRate', parseFloat(materialProfitsState))}
                                 />
-                                <FormattedNumberInput
-                                    suffix="%"
-                                    label="Equipment Profit"
-                                    value={equipmentProfitsState}
-                                    setValue={(_) => {
-                                        setEquipmentProfitsState(_);
-                                    }}
-                                    onBlur={() => autoSaveField('equipmentProfitRate', parseFloat(equipmentProfitsState))}
+                                <FormattedNumberInput readOnly={!hasWritePermissions}
+                                                      suffix="%"
+                                                      label="Equipment Profit"
+                                                      value={equipmentProfitsState}
+                                                      setValue={(_) => {
+                                                          setEquipmentProfitsState(_);
+                                                      }}
+                                                      onBlur={() => autoSaveField('equipmentProfitRate', parseFloat(equipmentProfitsState))}
                                 />
-                                <FormattedNumberInput
-                                    suffix="%"
-                                    label="Subcontractor Profit"
-                                    value={subProfitsState}
-                                    setValue={(_) => {
-                                        setSubProfitsState(_);
-                                    }}
-                                    onBlur={() => autoSaveField('subContractorProfitRate', parseFloat(subProfitsState))}
+                                <FormattedNumberInput readOnly={!hasWritePermissions}
+                                                      suffix="%"
+                                                      label="Subcontractor Profit"
+                                                      value={subProfitsState}
+                                                      setValue={(_) => {
+                                                          setSubProfitsState(_);
+                                                      }}
+                                                      onBlur={() => autoSaveField('subContractorProfitRate', parseFloat(subProfitsState))}
                                 />
-                                <FormattedNumberInput
-                                    suffix="%"
-                                    label="Rig Profit"
-                                    value={rigProfit}
-                                    setValue={(_) => {
-                                        setRigProfit(_);
-                                    }}
-                                    onBlur={() => autoSaveField('rigProfitRate', parseFloat(rigProfit))}
+                                <FormattedNumberInput readOnly={!hasWritePermissions}
+                                                      suffix="%"
+                                                      label="Rig Profit"
+                                                      value={rigProfit}
+                                                      setValue={(_) => {
+                                                          setRigProfit(_);
+                                                      }}
+                                                      onBlur={() => autoSaveField('rigProfitRate', parseFloat(rigProfit))}
                                 />
                             </div>
                         </div>

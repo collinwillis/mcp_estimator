@@ -32,7 +32,8 @@ export class Activity {
     customCraftRate: number | null;
     customSubsistenceRate: number | null;
     equipmentOwnership: string | null;
-
+    dateAdded: number | null; // Added new property
+    rowId: string | null; // Added new property
 
     constructor(
         id: string,
@@ -64,7 +65,9 @@ export class Activity {
         weldBaseRate: number = 0,
         customCraftRate: number | null,
         customSubsistenceRate: number | null,
-        equipmentOwnership: string | null
+        equipmentOwnership: string | null,
+        dateAdded: number | null, // Added new parameter
+        rowId: string | null // Added new parameter
     ) {
         this.id = id;
         this.description = description;
@@ -96,6 +99,8 @@ export class Activity {
         this.customCraftRate = customCraftRate;
         this.customSubsistenceRate = customSubsistenceRate;
         this.equipmentOwnership = equipmentOwnership;
+        this.dateAdded = dateAdded; // Initialize new property
+        this.rowId = rowId; // Initialize new property
     }
 }
 

@@ -37,6 +37,7 @@ import {
     subcontractorItemAvailableCells,
 } from "./columns";
 import DeleteConfirmationDialog from "../../../components/alert_dialog";
+import {useUserProfile} from "../../../hooks/user_profile_hook";
 
 const ActivityDataGrid = () => {
     const {proposalId, wbsId, phaseId} = useParams();
@@ -48,6 +49,7 @@ const ActivityDataGrid = () => {
     const currentPhase = useCurrentPhase({
         phaseId: phaseId ?? "",
     });
+    const {hasWritePermissions} = useUserProfile();
     const [selectedRows, setSelectedRows] = React.useState<GridRowId[]>([]);
     const [columns, setColumns] = React.useState<GridColumns>([]);
     const [openBaseRateDialog, setOpenBaseRateDialog] =
@@ -61,6 +63,7 @@ const ActivityDataGrid = () => {
     useEffect(() => {
         let temp = getActivityColumns({
             activities: data,
+            hasWritePermissions: hasWritePermissions
         });
         setColumns(temp);
 
@@ -117,63 +120,65 @@ const ActivityDataGrid = () => {
                     <Typography variant="h5">
                         {currentPhase?.phaseDatabaseName}
                     </Typography>
-                    <div
-                        style={{
-                            display: "flex",
-                            flexDirection: "row",
-                        }}
-                    >
-                        <Button
-                            disabled={selectedRows == null || selectedRows.length <= 0}
-                            sx={{color: "#424242", fontSize: "14px"}}
-                            onClick={() => setDeleteDialogOpen(true)} // Open delete confirmation dialog
-                            startIcon={<TrashIcon/>}
+                    {hasWritePermissions && (
+                        <div
+                            style={{
+                                display: "flex",
+                                flexDirection: "row",
+                            }}
                         >
-                            Delete
-                        </Button>
-                        <Divider
-                            light
-                            orientation="vertical"
-                            sx={{
-                                width: "1px",
-                                backgroundColor: "lightgray",
-                                margin: "0px 14px",
-                            }}
-                        />
-                        <Button
-                            disabled={selectedRows == null || selectedRows.length <= 0}
-                            sx={{color: "#424242", fontSize: "14px"}}
-                            onClick={() => {
-                                let ids: string[] = [];
-                                selectedRows.map((row) => {
-                                    ids.push(row.toString());
-                                });
-                                resetConstantsBatch(ids);
-                            }}
-                            startIcon={<RefreshIcon/>}
-                        >
-                            Quantity / Units
-                        </Button>
-                        <Divider
-                            light
-                            orientation="vertical"
-                            sx={{
-                                width: "1px",
-                                backgroundColor: "lightgray",
-                                margin: "0px 14px",
-                            }}
-                        />
-                        <Button
-                            disabled={selectedRows.length == 0}
-                            sx={{color: "#424242", fontSize: "14px"}}
-                            onClick={() => {
-                                setOpenBaseRateDialog(true);
-                            }}
-                            startIcon={<EditRounded/>}
-                        >
-                            Base Rate / Subsistence
-                        </Button>
-                    </div>
+                            <Button
+                                disabled={selectedRows == null || selectedRows.length <= 0}
+                                sx={{color: "#424242", fontSize: "14px"}}
+                                onClick={() => setDeleteDialogOpen(true)} // Open delete confirmation dialog
+                                startIcon={<TrashIcon/>}
+                            >
+                                Delete
+                            </Button>
+                            <Divider
+                                light
+                                orientation="vertical"
+                                sx={{
+                                    width: "1px",
+                                    backgroundColor: "lightgray",
+                                    margin: "0px 14px",
+                                }}
+                            />
+                            <Button
+                                disabled={selectedRows == null || selectedRows.length <= 0}
+                                sx={{color: "#424242", fontSize: "14px"}}
+                                onClick={() => {
+                                    let ids: string[] = [];
+                                    selectedRows.map((row) => {
+                                        ids.push(row.toString());
+                                    });
+                                    resetConstantsBatch(ids);
+                                }}
+                                startIcon={<RefreshIcon/>}
+                            >
+                                Quantity / Units
+                            </Button>
+                            <Divider
+                                light
+                                orientation="vertical"
+                                sx={{
+                                    width: "1px",
+                                    backgroundColor: "lightgray",
+                                    margin: "0px 14px",
+                                }}
+                            />
+                            <Button
+                                disabled={selectedRows.length == 0}
+                                sx={{color: "#424242", fontSize: "14px"}}
+                                onClick={() => {
+                                    setOpenBaseRateDialog(true);
+                                }}
+                                startIcon={<EditRounded/>}
+                            >
+                                Base Rate / Subsistence
+                            </Button>
+                        </div>
+                    )}
                 </div>
             </GridToolbarContainer>
         );
@@ -182,6 +187,7 @@ const ActivityDataGrid = () => {
     useEffect(() => {
         let temp = getActivityColumns({
             activities: data,
+            hasWritePermissions: hasWritePermissions,
         });
         setColumns(temp);
     }, [data]);
@@ -200,8 +206,10 @@ const ActivityDataGrid = () => {
                     color: "primary.dark",
                 },
                 "& .not-used": {
-                    backgroundColor: "#2d2d2d",
-                    color: "#2d2d2d",
+                    textDecoration: "line-through",
+                    backgroundColor: "#f0f0f0", // or use 'transparent'
+                    color: "#d0d0d0", // Light grey to indicate it's disabled, or use 'transparent' to hide the text
+                    fontStyle: "italic", // Optional, to make it distinct that it's not active or in use
                 },
                 "& .editable-cell": {
                     color: "primary.dark",
@@ -234,47 +242,25 @@ const ActivityDataGrid = () => {
                 }}
                 components={{Toolbar: CustomToolbar}}
                 isCellEditable={(params: GridCellParams<number>) => {
-                    const activity = data.find(
-                        (activity) => activity.id === params.row.id
-                    );
-                    if (activity) {
-                        if (
-                            activity.activityType == ActivityType.laborItem ||
-                            activity.activityType == ActivityType.customLaborItem
-                        ) {
-                            if (editableLaborItemCells.includes(params.field)) {
-                                return true;
-                            }
-                            return false;
-                        }
-                        if (activity.activityType == ActivityType.materialItem) {
-                            if (editableMaterialItemCells.includes(params.field)) {
-                                return true;
-                            }
-                            return false;
-                        }
-                        if (activity.activityType == ActivityType.equipmentItem) {
-                            if (editableEquipmentItemCells.includes(params.field)) {
-                                return true;
-                            }
-                            return false;
-                        }
-                        if (activity.activityType == ActivityType.costOnlyItem) {
-                            if (editableCostOnlyItemCells.includes(params.field)) {
-                                return true;
-                            }
-                            return false;
-                        }
-                        if (activity.activityType == ActivityType.subContractorItem) {
-                            if (editableSubcontractorItemCells.includes(params.field)) {
-                                return true;
-                            }
-                            return false;
-                        }
+                    if (!hasWritePermissions) {
+                        return false;
                     }
-                    return false;
+                    const activity = data.find((activity) => activity.id === params.row.id);
+                    if (!activity) return false;
+                    const editableCellsMap: Record<string, string[]> = {
+                        [ActivityType.laborItem]: editableLaborItemCells,
+                        [ActivityType.customLaborItem]: editableLaborItemCells,
+                        [ActivityType.materialItem]: editableMaterialItemCells,
+                        [ActivityType.equipmentItem]: editableEquipmentItemCells,
+                        [ActivityType.costOnlyItem]: editableCostOnlyItemCells,
+                        [ActivityType.subContractorItem]: editableSubcontractorItemCells,
+                    };
+                    return editableCellsMap[activity.activityType]?.includes(params.field) || false;
                 }}
                 getCellClassName={(params: GridCellParams<number>) => {
+                    if (!hasWritePermissions) { // Check if the user has write permissions
+                        return ''; // Return an empty string to not apply any additional styling
+                    }
                     const activity = data.find(
                         (activity) => activity.id === params.row.id
                     );

@@ -17,18 +17,21 @@ import {
     getTotalCost,
     getWelderLoadedRate,
 } from "./totals";
+// Make sure to import firestore methods properly
 
 export const insertActivityBatch = async (activities: FirestoreActivity[]) => {
     const batch = writeBatch(firestore);
-    let currentDate = new Date();
+    const currentDate = new Date().getTime();  // Getting current time in milliseconds
     activities.forEach((activity, index) => {
-        activity.dateAdded = new Date(currentDate.getTime() + index).toString();
-        var ref = doc(collection(firestore, "activities"));
+        // Ensuring unique millisecond timestamp by adding the index
+        activity.dateAdded = currentDate + index;  // Removed toString()
+        const ref = doc(collection(firestore, "activities"));
         batch.set(ref, {...activity});
     });
 
     await batch.commit();
 };
+
 
 export const updateActivity = async (
     id: string,
@@ -144,7 +147,7 @@ export const addCustomLabor = async (
         equipmentCost: null,
         materialCost: null,
         equipmentOwnership: null,
-        dateAdded: Date.now().toString(),
+        dateAdded: Date.now(),
     });
     const docRef = await addDoc(collection(firestore, "activities"), {
         ...activity,
@@ -175,7 +178,7 @@ export const addCostOnly = async (
         equipmentCost: null,
         materialCost: null,
         equipmentOwnership: null,
-        dateAdded: Date.now().toString(),
+        dateAdded: Date.now(),
     });
     const docRef = await addDoc(collection(firestore, "activities"), {
         ...activity,
@@ -206,7 +209,7 @@ export const addMaterial = async (
         equipmentCost: null,
         materialCost: null,
         equipmentOwnership: null,
-        dateAdded: Date.now().toString(),
+        dateAdded: Date.now(),
     });
     const docRef = await addDoc(collection(firestore, "activities"), {
         ...activity,
@@ -238,7 +241,7 @@ export const addSubcontractor = async (
         equipmentCost: 0,
         materialCost: 0,
         equipmentOwnership: null,
-        dateAdded: Date.now().toString(),
+        dateAdded: Date.now(),
     });
     const docRef = await addDoc(collection(firestore, "activities"), {
         ...activity,
@@ -399,7 +402,9 @@ export const calculateActivityData = async (
         proposalWeldBase,
         rawActivity.craftBaseRate ?? null,
         rawActivity.subsistenceRate ?? null,
-        rawActivity.equipmentOwnership ?? null
+        rawActivity.equipmentOwnership ?? null,
+        rawActivity.dateAdded,
+        null,
     );
 
     let craftLoadedRate = getCraftLoadedRate({

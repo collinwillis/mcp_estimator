@@ -20,6 +20,7 @@ import {updateProposalField, updateSingleProposal} from "../../../api/proposal";
 import {useCurrentProposalListener} from "../../../hooks/current_proposal_listener_hook";
 import {FirestoreProposal} from "../../../models/firestore models/proposal_firestore";
 import {BidType, ProposalStatus, UnitedStatesStates,} from "../../../models/proposal";
+import {useUserProfile} from "../../../hooks/user_profile_hook";
 
 interface ProposalInfoAccordionProps {
     proposalId: string;
@@ -134,6 +135,7 @@ export default function ProposalInfoAccordion({
         });
         setAlertOpen(true);
     };
+    const {hasWritePermissions} = useUserProfile();
     return (
         <div style={{marginBottom: 10, marginTop: 10}}>
             <Accordion>
@@ -151,32 +153,44 @@ export default function ProposalInfoAccordion({
                                 <p>Project Information</p>
                                 <div style={{display: "flex", flexDirection: "row", gap: "10px"}}>
                                     <div style={{width: "50%"}}>
-                                        <TextField variant="filled" size="small" type="number" label="Proposal #"
+                                        <TextField InputProps={{
+                                            readOnly: !hasWritePermissions
+                                        }} variant="filled" size="small" type="number" label="Proposal #"
                                                    sx={{width: "100%"}} InputLabelProps={{shrink: true}}
                                                    onChange={(e) => setProposalNumber(parseInt(e.target.value))}
                                                    onBlur={() => autoSaveField('proposalNumber', proposalNumber)}
                                                    value={proposalNumber ?? ""}/>
-                                        <TextField variant="filled" size="small" type="text" label="Job"
+                                        <TextField InputProps={{
+                                            readOnly: !hasWritePermissions
+                                        }} variant="filled" size="small" type="text" label="Job"
                                                    sx={{width: "100%"}} InputLabelProps={{shrink: true}}
                                                    onChange={(e) => setJob(e.target.value)}
                                                    onBlur={() => autoSaveField('job', job)}
                                                    value={job ?? ""}/>
-                                        <TextField variant="filled" size="small" type="number" label="CO #"
+                                        <TextField InputProps={{
+                                            readOnly: !hasWritePermissions
+                                        }} variant="filled" size="small" type="number" label="CO #"
                                                    sx={{width: "100%"}} InputLabelProps={{shrink: true}}
                                                    onChange={(e) => setCoNumber(parseInt(e.target.value))}
                                                    onBlur={() => autoSaveField('coNumber', coNumber)}
                                                    value={coNumber ?? ""}/>
-                                        <TextField variant="filled" size="small" type="text" label="Description"
+                                        <TextField InputProps={{
+                                            readOnly: !hasWritePermissions
+                                        }} variant="filled" size="small" type="text" label="Description"
                                                    sx={{width: "100%"}} InputLabelProps={{shrink: true}}
                                                    onChange={(e) => setDescription(e.target.value)}
                                                    onBlur={() => autoSaveField('proposalDescription', desctription)}
                                                    value={desctription ?? ""}/>
-                                        <TextField variant="filled" size="small" type="text" label="Owner"
+                                        <TextField InputProps={{
+                                            readOnly: !hasWritePermissions
+                                        }} variant="filled" size="small" type="text" label="Owner"
                                                    sx={{width: "100%"}} InputLabelProps={{shrink: true}}
                                                    onChange={(e) => setOwner(e.target.value)}
                                                    onBlur={() => autoSaveField('proposalOwner', owner)}
                                                    value={owner ?? ""}/>
-                                        <TextField variant="filled" size="small" type="text" label="City"
+                                        <TextField InputProps={{
+                                            readOnly: !hasWritePermissions
+                                        }} variant="filled" size="small" type="text" label="City"
                                                    sx={{width: "100%"}} InputLabelProps={{shrink: true}}
                                                    onChange={(e) => setJobLocationCity(e.target.value)}
                                                    onBlur={() => autoSaveField('projectCity', jobLocationCity)}
@@ -184,7 +198,8 @@ export default function ProposalInfoAccordion({
                                         <FormControl variant="filled" fullWidth>
                                             <InputLabel id="demo-simple-select-filled-label"
                                                         shrink={true}>State</InputLabel>
-                                            <Select labelId="demo-simple-select-filled-label"
+                                            <Select disabled={!hasWritePermissions}
+                                                    labelId="demo-simple-select-filled-label"
                                                     id="demo-simple-select-filled"
                                                     value={proposalInfoState ?? ""}
                                                     onChange={(e) => setProposalInfoState(e.target.value)}
@@ -198,28 +213,38 @@ export default function ProposalInfoAccordion({
                                         </FormControl>
                                     </div>
                                     <div style={{width: "50%"}}>
-                                        <TextField variant="filled" size="small" type="text" label="Estimator(s)"
+                                        <TextField InputProps={{
+                                            readOnly: !hasWritePermissions
+                                        }} variant="filled" size="small" type="text" label="Estimator(s)"
                                                    sx={{width: "100%"}} InputLabelProps={{shrink: true}}
                                                    onChange={(e) => setEstimator(e.target.value)}
                                                    onBlur={() => autoSaveField('proposalEstimators', estimator)}
                                                    value={estimator ?? ""}/>
-                                        <TextField variant="filled" size="small" type="date" label="Date Rec."
+                                        <TextField InputProps={{
+                                            readOnly: !hasWritePermissions
+                                        }} variant="filled" size="small" type="date" label="Date Rec."
                                                    placeholder="none" sx={{width: "100%"}}
                                                    InputLabelProps={{shrink: true}}
                                                    onChange={(e) => setDateReceived(e.target.value)}
                                                    onBlur={() => autoSaveField('proposalDateReceived', dateReceived)}
                                                    value={dateReceived?.toString() ?? ""}/>
-                                        <TextField variant="filled" size="small" type="date" label="Due Date"
+                                        <TextField InputProps={{
+                                            readOnly: !hasWritePermissions
+                                        }} variant="filled" size="small" type="date" label="Due Date"
                                                    sx={{width: "100%"}} InputLabelProps={{shrink: true}}
                                                    onChange={(e) => setDateDue(e.target.value)}
                                                    onBlur={() => autoSaveField('proposalDateDue', dateDue)}
                                                    value={dateDue ?? ""}/>
-                                        <TextField variant="filled" size="small" type="date" label="Project Start Date"
+                                        <TextField InputProps={{
+                                            readOnly: !hasWritePermissions
+                                        }} variant="filled" size="small" type="date" label="Project Start Date"
                                                    sx={{width: "100%"}} InputLabelProps={{shrink: true}}
                                                    onChange={(e) => setProjectStartDate(e.target.value)}
                                                    onBlur={() => autoSaveField('projectStartDate', projectStartDate)}
                                                    value={projectStartDate ?? ""}/>
-                                        <TextField variant="filled" size="small" type="date" label="Project End Date"
+                                        <TextField InputProps={{
+                                            readOnly: !hasWritePermissions
+                                        }} variant="filled" size="small" type="date" label="Project End Date"
                                                    sx={{width: "100%"}} InputLabelProps={{shrink: true}}
                                                    onChange={(e) => setProjectEndDate(e.target.value)}
                                                    onBlur={() => autoSaveField('projectEndDate', projectEndDate)}
@@ -227,7 +252,8 @@ export default function ProposalInfoAccordion({
                                         <FormControl variant="filled" fullWidth>
                                             <InputLabel id="demo-simple-select-filled-label"
                                                         shrink={true}>Bid Type</InputLabel>
-                                            <Select labelId="demo-simple-select-filled-label"
+                                            <Select disabled={!hasWritePermissions}
+                                                    labelId="demo-simple-select-filled-label"
                                                     id="demo-simple-select-filled" value={bidType ?? ""}
                                                     onChange={(e) => setBidType(e.target.value)}
                                                     onBlur={() => autoSaveField('bidType', bidType)}>
@@ -241,7 +267,8 @@ export default function ProposalInfoAccordion({
                                         <FormControl variant="filled" fullWidth>
                                             <InputLabel id="demo-simple-select-filled-label"
                                                         shrink={true}>Status</InputLabel>
-                                            <Select labelId="demo-simple-select-filled-label"
+                                            <Select disabled={!hasWritePermissions}
+                                                    labelId="demo-simple-select-filled-label"
                                                     id="demo-simple-select-filled" value={status ?? ""}
                                                     onChange={(e) => setStatus(e.target.value)}
                                                     onBlur={() => autoSaveField('proposalStatus', status)}>
@@ -260,17 +287,23 @@ export default function ProposalInfoAccordion({
                                 outline: ".2px solid #EBEBEB", padding: "10px", alignItems: "center"
                             }}>
                                 <p>Contact Information</p>
-                                <TextField variant="filled" size="small" type="text" label="Contact"
+                                <TextField InputProps={{
+                                    readOnly: !hasWritePermissions
+                                }} variant="filled" size="small" type="text" label="Contact"
                                            sx={{width: "100%"}} InputLabelProps={{shrink: true}}
                                            onChange={(e) => setContact(e.target.value)}
                                            onBlur={() => autoSaveField('contactName', contact)}
                                            value={contact ?? ""}/>
-                                <TextField variant="filled" size="small" type="text" label="Address"
+                                <TextField InputProps={{
+                                    readOnly: !hasWritePermissions
+                                }} variant="filled" size="small" type="text" label="Address"
                                            sx={{width: "100%"}} InputLabelProps={{shrink: true}}
                                            onChange={(e) => setAddress(e.target.value)}
                                            onBlur={() => autoSaveField('contactAddress', address)}
                                            value={address ?? ""}/>
-                                <TextField variant="filled" size="small" type="text" label="City"
+                                <TextField InputProps={{
+                                    readOnly: !hasWritePermissions
+                                }} variant="filled" size="small" type="text" label="City"
                                            sx={{width: "100%"}} InputLabelProps={{shrink: true}}
                                            onChange={(e) => setCity(e.target.value)}
                                            onBlur={() => autoSaveField('contactCity', city)}
@@ -278,7 +311,7 @@ export default function ProposalInfoAccordion({
                                 <FormControl variant="filled" fullWidth>
                                     <InputLabel id="demo-simple-select-filled-label"
                                                 shrink={true}>State</InputLabel>
-                                    <Select labelId="demo-simple-select-filled-label"
+                                    <Select disabled={!hasWritePermissions} labelId="demo-simple-select-filled-label"
                                             id="demo-simple-select-filled" value={contactInfoState ?? ""}
                                             onChange={(e) => setContactInfoState(e.target.value)}
                                             onBlur={() => autoSaveField('contactState', contactInfoState)}>
@@ -289,16 +322,22 @@ export default function ProposalInfoAccordion({
                                         ))}
                                     </Select>
                                 </FormControl>
-                                <TextField variant="filled" size="small" type="number" label="Zip"
+                                <TextField InputProps={{
+                                    readOnly: !hasWritePermissions
+                                }} variant="filled" size="small" type="number" label="Zip"
                                            sx={{width: "100%"}} InputLabelProps={{shrink: true}}
                                            onChange={(e) => setZip(parseInt(e.target.value))}
                                            onBlur={() => autoSaveField('contactZip', zip)}
                                            value={zip ?? ""}/>
-                                <TextField variant="filled" size="small" label="Phone" sx={{width: "100%"}}
+                                <TextField InputProps={{
+                                    readOnly: !hasWritePermissions
+                                }} variant="filled" size="small" label="Phone" sx={{width: "100%"}}
                                            onChange={formatPhoneNumber}
                                            onBlur={() => autoSaveField('contactPhone', phone)}
                                            value={phone ?? ""}/>
-                                <TextField variant="filled" size="small" type="email" label="Email"
+                                <TextField InputProps={{
+                                    readOnly: !hasWritePermissions
+                                }} variant="filled" size="small" type="email" label="Email"
                                            sx={{width: "100%"}} InputLabelProps={{shrink: true}}
                                            onChange={(e) => setEmail(e.target.value)}
                                            onBlur={() => autoSaveField('contactEmail', email)}
