@@ -64,7 +64,7 @@ export const usePhases = ({
 
             setData(
                 updatedPhases.sort((a, b) =>
-                    (b.phaseNumber ?? 0) - (a.phaseNumber ?? 0)
+                    (a.phaseNumber ?? 0) - (b.phaseNumber ?? 0)
                 )
             );
 
