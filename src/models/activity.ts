@@ -99,8 +99,8 @@ export class Activity {
         this.customCraftRate = customCraftRate;
         this.customSubsistenceRate = customSubsistenceRate;
         this.equipmentOwnership = equipmentOwnership;
-        this.dateAdded = dateAdded; // Initialize new property
-        this.rowId = rowId; // Initialize new property
+        this.dateAdded = dateAdded;
+        this.rowId = rowId;
     }
 }
 

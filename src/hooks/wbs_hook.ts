@@ -1,6 +1,6 @@
 import {collection, doc, onSnapshot, query, QuerySnapshot, where,} from "firebase/firestore";
 import {useCallback, useEffect, useMemo, useState} from "react";
-import {getActivitiesForWbs} from "../api/activity";
+import {getActivitiesForWbs, getQuantityAndUnit} from "../api/activity";
 import {Proposal} from "../models/proposal";
 import {Wbs} from "../models/wbs";
 import {firestore} from "../setup/config/firebase";
@@ -57,10 +57,12 @@ export const useWbs = ({currentProposalId}: { currentProposalId: string }) => {
                         wbsId: wbs.id!,
                         proposalId: currentProposalId,
                     });
+                    // const phases = await getPhasesForWbs(wbs.id!, currentProposalId);
+                    // console.log(phases);
 
                     // Calculating the accumulated costs and hours from activities
                     activities.forEach((activity) => {
-                        wbs.costOnlyCost = (wbs.costOnlyCost ?? 0) + activity.costOnlyCost;
+                        wbs.costOnlyCost = (wbs.costOnlyCost ?? 0) + (activity.costOnlyCost ?? 0);
                         wbs.subContractorCost = (wbs.subContractorCost ?? 0) + activity.subContractorCost;
                         wbs.materialCost = (wbs.materialCost ?? 0) + activity.materialCost;
                         wbs.equipmentCost = (wbs.equipmentCost ?? 0) + activity.equipmentCost;
@@ -70,7 +72,11 @@ export const useWbs = ({currentProposalId}: { currentProposalId: string }) => {
                         wbs.welderManHours = (wbs.welderManHours ?? 0) + activity.welderManHours;
                         wbs.totalCost = (wbs.totalCost ?? 0) + activity.totalCost;
                     });
-
+                    wbs.quantity = getQuantityAndUnit(activities, wbs.wbsDatabaseId!).quantity;
+                    wbs.unit = getQuantityAndUnit(activities, wbs.wbsDatabaseId!).unit;
+                    if (wbs.unit == '') {
+                        wbs.quantity = undefined;
+                    }
                     return wbs;
                 })
             );

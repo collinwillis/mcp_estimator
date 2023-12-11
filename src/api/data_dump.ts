@@ -377,7 +377,7 @@ const fetchDDPhases = async (
                 profitTotal: profitTotal,
                 salesTax: salesTax,
                 total: total,
-                activities: activities,
+                activities: [...activities].sort((a, b) => a!.sortOrder! - b!.sortOrder!),
             }
             return newPhase;
         })
@@ -572,6 +572,7 @@ const activityToDataDumpItem = (baseActivity: Activity, proposal: Proposal) => {
         profitTotal: isOwnedEquip ? null : currencyRound(profitTotal),
         salesTax: currencyRound(salesTax),
         total: isOwnedEquip ? equipmentCost : currencyRound(laborCost + rig + materialCost + equipmentCost + subCost + baseActivity.costOnlyCost + profitTotal + salesTax),
+        sortOrder: baseActivity.sortOrder ?? 0,
     }
     return newActivity;
 }

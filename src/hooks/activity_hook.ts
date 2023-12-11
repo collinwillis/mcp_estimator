@@ -42,14 +42,8 @@ const useActivities = ({
             const withDateAdded = activities.filter(a => a && a.dateAdded !== null && a.dateAdded !== undefined);
             const withoutDateAdded = activities.filter(a => a && (a.dateAdded === null || a.dateAdded === undefined));
 
-            // Sort the 'withDateAdded' array by 'dateAdded'
-            withDateAdded.sort((a, b) => a!.dateAdded! - b!.dateAdded!);
+            const sortedActivities = [...activities].sort((a, b) => a!.sortOrder - b!.sortOrder);
 
-            // Sort the 'withoutDateAdded' array by 'sortOrder'
-            withoutDateAdded.sort((a, b) => a!.sortOrder - b!.sortOrder);
-
-            // Combine the two arrays, placing 'withoutDateAdded' first
-            const sortedActivities = [...withoutDateAdded, ...withDateAdded];
 
             // Process the sorted activities
             sortedActivities.forEach((activity, index) => {
@@ -57,7 +51,6 @@ const useActivities = ({
                     activity.rowId = numberToLetters(index + 1);
                 }
             });
-            console.log("Sorted Activities: ", sortedActivities);
 
             // Setting the processed activities data to the state
             setData(sortedActivities as Activity[]);

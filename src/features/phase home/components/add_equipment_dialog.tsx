@@ -8,7 +8,7 @@ import ListItemText from "@mui/material/ListItemText";
 import React, {useEffect, useState} from "react";
 import {useParams} from "react-router-dom";
 import {insertActivityBatch} from "../../../api/activity";
-import rawEquipment from "../../../data/equipment.json";
+import rawEquipment from "../../../data/equipment_v2.json";
 import {useCurrentPhase} from "../../../hooks/current_phase_hook";
 import {ActivityType} from "../../../models/activity";
 import {Equipment, EquipmentOwnership, EquipmentUnit,} from "../../../models/equipment";
@@ -47,7 +47,7 @@ export default function AddEquipmentDialog({
                 quantity: 0,
                 time: 0,
                 unit: EquipmentUnit.months,
-                price: equipment.dayRate,
+                price: equipment.monthRate,
                 craftBaseRate: null,
                 subsistenceRate: null,
                 craftCost: null,
@@ -55,6 +55,7 @@ export default function AddEquipmentDialog({
                 materialCost: null,
                 equipmentOwnership: EquipmentOwnership.rental,
                 dateAdded: Date.now(),
+                sortOrder: new Date().getTime()
             });
             temp.push(newActivity);
         });

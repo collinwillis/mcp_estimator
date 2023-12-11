@@ -2,7 +2,7 @@ import {addDoc, collection, doc, getDoc, getDocs, query, updateDoc, where, write
 import agPiping from "../data/agPiping.json";
 import rawPhases from "../data/phases.json";
 import {Activity, ActivityType} from "../models/activity";
-import {EquipmentUnit} from "../models/equipment";
+import {EquipmentOwnership, EquipmentUnit} from "../models/equipment";
 import {FirestoreActivity} from "../models/firestore models/activity_firestore";
 import {FirestorePhase} from "../models/firestore models/phase_firestore";
 import {Proposal} from "../models/proposal";
@@ -44,7 +44,6 @@ export const updateActivity = async (
     } else {
         newValue = value;
     }
-    console.log(typeof newValue + newValue);
     const data = {
         [field]: newValue,
     };
@@ -55,6 +54,19 @@ export const updateActivity = async (
         .catch((error) => {
             console.log(error);
         });
+};
+
+export const updateActivitiesBatch = async (activities: Activity[]) => {
+    const batch = writeBatch(firestore);
+
+    activities.forEach(activity => {
+        const activityRef = doc(firestore, "activities", activity.id);
+        batch.update(activityRef, {
+            sortOrder: activity.sortOrder,
+        });
+    });
+
+    await batch.commit();
 };
 
 export const getSingleActivity = async ({
@@ -112,7 +124,11 @@ export const updateEquipmentOwnership = async ({
         equipmentOwnership: ownership,
     })
         .then((docRef) => {
-            console.log("Value of an Existing Document Field has been updated");
+            if (activity.equipmentOwnership == EquipmentOwnership.purchase && (ownership == EquipmentOwnership.owned || ownership == EquipmentOwnership.rental)) {
+                updateEquipmentUnit({activity: activity, unit: 'Months'});
+            } else if ((activity.equipmentOwnership == EquipmentOwnership.owned || activity.equipmentOwnership == EquipmentOwnership.rental) && ownership == EquipmentOwnership.purchase) {
+                updateEquipmentUnit({activity: activity, unit: 'EA'});
+            }
         })
         .catch((error) => {
             console.log(error);
@@ -122,6 +138,47 @@ export const updateEquipmentOwnership = async ({
 function isNumber(value: string | number): boolean {
     return value != null && value !== "" && !isNaN(Number(value.toString()));
 }
+
+export const changeActivityOrder = async (activityId: string, newRowId: string, activities: Activity[]) => {
+    // Find the target activity based on newRowId
+    const targetActivityIndex = activities.findIndex(activity => activity.rowId === newRowId);
+
+    if (targetActivityIndex === -1) {
+        console.error('Target row ID not found');
+        return;
+    }
+
+    // Find the selected activity
+    const selectedActivityIndex = activities.findIndex(activity => activity.id === activityId);
+
+    if (selectedActivityIndex === -1) {
+        console.error('Selected activity not found');
+        return;
+    }
+
+    if (targetActivityIndex != selectedActivityIndex) {
+        const [selectedActivity] = activities.splice(selectedActivityIndex, 1);
+
+        if (selectedActivityIndex > targetActivityIndex) {
+            activities.splice(targetActivityIndex, 0, selectedActivity);
+            activities[targetActivityIndex].sortOrder = activities[targetActivityIndex + 1].sortOrder - 1;
+        } else {
+            activities.splice(targetActivityIndex, 0, selectedActivity);
+            activities[targetActivityIndex].sortOrder = activities[targetActivityIndex - 1].sortOrder + 1;
+        }
+        await updateActivitiesBatch(activities);
+    }
+
+
+    // Update the sortOrder of all activities
+    // activities.forEach((activity, index) => {
+    //     activity.sortOrder = index + 1; // or use a different logic if sortOrder is not sequential
+    // });
+
+    // Update activities in Firestore and local state
+
+};
+
 
 export const addCustomLabor = async (
     proposalId: string,
@@ -148,6 +205,7 @@ export const addCustomLabor = async (
         materialCost: null,
         equipmentOwnership: null,
         dateAdded: Date.now(),
+        sortOrder: null
     });
     const docRef = await addDoc(collection(firestore, "activities"), {
         ...activity,
@@ -179,6 +237,7 @@ export const addCostOnly = async (
         materialCost: null,
         equipmentOwnership: null,
         dateAdded: Date.now(),
+        sortOrder: null
     });
     const docRef = await addDoc(collection(firestore, "activities"), {
         ...activity,
@@ -210,6 +269,7 @@ export const addMaterial = async (
         materialCost: null,
         equipmentOwnership: null,
         dateAdded: Date.now(),
+        sortOrder: null
     });
     const docRef = await addDoc(collection(firestore, "activities"), {
         ...activity,
@@ -242,6 +302,7 @@ export const addSubcontractor = async (
         materialCost: 0,
         equipmentOwnership: null,
         dateAdded: Date.now(),
+        sortOrder: null
     });
     const docRef = await addDoc(collection(firestore, "activities"), {
         ...activity,
@@ -381,7 +442,7 @@ export const calculateActivityData = async (
         rawActivity.constant ?? null,
         rawActivity.equipment ?? null,
         rawActivity.quantity ?? 0,
-        rawActivity.constant?.sortOrder ?? 0,
+        rawActivity.sortOrder ?? rawActivity.constant?.sortOrder ?? rawActivity.dateAdded ?? 0,
         rawActivity.activityType ?? ActivityType.laborItem,
         rawActivity.unit ?? rawActivity.constant?.craftUnits ?? "",
         craftConstant,
@@ -449,9 +510,41 @@ export const calculateActivityData = async (
     } else {
         newActivity.totalCost = newActivity.subContractorCost;
     }
-
     return newActivity;
 };
+
+export function getQuantityAndUnit(activities: Activity[], wbsDatabaseId: number) {
+    let quantity = 0;
+    let unit = '';
+
+    const unitMap = new Map<number, string>([
+        [20000, "CY"],
+        [40000, "TON"],
+        [50000, "EA"],
+        [60000, "TON"],
+        [70000, "LF"],
+        [130000, "LF"],
+    ]);
+
+    unit = unitMap.get(wbsDatabaseId) || '';
+
+    activities.forEach((activity) => {
+        if (wbsDatabaseId === 30000) {
+            if (activity.constant && [30011, 30012, 30013, 30015].includes(activity.constant.phaseDatabaseId)) {
+                unit = "EA";
+            } else {
+                unit = "CY";
+            }
+        }
+
+        if (activity.unit === unit) {
+            quantity += activity.quantity;
+        }
+    });
+
+    return {quantity, unit};
+}
+
 
 // export async function insertActivitiesFromFile() {
 //   let phasesToAdd: FirestorePhase[] = [];

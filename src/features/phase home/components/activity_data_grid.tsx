@@ -1,4 +1,4 @@
-import {EditRounded} from "@mui/icons-material";
+import {Download, EditRounded} from "@mui/icons-material";
 import TrashIcon from "@mui/icons-material/DeleteForever";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import {Button, Divider, Typography} from "@mui/material";
@@ -16,7 +16,7 @@ import {
 } from "@mui/x-data-grid";
 import React, {useEffect, useState} from "react";
 import {useParams} from "react-router-dom";
-import {deleteActivityBatch, resetConstantsBatch, updateActivity,} from "../../../api/activity";
+import {changeActivityOrder, deleteActivityBatch, resetConstantsBatch, updateActivity,} from "../../../api/activity";
 import {StyledDataGrid} from "../../../components/custom_data_grid";
 import EditBaseRateDialog from "../../../components/edit_base_rate_dialog";
 import useActivities from "../../../hooks/activity_hook";
@@ -38,6 +38,7 @@ import {
 } from "./columns";
 import DeleteConfirmationDialog from "../../../components/alert_dialog";
 import {useUserProfile} from "../../../hooks/user_profile_hook";
+import CopyFromPhaseDialog from "../../../components/copy_from_phase_dialog";
 
 const ActivityDataGrid = () => {
     const {proposalId, wbsId, phaseId} = useParams();
@@ -53,6 +54,8 @@ const ActivityDataGrid = () => {
     const [selectedRows, setSelectedRows] = React.useState<GridRowId[]>([]);
     const [columns, setColumns] = React.useState<GridColumns>([]);
     const [openBaseRateDialog, setOpenBaseRateDialog] =
+        React.useState<boolean>(false);
+    const [openCopyDialog, setOpenCopyDialog] =
         React.useState<boolean>(false);
 
     const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false); // New state to control delete dialog visibility
@@ -175,7 +178,25 @@ const ActivityDataGrid = () => {
                                 }}
                                 startIcon={<EditRounded/>}
                             >
-                                Base Rate / Subsistence
+                                Edit Rates
+                            </Button>
+                            <Divider
+                                light
+                                orientation="vertical"
+                                sx={{
+                                    width: "1px",
+                                    backgroundColor: "lightgray",
+                                    margin: "0px 14px",
+                                }}
+                            />
+                            <Button
+                                sx={{color: "#424242", fontSize: "14px"}}
+                                onClick={() => {
+                                    setOpenCopyDialog(true);
+                                }}
+                                startIcon={<Download/>}
+                            >
+                                Copy from Phase
                             </Button>
                         </div>
                     )}
@@ -232,7 +253,13 @@ const ActivityDataGrid = () => {
                 columns={columns}
                 onCellEditCommit={(params, event) => {
                     var {id, field, value} = params;
-                    updateActivity(id.toString(), field, value);
+                    if (field == 'rowId') {
+                        const foundActivity = data.find(activity => activity.rowId?.toLowerCase() === value.toLowerCase());
+                        changeActivityOrder(id.toString(), value, [...data]);
+                    } else {
+                        updateActivity(id.toString(), field, value);
+                    }
+
                 }}
                 rows={data}
                 loading={loading}
@@ -354,6 +381,7 @@ const ActivityDataGrid = () => {
                 onClose={() => setDeleteDialogOpen(false)}
                 onConfirm={handleDelete} // Delete activities when confirmed
             />
+            <CopyFromPhaseDialog open={openCopyDialog} onClose={() => setOpenCopyDialog(false)}/>
         </Box>
     );
 };

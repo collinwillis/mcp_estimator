@@ -1,14 +1,14 @@
 import {Button} from "@mui/material";
 import {Box} from "@mui/system";
 import {
-  GridCellEditCommitParams,
-  GridCellParams,
-  GridColumns,
-  GridRowId,
-  GridToolbarColumnsButton,
-  GridToolbarContainer,
-  GridToolbarDensitySelector,
-  GridValueFormatterParams,
+    GridCellEditCommitParams,
+    GridCellParams,
+    GridColumns,
+    GridRowId,
+    GridToolbarColumnsButton,
+    GridToolbarContainer,
+    GridToolbarDensitySelector,
+    GridValueFormatterParams,
 } from "@mui/x-data-grid";
 import React from "react";
 import {useParams} from "react-router-dom";
@@ -142,7 +142,7 @@ const columns: GridColumns = [
         field: "name",
         headerName: "Wbs",
         minWidth: 100,
-        editable: true,
+        editable: false,
         flex: 1,
         headerAlign: "center",
     },
@@ -154,7 +154,17 @@ const columns: GridColumns = [
         align: "right",
         flex: 1,
         headerAlign: "center",
-        editable: true,
+        editable: false,
+        valueFormatter: (params: GridValueFormatterParams<number>) => {
+            if (params.value == null) {
+                return "";
+            }
+            const valueFormatted = params.value.toLocaleString(undefined, {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+            });
+            return `${valueFormatted}`;
+        },
     },
     {
         field: "unit",
@@ -163,7 +173,7 @@ const columns: GridColumns = [
         align: "right",
         flex: 1,
         headerAlign: "center",
-        editable: true,
+        editable: false,
     },
 
     {

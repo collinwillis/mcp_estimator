@@ -32,7 +32,6 @@ export default function ProposalInfoAccordion({
     const currentProposal = useCurrentProposalListener({
         proposalId: proposalId,
     });
-    console.log("INFORMATION ACCORDION", currentProposal);
     //Proposal States
     const [proposalNumber, setProposalNumber] = useState(0);
     const [job, setJob] = useState("");

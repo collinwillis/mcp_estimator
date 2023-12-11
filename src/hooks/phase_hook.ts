@@ -1,8 +1,9 @@
 import {collection, onSnapshot, query, where} from "firebase/firestore";
 import {useEffect, useState} from "react";
-import {getActivitiesForPhase} from "../api/activity";
+import {getActivitiesForPhase, getQuantityAndUnit} from "../api/activity";
 import {Phase} from "../models/phase";
 import {firestore} from "../setup/config/firebase";
+import {getSingleWbs} from "../api/wbs";
 
 export const usePhases = ({
                               currentWbsId,
@@ -18,9 +19,10 @@ export const usePhases = ({
         const phaseRef = collection(firestore, "phase");
         const phaseQuery = query(phaseRef, where("wbsId", "==", currentWbsId));
 
+
         return onSnapshot(phaseQuery, async (querySnapshot) => {
             setIsLoading(true);
-
+            const currentWbs = await getSingleWbs({wbsId: currentWbsId});
             const phases = querySnapshot.docs.map(doc => ({...doc.data(), id: doc.id} as Phase));
 
             const updatedPhases = await Promise.all(
@@ -41,7 +43,7 @@ export const usePhases = ({
                         wmh: 0,
                         totalCost: 0,
                     };
-
+                    console.log(phase);
                     const costs = activities.reduce((accum, activity) => {
                         accum.costOnlyCost += activity.costOnlyCost ?? 0;
                         accum.subCost += activity.subContractorCost ?? 0;
@@ -52,15 +54,19 @@ export const usePhases = ({
                         accum.cmh += activity.craftManHours ?? 0;
                         accum.wmh += activity.welderManHours ?? 0;
                         accum.totalCost += activity.totalCost ?? 0;
+
                         return accum;
                     }, initialCosts);
-
+                    phase.quantity = phase.quantity ?? parseFloat(getQuantityAndUnit(activities, currentWbs?.wbsDatabaseId!).quantity.toFixed(2));
+                    phase.unit = phase.unit ?? getQuantityAndUnit(activities, currentWbs?.wbsDatabaseId!).unit;
+                    console.log(costs);
                     return {
                         ...phase,
                         ...costs,
                     };
                 })
             );
+            console.log(updatedPhases);
 
             setData(
                 updatedPhases.sort((a, b) =>

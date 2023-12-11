@@ -13,6 +13,7 @@ import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import {styled, useTheme} from "@mui/material/styles";
 import * as React from "react";
+import {useState} from "react";
 import {useNavigate, useParams} from "react-router-dom";
 import AddProposalDialog from "../features/home/components/add_proposal_dialog";
 import ProposalList from "../features/home/components/proposal_list";
@@ -33,6 +34,10 @@ import AddIcon from "@mui/icons-material/Add";
 import {useUserProfile} from "../hooks/user_profile_hook";
 import DrawerIcon from "./drawer_icon";
 import EditProposalsDialog from "../features/home/components/edit_proposals_dialog";
+import TextField from '@mui/material/TextField';
+import InputAdornment from '@mui/material/InputAdornment';
+import SearchIcon from '@mui/icons-material/Search';
+import {useProposals} from "../hooks/proposals_hook";
 
 const drawerWidth = 300;
 const appBar = document.querySelector("header.MuiAppBar-root");
@@ -116,6 +121,20 @@ export default function EstimatorDrawer({children}: EstimatorDrawerProps) {
     const currentPhase: Phase | undefined = useCurrentPhase({
         phaseId: phaseId ?? "",
     });
+
+    const {data, loading} = useProposals();
+
+    // State for search input
+    const [proposalSearchInput, setProposalSearchInput] = useState('');
+
+// Function to filter proposals based on search input
+    const filteredProposals: Proposal[] = data?.filter(proposal => {
+        // Assuming 'proposal' has a property like 'name' or 'description' to search
+        // Adjust the property according to your proposal object structure
+        const searchKey = proposalSearchInput.toLowerCase();
+        return proposal?.proposalDescription?.toLowerCase().includes(searchKey) ||
+            proposal?.proposalNumber?.toString().includes(searchKey);
+    }) || [];
 
     const [menuAnchorEl, setMenuAnchorEl] = React.useState<null | HTMLElement>(null);
     const [proposalMenuOpen, setProposalMenuOpen] = React.useState(false);
@@ -345,15 +364,52 @@ export default function EstimatorDrawer({children}: EstimatorDrawerProps) {
                     <ProposalMenu anchorEl={menuAnchorEl} setAnchorEl={setMenuAnchorEl}
                                   openAddProposalDialog={() => setAddProposalDialogOpen(true)}
                                   onEditClicked={() => setIsEditProposals(true)}/>
+
                 </DrawerHeader>
 
                 <Divider/>
                 {proposalId == null && (
-                    <>
-                        <ProposalList
-                            onClick={(proposal: Proposal) => setSelectedProposal(proposal)}
+                    <Box sx={{padding: '16px'}}> {/* Adjust padding as needed */}
+                        <TextField
+                            fullWidth
+                            variant="outlined"
+                            size="small" // Makes the TextField slightly smaller
+                            placeholder="Search Proposals..."
+                            InputProps={{
+                                startAdornment: (
+                                    <InputAdornment position="start">
+                                        <SearchIcon/>
+                                    </InputAdornment>
+                                ),
+                            }}
+                            sx={{
+                                // Adjust TextField styles
+                                '.MuiOutlinedInput-root': {
+                                    borderRadius: '20px', // Rounded corners
+                                    height: '40px', // Adjust the height as needed
+                                    '.MuiInputBase-input': {
+                                        height: '20px', // Adjust the input field height
+                                        padding: '10px 14px', // Adjust padding for proper alignment
+                                    }
+                                }
+                            }}
+                            value={proposalSearchInput}
+                            onChange={(e) => setProposalSearchInput(e.target.value)}
                         />
+
+                    </Box>
+                )}
+                {proposalId == null && (
+                    <>
+                        <Divider sx={{}}/>
+                        <Box sx={{height: "calc(100% - 64px)", overflowY: "auto"}}>
+                            <ProposalList
+                                onClick={(proposal: Proposal) => setSelectedProposal(proposal)}
+                                proposals={filteredProposals}
+                            />
+                        </Box>
                     </>
+
                 )}
 
                 {proposalId != null && (
@@ -411,14 +467,14 @@ export default function EstimatorDrawer({children}: EstimatorDrawerProps) {
                         )}
                     </Box>
                 )}
-                <Box sx={{height: "calc(100% - 64px)", overflowY: "auto"}}>
-                    {wbsId != null && (
+                {wbsId != null && (
+                    <Box sx={{height: "calc(100% - 64px)", overflowY: "auto"}}>
                         <>
                             <PhaseList onClick={(_) => {
                             }}/>
                         </>
-                    )}
-                </Box>
+                    </Box>
+                )}
             </Drawer>
 
             <Main open={open} proposalId={proposalId}>

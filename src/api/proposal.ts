@@ -30,7 +30,6 @@ export const insertProposal = async (
     }).then(async (docRef) => {
         await insertAllBaseWbs(docRef.id);
     });
-    console.log("Proposal inserted");
 };
 
 export const getSingleProposal = async ({
@@ -55,7 +54,6 @@ export const updateSingleProposal = async ({
     proposalId: string;
     proposal: FirestoreProposal;
 }) => {
-    console.log(proposalId, proposal);
     const proposalRef = doc(firestore, "proposals", proposalId);
     await setDoc(proposalRef, {
         ...proposal,
@@ -72,7 +70,6 @@ export const updateProposalField = async ({
     field: string;
     value: any;
 }) => {
-    console.log(proposalId, field, value);
     const proposalRef = doc(firestore, "proposals", proposalId);
 
     await updateDoc(proposalRef, {

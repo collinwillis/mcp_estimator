@@ -156,7 +156,7 @@ const PhaseDataGrid = ({
                             />
                         </div>
                     )}
-                    
+
                 </div>
             </GridToolbarContainer>
         );
@@ -352,11 +352,21 @@ const columns: GridColumns = [
     {
         field: "quantity",
         headerName: "Quantity",
-        minWidth: 80,
+        minWidth: 100,
         align: "right",
         editable: true,
         flex: 1,
         headerAlign: "center",
+        valueFormatter: (params: GridValueFormatterParams<number>) => {
+            if (params.value == null) {
+                return "";
+            }
+            const valueFormatted = params.value.toLocaleString(undefined, {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+            });
+            return `${valueFormatted}`;
+        },
     },
     {
         field: "unit",
@@ -369,7 +379,7 @@ const columns: GridColumns = [
     },
 
     {
-        field: "craftManHours",
+        field: "cmh",
         headerName: "Craft MH",
         editable: true,
         align: "right",
@@ -408,7 +418,7 @@ const columns: GridColumns = [
     },
 
     {
-        field: "welderManHours",
+        field: "wmh",
         headerName: "Welder MH",
         editable: true,
         minWidth: 120,

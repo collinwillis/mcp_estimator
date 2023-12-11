@@ -18,9 +18,9 @@ export const getActivityColumns = ({
     let baseColumns: GridColumns = [
         {
             field: "rowId",
-            headerName: "Row",
+            headerName: "Item",
             minWidth: 80,
-            editable: false,
+            editable: true,
             flex: 1,
             headerAlign: "center",
             align: 'center',
@@ -79,18 +79,19 @@ export const getActivityColumns = ({
                                 })
                             }
                         >
-                            <MenuItem value={EquipmentUnit.hours}>
-                                {EquipmentUnit.hours}
-                            </MenuItem>
-                            <MenuItem value={EquipmentUnit.days}>
-                                {EquipmentUnit.days}
-                            </MenuItem>
-                            <MenuItem value={EquipmentUnit.weeks}>
-                                {EquipmentUnit.weeks}
-                            </MenuItem>
-                            <MenuItem value={EquipmentUnit.months}>
-                                {EquipmentUnit.months}
-                            </MenuItem>
+                            {fullActivity.equipmentOwnership === EquipmentOwnership.purchase ? (
+                                <MenuItem value={EquipmentUnit.each}>
+                                    {EquipmentUnit.each}
+                                </MenuItem>
+                            ) : (
+                                Object.values(EquipmentUnit).map(unit => (
+                                    unit !== EquipmentUnit.each && (
+                                        <MenuItem key={unit} value={unit}>
+                                            {unit}
+                                        </MenuItem>
+                                    )
+                                ))
+                            )}
                         </Select>
                     );
                 }
@@ -325,6 +326,9 @@ export const getActivityColumns = ({
                             </MenuItem>
                             <MenuItem value={EquipmentOwnership.owned}>
                                 {EquipmentOwnership.owned}
+                            </MenuItem>
+                            <MenuItem value={EquipmentOwnership.purchase}>
+                                {EquipmentOwnership.purchase}
                             </MenuItem>
                         </Select>
                     );
@@ -577,6 +581,7 @@ export const customLaborItemAvailableCells = [
 ];
 
 export const editableLaborItemCells = [
+    "rowId",
     "description",
     "quantity",
     "unit",
@@ -585,6 +590,7 @@ export const editableLaborItemCells = [
 ];
 
 export const editableEquipmentItemCells = [
+    "rowId",
     "description",
     "quantity",
     "price",
@@ -594,13 +600,15 @@ export const editableEquipmentItemCells = [
 ];
 
 export const editableMaterialItemCells = [
+    "rowId",
     "description",
     "quantity",
     "price",
     "unit",
 ];
-export const editableCostOnlyItemCells = ["quantity", "description", "price"];
+export const editableCostOnlyItemCells = ["rowId", "quantity", "description", "price"];
 export const editableSubcontractorItemCells = [
+    "rowId",
     "quantity",
     "description",
     "time",
