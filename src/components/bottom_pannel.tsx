@@ -57,7 +57,7 @@ const BottomPanel: React.FC = () => {
             tempCraftHours += activity.craftManHours || 0;
             tempWelderHours += activity.welderManHours || 0;
             // tempSubHours += activity.sub || 0;
-            tempCraftCost += activity.craftCost || 0;
+            tempCraftCost += Number(activity.craftCost) || 0;
             tempWelderCost += activity.welderCost || 0;
             tempSubCost += activity.subContractorCost || 0;
             tempEquipmentCost += activity.equipmentCost || 0;

@@ -33,27 +33,63 @@ export const insertActivityBatch = async (activities: FirestoreActivity[]) => {
 };
 
 
+// List of fields that should contain numbers
+const numberFields = [
+    "quantity",
+    "craftConstant",
+    "welderConstant",
+    "craftManHours",
+    "welderManHours",
+    "craftCost",
+    "welderCost",
+    "totalCost",
+    "craftBaseRate",
+    "subsistenceRate",
+    "equipmentCost",
+    "materialCost",
+    "costOnlyCost",
+    "price",
+    "time",
+    "subContractorCost",
+];
+
 export const updateActivity = async (
     id: string,
     field: string,
     value: string
-) => {
-    let newValue;
-    if (isNumber(value) == true) {
-        newValue = parseFloat(value);
+): Promise<{ success: boolean; message: string }> => {
+    let newValue: number | string;
+
+    // Check if the field is a number field
+    if (numberFields.includes(field)) {
+        if (isNaN(parseFloat(value)) || value.trim() === '') {
+            // Notify the user for non-numeric input
+            return {
+                success: false,
+                message: "Invalid input: Expected a numeric value."
+            };
+        } else {
+            // If value is a valid number, parse it
+            newValue = parseFloat(value);
+        }
     } else {
+        // For non-number fields, use the value as is
         newValue = value;
     }
-    const data = {
-        [field]: newValue,
-    };
-    await updateDoc(doc(firestore, "activities", id), data)
-        .then((docRef) => {
-            console.log("Value of an Existing Document Field has been updated");
-        })
-        .catch((error) => {
-            console.log(error);
-        });
+
+    try {
+        await updateDoc(doc(firestore, "activities", id), {[field]: newValue});
+        return {
+            success: true,
+            message: `Field '${field}' has been updated to ${newValue}`
+        };
+    } catch (error) {
+        console.error(error);
+        return {
+            success: false,
+            message: "An error occurred while updating the document."
+        };
+    }
 };
 
 export const updateActivitiesBatch = async (activities: Activity[]) => {

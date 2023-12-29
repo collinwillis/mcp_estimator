@@ -1,7 +1,7 @@
 import {Download, EditRounded} from "@mui/icons-material";
 import TrashIcon from "@mui/icons-material/DeleteForever";
 import RefreshIcon from "@mui/icons-material/Refresh";
-import {Button, Divider, Typography} from "@mui/material";
+import {Alert, Button, Divider, Snackbar, Typography} from "@mui/material";
 import {Box} from "@mui/system";
 import {
     GridCellParams,
@@ -14,7 +14,7 @@ import {
     GridToolbarContainer,
     GridToolbarDensitySelector,
 } from "@mui/x-data-grid";
-import React, {useEffect, useState} from "react";
+import React, {SyntheticEvent, useEffect, useState} from "react";
 import {useParams} from "react-router-dom";
 import {changeActivityOrder, deleteActivityBatch, resetConstantsBatch, updateActivity,} from "../../../api/activity";
 import {StyledDataGrid} from "../../../components/custom_data_grid";
@@ -41,6 +41,17 @@ import {useUserProfile} from "../../../hooks/user_profile_hook";
 import CopyFromPhaseDialog from "../../../components/copy_from_phase_dialog";
 
 const ActivityDataGrid = () => {
+
+    const [snackbarOpen, setSnackbarOpen] = useState(false);
+    const [snackbarMessage, setSnackbarMessage] = useState('');
+
+    const handleSnackbarClose = (event: SyntheticEvent<Element, Event> | Event, reason?: string) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+        setSnackbarOpen(false);
+    };
+
     const {proposalId, wbsId, phaseId} = useParams();
     const {data, loading} = useActivities({
         currentProposalId: proposalId ?? "",
@@ -251,13 +262,17 @@ const ActivityDataGrid = () => {
 
                 density="compact"
                 columns={columns}
-                onCellEditCommit={(params, event) => {
+                onCellEditCommit={async (params, event) => {
                     var {id, field, value} = params;
                     if (field == 'rowId') {
                         const foundActivity = data.find(activity => activity.rowId?.toLowerCase() === value.toLowerCase());
                         changeActivityOrder(id.toString(), value, [...data]);
                     } else {
-                        updateActivity(id.toString(), field, value);
+                        const response = await updateActivity(id.toString(), field, value);
+                        if (!response.success) {
+                            setSnackbarMessage(response.message);
+                            setSnackbarOpen(true);
+                        }
                     }
 
                 }}
@@ -382,6 +397,20 @@ const ActivityDataGrid = () => {
                 onConfirm={handleDelete} // Delete activities when confirmed
             />
             <CopyFromPhaseDialog open={openCopyDialog} onClose={() => setOpenCopyDialog(false)}/>
+            <Snackbar
+                open={snackbarOpen}
+                autoHideDuration={6000}
+                onClose={handleSnackbarClose}
+                anchorOrigin={{vertical: 'bottom', horizontal: 'center'}}
+            >
+                <Alert
+                    onClose={handleSnackbarClose}
+                    severity="error"
+                    sx={{width: '100%'}}
+                >
+                    {snackbarMessage}
+                </Alert>
+            </Snackbar>
         </Box>
     );
 };

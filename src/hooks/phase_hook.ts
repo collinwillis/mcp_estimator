@@ -57,8 +57,17 @@ export const usePhases = ({
 
                         return accum;
                     }, initialCosts);
-                    phase.quantity = phase.quantity ?? parseFloat(getQuantityAndUnit(activities, currentWbs?.wbsDatabaseId!).quantity.toFixed(2));
-                    phase.unit = phase.unit ?? getQuantityAndUnit(activities, currentWbs?.wbsDatabaseId!).unit;
+                    const wbsDatabaseId = currentWbs?.wbsDatabaseId ?? 0;
+                    let quantityResult = getQuantityAndUnit(activities, wbsDatabaseId).quantity;
+
+                    // Ensure quantityResult is a finite number
+                    if (!Number.isFinite(quantityResult)) {
+                        quantityResult = 0;
+                    }
+
+                    phase.quantity = phase.quantity ?? parseFloat(quantityResult.toFixed(2));
+                    phase.unit = phase.unit ?? getQuantityAndUnit(activities, wbsDatabaseId).unit;
+
                     console.log(costs);
                     return {
                         ...phase,
