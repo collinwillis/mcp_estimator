@@ -5,6 +5,7 @@ import {Proposal} from "../models/proposal";
 import {Wbs} from "../models/wbs";
 import {firestore} from "../setup/config/firebase";
 import {useProposalPreferences} from "./proposal_preferences_hook";
+import {getPhasesForWbs} from "../api/phase";
 
 export const useWbs = ({currentProposalId}: { currentProposalId: string }) => {
     const [data, setData] = useState<Wbs[]>([]);
@@ -57,7 +58,7 @@ export const useWbs = ({currentProposalId}: { currentProposalId: string }) => {
                         wbsId: wbs.id!,
                         proposalId: currentProposalId,
                     });
-                    // const phases = await getPhasesForWbs(wbs.id!, currentProposalId);
+                    const phases = await getPhasesForWbs(wbs.id!, currentProposalId);
                     // console.log(phases);
 
                     // Calculating the accumulated costs and hours from activities
@@ -72,8 +73,26 @@ export const useWbs = ({currentProposalId}: { currentProposalId: string }) => {
                         wbs.welderManHours = (wbs.welderManHours ?? 0) + activity.welderManHours;
                         wbs.totalCost = (wbs.totalCost ?? 0) + activity.totalCost;
                     });
-                    wbs.quantity = getQuantityAndUnit(activities, wbs.wbsDatabaseId!).quantity;
-                    wbs.unit = getQuantityAndUnit(activities, wbs.wbsDatabaseId!).unit;
+                    const unitMap = new Map<number, string>([
+                        [20000, "CY"],
+                        [40000, "TON"],
+                        [50000, "EA"],
+                        [60000, "TON"],
+                        [70000, "LF"],
+                        [130000, "LF"],
+                    ]);
+
+                    let unit = unitMap.get(wbs.wbsDatabaseId!) || '';
+                    const phasesWithCustomQuantities = phases.filter(phase => phase.customQuantity !== null);
+                    const sumOfCustomQuantities = phasesWithCustomQuantities.reduce(
+                        (acc, phase) => acc + (phase.unit === unit ? phase.customQuantity || 0 : 0),
+                        0
+                    );
+                    const filteredActivities = activities.filter(activity => !phasesWithCustomQuantities.map(phase => phase.id).includes(activity.phaseId));
+                    let calculatedQuantity = getQuantityAndUnit(filteredActivities, wbs.wbsDatabaseId!).quantity;
+
+                    wbs.quantity = calculatedQuantity + sumOfCustomQuantities;
+                    wbs.unit = unit; // Assuming unit handling remains as is
                     if (wbs.unit == '') {
                         wbs.quantity = undefined;
                     }

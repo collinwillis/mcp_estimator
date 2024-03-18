@@ -553,16 +553,24 @@ export function getQuantityAndUnit(activities: Activity[], wbsDatabaseId: number
     let quantity = 0;
     let unit = '';
 
-    const unitMap = new Map<number, string>([
-        [20000, "CY"],
-        [40000, "TON"],
-        [50000, "EA"],
-        [60000, "TON"],
-        [70000, "LF"],
-        [130000, "LF"],
+    const keywordMap = new Map<number, string[]>([
+        [20000, ["EXCAVATE", "BACKFILL / COMPACT"]],
+        [40000, ["CLEAN UP"]],
+        [50000, ["CLEAN UP"]],
+        [60000, ["CLEAN UP"]],
+        [70000, ["HE", "OFF", "HYDRO", "PNEU"]],
+        [130000, ["HE", "OFF", "HYDRO", "PNEU"]],
     ]);
 
-    unit = unitMap.get(wbsDatabaseId) || '';
+    let keywords = keywordMap.get(wbsDatabaseId) || [];
+
+    activities.forEach((activity) => {
+        const hasKeyword = keywords.some(keyword => activity.description.toUpperCase().includes(keyword));
+        if (hasKeyword) {
+            quantity += activity.quantity;
+            unit = activity.unit;
+        }
+    });
 
     activities.forEach((activity) => {
         if (wbsDatabaseId === 30000) {
@@ -571,10 +579,6 @@ export function getQuantityAndUnit(activities: Activity[], wbsDatabaseId: number
             } else {
                 unit = "CY";
             }
-        }
-
-        if (activity.unit === unit) {
-            quantity += activity.quantity;
         }
     });
 

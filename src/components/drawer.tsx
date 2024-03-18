@@ -129,12 +129,38 @@ export default function EstimatorDrawer({children}: EstimatorDrawerProps) {
 
 // Function to filter proposals based on search input
     const filteredProposals: Proposal[] = data?.filter(proposal => {
-        // Assuming 'proposal' has a property like 'name' or 'description' to search
-        // Adjust the property according to your proposal object structure
         const searchKey = proposalSearchInput.toLowerCase();
-        return proposal?.proposalDescription?.toLowerCase().includes(searchKey) ||
-            proposal?.proposalNumber?.toString().includes(searchKey);
+
+        // Prepare a combined string of all important fields for the proposal
+        // Note: Ensure to safely handle possibly undefined or null fields
+        const proposalFieldsCombined = [
+            proposal.proposalNumber?.toString().toLowerCase(),
+            proposal.job?.toString().toString().toLowerCase(),
+            proposal.coNumber?.toString().toLowerCase(),
+            proposal.proposalDescription?.toLowerCase(),
+            proposal.proposalOwner?.toLowerCase(),
+            proposal.projectCity?.toLowerCase(),
+            proposal.projectState?.toLowerCase(),
+            proposal.proposalEstimators?.toLowerCase(),
+            proposal.proposalDateReceived?.toString().toLowerCase(),
+            proposal.proposalDateDue?.toLowerCase(),
+            proposal.projectStartDate?.toLowerCase(),
+            proposal.projectEndDate?.toLowerCase(),
+            proposal.bidType?.toLowerCase(),
+            proposal.proposalStatus?.toString().toLowerCase(),
+            proposal.contactName?.toLowerCase(),
+            proposal.contactAddress?.toLowerCase(),
+            proposal.contactCity?.toLowerCase(),
+            proposal.contactState?.toLowerCase(),
+            proposal.contactZip?.toString().toLowerCase(),
+            proposal.contactPhone?.toLowerCase(),
+            proposal.contactEmail?.toLowerCase(),
+        ].filter(Boolean).join(" "); // Filters out any undefined or null values and joins the rest into a single string
+
+        // Check if the combined fields string includes the search key
+        return proposalFieldsCombined.includes(searchKey);
     }) || [];
+
 
     const [menuAnchorEl, setMenuAnchorEl] = React.useState<null | HTMLElement>(null);
     const [proposalMenuOpen, setProposalMenuOpen] = React.useState(false);

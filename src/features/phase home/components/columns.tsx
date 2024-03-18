@@ -247,6 +247,26 @@ export const getActivityColumns = ({
                 return `$${valueFormatted}`;
             },
         },
+        {
+            field: "equipmentCost",
+            headerName: "Equipment Total",
+            minWidth: 120,
+            align: "right",
+            editable: true,
+            hide: false,
+            flex: 1,
+            headerAlign: "center",
+            valueFormatter: (params: GridValueFormatterParams<number>) => {
+                if (params.value == null) {
+                    return "";
+                }
+                const valueFormatted = params.value.toLocaleString(undefined, {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                });
+                return `$${valueFormatted}`;
+            },
+        },
     ];
     activities.map((activity) => {
         if (activity.activityType == ActivityType.equipmentItem) {

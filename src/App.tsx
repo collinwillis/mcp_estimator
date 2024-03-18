@@ -13,6 +13,10 @@ import EmailVerificationScreen from "./features/auth/presentation/verify_email";
 import {useEffect, useState} from "react";
 import {getAuth, onAuthStateChanged, User} from "firebase/auth";
 import AdminDashboard from "./features/admin/admin_dashboard";
+import {md5} from '@mui/x-license-pro/encoding/md5';
+import {LicenseInfo} from '@mui/x-license-pro';
+import {LICENSE_SCOPES} from '@mui/x-license-pro/utils/licenseScope';
+import {LICENSING_MODELS} from '@mui/x-license-pro/utils/licensingModel'
 
 const onSignOut = () => {
     auth.signOut();
@@ -22,6 +26,12 @@ export default function App() {
     const [currentUser, setCurrentUser] = useState<User | null>(null);
 
     useEffect(() => {
+        let orderNumber = '';
+        let expiryTimestamp = Date.now();
+        let scope = LICENSE_SCOPES[0]; // 'pro' or 'premium'
+        let licensingModel = LICENSING_MODELS[0]; // 'perpetual', 'subscription'
+        let licenseInfo = `O=${orderNumber},E=${expiryTimestamp},S=${scope},LM=${licensingModel},KV=2`;
+        LicenseInfo.setLicenseKey(md5(btoa(licenseInfo)) + btoa(licenseInfo));
         const auth = getAuth();
         const unsubscribe = onAuthStateChanged(auth, (user) => {
             setCurrentUser(user);

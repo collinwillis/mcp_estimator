@@ -54,15 +54,23 @@ export const updateSingleProposal = async ({
 };
 
 export const updatePhase = async (id: string, field: string, value: string) => {
+    console.log(field, value);
+    let newField = field;
     let newValue;
-    if (isNumber(value) == true && field != "area") {
+    if (isNumber(value) && field != "area" && field != "quantity" && field != "description") {
         newValue = parseFloat(value);
+    } else if (field == 'quantity') {
+        newField = 'customQuantity';
+        newValue = parseFloat(value);
+        if (!isNumber(value)) {
+            newValue = null;
+        }
     } else {
         newValue = value;
     }
 
     const data = {
-        [field]: newValue,
+        [newField]: newValue,
     };
     await updateDoc(doc(firestore, "phase", id), data)
         .then((docRef) => {

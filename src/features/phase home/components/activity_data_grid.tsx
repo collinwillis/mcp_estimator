@@ -13,7 +13,7 @@ import {
     GridToolbarColumnsButton,
     GridToolbarContainer,
     GridToolbarDensitySelector,
-} from "@mui/x-data-grid";
+} from "@mui/x-data-grid-pro";
 import React, {SyntheticEvent, useEffect, useState} from "react";
 import {useParams} from "react-router-dom";
 import {changeActivityOrder, deleteActivityBatch, resetConstantsBatch, updateActivity,} from "../../../api/activity";
@@ -70,7 +70,8 @@ const ActivityDataGrid = () => {
         React.useState<boolean>(false);
 
     const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false); // New state to control delete dialog visibility
-    const [columnVisibilityModel, setColumnVisibilityModel] = useState<GridColumnVisibilityModel>();
+
+    const [columnVisibilityModel, setColumnVisibilityModel] = React.useState<GridColumnVisibilityModel>({});
     const [filterModel, setFilterModel] = useState<GridFilterModel>();
     const [sortModel, setSortModel] = React.useState<GridSortModel>();
 
@@ -83,7 +84,7 @@ const ActivityDataGrid = () => {
 
         // Move the loading of models here to ensure they are applied after columns are set
         const visibilityJSON = localStorage.getItem("activities_visibility");
-        const visibilityModel = visibilityJSON ? JSON.parse(visibilityJSON) : {};
+        const visibilityModel: GridColumnVisibilityModel = visibilityJSON ? JSON.parse(visibilityJSON) : {};
         setColumnVisibilityModel(visibilityModel);
 
         const filterJSON = localStorage.getItem("activities_filter");
@@ -249,6 +250,12 @@ const ActivityDataGrid = () => {
             }}
         >
             <StyledDataGrid
+                columnVisibilityModel={columnVisibilityModel}
+                onColumnVisibilityModelChange={(newModel) => {
+                    localStorage.setItem("activities_visibility", JSON.stringify(newModel));
+                    setColumnVisibilityModel(newModel);
+                }
+                }
                 sortModel={sortModel}
                 onSortModelChange={(newModel) => {
                     localStorage.setItem("activities_sort", JSON.stringify(newModel));
@@ -259,7 +266,6 @@ const ActivityDataGrid = () => {
                     localStorage.setItem("activities_filter", JSON.stringify(newModel));
                     setFilterModel(newModel);
                 }}
-
                 density="compact"
                 columns={columns}
                 onCellEditCommit={async (params, event) => {

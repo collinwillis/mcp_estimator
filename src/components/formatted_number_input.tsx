@@ -10,6 +10,7 @@ interface FormattedNumberInput {
     suffix?: string;
     disabled?: boolean;
     onBlur?: () => void;
+    onFocus?: () => void;
     readOnly?: boolean;
 }
 
@@ -21,6 +22,7 @@ const FormattedNumberInput = ({
                                   suffix,
                                   disabled,
                                   onBlur,
+                                  onFocus,
                                   readOnly
                               }: FormattedNumberInput) => {
     const materialUITextFieldProps = {
@@ -53,6 +55,7 @@ const FormattedNumberInput = ({
             prefix={prefix}
             suffix={suffix}
             onBlur={onBlur}
+            onFocus={onFocus}
             {...textFieldProps}
         />
     );

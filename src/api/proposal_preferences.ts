@@ -10,7 +10,7 @@ export const insertProposalPreferences = async (proposalId: string) => {
         tempArray.push(wbs.name);
     });
     const proposalPref = new FirestoreProposalPreferences({
-        wbsToDisplay: tempArray,
+        wbsToDisplay: [],
     });
     await setDoc(doc(firestore, "proposal-preferences", proposalId), {
         ...proposalPref,

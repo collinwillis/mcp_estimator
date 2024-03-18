@@ -24,6 +24,7 @@ export const usePhases = ({
             setIsLoading(true);
             const currentWbs = await getSingleWbs({wbsId: currentWbsId});
             const phases = querySnapshot.docs.map(doc => ({...doc.data(), id: doc.id} as Phase));
+            console.log(phases);
 
             const updatedPhases = await Promise.all(
                 phases.map(async (phase) => {
@@ -43,7 +44,6 @@ export const usePhases = ({
                         wmh: 0,
                         totalCost: 0,
                     };
-                    console.log(phase);
                     const costs = activities.reduce((accum, activity) => {
                         accum.costOnlyCost += activity.costOnlyCost ?? 0;
                         accum.subCost += activity.subContractorCost ?? 0;
@@ -64,19 +64,20 @@ export const usePhases = ({
                     if (!Number.isFinite(quantityResult)) {
                         quantityResult = 0;
                     }
+                    console.log(phase);
+                    if (phase.customQuantity == null) {
+                        phase.quantity = parseFloat(quantityResult.toFixed(2));
+                    } else {
+                        phase.quantity = phase.customQuantity;
+                    }
 
-                    phase.quantity = phase.quantity ?? parseFloat(quantityResult.toFixed(2));
                     phase.unit = phase.unit ?? getQuantityAndUnit(activities, wbsDatabaseId).unit;
-
-                    console.log(costs);
                     return {
                         ...phase,
                         ...costs,
                     };
                 })
             );
-            console.log(updatedPhases);
-
             setData(
                 updatedPhases.sort((a, b) =>
                     (a.phaseNumber ?? 0) - (b.phaseNumber ?? 0)
