@@ -54,7 +54,8 @@ export default function AddActivityDialog({
                 craftCost: null,
                 materialCost: null,
                 equipmentOwnership: null,
-                dateAdded: Date.now().toString(),
+                dateAdded: Date.now(),
+                sortOrder: constant.sortOrder,
             });
             temp.push(newActivity);
         });

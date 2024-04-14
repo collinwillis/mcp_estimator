@@ -11,13 +11,12 @@ import {
 } from "@mui/material";
 import React, {useEffect, useState} from "react";
 import {useParams} from "react-router-dom";
-import {insertPhase} from "../api/phase";
 import localPhaseArray from "../data/phases.json";
 import {useCurrentProposal} from "../hooks/current_proposal_hook";
 import {useCurrentWbs} from "../hooks/current_wbs_hook";
-import {usePhases} from "../hooks/phase_hook";
 import {FirestorePhase} from "../models/firestore models/phase_firestore";
 import {Phase} from "../models/phase";
+import {estimatorStore, StoreState} from "../utils/store";
 
 interface Props {
     open: boolean;
@@ -26,10 +25,7 @@ interface Props {
 
 export default function AddPhaseDialog({open, onClose}: Props) {
     const {wbsId, proposalId} = useParams();
-    const {data, isLoading} = usePhases({
-        currentWbsId: wbsId ?? "",
-        currentProposalId: proposalId ?? "",
-    });
+    const data = estimatorStore((state: StoreState) => state.phases[proposalId!] || []);
     const currentWbs = useCurrentWbs({
         wbsId: wbsId ?? "",
     });
@@ -108,6 +104,8 @@ export default function AddPhaseDialog({open, onClose}: Props) {
         }
     }, [selectedPhaseOption]);
 
+    const addPhase = estimatorStore((state: StoreState) => state.addPhase);
+
     const handlePhaseCreate = async () => {
         const newPhase: FirestorePhase = new FirestorePhase({
             phaseDatabaseName: selectedPhaseOption.description,
@@ -120,7 +118,7 @@ export default function AddPhaseDialog({open, onClose}: Props) {
             wbsId: currentWbs?.id,
             proposalId: currentProposal?.id,
         });
-        await insertPhase(newPhase);
+        await addPhase(newPhase);
         // Clear all states
         setSelectedPhaseOption({
             wbsDatabaseId: 0,

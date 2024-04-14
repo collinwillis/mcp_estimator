@@ -15,7 +15,7 @@ import {useCurrentWbs} from "../hooks/current_wbs_hook";
 import {Activity} from "../models/activity";
 import {usePhases} from "../hooks/phase_hook";
 import {useCurrentPhase} from "../hooks/current_phase_hook";
-import {copyActivitiesFromPhase} from "../api/phase";
+import {estimatorStore, StoreState} from "../utils/store";
 
 
 interface Props {
@@ -28,14 +28,12 @@ export default function CopyFromPhaseDialog({
                                                 onClose,
                                             }: Props) {
     const {wbsId, proposalId, phaseId} = useParams();
-
+    const copyActivitiesFromPhase = estimatorStore((state: StoreState) => state.copyActivitiesFromPhase);
+    const recalculatePhase = estimatorStore((state: StoreState) => state.recalculatePhase);
     const currentWbs = useCurrentWbs({
         wbsId: wbsId ?? "",
     });
-    const {data, isLoading} = usePhases({
-        currentWbsId: wbsId ?? "",
-        currentProposalId: proposalId ?? "",
-    });
+    const data = estimatorStore((state: StoreState) => state.phases[proposalId!] || []);
     const [disabled, setDisabled] = useState(true);
     const [fromPhase, setFromPhase] = useState('');
     const [toPhase, setToPhase] = useState();
@@ -46,18 +44,17 @@ export default function CopyFromPhaseDialog({
     });
     const onSubmit = async () => {
         await copyActivitiesFromPhase(fromPhase, phaseId!);
+        recalculatePhase(phaseId!);
         setFromPhase('');
         onClose();
     };
     useEffect(() => {
-        let temp = [...data];
-        const filtered = temp.filter(a => a && a.id !== phaseId);
-        setAvailablePhases(filtered)
-    }, [phaseId]);
+        const filtered = data.filter(a => a && a.id !== phaseId);
+        const filtered2 = filtered.filter(a => a && a.wbsId == wbsId);
+        const sorted = filtered2.sort((a, b) => a.phaseNumber! - b.phaseNumber!);
+        setAvailablePhases(filtered2)
+    }, [phaseId, data, currentPhase]);
 
-    useEffect(() => {
-
-    }, []);
 
     const checkSameValue = (
         array: Activity[],

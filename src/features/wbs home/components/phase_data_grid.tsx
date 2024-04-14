@@ -18,13 +18,11 @@ import {
 } from "@mui/x-data-grid";
 import React from "react";
 import {useParams} from "react-router-dom";
-import {deleteActivityBatch, getActivitiesForPhase,} from "../../../api/activity";
-import {deletePhaseBatch, duplicatePhases, updatePhase,} from "../../../api/phase";
 import {StyledDataGrid} from "../../../components/custom_data_grid";
-import {useCurrentPhase} from "../../../hooks/current_phase_hook";
 import {Phase} from "../../../models/phase";
 import DeleteConfirmationDialog from "../../../components/alert_dialog";
 import {useUserProfile} from "../../../hooks/user_profile_hook";
+import {estimatorStore, StoreState} from "../../../utils/store";
 
 const PhaseDataGrid = ({
                            phaseList,
@@ -36,27 +34,18 @@ const PhaseDataGrid = ({
     const {hasWritePermissions} = useUserProfile();
     const [selectedRows, setSelectedRows] = React.useState<GridRowId[]>([]);
     const {proposalId, wbsId, phaseId} = useParams();
-    const currentPhase = useCurrentPhase({
-        phaseId: phaseId ?? "",
-    });
     const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
+    const updatePhase = estimatorStore((state: StoreState) => state.updatePhase);
+    const deletePhases = estimatorStore((state: StoreState) => state.deletePhases);
+    const duplicatePhases = estimatorStore((state: StoreState) => state.duplicatePhases);
+
+
     const handleDelete = async () => {
         let ids: string[] = [];
         selectedRows.forEach((row) => {
             ids.push(row.toString());
         });
-        ids.forEach(async (id) => {
-            let activityIds: string[] = [];
-            const activities = await getActivitiesForPhase({
-                phaseId: id,
-                proposalId: proposalId ?? "",
-            });
-            activities.forEach((activity) => {
-                activityIds.push(activity.id);
-            });
-            await deleteActivityBatch(activityIds);
-        });
-        await deletePhaseBatch(ids);
+        await deletePhases(ids);
         setDeleteDialogOpen(false); // Close dialog after deletion
     };
 

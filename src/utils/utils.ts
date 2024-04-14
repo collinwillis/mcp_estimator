@@ -153,3 +153,7 @@ export const calculateTotals = (activities: Activity[]) => {
         totalCost: 0
     });
 };
+
+export function isNumber(value: string | number): boolean {
+    return value != null && value !== "" && !isNaN(Number(value.toString()));
+}
