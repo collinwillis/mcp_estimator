@@ -24,7 +24,6 @@ export const usePhases = ({
             setIsLoading(true);
             const currentWbs = await getSingleWbs({wbsId: currentWbsId});
             const phases = querySnapshot.docs.map(doc => ({...doc.data(), id: doc.id} as Phase));
-            console.log(phases);
 
             const updatedPhases = await Promise.all(
                 phases.map(async (phase) => {
@@ -64,7 +63,6 @@ export const usePhases = ({
                     if (!Number.isFinite(quantityResult)) {
                         quantityResult = 0;
                     }
-                    console.log(phase);
                     if (phase.customQuantity == null) {
                         phase.quantity = parseFloat(quantityResult.toFixed(2));
                     } else {

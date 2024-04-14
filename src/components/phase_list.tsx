@@ -6,10 +6,11 @@ import {
   Tooltip,
   Typography,
 } from "@mui/material";
-import React from "react";
+import React, {useEffect, useState} from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { usePhases } from "../hooks/phase_hook";
 import { Phase } from "../models/phase";
+import {estimatorStore, StoreState} from "../utils/store";
 
 interface PhaseListProps {
   onClick: (phase: Phase) => void;
@@ -17,11 +18,15 @@ interface PhaseListProps {
 
 export default function PhaseList({ onClick }: PhaseListProps) {
   const { proposalId, wbsId, phaseId } = useParams();
-  const { data, isLoading } = usePhases({
-    currentWbsId: wbsId ?? "",
-    currentProposalId: proposalId ?? "",
-  });
+  const phases = estimatorStore((state: StoreState) => state.phases[proposalId!] || []);
   const navigate = useNavigate();
+  const [data, setData] = useState<Phase[]>([]);
+    useEffect(() => {
+        let temp = phases.filter(phase => phase.wbsId === wbsId);
+        temp.sort((a, b) => a.phaseNumber! - b.phaseNumber!);
+        setData(temp);
+        console.log(temp);
+    }, [phases, wbsId]);
 
   return (
     <Box

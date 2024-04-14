@@ -21,7 +21,7 @@ import {StyledDataGrid} from "../../../components/custom_data_grid";
 import EditBaseRateDialog from "../../../components/edit_base_rate_dialog";
 import useActivities from "../../../hooks/activity_hook";
 import {useCurrentPhase} from "../../../hooks/current_phase_hook";
-import {ActivityType} from "../../../models/activity";
+import {Activity, ActivityType} from "../../../models/activity";
 import {
     costOnlyItemAvailableCells,
     customLaborItemAvailableCells,
@@ -39,6 +39,9 @@ import {
 import DeleteConfirmationDialog from "../../../components/alert_dialog";
 import {useUserProfile} from "../../../hooks/user_profile_hook";
 import CopyFromPhaseDialog from "../../../components/copy_from_phase_dialog";
+import {estimatorStore, StoreState} from "../../../utils/store";
+import {Phase} from "../../../models/phase";
+import {numberToLetters} from "../../../utils/utils";
 
 const ActivityDataGrid = () => {
 
@@ -53,11 +56,23 @@ const ActivityDataGrid = () => {
     };
 
     const {proposalId, wbsId, phaseId} = useParams();
-    const {data, loading} = useActivities({
-        currentProposalId: proposalId ?? "",
-        currentWbsId: wbsId ?? "",
-        currentPhaseId: phaseId ?? "",
-    });
+    const myactivities = estimatorStore((state: StoreState) => state.activities[proposalId!] || []);
+    const [filtered, setFiltered] = useState<Activity[]>([]);
+
+    useEffect(() => {
+        let temp = myactivities.filter(activity => activity.phaseId === phaseId);
+        const sortedActivities = [...temp].sort((a, b) => a!.sortOrder - b!.sortOrder);
+
+
+        // Process the sorted activities
+        sortedActivities.forEach((activity, index) => {
+            if (activity) {  // Check if activity is not null or undefined
+                activity.rowId = numberToLetters(index + 1);
+            }
+        });
+        setFiltered(sortedActivities);
+    }, [myactivities, phaseId]);
+
     const currentPhase = useCurrentPhase({
         phaseId: phaseId ?? "",
     });
@@ -77,7 +92,7 @@ const ActivityDataGrid = () => {
 
     useEffect(() => {
         let temp = getActivityColumns({
-            activities: data,
+            activities: filtered,
             hasWritePermissions: hasWritePermissions
         });
         setColumns(temp);
@@ -94,7 +109,7 @@ const ActivityDataGrid = () => {
         const sortJSON = localStorage.getItem("activities_sort");
         const initialSortModel = sortJSON ? JSON.parse(sortJSON) : [];
         setSortModel(initialSortModel);
-    }, [data]);
+    }, [filtered]);
 
     const handleDelete = async () => {
         let ids: string[] = [];
@@ -219,11 +234,11 @@ const ActivityDataGrid = () => {
 
     useEffect(() => {
         let temp = getActivityColumns({
-            activities: data,
+            activities: filtered,
             hasWritePermissions: hasWritePermissions,
         });
         setColumns(temp);
-    }, [data]);
+    }, [filtered]);
 
 
     return (
@@ -271,8 +286,8 @@ const ActivityDataGrid = () => {
                 onCellEditCommit={async (params, event) => {
                     var {id, field, value} = params;
                     if (field == 'rowId') {
-                        const foundActivity = data.find(activity => activity.rowId?.toLowerCase() === value.toLowerCase());
-                        changeActivityOrder(id.toString(), value, [...data]);
+                        const foundActivity = filtered.find(activity => activity.rowId?.toLowerCase() === value.toLowerCase());
+                        changeActivityOrder(id.toString(), value, [...filtered]);
                     } else {
                         const response = await updateActivity(id.toString(), field, value);
                         if (!response.success) {
@@ -282,8 +297,8 @@ const ActivityDataGrid = () => {
                     }
 
                 }}
-                rows={data}
-                loading={loading}
+                rows={filtered}
+                loading={false}
                 pageSize={100}
                 onSelectionModelChange={(newSelectionModel) => {
                     setSelectedRows(newSelectionModel);
@@ -293,7 +308,7 @@ const ActivityDataGrid = () => {
                     if (!hasWritePermissions) {
                         return false;
                     }
-                    const activity = data.find((activity) => activity.id === params.row.id);
+                    const activity = filtered.find((activity) => activity.id === params.row.id);
                     if (!activity) return false;
                     const editableCellsMap: Record<string, string[]> = {
                         [ActivityType.laborItem]: editableLaborItemCells,
@@ -309,7 +324,7 @@ const ActivityDataGrid = () => {
                     if (!hasWritePermissions) { // Check if the user has write permissions
                         return ''; // Return an empty string to not apply any additional styling
                     }
-                    const activity = data.find(
+                    const activity = filtered.find(
                         (activity) => activity.id === params.row.id
                     );
                     if (activity) {

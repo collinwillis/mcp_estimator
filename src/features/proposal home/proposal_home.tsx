@@ -9,6 +9,7 @@ import ProposalInfoAccordion from "./components/proposal_info_accordion";
 import ProposalRatesAccordion from "./components/proposal_rates_accordion";
 import SelectWbsDialog from "./components/select_wbs_dialog";
 import WbsDataGrid from "./components/wbs_data_grid";
+import {estimatorStore, StoreState} from "../../utils/store";
 
 const ProposalHomeScreen = () => {
     const navigate = useNavigate();
@@ -20,6 +21,18 @@ const ProposalHomeScreen = () => {
     const currentProposal = useCurrentProposal({
         proposalId: proposalId ?? "",
     });
+    const wbs = estimatorStore((state: StoreState) => state.visibleWbs[proposalId!] || []);
+    const prefs = estimatorStore((state: StoreState) => state.preferences[proposalId!] || []);
+    const loadFullProposalData = estimatorStore((state: StoreState) => state.loadFullProposalData);
+
+    useEffect(() => {
+        loadFullProposalData(proposalId!).then(r => {
+            console.log("WBS", prefs);
+            // console.log("ACTIVITIES", activities);
+            // console.log("PHASES", phases);
+        });
+    }, [proposalId, loadFullProposalData]);
+
     useEffect(() => {
         if (currentProposal) {
             const craftLoadedRate = getCraftLoadedRate({
@@ -46,7 +59,7 @@ const ProposalHomeScreen = () => {
                 onClose={() => {
                     setIsSelectWbsDialogOpen(false);
                 }}
-                proposalPreferences={proposalPreferences}
+                proposalPreferences={prefs}
             />
             <BottomPanel/>
         </Box>

@@ -19,6 +19,7 @@ import { FirestoreProposalPreferences } from "../../../models/firestore models/p
 import { ProposalPreferences } from "../../../models/proposal_preferences";
 import { auth } from "../../../setup/config/firebase";
 import { WbsArray, WbsEnum } from "../../../utils/enums";
+import {estimatorStore, StoreState} from "../../../utils/store";
 
 interface Props {
   isOpen: boolean;
@@ -32,7 +33,8 @@ export default function SelectWbsDialog({
 }: Props) {
   const [search, setSearch] = useState("");
   const [checked, setChecked] = useState<string[]>([]);
-
+  const updateFirestorePreferences = estimatorStore((state: StoreState) => state.setPreferences);
+  const proposal = estimatorStore((state: StoreState) => state.proposal);
   useEffect(() => {
     if (proposalPreferences) {
       setChecked(proposalPreferences?.wbsToDisplay!);
@@ -58,7 +60,8 @@ export default function SelectWbsDialog({
       ...proposalPreferences!,
       wbsToDisplay: checked!,
     };
-    await updateProposalPreferences(updatedProposalPreferences);
+    updateFirestorePreferences(proposal?.id!, updatedProposalPreferences);
+    // await updateProposalPreferences(updatedProposalPreferences);
     onClose();
   };
 
@@ -100,7 +103,7 @@ export default function SelectWbsDialog({
                     <ListItemIcon>
                       <Checkbox
                         edge="start"
-                        checked={checked.includes(wbs.name)}
+                        checked={checked?.includes(wbs.name)}
                         tabIndex={-1}
                         disableRipple
                         inputProps={{ "aria-labelledby": labelId }}

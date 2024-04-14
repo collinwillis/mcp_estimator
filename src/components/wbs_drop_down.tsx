@@ -16,10 +16,11 @@ import {
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useWbs } from "../hooks/wbs_hook";
+import {estimatorStore, StoreState} from "../utils/store";
 
 export default function WbsDropdown() {
   const { proposalId, wbsId } = useParams();
-  const { data, loading } = useWbs({ currentProposalId: proposalId! });
+  const data = estimatorStore((state: StoreState) => state.visibleWbs[proposalId!] || []);
   const navigate = useNavigate();
   return (
     <Box sx={{ width: "100%", pt: "20px" }}>

@@ -1,6 +1,6 @@
 import { Box } from "@mui/material";
 import { collection, doc, query, where } from "firebase/firestore";
-import React from "react";
+import React, {useEffect, useState} from "react";
 import { useCollection } from "react-firebase-hooks/firestore";
 import { useParams } from "react-router-dom";
 import BottomPanel from "../../components/bottom_pannel";
@@ -10,16 +10,19 @@ import { firestore } from "../../setup/config/firebase";
 import ProposalInfoAccordion from "../proposal home/components/proposal_info_accordion";
 import ProposalRatesAccordion from "../proposal home/components/proposal_rates_accordion";
 import PhaseDataGrid from "./components/phase_data_grid";
+import {estimatorStore, StoreState} from "../../utils/store";
+import {Phase} from "../../models/phase";
 
 function WbsHomeScreen() {
   const { proposalId, wbsId } = useParams();
-  const { data, isLoading } = usePhases({
-    currentWbsId: wbsId ?? "",
-    currentProposalId: proposalId ?? "",
-  });
-  const currentProposal = useCurrentProposal({
-    proposalId: proposalId ?? "",
-  });
+    const data = estimatorStore((state: StoreState) => state.phases[proposalId!] || []);
+    const [filtered, setFiltered] = useState<Phase[]>([]);
+
+    useEffect(() => {
+            let temp = data.filter(phase => phase.wbsId === wbsId);
+            setFiltered(temp);
+            console.log(temp);
+    }, [data, wbsId]);
 
   return (
     <Box
@@ -31,7 +34,7 @@ function WbsHomeScreen() {
         justifyContent: "space-between",
       }}
     >
-      <PhaseDataGrid phaseList={data} isLoading={isLoading} />
+      <PhaseDataGrid phaseList={filtered} isLoading={false} />
 
       <BottomPanel />
     </Box>

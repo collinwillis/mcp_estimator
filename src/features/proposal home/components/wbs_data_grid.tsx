@@ -10,7 +10,7 @@ import {
     GridToolbarDensitySelector,
     GridValueFormatterParams,
 } from "@mui/x-data-grid";
-import React from "react";
+import React, {useEffect} from "react";
 import {useParams} from "react-router-dom";
 import {updateWbs} from "../../../api/wbs";
 import {StyledDataGrid} from "../../../components/custom_data_grid";
@@ -19,6 +19,7 @@ import {Wbs} from "../../../models/wbs";
 import {useProposalPreferences} from "../../../hooks/proposal_preferences_hook";
 import ExportMenu from "./export_menu";
 import {useUserProfile} from "../../../hooks/user_profile_hook";
+import {estimatorStore, StoreState} from "../../../utils/store";
 
 const WbsDataGrid = ({
                          openSelectWbsDialog,
@@ -26,11 +27,15 @@ const WbsDataGrid = ({
     openSelectWbsDialog: () => void;
 }) => {
     const {proposalId, wbsId, phaseId} = useParams();
-    const {data, loading} = useWbs({currentProposalId: proposalId ?? ""});
+    const wbs = estimatorStore((state: StoreState) => state.visibleWbs[proposalId!] || []);
+    const loading = estimatorStore((state: StoreState) => state.loading);
     const proposalPreferences = useProposalPreferences(proposalId ?? "");
     const [selectedRows, setSelectedRows] = React.useState<GridRowId[]>([]);
 
     const {hasWritePermissions} = useUserProfile();
+    useEffect(() => {
+        console.log(wbs);
+    }, [wbs]);
 
     function CustomToolbar() {
         return (
@@ -103,7 +108,7 @@ const WbsDataGrid = ({
             <StyledDataGrid
                 loading={loading}
                 columns={columns}
-                rows={data}
+                rows={wbs}
                 pageSize={100}
                 onSelectionModelChange={(newSelectionModel) => {
                     setSelectedRows(newSelectionModel);

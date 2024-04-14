@@ -1,0 +1,155 @@
+import {FirestoreActivity} from "../models/firestore models/activity_firestore";
+import {Activity, ActivityType} from "../models/activity";
+import {Proposal} from "../models/proposal";
+import {
+    getCostOnlyCost,
+    getCraftLoadedRate,
+    getEquipmentCost,
+    getMaterialCost,
+    getSubcontractorCost,
+    getTotalCost,
+    getWelderLoadedRate
+} from './calculations';
+import {usePhaseStore} from "../stores/phase_store";
+
+export function processRawActivity(docId: string, firestoreActivity: FirestoreActivity, proposal: Proposal): Activity {
+    let activity = new Activity(
+        docId,
+        firestoreActivity.description ?? "",
+        firestoreActivity.proposalId ?? "",
+        firestoreActivity.wbsId ?? "",
+        firestoreActivity.phaseId ?? "",
+        firestoreActivity.constant ?? null,
+        firestoreActivity.equipment ?? null,
+        firestoreActivity.quantity ?? 0,
+        firestoreActivity.sortOrder ?? firestoreActivity.constant?.sortOrder ?? firestoreActivity.dateAdded ?? 0,
+        firestoreActivity.activityType ?? ActivityType.laborItem,
+        firestoreActivity.unit ?? firestoreActivity.constant?.craftUnits ?? "",
+        firestoreActivity.craftConstant ?? 0,
+        firestoreActivity.welderConstant ?? 0,
+        (firestoreActivity.quantity ?? 0) * (firestoreActivity.craftConstant ?? 0),
+        0,  // Craft cost to be calculated
+        (firestoreActivity.quantity ?? 0) * (firestoreActivity.welderConstant ?? 0),
+        0,  // Welder cost to be calculated
+        firestoreActivity.price ?? 0,
+        firestoreActivity.time ?? 0,
+        firestoreActivity.materialCost ?? 0,
+        firestoreActivity.equipmentCost ?? 0,
+        0,  // Subcontractor cost to be calculated
+        0,  // Cost-only cost to be calculated
+        0,  // Total cost to be updated after all calculations
+        firestoreActivity.craftBaseRate ?? proposal?.craftBaseRate ?? 0,
+        firestoreActivity.subsistenceRate ?? proposal?.subsistenceRate ?? 0,
+        proposal?.weldBaseRate ?? 0,
+        firestoreActivity.craftBaseRate ?? null,  // Custom craft rate if applicable
+        firestoreActivity.subsistenceRate ?? null,  // Custom subsistence rate if applicable
+        firestoreActivity?.equipmentOwnership ?? null,
+        firestoreActivity?.dateAdded ?? null,
+        null  // RowId if used
+    );
+
+    // Initialize common properties
+    if (activity.activityType != ActivityType.subContractorItem) {
+        activity.craftCost = activity.craftManHours * getCraftLoadedRate({
+            proposal,
+            customCraftBaseRate: activity.craftBaseRate
+        });
+    }
+    activity.welderCost = activity.welderManHours * getWelderLoadedRate({proposal});
+
+    // Apply specific calculations based on the activity type
+    switch (activity.activityType) {
+        case ActivityType.subContractorItem:
+            activity.subContractorCost = getSubcontractorCost({activity, proposal});
+            activity.totalCost = activity.subContractorCost;
+            break;
+        case ActivityType.equipmentItem:
+            activity.equipmentCost = getEquipmentCost({activity, proposal});
+            activity.totalCost = getTotalCost({activity});
+            break;
+        case ActivityType.materialItem:
+            activity.materialCost = getMaterialCost({activity, proposal});
+            activity.totalCost = getTotalCost({activity});
+            break;
+        case ActivityType.costOnlyItem:
+            activity.costOnlyCost = getCostOnlyCost({activity});
+            activity.totalCost = getTotalCost({activity});
+            break;
+        case ActivityType.laborItem:
+        case ActivityType.customLaborItem:
+            activity.totalCost = getTotalCost({activity});
+            break;
+    }
+
+    return activity;
+}
+
+export function numberToLetters(num: number) {
+    let letters = '';
+    while (num > 0) {
+        const modulo = (num - 1) % 26;
+        letters = String.fromCharCode(65 + modulo) + letters;
+        num = Math.floor((num - modulo) / 26);
+    }
+    return letters;
+}
+
+export function getQuantityAndUnit(activities: Activity[], wbsDatabaseId: number) {
+    let quantity = 0;
+    let unit = '';
+
+    const keywordMap = new Map<number, string[]>([
+        [20000, ["EXCAVATE", "BACKFILL / COMPACT"]],
+        [40000, ["CLEAN UP"]],
+        [50000, ["CLEAN UP"]],
+        [60000, ["CLEAN UP"]],
+        [70000, ["HE", "OFF", "HYDRO", "PNEU"]],
+        [130000, ["HE", "OFF", "HYDRO", "PNEU"]],
+    ]);
+
+    let keywords = keywordMap.get(wbsDatabaseId) || [];
+
+    activities.forEach((activity) => {
+        const hasKeyword = keywords.some(keyword => activity.description.toUpperCase().includes(keyword));
+        if (hasKeyword) {
+            quantity += activity.quantity;
+            unit = activity.unit;
+        }
+    });
+
+    activities.forEach((activity) => {
+        if (wbsDatabaseId === 30000) {
+            if (activity.constant && [30011, 30012, 30013, 30015].includes(activity.constant.phaseDatabaseId)) {
+                unit = "EA";
+            } else {
+                unit = "CY";
+            }
+        }
+    });
+
+    return {quantity, unit};
+}
+
+export const calculateTotals = (activities: Activity[]) => {
+    return activities.reduce((acc, activity) => ({
+        costOnlyCost: acc.costOnlyCost + (activity.costOnlyCost || 0),
+        subContractorCost: acc.subContractorCost + (activity.subContractorCost || 0),
+        materialCost: acc.materialCost + (activity.materialCost || 0),
+        equipmentCost: acc.equipmentCost + (activity.equipmentCost || 0),
+        craftCost: acc.craftCost + (activity.craftCost || 0),
+        welderCost: acc.welderCost + (activity.welderCost || 0),
+        craftManHours: acc.craftManHours + (activity.craftManHours || 0),
+        welderManHours: acc.welderManHours + (activity.welderManHours || 0),
+        totalCost: acc.totalCost + (activity.totalCost || 0)
+    }), {
+        costOnlyCost: 0,
+        subContractorCost: 0,
+        materialCost: 0,
+        equipmentCost: 0,
+        craftCost: 0,
+        welderCost: 0,
+        craftManHours: 0,
+        welderManHours: 0,
+        totalCost: 0
+    });
+};
