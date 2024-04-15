@@ -11,16 +11,6 @@ import ActivityDataGrid from "./components/activity_data_grid";
 import AddActivityDialog from "./components/add_activity_dialog";
 
 function PhaseHomeScreen() {
-  const { proposalId, wbsId, phaseId } = useParams();
-  const [addActivityOpen, setAddActivitiyOpen] = useState<boolean>(false);
-  const { data, loading } = useActivities({
-    currentPhaseId: phaseId ?? "",
-    currentProposalId: proposalId ?? "",
-  });
-  const { craftLoadedRate, welderLoadedRate } = useLoadedRates({
-    currentProposalId: proposalId ?? "",
-  });
-
   return (
     <Box
       sx={{

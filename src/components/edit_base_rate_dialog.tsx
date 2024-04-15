@@ -2,12 +2,13 @@ import {Button, Dialog, DialogContent, DialogTitle} from "@mui/material";
 import {GridRowId} from "@mui/x-data-grid";
 import React, {useEffect, useState} from "react";
 import {useParams} from "react-router-dom";
-import {getSingleActivity, updateActivityRates} from "../api/activity";
+import {getSingleActivity } from "../api/activity";
 import {useCurrentProposal} from "../hooks/current_proposal_hook";
 import {useCurrentWbs} from "../hooks/current_wbs_hook";
 import {Activity, ActivityType} from "../models/activity";
 import FormattedNumberInput from "./formatted_number_input";
 import {useCurrentPhase} from "../hooks/current_phase_hook";
+import {estimatorStore, StoreState} from "../utils/store";
 
 interface Props {
     open: boolean;
@@ -34,6 +35,8 @@ export default function EditBaseRateDialog({
     const [activities, setActivities] = useState<(Activity | undefined)[]>([]);
     const [baseRate, setBaseRate] = useState<number>();
     const [subsistence, setSubsistence] = useState<number>();
+    const recalculatePhase = estimatorStore((state: StoreState) => state.recalculatePhase);
+    const updateActivityRates = estimatorStore((state: StoreState) => state.updateActivityRates);
 
     const phaseDatabasesAllowed = [
         "180002",
@@ -44,11 +47,13 @@ export default function EditBaseRateDialog({
         const filteredActivities = activities.filter(
             (activity) => activity !== undefined
         ) as Activity[];
+        const activityIds = filteredActivities.map(activity => activity.id);
         await updateActivityRates(
-            filteredActivities,
+            activityIds,
             baseRate ?? 0,
             subsistence ?? 0
         );
+        recalculatePhase(phaseId!);
         onClose();
     };
     useEffect(() => {

@@ -21,6 +21,9 @@ import {Phase} from "../models/phase";
 import {ProposalPreferences} from "../models/proposal_preferences";
 import {FirestoreProposalPreferences} from "../models/firestore models/proposal_preferences_firestore";
 import {FirestorePhase} from "../models/firestore models/phase_firestore";
+import {getSingleProposal} from "../api/proposal";
+import {EquipmentOwnership, EquipmentUnit} from "../models/equipment";
+import {act} from "react-dom/test-utils";
 
 
 /**
@@ -201,146 +204,206 @@ export const copyActivitiesFromPhaseToPhaseInFirestore = async (fromPhaseId: str
 };
 
 
-export const insertActivityBatchToFirestore = async (activities: FirestoreActivity[]) => {
-    const batch = writeBatch(firestore);
-    const currentDate = new Date().getTime();
-    activities.forEach((activity, index) => {
-        activity.dateAdded = currentDate + index; // Removed toString()
-        const ref = doc(collection(firestore, "activities"));
-        batch.set(ref, { ...activity });
-    });
+// Function to add multiple activities in a single batch operation
 
+export const insertActivityBatchToFirestore = async (
+    activities: FirestoreActivity[],
+    proposal: Proposal
+): Promise<Activity[]> => {
+    const batch = writeBatch(firestore);
+    const newActivities: Activity[] = [];
+    activities.forEach(activity => {
+        const ref = doc(collection(firestore, "activities"));
+        batch.set(ref, { ...activity, dateAdded: Date.now() });
+        let temp = ({ ...activity, id: ref.id });
+        let processed = processRawActivity(ref.id, temp, proposal);
+        newActivities.push(processed);
+    });
+    await batch.commit();
+    return newActivities;
+};
+
+export const updateActivityFieldInFirestore = async (activityId: string, field: string, value: any) => {
+    const numberFields = [
+        "quantity",
+        "craftConstant",
+        "welderConstant",
+        "craftManHours",
+        "welderManHours",
+        "craftCost",
+        "welderCost",
+        "totalCost",
+        "craftBaseRate",
+        "subsistenceRate",
+        "equipmentCost",
+        "materialCost",
+        "costOnlyCost",
+        "price",
+        "time",
+        "subContractorCost",
+    ];
+    let newValue: number | string;
+    if (numberFields.includes(field)) {
+        if (isNaN(parseFloat(value)) || value.trim() === "") {
+            return {
+                success: false,
+                message: "Invalid input: Expected a numeric value.",
+            };
+        } else {
+            newValue = parseFloat(value);
+        }
+    } else {
+        newValue = value;
+    }
+
+    try {
+        await updateDoc(doc(firestore, "activities", activityId), { [field]: newValue });
+        return {
+            success: true,
+            message: `Field '${field}' has been updated to ${newValue}`,
+        };
+    } catch (error) {
+        console.error(error);
+        return {
+            success: false,
+            message: "An error occurred while updating the document.",
+        };
+    }
+};
+export interface EquipmentUpdateResult {
+    unit: string;
+    price: number | null;
+}
+
+export interface OwnershipUpdateResult extends EquipmentUpdateResult {
+    equipmentOwnership: string;
+}
+
+export const updateEquipmentUnitInFirestore = async ({
+                                                         activity,
+                                                         unit,
+                                                     }: {
+    activity: Activity;
+    unit: string;
+}): Promise<EquipmentUpdateResult> => {
+    const newPrice = unit === EquipmentUnit.hours
+        ? activity.equipment?.hourRate
+        : unit === EquipmentUnit.days
+            ? activity.equipment?.dayRate
+            : unit === EquipmentUnit.weeks
+                ? activity.equipment?.weekRate
+                : unit === EquipmentUnit.months
+                    ? activity.equipment?.monthRate
+                    : 0;
+
+    try {
+        await updateDoc(doc(firestore, "activities", activity.id), {
+            unit: unit,
+            price: newPrice
+        });
+        return {
+            unit: unit,
+            price: newPrice!
+        };
+    } catch (error) {
+        console.error("Failed to update equipment unit:", error);
+        return {
+            unit: activity.unit,
+            price: activity.price
+        };
+    }
+};
+
+export const updateEquipmentOwnershipInFirestore = async ({
+                                                              activity,
+                                                              ownership,
+                                                          }: {
+    activity: Activity;
+    ownership: string;
+}): Promise<OwnershipUpdateResult> => {
+    try {
+        await updateDoc(doc(firestore, "activities", activity.id), {
+            equipmentOwnership: ownership,
+        });
+
+        if (activity.equipmentOwnership === EquipmentOwnership.purchase &&
+            (ownership === EquipmentOwnership.owned || ownership === EquipmentOwnership.rental)) {
+            const unitAndPrice = await updateEquipmentUnitInFirestore({ activity, unit: "Months" });
+            return {
+                ...unitAndPrice,
+                equipmentOwnership: ownership,
+            };
+        } else if ((activity.equipmentOwnership === EquipmentOwnership.owned || activity.equipmentOwnership === EquipmentOwnership.rental) &&
+            ownership === EquipmentOwnership.purchase) {
+            const unitAndPrice = await updateEquipmentUnitInFirestore({ activity, unit: "EA" });
+            return {
+                ...unitAndPrice,
+                equipmentOwnership: ownership,
+            };
+        }
+
+        return {
+            unit: activity.unit,
+            price: activity.price,
+            equipmentOwnership: ownership,
+        };
+    } catch (error) {
+        console.error("Failed to update equipment ownership:", error);
+        return {
+            unit: activity.unit,
+            price: activity.price,
+            equipmentOwnership: activity.equipmentOwnership!
+        };
+    }
+};
+
+export const updateSortOrderBatchInFirestore = async (activities: Activity[]) => {
+    const batch = writeBatch(firestore);
+    activities.forEach(activity => {
+        const ref = doc(firestore, "activities", activity.id);
+        batch.update(ref, { sortOrder: activity.sortOrder });
+    });
     await batch.commit();
 };
 
-export const insertCustomLaborToFirestore = async (
-    proposalId: string,
-    wbsId: string,
-    phaseId: string
-) => {
-    const activity = new FirestoreActivity({
-        proposalId: proposalId,
-        wbsId: wbsId,
-        phaseId: phaseId,
-        constant: null,
-        equipment: null,
-        time: 0,
-        craftConstant: 0,
-        welderConstant: 0,
-        activityType: ActivityType.customLaborItem,
-        description: "NEW CUSTOM LABOR ITEM",
-        quantity: 0,
-        price: 0,
-        craftBaseRate: null,
-        subsistenceRate: null,
-        craftCost: null,
-        equipmentCost: null,
-        materialCost: null,
-        equipmentOwnership: null,
-        dateAdded: Date.now(),
-        sortOrder: null,
+export const resetConstantsBatchInFirestore = async (activityIds: string[]) => {
+    const batch = writeBatch(firestore);
+    activityIds.forEach((activityId) => {
+        batch.update(doc(firestore, "activities", activityId), {
+            craftConstant: null,
+            welderConstant: null,
+            unit: null,
+        });
     });
-    const docRef = await addDoc(collection(firestore, "activities"), {
-        ...activity,
-    });
+    await batch.commit();
 };
 
-export const insertCostOnlyToFirestore = async (
-    proposalId: string,
-    wbsId: string,
-    phaseId: string
-) => {
-    const activity = new FirestoreActivity({
-        proposalId: proposalId,
-        wbsId: wbsId,
-        phaseId: phaseId,
-        constant: null,
-        equipment: null,
-        time: 0,
-        craftConstant: 0,
-        welderConstant: 0,
-        activityType: ActivityType.costOnlyItem,
-        description: "NEW COST ONLY ITEM",
-        quantity: 0,
-        price: 0,
-        craftBaseRate: null,
-        subsistenceRate: null,
-        craftCost: null,
-        equipmentCost: null,
-        materialCost: null,
-        equipmentOwnership: null,
-        dateAdded: Date.now(),
-        sortOrder: null,
+export const deleteActivityBatchInFirestore = async (activityIds: string[]) => {
+    const batch = writeBatch(firestore);
+    activityIds.forEach((activityId) => {
+        batch.delete(doc(firestore, "activities", activityId));
     });
-    const docRef = await addDoc(collection(firestore, "activities"), {
-        ...activity,
-    });
+    await batch.commit();
 };
 
-export const insertMaterialToFirestore = async (
-    proposalId: string,
-    wbsId: string,
-    phaseId: string
-) => {
-    const activity = new FirestoreActivity({
-        proposalId: proposalId,
-        wbsId: wbsId,
-        phaseId: phaseId,
-        constant: null,
-        equipment: null,
-        time: 0,
-        craftConstant: 0,
-        welderConstant: 0,
-        activityType: ActivityType.materialItem,
-        description: "NEW MATERIAL ITEM",
-        quantity: 0,
-        price: 0,
-        craftBaseRate: null,
-        subsistenceRate: null,
-        craftCost: null,
-        equipmentCost: null,
-        materialCost: null,
-        equipmentOwnership: null,
-        dateAdded: Date.now(),
-        sortOrder: null,
+export async function updateActivityRatesInFirestore(
+    ids: string[],
+    newBaseRate: number,
+    newSubsistenceRate: number
+) {
+    const batch = writeBatch(firestore);
+    ids.forEach((activity) => {
+        if (activity) {
+            batch.update(doc(firestore, "activities", activity), {
+                craftBaseRate: newBaseRate,
+                subsistenceRate: newSubsistenceRate,
+            });
+        }
     });
-    const docRef = await addDoc(collection(firestore, "activities"), {
-        ...activity,
-    });
-};
+    await batch.commit();
+}
 
-export const insertSubcontractorToFirestore = async (
-    proposalId: string,
-    wbsId: string,
-    phaseId: string
-) => {
-    const activity = new FirestoreActivity({
-        proposalId: proposalId,
-        wbsId: wbsId,
-        unit: "HOURS",
-        phaseId: phaseId,
-        constant: null,
-        equipment: null,
-        time: 0,
-        craftConstant: 0,
-        welderConstant: 0,
-        activityType: ActivityType.subContractorItem,
-        description: "NEW SUBCONTRACTOR",
-        quantity: 0,
-        price: 0,
-        craftBaseRate: null,
-        subsistenceRate: null,
-        craftCost: 0,
-        equipmentCost: 0,
-        materialCost: 0,
-        equipmentOwnership: null,
-        dateAdded: Date.now(),
-        sortOrder: null,
-    });
-    const docRef = await addDoc(collection(firestore, "activities"), {
-        ...activity,
-    });
-};
+
 
 
 

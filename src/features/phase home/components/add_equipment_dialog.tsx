@@ -7,12 +7,12 @@ import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import React, {useEffect, useState} from "react";
 import {useParams} from "react-router-dom";
-import {insertActivityBatch} from "../../../api/activity";
 import rawEquipment from "../../../data/equipment_v2.json";
 import {useCurrentPhase} from "../../../hooks/current_phase_hook";
 import {ActivityType} from "../../../models/activity";
 import {Equipment, EquipmentOwnership, EquipmentUnit,} from "../../../models/equipment";
 import {FirestoreActivity} from "../../../models/firestore models/activity_firestore";
+import {estimatorStore, StoreState} from "../../../utils/store";
 
 export default function AddEquipmentDialog({
                                                open,
@@ -29,6 +29,8 @@ export default function AddEquipmentDialog({
     const [searchResults, setSearchResults] = useState<Equipment[]>([]);
     const [checked, setChecked] = useState<Equipment[]>([]);
     const [equipment, setEquipment] = useState<Equipment[]>([]);
+    const addActivities = estimatorStore((state: StoreState) => state.addActivities);
+    const recalculatePhase = estimatorStore((state: StoreState) => state.recalculatePhase);
 
     //batch add new activities to db
     async function addToDb() {
@@ -59,7 +61,8 @@ export default function AddEquipmentDialog({
             });
             temp.push(newActivity);
         });
-        await insertActivityBatch(temp);
+        await addActivities(temp);
+        recalculatePhase(phaseId!);
         setChecked([]);
         setSearch("");
         setSearchResults([]);

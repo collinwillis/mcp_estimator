@@ -6,6 +6,7 @@ import FormattedNumberInput from "../../../components/formatted_number_input";
 import {useCurrentProposalListener} from "../../../hooks/current_proposal_listener_hook";
 import {FirestoreProposal} from "../../../models/firestore models/proposal_firestore";
 import {useUserProfile} from "../../../hooks/user_profile_hook";
+import {estimatorStore, StoreState} from "../../../utils/store";
 
 interface ProposalRatesAccordionProps {
     proposalId: string;
@@ -140,7 +141,7 @@ export default function ProposalRatesAccordion({
         }, 10);
     };
 
-
+    const loadFullProposalData = estimatorStore((state: StoreState) => state.loadFullProposalData);
     const handleBlur = async (fieldName: string, value: string) => {
         let originalStateSetter;
         let stateSetter;
@@ -239,6 +240,7 @@ export default function ProposalRatesAccordion({
         if (currentFocusRef.current === fieldName) {
             currentFocusRef.current = null;
         }
+        await loadFullProposalData(proposalId!);
     };
 
     useEffect(() => {

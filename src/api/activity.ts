@@ -231,13 +231,6 @@ export const changeActivityOrder = async (
     }
     await updateActivitiesBatch(activities);
   }
-
-  // Update the sortOrder of all activities
-  // activities.forEach((activity, index) => {
-  //     activity.sortOrder = index + 1; // or use a different logic if sortOrder is not sequential
-  // });
-
-  // Update activities in Firestore and local state
 };
 
 export const addCustomLabor = async (

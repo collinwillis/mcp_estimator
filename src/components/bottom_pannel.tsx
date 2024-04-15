@@ -4,11 +4,14 @@ import {Avatar, Box, Button, Grid, Stack, Typography} from "@mui/material";
 import {blue, green} from "@mui/material/colors";
 import {useEffect, useRef, useState} from "react";
 import {useParams} from "react-router-dom";
-import {addCostOnly, addCustomLabor, addMaterial, addSubcontractor,} from "../api/activity";
 import AddActivityDialog from "../features/phase home/components/add_activity_dialog";
 import AddEquipmentDialog from "../features/phase home/components/add_equipment_dialog";
 import useActivities from "../hooks/activity_hook";
 import {useUserProfile} from "../hooks/user_profile_hook";
+import {estimatorStore, StoreState} from "../utils/store";
+import {baseCostOnly, baseCustomLabor, FirestoreActivity} from "../models/firestore models/activity_firestore";
+import {Activity, ActivityType} from "../models/activity";
+import {Proposal} from "../models/proposal";
 
 const BottomPanel: React.FC = () => {
     const [height, setHeight] = useState<number>(300);
@@ -19,11 +22,7 @@ const BottomPanel: React.FC = () => {
     const ref = useRef<HTMLDivElement>(null);
     const {proposalId, wbsId, phaseId} = useParams();
 
-    const {data, loading} = useActivities({
-        currentProposalId: proposalId ?? "",
-        currentPhaseId: phaseId,
-        currentWbsId: wbsId,
-    });
+ const [data, setData] = useState<Activity[]>([]);
 
     const [totalCost, setTotalCost] = useState(0);
     const [totalManHours, setTotalManHours] = useState(0);
@@ -36,6 +35,23 @@ const BottomPanel: React.FC = () => {
     const [equipmentCost, setEquipmentCost] = useState(0);
     const [materialCost, setMaterialCost] = useState(0);
     const [costOnlyCost, setCostOnlyCost] = useState(0);
+
+    const activities = estimatorStore((state: StoreState) => state.activities[proposalId!] || []);
+
+    useEffect(() => {
+        if(phaseId)
+        {
+            let temp = activities.filter(activity => activity.phaseId === phaseId);
+            setData(temp);
+        }
+        else if(wbsId){
+            let temp = activities.filter(activity => activity.wbsId === wbsId);
+            setData(temp);
+        }
+        else{
+            setData(activities);
+        }
+    }, [activities, phaseId, proposalId, wbsId]);
 
     const {hasWritePermissions} = useUserProfile();
     useEffect(() => {
@@ -94,7 +110,113 @@ const BottomPanel: React.FC = () => {
             });
         }
     };
-
+    const addActivities = estimatorStore((state: StoreState) => state.addActivities);
+    const recalculatePhase = estimatorStore((state: StoreState) => state.recalculatePhase);
+    async function addMaterial() {
+        const activity = new FirestoreActivity({
+            proposalId: proposalId,
+            wbsId: wbsId,
+            phaseId: phaseId,
+            constant: null,
+            equipment: null,
+            time: 0,
+            craftConstant: 0,
+            welderConstant: 0,
+            activityType: ActivityType.materialItem,
+            description: "NEW MATERIAL ITEM",
+            quantity: 0,
+            price: 0,
+            craftBaseRate: null,
+            subsistenceRate: null,
+            craftCost: null,
+            equipmentCost: null,
+            materialCost: null,
+            equipmentOwnership: null,
+            dateAdded: Date.now(),
+            sortOrder: null,
+        });
+        await addActivities([activity]);
+        recalculatePhase(phaseId!);
+    };
+    async function addCustomLabor() {
+        const activity = new FirestoreActivity({
+            proposalId: proposalId,
+            wbsId: wbsId,
+            phaseId: phaseId,
+            constant: null,
+            equipment: null,
+            time: 0,
+            craftConstant: 0,
+            welderConstant: 0,
+            activityType: ActivityType.customLaborItem,
+            description: "NEW CUSTOM LABOR ITEM",
+            quantity: 0,
+            price: 0,
+            craftBaseRate: null,
+            subsistenceRate: null,
+            craftCost: null,
+            equipmentCost: null,
+            materialCost: null,
+            equipmentOwnership: null,
+            dateAdded: Date.now(),
+            sortOrder: null,
+        });
+        await addActivities([activity]);
+        recalculatePhase(phaseId!);
+    };
+    async function addSubcontractor() {
+        const activity = new FirestoreActivity({
+            proposalId: proposalId,
+            wbsId: wbsId,
+            unit: "HOURS",
+            phaseId: phaseId,
+            constant: null,
+            equipment: null,
+            time: 0,
+            craftConstant: 0,
+            welderConstant: 0,
+            activityType: ActivityType.subContractorItem,
+            description: "NEW SUBCONTRACTOR",
+            quantity: 0,
+            price: 0,
+            craftBaseRate: null,
+            subsistenceRate: null,
+            craftCost: 0,
+            equipmentCost: 0,
+            materialCost: 0,
+            equipmentOwnership: null,
+            dateAdded: Date.now(),
+            sortOrder: null,
+        });
+        await addActivities([activity]);
+        recalculatePhase(phaseId!);
+    };
+    async function addCostOnly() {
+        const activity = new FirestoreActivity({
+            proposalId: proposalId,
+            wbsId: wbsId,
+            phaseId: phaseId,
+            constant: null,
+            equipment: null,
+            time: 0,
+            craftConstant: 0,
+            welderConstant: 0,
+            activityType: ActivityType.costOnlyItem,
+            description: "NEW COST ONLY ITEM",
+            quantity: 0,
+            price: 0,
+            craftBaseRate: null,
+            subsistenceRate: null,
+            craftCost: null,
+            equipmentCost: null,
+            materialCost: null,
+            equipmentOwnership: null,
+            dateAdded: Date.now(),
+            sortOrder: null,
+        });
+        await addActivities([activity]);
+        recalculatePhase(phaseId!);
+    };
     return (
         <Box
             sx={{
@@ -350,7 +472,7 @@ const BottomPanel: React.FC = () => {
                                     disabled={phaseId == null}
                                     fullWidth
                                     variant="contained"
-                                    onClick={() => addMaterial(proposalId!, wbsId!, phaseId!)}
+                                    onClick={() => addMaterial()}
                                 >
                                     Material
                                 </Button>
@@ -360,7 +482,7 @@ const BottomPanel: React.FC = () => {
                                     disabled={phaseId == null}
                                     fullWidth
                                     variant="contained"
-                                    onClick={() => addCostOnly(proposalId!, wbsId!, phaseId!)}
+                                    onClick={() => addCostOnly()}
                                 >
                                     Cost Only
                                 </Button>
@@ -375,7 +497,7 @@ const BottomPanel: React.FC = () => {
                                         textOverflow: "ellipsis",
                                     }}
                                     variant="contained"
-                                    onClick={() => addCustomLabor(proposalId!, wbsId!, phaseId!)}
+                                    onClick={() => addCustomLabor()}
                                 >
                                     Custom Labor
                                 </Button>
@@ -385,7 +507,7 @@ const BottomPanel: React.FC = () => {
                                     disabled={phaseId == null}
                                     fullWidth
                                     variant="contained"
-                                    onClick={() => addSubcontractor(proposalId!, wbsId!, phaseId!)}
+                                    onClick={() => addSubcontractor()}
                                 >
                                     Subcontractor
                                 </Button>

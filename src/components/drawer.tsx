@@ -1,4 +1,12 @@
-import {AdminPanelSettings, ArrowBack, ContentCopy, EditRounded, ExitToApp, Settings} from "@mui/icons-material";
+import {
+    AdminPanelSettings,
+    ArrowBack,
+    ContentCopy,
+    DownloadForOffline,
+    EditRounded,
+    ExitToApp,
+    Settings
+} from "@mui/icons-material";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import MenuIcon from "@mui/icons-material/Menu";
@@ -38,6 +46,8 @@ import TextField from '@mui/material/TextField';
 import InputAdornment from '@mui/material/InputAdornment';
 import SearchIcon from '@mui/icons-material/Search';
 import {useProposals} from "../hooks/proposals_hook";
+import {HStack} from "@chakra-ui/react";
+import {estimatorStore, StoreState} from "../utils/store";
 
 const drawerWidth = 300;
 const appBar = document.querySelector("header.MuiAppBar-root");
@@ -167,7 +177,7 @@ export default function EstimatorDrawer({children}: EstimatorDrawerProps) {
     const handleDrawerOpen = () => {
         setOpen(true);
     };
-
+    const loadFullProposalData = estimatorStore((state: StoreState) => state.loadFullProposalData);
     const handleDrawerClose = () => {
         setOpen(false);
     };
@@ -257,37 +267,51 @@ export default function EstimatorDrawer({children}: EstimatorDrawerProps) {
                     >
                         <MenuIcon/>
                     </IconButton>
+                    <HStack gap={2}>
+                        {proposalId &&
+                            <IconButton
+                                color="inherit"
+                                aria-label="menu"
+                                onClick={() => loadFullProposalData(proposalId)}
+                                edge="end"
 
-                    {/* New Menu for admin console and logout options */}
-                    <Menu
-                        anchorEl={mainMenuAnchorEl}
-                        open={Boolean(mainMenuAnchorEl)}
-                        onClose={handleMenuClose}
-                    >
-                        {isAdmin && (
-                            <MenuItem onClick={() => {
-                                handleMenuClose();
-                                navigate("/admin");
-                            }}>
-                                <ListItemIcon>
-                                    <AdminPanelSettings fontSize="small"/>
-                                </ListItemIcon>
-                                <ListItemText primary="Admin Console"/>
-                            </MenuItem>
-                        )}
-                        <MenuItem
-                            onClick={() => {
-                                handleMenuClose();
-                                auth.signOut();
-                            }}
-                            sx={{color: 'red'}}  // This line changes the text color to red
+                            >
+                                <DownloadForOffline/>
+                            </IconButton>
+                        }
+
+                        {/* New Menu for admin console and logout options */}
+                        <Menu
+                            anchorEl={mainMenuAnchorEl}
+                            open={Boolean(mainMenuAnchorEl)}
+                            onClose={handleMenuClose}
                         >
-                            <ListItemIcon>
-                                <ExitToApp fontSize="small" sx={{color: 'inherit'}}/>
-                            </ListItemIcon>
-                            <ListItemText primary="Logout"/>
-                        </MenuItem>
-                    </Menu>
+                            {isAdmin && (
+                                <MenuItem onClick={() => {
+                                    handleMenuClose();
+                                    navigate("/admin");
+                                }}>
+                                    <ListItemIcon>
+                                        <AdminPanelSettings fontSize="small"/>
+                                    </ListItemIcon>
+                                    <ListItemText primary="Admin Console"/>
+                                </MenuItem>
+                            )}
+                            <MenuItem
+                                onClick={() => {
+                                    handleMenuClose();
+                                    auth.signOut();
+                                }}
+                                sx={{color: 'red'}}  // This line changes the text color to red
+                            >
+                                <ListItemIcon>
+                                    <ExitToApp fontSize="small" sx={{color: 'inherit'}}/>
+                                </ListItemIcon>
+                                <ListItemText primary="Logout"/>
+                            </MenuItem>
+                        </Menu>
+                    </HStack>
+
                 </Toolbar>
 
             </AppBar>

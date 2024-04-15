@@ -25,8 +25,8 @@ export function processRawActivity(docId: string, firestoreActivity: FirestoreAc
         firestoreActivity.sortOrder ?? firestoreActivity.constant?.sortOrder ?? firestoreActivity.dateAdded ?? 0,
         firestoreActivity.activityType ?? ActivityType.laborItem,
         firestoreActivity.unit ?? firestoreActivity.constant?.craftUnits ?? "",
-        firestoreActivity.craftConstant ?? 0,
-        firestoreActivity.welderConstant ?? 0,
+        firestoreActivity.craftConstant ?? firestoreActivity.constant?.craftConstant ?? 0,
+        firestoreActivity.welderConstant ?? firestoreActivity.constant?.weldConstant ?? 0,
         (firestoreActivity.quantity ?? 0) * (firestoreActivity.craftConstant ?? 0),
         0,  // Craft cost to be calculated
         (firestoreActivity.quantity ?? 0) * (firestoreActivity.welderConstant ?? 0),
@@ -112,7 +112,7 @@ export function getQuantityAndUnit(activities: Activity[], wbsDatabaseId: number
     activities.forEach((activity) => {
         const hasKeyword = keywords.some(keyword => activity.description.toUpperCase().includes(keyword));
         if (hasKeyword) {
-            quantity += activity.quantity;
+            quantity += parseInt(String(activity.quantity));
             unit = activity.unit;
         }
     });

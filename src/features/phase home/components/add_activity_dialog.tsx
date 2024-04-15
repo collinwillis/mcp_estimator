@@ -13,6 +13,7 @@ import {useCurrentPhase} from "../../../hooks/current_phase_hook";
 import {ActivityType} from "../../../models/activity";
 import {Constant} from "../../../models/constant";
 import {FirestoreActivity} from "../../../models/firestore models/activity_firestore";
+import {estimatorStore, StoreState} from "../../../utils/store";
 
 export default function AddActivityDialog({
                                               open,
@@ -29,7 +30,8 @@ export default function AddActivityDialog({
     const [searchResults, setSearchResults] = useState<Constant[]>([]);
     const [checked, setChecked] = useState<Constant[]>([]);
     const [constants, setConstants] = useState<Constant[]>([]);
-
+    const addActivities = estimatorStore((state: StoreState) => state.addActivities);
+    const recalculatePhase = estimatorStore((state: StoreState) => state.recalculatePhase);
     //batch add new activities to db
     async function addToDb() {
         let temp: FirestoreActivity[] = [];
@@ -59,7 +61,8 @@ export default function AddActivityDialog({
             });
             temp.push(newActivity);
         });
-        await insertActivityBatch(temp);
+        await addActivities(temp);
+        recalculatePhase(phaseId!);
         setChecked([]);
         setConstants([]);
         onClose();

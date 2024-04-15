@@ -20,6 +20,9 @@ function WbsHomeScreen() {
 
     useEffect(() => {
             let temp = data.filter(phase => phase.wbsId === wbsId);
+            temp.forEach((phase) => {
+
+            });
             setFiltered(temp);
             console.log(temp);
     }, [data, wbsId]);

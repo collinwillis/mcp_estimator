@@ -17,12 +17,6 @@ import {
 import React, { SyntheticEvent, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import {
-  changeActivityOrder,
-  deleteActivityBatch,
-  resetConstantsBatch,
-  updateActivity,
-} from "../../../api/activity";
-import {
   loadColumnVisibilityModel,
   saveColumnVisibilityModel,
 } from "../../../api/helpers";
@@ -30,7 +24,6 @@ import DeleteConfirmationDialog from "../../../components/alert_dialog";
 import CopyFromPhaseDialog from "../../../components/copy_from_phase_dialog";
 import { StyledDataGrid } from "../../../components/custom_data_grid";
 import EditBaseRateDialog from "../../../components/edit_base_rate_dialog";
-import useActivities from "../../../hooks/activity_hook";
 import {useCurrentPhase} from "../../../hooks/current_phase_hook";
 import {Activity, ActivityType} from "../../../models/activity";
 import { useUserProfile } from "../../../hooks/user_profile_hook";
@@ -87,6 +80,13 @@ const ActivityDataGrid = () => {
   const userId = user?.userProfile?.uid;
 
   const myactivities = estimatorStore((state: StoreState) => state.activities[proposalId!] || []);
+  const updateActivity = estimatorStore((state: StoreState) => state.updateActivity);
+  const updateEquipmentOwnership = estimatorStore((state: StoreState) => state.updateEquipmentOwnership);
+  const updateEquipmentUnit = estimatorStore((state: StoreState) => state.updateEquipmentUnit);
+  const recalculatePhase = estimatorStore((state: StoreState) => state.recalculatePhase);
+  const changeActivityOrder = estimatorStore((state: StoreState) => state.changeActivityOrder);
+  const resetConstants = estimatorStore((state: StoreState) => state.resetConstants);
+  const deleteActivities = estimatorStore((state: StoreState) => state.deleteActivities);
   const [filtered, setFiltered] = useState<Activity[]>([]);
 
   useEffect(() => {
@@ -123,6 +123,16 @@ const ActivityDataGrid = () => {
       }
     };
 
+    const updateOwnership = async (activity: Activity, ownership: string) => {
+      await updateEquipmentOwnership(activity, ownership);
+      recalculatePhase(phaseId!);
+    };
+
+    const updateEquipUnit = async (activity: Activity, unit: string) => {
+      await updateEquipmentUnit(activity, unit);
+      recalculatePhase(phaseId!);
+    };
+
     const filterJSON = localStorage.getItem("activities_filter");
     const initialFilterModel = filterJSON
       ? JSON.parse(filterJSON)
@@ -135,16 +145,19 @@ const ActivityDataGrid = () => {
     let temp = getActivityColumns({
       activities: filtered,
       hasWritePermissions: hasWritePermissions,
+      updateEquipmentOwnership: updateOwnership,
+      updateEquipmentUnit: updateEquipUnit,
     });
     setColumns(temp);
-  }, [filtered]);
+  }, [filtered, hasWritePermissions]);
 
   const handleDelete = async () => {
     let ids: string[] = [];
     selectedRows.map((row) => {
       ids.push(row.toString());
     });
-    await deleteActivityBatch(ids);
+    await deleteActivities(ids);
+    recalculatePhase(phaseId!);
     setDeleteDialogOpen(false); // Close the dialog after deletion
   };
 
@@ -210,16 +223,17 @@ const ActivityDataGrid = () => {
               <Button
                 disabled={selectedRows == null || selectedRows.length <= 0}
                 sx={{ color: "#424242", fontSize: "14px" }}
-                onClick={() => {
+                onClick={async () => {
                   let ids: string[] = [];
                   selectedRows.map((row) => {
                     ids.push(row.toString());
                   });
-                  resetConstantsBatch(ids);
+                  await resetConstants(ids);
+                  recalculatePhase(phaseId!);
                 }}
                 startIcon={<RefreshIcon />}
               >
-                Quantity / Units
+                Constants / Units
               </Button>
               <Divider
                 light
@@ -328,13 +342,10 @@ const ActivityDataGrid = () => {
               (activity) =>
                 activity.rowId?.toLowerCase() === value.toLowerCase()
             );
-            changeActivityOrder(id.toString(), value, [...filtered]);
+            await changeActivityOrder(id.toString(), value);
           } else {
-            const response = await updateActivity(id.toString(), field, value);
-            if (!response.success) {
-              setSnackbarMessage(response.message);
-              setSnackbarOpen(true);
-            }
+            await updateActivity(id.toString(), field, value);
+            recalculatePhase(phaseId!);
           }
         }}
         rows={filtered}

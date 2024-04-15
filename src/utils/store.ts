@@ -1,22 +1,28 @@
 // src/store/useStore.ts
 import {create} from 'zustand';
 import {
-    copyActivitiesFromPhaseToPhaseInFirestore,
-    deletePhasesInFirestore, duplicatePhasesAndActivitiesInFirestore,
+    copyActivitiesFromPhaseToPhaseInFirestore, deleteActivityBatchInFirestore,
+    deletePhasesInFirestore,
+    duplicatePhasesAndActivitiesInFirestore,
     fetchProposalData,
     fetchProposalPreferencesFromFirestore,
-    insertPhaseToFirestore,
-    updatePhaseFieldInFirestore
+    insertActivityBatchToFirestore,
+    insertPhaseToFirestore, resetConstantsBatchInFirestore,
+    updateActivityFieldInFirestore, updateActivityRatesInFirestore,
+    updateEquipmentOwnershipInFirestore,
+    updateEquipmentUnitInFirestore,
+    updatePhaseFieldInFirestore, updateSortOrderBatchInFirestore
 } from "../newAPI/api";
 import {Phase} from "../models/phase";
 import {Wbs} from "../models/wbs";
 import {Activity} from "../models/activity";
 import {Proposal} from "../models/proposal";
 import {getSingleProposal} from "../api/proposal";
-import {calculateTotals, getQuantityAndUnit} from "./utils";
+import {calculateTotals, getQuantityAndUnit, numberToLetters, processRawActivity} from "./utils";
 import {ProposalPreferences} from "../models/proposal_preferences";
 import {debouncedUpdateProposalPreferencesInFirestore} from "../newAPI/debounced";
 import {FirestorePhase} from "../models/firestore models/phase_firestore";
+import {FirestoreActivity} from "../models/firestore models/activity_firestore";
 
 
 export interface StoreState {
@@ -37,6 +43,14 @@ export interface StoreState {
     deletePhases: (phaseIds: string[]) => Promise<void>;
     duplicatePhases: (phaseIds: string[]) => Promise<void>;
     copyActivitiesFromPhase: (fromPhaseId: string, toPhaseId: string) => Promise<void>;
+    addActivities: (activities: FirestoreActivity[]) => Promise<void>;
+    updateActivity: (activityId: string, field: string, value: any) => Promise<void>;
+    updateEquipmentUnit: (activity: Activity, unit: string) => Promise<void>;
+    updateEquipmentOwnership: (activity: Activity, ownership: string) => Promise<void>;
+    changeActivityOrder: (activityId: string, newRowId: string) => Promise<void>;
+    resetConstants: (ids: string[]) => Promise<void>;
+    deleteActivities: (ids: string[]) => Promise<void>;
+    updateActivityRates: (ids: string[], baseRate: number, sub: number) => Promise<void>;
 }
 
 
@@ -96,6 +110,11 @@ export const estimatorStore = create<StoreState>()((set, get) => ({
     },
 
     recalculatePhase: (phaseId: string) => {
+        let wbs = get().wbs[get().proposal?.id!];
+        const wbsLookup = wbs.reduce((acc, wbsItem) => {
+            acc[wbsItem.id!] = wbsItem;
+            return acc;
+        }, {} as Record<string, Wbs>);
         set(state => {
             const existingPhases = state.phases[state.proposal?.id!] || [];
             const existingActivities = state.activities[state.proposal?.id!] || [];
@@ -106,7 +125,16 @@ export const estimatorStore = create<StoreState>()((set, get) => ({
 
             const phaseActivities = existingActivities.filter(activity => activity.phaseId === phaseId);
             const totals = calculateTotals(phaseActivities);
-            const updatedPhase = {...existingPhases[phaseIndex], ...totals};
+            let wbsId = existingPhases[phaseIndex].wbsId;
+            let quantity =  getQuantityAndUnit(phaseActivities, wbsLookup[wbsId!].wbsDatabaseId!).quantity;
+            console.log("QUANTITY", quantity);
+
+            const updatedPhase = {
+                ...existingPhases[phaseIndex],
+                ...totals,
+                quantity: existingPhases[phaseIndex].customQuantity ?? getQuantityAndUnit(phaseActivities, wbsLookup[wbsId!].wbsDatabaseId!).quantity,
+                unit: existingPhases[phaseIndex].customUnit ?? getQuantityAndUnit(phaseActivities, wbsLookup[wbsId!].wbsDatabaseId!).unit
+            };
 
             // Create a new array of phases with the updated phase
             const updatedPhases = [
@@ -268,6 +296,232 @@ export const estimatorStore = create<StoreState>()((set, get) => ({
                 activities: {
                     ...state.activities,
                     [proposalId]: [...existingActivities, ...newActivities] // Merge new activities into the existing array
+                }
+            };
+        });
+    },
+    addActivities: async (activities: FirestoreActivity[]) => {
+        let proposal = get().proposal;
+        if (!proposal) {
+            return;
+        }
+        const newActivities = await insertActivityBatchToFirestore(activities, proposal);
+        set(state => {
+            const existingActivities = state.activities[proposal?.id!] || [];
+            return {
+                ...state,
+                activities: {
+                    ...state.activities,
+                    [state.proposal?.id!]: [...existingActivities, ...newActivities]
+                }
+            };
+        });
+    },
+    updateActivity: async (activityId: string, field: string, value: any) => {
+       const result = await updateActivityFieldInFirestore(activityId, field, value);
+       if(result.success){
+           set(state => {
+               const updatedActivities = {...state.activities};
+               Object.keys(updatedActivities).forEach(proposalId => {
+                   const activities = updatedActivities[proposalId];
+                   const index = activities.findIndex(activity => activity.id === activityId);
+                   if (index !== -1) {
+                       const updatedActivity = { ...activities[index], [field]: value } as FirestoreActivity;
+                       let processedActivity = processRawActivity(activities[index].id!, updatedActivity, state.proposal!);
+                       updatedActivities[proposalId] = [
+                           ...activities.slice(0, index),
+                           processedActivity,
+                           ...activities.slice(index + 1)
+                       ];
+                   }
+               });
+               return { ...state, activities: updatedActivities };
+           });
+       }
+    },
+    updateEquipmentUnit: async (activity: Activity, unit: string) => {
+        const updated = await updateEquipmentUnitInFirestore({ activity, unit });
+        set(state => {
+            const existingActivities = state.activities[state.proposal?.id!] || [];
+            const index = existingActivities.findIndex(a => a.id === activity.id);
+            if (index !== -1) {
+                const updatedActivities = [...existingActivities];
+                let temp = { ...updatedActivities[index], unit: updated.unit, price: updated.price! } as FirestoreActivity;
+                updatedActivities[index] = processRawActivity(activity.id!, temp, state.proposal!);
+                return {
+                    ...state,
+                    activities: {
+                        ...state.activities,
+                        [state.proposal?.id!]: updatedActivities,
+                    }
+                };
+            }
+            return state;
+        });
+    },
+    updateEquipmentOwnership: async (activity: Activity, ownership: string) => {
+        const updated = await updateEquipmentOwnershipInFirestore({ activity, ownership });
+        set(state => {
+            const existingActivities = state.activities[state.proposal?.id!] || [];
+            const index = existingActivities.findIndex(a => a.id === activity.id);
+            if (index !== -1) {
+                const updatedActivities = [...existingActivities];
+                let temp = {
+                    ...updatedActivities[index],
+                    equipmentOwnership: updated.equipmentOwnership,
+                    unit: updated.unit,
+                    price: updated.price!
+                } as FirestoreActivity;
+                updatedActivities[index] = processRawActivity(activity.id!, temp, state.proposal!);
+                return {
+                    ...state,
+                    activities: {
+                        ...state.activities,
+                        [state.proposal?.id!]: updatedActivities,
+                    }
+                };
+            }
+            return state;
+        });
+    },
+// TODO: COME BACK TO THIS AND FIX
+    changeActivityOrder: async (activityId: string, newRowId: string) => {
+        set(state => {
+            const proposalId = state.proposal?.id;
+            if (!proposalId) return state;  // Return current state if no proposal is loaded
+
+            const activities = state.activities[proposalId] || [];
+            const selectedActivityIndex = activities.findIndex(
+                (activity) => activity.id === activityId
+            );
+
+            // Early exit if selected activity is not found, returning current state to ensure type safety
+            if (selectedActivityIndex === -1) {
+                console.error("Selected activity not found");
+                return state;
+            }
+
+            let filteredActivities = activities.filter((activity) => activity.phaseId === activities[selectedActivityIndex].phaseId);
+            let newActivities = [...filteredActivities];
+
+            const targetActivityIndex = newActivities.findIndex(
+                (activity) => activity.rowId === newRowId.toUpperCase()
+            );
+            const selectedFilteredActivityIndex = newActivities.findIndex(
+                (activity) => activity.id === activityId
+            );
+
+            // Exit if target or selected indexes are invalid or no change is needed, returning current state
+            if (targetActivityIndex === -1 || selectedFilteredActivityIndex === -1 || targetActivityIndex === selectedFilteredActivityIndex) {
+                console.error("Invalid operation or no change needed");
+                return state;
+            }
+
+            const [selectedActivity] = newActivities.splice(selectedFilteredActivityIndex, 1);
+            newActivities.splice(targetActivityIndex, 0, selectedActivity);
+console.log( newActivities[selectedFilteredActivityIndex].sortOrder);
+console.log(newActivities[targetActivityIndex].sortOrder);
+            // Adjust sortOrder
+            if (selectedActivityIndex > targetActivityIndex) {
+                activities[targetActivityIndex].sortOrder =
+                    activities[targetActivityIndex + 1].sortOrder - 1;
+            } else {
+                activities.splice(targetActivityIndex, 0, selectedActivity);
+                activities[targetActivityIndex].sortOrder =
+                    activities[targetActivityIndex - 1].sortOrder + 1;
+            }
+
+            // Update Firestore in the background
+            updateSortOrderBatchInFirestore(newActivities);
+
+            // Merge the sorted activities back into the full list
+            const updatedActivities = activities.map(activity => newActivities.find(a => a.id === activity.id) || activity);
+
+            // Construct and return the new state
+            return {
+                ...state,
+                activities: {
+                    ...state.activities,
+                    [proposalId]: updatedActivities
+                }
+            };
+        });
+    },
+    resetConstants: async (ids: string[]) => {
+        await resetConstantsBatchInFirestore(ids);
+        set(state => {
+            const proposalId = state.proposal?.id;
+            if (!proposalId) {
+                console.error("No proposal loaded");
+                return state;  // Early exit if no proposal is loaded
+            }
+            const existingActivities = state.activities[proposalId] || [];
+            const updatedActivities = existingActivities.map(activity => {
+                if (ids.includes(activity.id)) {
+                    // Resetting specified fields for activities that need to be updated
+                    let temp = {
+                        ...activity,
+                        craftConstant: null,
+                        welderConstant: null,
+                        unit: null,
+                    } as FirestoreActivity;
+                    return processRawActivity(activity.id, temp, state.proposal!);
+                }
+                return activity;
+            });
+
+            return {
+                ...state,
+                activities: {
+                    ...state.activities,
+                    [proposalId]: updatedActivities
+                }
+            };
+        });
+    },
+
+    deleteActivities: async (ids: string[]) => {
+        await deleteActivityBatchInFirestore(ids);
+        set(state => {
+            const updatedActivities = {...state.activities};
+
+            Object.keys(updatedActivities).forEach(proposalId => {
+                updatedActivities[proposalId] = updatedActivities[proposalId].filter(activity => !ids.includes(activity.id));
+            });
+
+            return {
+                ...state,
+                activities: updatedActivities
+            };
+        });
+    },
+
+    updateActivityRates: async (ids: string[], baseRate: number, sub: number) => {
+        await updateActivityRatesInFirestore(ids, baseRate, sub); // Assuming this function exists and updates Firestore correctly
+        set(state => {
+            const proposalId = state.proposal?.id;
+            if (!proposalId) {
+                console.error("No proposal loaded");
+                return state; // Early exit if no proposal is loaded
+            }
+
+            const existingActivities = state.activities[proposalId] || [];
+            const updatedActivities = existingActivities.map(activity => {
+                if (ids.includes(activity.id)) {
+                    // Update specified fields for activities that need to be updated
+                    return processRawActivity(activity.id, {
+                        ...activity,
+                        craftBaseRate: baseRate,
+                        subsistenceRate: sub,
+                    }, state.proposal!);
+                }
+                return activity;
+            });
+            return {
+                ...state,
+                activities: {
+                    ...state.activities,
+                    [proposalId]: updatedActivities
                 }
             };
         });

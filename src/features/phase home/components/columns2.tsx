@@ -1,18 +1,18 @@
 import { MenuItem, Select } from "@mui/material";
 import { GridColumns, GridValueFormatterParams } from "@mui/x-data-grid-pro";
-import {
-  updateEquipmentOwnership,
-  updateEquipmentUnit,
-} from "../../../api/activity";
 import { Activity, ActivityType } from "../../../models/activity";
 import { EquipmentOwnership, EquipmentUnit } from "../../../models/equipment";
 
 export const getActivityColumns = ({
   activities,
   hasWritePermissions,
+    updateEquipmentOwnership,
+    updateEquipmentUnit,
 }: {
   activities: Activity[];
   hasWritePermissions: boolean;
+  updateEquipmentUnit: (activity: Activity, unit: string) => Promise<void>;
+  updateEquipmentOwnership: (activity: Activity, ownership: string) => Promise<void>;
 }) => {
   const baseColumns: GridColumns = [
     {
@@ -70,10 +70,7 @@ export const getActivityColumns = ({
               id="demo-simple-select"
               value={fullActivity.unit}
               onChange={(event) =>
-                updateEquipmentUnit({
-                  activity: fullActivity,
-                  unit: event.target.value,
-                })
+                updateEquipmentUnit(fullActivity, event.target.value)
               }
             >
               {fullActivity.equipmentOwnership ===
@@ -161,10 +158,7 @@ export const getActivityColumns = ({
                 fullActivity.equipmentOwnership ?? EquipmentOwnership.rental
               }
               onChange={(event) =>
-                updateEquipmentOwnership({
-                  activity: fullActivity,
-                  ownership: event.target.value,
-                })
+                updateEquipmentOwnership(fullActivity, event.target.value)
               }
             >
               <MenuItem value={EquipmentOwnership.rental}>
