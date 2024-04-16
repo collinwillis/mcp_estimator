@@ -8,7 +8,7 @@ import {
   GridColumns,
   GridColumnVisibilityModel,
   GridFilterModel,
-  GridRowId,
+  GridRowId, GridRowOrderChangeParams,
   GridSortModel,
   GridToolbarColumnsButton,
   GridToolbarContainer,
@@ -88,7 +88,7 @@ const ActivityDataGrid = () => {
   const resetConstants = estimatorStore((state: StoreState) => state.resetConstants);
   const deleteActivities = estimatorStore((state: StoreState) => state.deleteActivities);
   const [filtered, setFiltered] = useState<Activity[]>([]);
-
+  const changeSortOrder = estimatorStore((state: StoreState) => state.changeActivitySortOrder);
   useEffect(() => {
     console.log(phaseId);
     let temp = myactivities.filter(activity => activity.phaseId === phaseId);
@@ -104,6 +104,40 @@ const ActivityDataGrid = () => {
     });
     setFiltered([...sortedActivities]);
   }, [myactivities, phaseId]);
+
+  const handleRowOrderChange = async (params: GridRowOrderChangeParams) => {
+    if (filtered && filtered.length > 0) {
+      const activityId = filtered[params.oldIndex].id;
+      await changeSortOrder(activityId, params.targetIndex, phaseId!);
+    }
+  };
+
+  const handleRowOrderChangeByRowId = async (activityId: string, targetRowId: string) => {
+    if (!filtered || filtered.length === 0) {
+      console.log("No activities to reorder.");
+      return;
+    }
+
+    const targetRowIdLower = targetRowId.toLowerCase();
+
+    // Combine search for the activity and getting its index
+    const targetActivityIndex = filtered.findIndex(act => act.rowId?.toLowerCase() === targetRowIdLower);
+
+    if (targetActivityIndex === -1) {
+      console.log("Target activity not found for the row ID:", targetRowId);
+      return;
+    }
+
+    const targetActivity = filtered[targetActivityIndex];
+    if (!targetActivity) {
+      console.log("No target activity found with row ID:", targetRowId);
+      return;
+    }
+
+    // Assuming `phaseId!` is correctly defined elsewhere and exists
+    await changeSortOrder(activityId, targetActivityIndex, phaseId!);
+  };
+
 
   useEffect(() => {
     const loadModels = async () => {
@@ -333,16 +367,13 @@ const ActivityDataGrid = () => {
           localStorage.setItem("activities_filter", JSON.stringify(newModel));
           setFilterModel(newModel);
         }}
+        onRowOrderChange={handleRowOrderChange}
         density="compact"
         columns={columns}
         onCellEditCommit={async (params, event) => {
           var { id, field, value } = params;
           if (field == "rowId") {
-            const foundActivity = filtered.find(
-              (activity) =>
-                activity.rowId?.toLowerCase() === value.toLowerCase()
-            );
-            await changeActivityOrder(id.toString(), value);
+           await handleRowOrderChangeByRowId(id.toString(), value);
           } else {
             await updateActivity(id.toString(), field, value);
             recalculatePhase(phaseId!);
@@ -460,6 +491,7 @@ const ActivityDataGrid = () => {
           }
           return "used";
         }}
+        rowReordering
       />
       <EditBaseRateDialog
         open={openBaseRateDialog}

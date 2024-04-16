@@ -17,6 +17,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useWbs } from "../hooks/wbs_hook";
 import {estimatorStore, StoreState} from "../utils/store";
+import {WbsArray} from "../utils/enums";
 
 export default function WbsDropdown() {
   const { proposalId, wbsId } = useParams();
@@ -52,7 +53,9 @@ export default function WbsDropdown() {
           <MenuItem value="" disabled>
             Select Wbs
           </MenuItem>
-          {data.map((item) => (
+          {[...data]?.sort((a, b) => {
+            return a.wbsDatabaseId! - b.wbsDatabaseId!;
+          }).map((item) => (
             <MenuItem
               key={item.id}
               value={item.id}

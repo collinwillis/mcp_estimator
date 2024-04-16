@@ -6,12 +6,10 @@ import {useEffect, useRef, useState} from "react";
 import {useParams} from "react-router-dom";
 import AddActivityDialog from "../features/phase home/components/add_activity_dialog";
 import AddEquipmentDialog from "../features/phase home/components/add_equipment_dialog";
-import useActivities from "../hooks/activity_hook";
 import {useUserProfile} from "../hooks/user_profile_hook";
 import {estimatorStore, StoreState} from "../utils/store";
-import {baseCostOnly, baseCustomLabor, FirestoreActivity} from "../models/firestore models/activity_firestore";
+import {FirestoreActivity} from "../models/firestore models/activity_firestore";
 import {Activity, ActivityType} from "../models/activity";
-import {Proposal} from "../models/proposal";
 
 const BottomPanel: React.FC = () => {
     const [height, setHeight] = useState<number>(300);
@@ -79,7 +77,9 @@ const BottomPanel: React.FC = () => {
             tempEquipmentCost += activity.equipmentCost || 0;
             tempMaterialCost += activity.materialCost || 0;
             tempCostOnlyCost += activity.costOnlyCost || 0;
+            tempSubHours += activity.unit.toLowerCase() == "hours" && activity.activityType == ActivityType.subContractorItem && (activity.time * activity.quantity) || 0;
         });
+        console.log("tempMaterialCost", tempMaterialCost);
 
         setTotalCost(parseFloat(tempTotalCost.toFixed(2)));
         setTotalManHours(parseFloat(tempTotalManHours.toFixed(2)));
@@ -91,6 +91,7 @@ const BottomPanel: React.FC = () => {
         setEquipmentCost(parseFloat(tempEquipmentCost.toFixed(2)));
         setMaterialCost(parseFloat(tempMaterialCost.toFixed(2)));
         setCostOnlyCost(parseFloat(tempCostOnlyCost.toFixed(2)));
+        setTotalSubcontractorHours(parseFloat(tempSubHours.toFixed(2)));
     }, [data]);
 
     const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {

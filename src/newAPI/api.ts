@@ -14,7 +14,7 @@ import {
 import { firestore } from "../setup/config/firebase";
 import {Activity, ActivityType} from "../models/activity";
 import {Proposal} from "../models/proposal";
-import {isNumber, processRawActivity} from "../utils/utils";
+import {isNumber, numberFields, processRawActivity} from "../utils/utils";
 import {FirestoreActivity} from "../models/firestore models/activity_firestore";
 import {Wbs} from "../models/wbs";
 import {Phase} from "../models/phase";
@@ -224,24 +224,6 @@ export const insertActivityBatchToFirestore = async (
 };
 
 export const updateActivityFieldInFirestore = async (activityId: string, field: string, value: any) => {
-    const numberFields = [
-        "quantity",
-        "craftConstant",
-        "welderConstant",
-        "craftManHours",
-        "welderManHours",
-        "craftCost",
-        "welderCost",
-        "totalCost",
-        "craftBaseRate",
-        "subsistenceRate",
-        "equipmentCost",
-        "materialCost",
-        "costOnlyCost",
-        "price",
-        "time",
-        "subContractorCost",
-    ];
     let newValue: number | string;
     if (numberFields.includes(field)) {
         if (isNaN(parseFloat(value)) || value.trim() === "") {
@@ -255,6 +237,7 @@ export const updateActivityFieldInFirestore = async (activityId: string, field: 
     } else {
         newValue = value;
     }
+    console.log(newValue);
 
     try {
         await updateDoc(doc(firestore, "activities", activityId), { [field]: newValue });

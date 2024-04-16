@@ -22,13 +22,13 @@ export function processRawActivity(docId: string, firestoreActivity: FirestoreAc
         firestoreActivity.constant ?? null,
         firestoreActivity.equipment ?? null,
         firestoreActivity.quantity ?? 0,
-        firestoreActivity.sortOrder ?? firestoreActivity.constant?.sortOrder ?? firestoreActivity.dateAdded ?? 0,
+        firestoreActivity.sortOrder ?? firestoreActivity.constant?.sortOrder ?? 2200,
         firestoreActivity.activityType ?? ActivityType.laborItem,
         firestoreActivity.unit ?? firestoreActivity.constant?.craftUnits ?? "",
         firestoreActivity.craftConstant ?? firestoreActivity.constant?.craftConstant ?? 0,
         firestoreActivity.welderConstant ?? firestoreActivity.constant?.weldConstant ?? 0,
         (firestoreActivity.quantity ?? 0) * (firestoreActivity.craftConstant ?? 0),
-        0,  // Craft cost to be calculated
+        firestoreActivity.craftCost ?? 0,  // Craft cost to be calculated
         (firestoreActivity.quantity ?? 0) * (firestoreActivity.welderConstant ?? 0),
         0,  // Welder cost to be calculated
         firestoreActivity.price ?? 0,
@@ -94,32 +94,42 @@ export function numberToLetters(num: number) {
     return letters;
 }
 
-export function getQuantityAndUnit(activities: Activity[], wbsDatabaseId: number) {
+export function getQuantityAndUnit(
+    activities: Activity[],
+    wbsDatabaseId: number
+) {
     let quantity = 0;
-    let unit = '';
+    let unit = "";
 
     const keywordMap = new Map<number, string[]>([
         [20000, ["EXCAVATE", "BACKFILL / COMPACT"]],
         [40000, ["CLEAN UP"]],
         [50000, ["CLEAN UP"]],
         [60000, ["CLEAN UP"]],
-        [70000, ["HE", "OFF", "HYDRO", "PNEU"]],
-        [130000, ["HE", "OFF", "HYDRO", "PNEU"]],
+        [70000, ["HE"]],
+        [130000, ["HE"]],
+        //   [70000, ["HE", "OFF", "HYDRO", "PNEU"]],
+        //   [130000, ["HE", "OFF", "HYDRO", "PNEU"]],
     ]);
 
     let keywords = keywordMap.get(wbsDatabaseId) || [];
 
     activities.forEach((activity) => {
-        const hasKeyword = keywords.some(keyword => activity.description.toUpperCase().includes(keyword));
+        const hasKeyword = keywords.some((keyword) =>
+            activity.description.toUpperCase().includes(keyword)
+        );
         if (hasKeyword) {
-            quantity += parseInt(String(activity.quantity));
+            quantity += activity.quantity;
             unit = activity.unit;
         }
     });
 
     activities.forEach((activity) => {
         if (wbsDatabaseId === 30000) {
-            if (activity.constant && [30011, 30012, 30013, 30015].includes(activity.constant.phaseDatabaseId)) {
+            if (
+                activity.constant &&
+                [30011, 30012, 30013, 30015].includes(activity.constant.phaseDatabaseId)
+            ) {
                 unit = "EA";
             } else {
                 unit = "CY";
@@ -127,8 +137,9 @@ export function getQuantityAndUnit(activities: Activity[], wbsDatabaseId: number
         }
     });
 
-    return {quantity, unit};
+    return { quantity, unit };
 }
+
 
 export const calculateTotals = (activities: Activity[]) => {
     return activities.reduce((acc, activity) => ({
@@ -157,3 +168,35 @@ export const calculateTotals = (activities: Activity[]) => {
 export function isNumber(value: string | number): boolean {
     return value != null && value !== "" && !isNaN(Number(value.toString()));
 }
+
+export function calculateNewSortOrder(activities: Activity[], newIndex: number) {
+    const prevSortOrder = newIndex > 0 ? activities[newIndex - 1].sortOrder : (activities[0].sortOrder - 1);
+    const nextSortOrder = newIndex < activities.length - 1 ? activities[newIndex + 1].sortOrder : (activities[activities.length - 1].sortOrder + 1);
+
+    if (prevSortOrder !== nextSortOrder) {
+        return (prevSortOrder + nextSortOrder) / 2;
+    } else {
+        // When both have the same sortOrder, nudge by a small increment
+        return prevSortOrder + 0.01; // This is arbitrary and may need adjustment based on your data
+    }
+}
+
+
+export const numberFields = [
+    "quantity",
+    "craftConstant",
+    "welderConstant",
+    "craftManHours",
+    "welderManHours",
+    "craftCost",
+    "welderCost",
+    "totalCost",
+    "craftBaseRate",
+    "subsistenceRate",
+    "equipmentCost",
+    "materialCost",
+    "costOnlyCost",
+    "price",
+    "time",
+    "subContractorCost",
+];

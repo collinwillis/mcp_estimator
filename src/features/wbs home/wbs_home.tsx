@@ -19,13 +19,12 @@ function WbsHomeScreen() {
     const [filtered, setFiltered] = useState<Phase[]>([]);
 
     useEffect(() => {
-            let temp = data.filter(phase => phase.wbsId === wbsId);
-            temp.forEach((phase) => {
-
-            });
-            setFiltered(temp);
-            console.log(temp);
+        let temp = data.filter(phase => phase.wbsId === wbsId)
+            .sort((a, b) => a.phaseNumber! - b.phaseNumber!);
+        setFiltered(temp);
+        console.log(temp);
     }, [data, wbsId]);
+
 
   return (
     <Box

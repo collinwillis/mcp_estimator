@@ -18,7 +18,14 @@ import {Wbs} from "../models/wbs";
 import {Activity} from "../models/activity";
 import {Proposal} from "../models/proposal";
 import {getSingleProposal} from "../api/proposal";
-import {calculateTotals, getQuantityAndUnit, numberToLetters, processRawActivity} from "./utils";
+import {
+    calculateNewSortOrder,
+    calculateTotals,
+    getQuantityAndUnit,
+    numberFields,
+    numberToLetters,
+    processRawActivity
+} from "./utils";
 import {ProposalPreferences} from "../models/proposal_preferences";
 import {debouncedUpdateProposalPreferencesInFirestore} from "../newAPI/debounced";
 import {FirestorePhase} from "../models/firestore models/phase_firestore";
@@ -51,6 +58,7 @@ export interface StoreState {
     resetConstants: (ids: string[]) => Promise<void>;
     deleteActivities: (ids: string[]) => Promise<void>;
     updateActivityRates: (ids: string[], baseRate: number, sub: number) => Promise<void>;
+    changeActivitySortOrder: (activityId: string, newIndex: number, phaseId: string) => Promise<void>;
 }
 
 
@@ -318,6 +326,7 @@ export const estimatorStore = create<StoreState>()((set, get) => ({
         });
     },
     updateActivity: async (activityId: string, field: string, value: any) => {
+        console.log(activityId, field, value);
        const result = await updateActivityFieldInFirestore(activityId, field, value);
        if(result.success){
            set(state => {
@@ -326,7 +335,11 @@ export const estimatorStore = create<StoreState>()((set, get) => ({
                    const activities = updatedActivities[proposalId];
                    const index = activities.findIndex(activity => activity.id === activityId);
                    if (index !== -1) {
-                       const updatedActivity = { ...activities[index], [field]: value } as FirestoreActivity;
+                       let newValue = value;
+                       if(numberFields.includes(field)){
+                           newValue = parseFloat(value);
+                       }
+                       const updatedActivity = { ...activities[index], [field]: newValue } as FirestoreActivity;
                        let processedActivity = processRawActivity(activities[index].id!, updatedActivity, state.proposal!);
                        updatedActivities[proposalId] = [
                            ...activities.slice(0, index),
@@ -525,8 +538,45 @@ console.log(newActivities[targetActivityIndex].sortOrder);
                 }
             };
         });
-    }
+    },
 
+    changeActivitySortOrder: async (activityId: string, newIndex: number, phaseId: string) => {
+        set((state) => {
+            const proposalId = state.proposal?.id;
+            if (!proposalId) return state; // If there's no proposal loaded, we simply return without updating state.
+
+            const activities = state.activities[proposalId] || [];
+            const filtered = activities.filter(activity => activity.phaseId === phaseId).sort((a, b) => a.sortOrder - b.sortOrder);
+            const index = filtered.findIndex(a => a.id === activityId);
+            if (index === -1) return state; // If activity is not found, we return without updating state.
+
+            const activity = filtered[index];
+            const updatedActivities = [...filtered];
+            updatedActivities.splice(index, 1); // Remove the activity from its position
+            updatedActivities.splice(newIndex, 0, activity); // Insert it at the new position
+console.log(activity.sortOrder);
+            // Recalculate sortOrder only for the moved activity
+            const prevSortOrder = newIndex > 0 ? updatedActivities[newIndex - 1].sortOrder : 0;
+            const nextSortOrder = newIndex < updatedActivities.length - 1 ? updatedActivities[newIndex + 1].sortOrder : prevSortOrder + 2; // Ensure there's always a space
+            activity.sortOrder = prevSortOrder != nextSortOrder ? ((prevSortOrder + nextSortOrder) / 2) : prevSortOrder + 0.01;
+            console.log(prevSortOrder, nextSortOrder, activity.sortOrder);
+
+            // Optimistically update the local state before updating Firestore
+            // Asynchronous Firestore update
+            updateSortOrderBatchInFirestore(updatedActivities);
+
+            const merged = activities.map(activity => updatedActivities.find(a => a.id === activity.id) || activity);
+
+            // Return new state to update the Zustand store
+            return {
+                ...state,
+                activities: {
+                    ...state.activities,
+                    [proposalId]: merged
+                }
+            };
+        });
+    }
 
 }));
 

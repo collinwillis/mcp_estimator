@@ -76,7 +76,7 @@ export default function SelectWbsDialog({
           <>
             <h2>Select WBS</h2>
             <Input
-              placeholder="Search Activities"
+              placeholder="Search WBS"
               onChange={(e) => {
                 setSearch(e.target.value);
               }}

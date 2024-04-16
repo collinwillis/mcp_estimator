@@ -31,10 +31,12 @@ const WbsDataGrid = ({
     const loading = estimatorStore((state: StoreState) => state.loading);
     const proposalPreferences = useProposalPreferences(proposalId ?? "");
     const [selectedRows, setSelectedRows] = React.useState<GridRowId[]>([]);
+    const [data, setData] = React.useState<Wbs[]>([]);
 
     const {hasWritePermissions} = useUserProfile();
     useEffect(() => {
-        console.log(wbs);
+        const temp = [...wbs].sort((a, b) => a.wbsDatabaseId! - b.wbsDatabaseId!);
+        setData(temp);
     }, [wbs]);
 
     function CustomToolbar() {
@@ -108,7 +110,7 @@ const WbsDataGrid = ({
             <StyledDataGrid
                 loading={loading}
                 columns={columns}
-                rows={wbs}
+                rows={data}
                 pageSize={100}
                 onSelectionModelChange={(newSelectionModel) => {
                     setSelectedRows(newSelectionModel);
