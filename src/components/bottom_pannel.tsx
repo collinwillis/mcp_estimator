@@ -66,16 +66,17 @@ const BottomPanel: React.FC = () => {
         let tempCostOnlyCost = 0;
 
         data.forEach((activity) => {
+            let isSub = activity.activityType == ActivityType.subContractorItem;
             tempTotalCost += activity.totalCost || 0;
             tempTotalManHours += (activity.craftManHours || 0) + (activity.welderManHours || 0);
             tempCraftHours += activity.craftManHours || 0;
             tempWelderHours += activity.welderManHours || 0;
             // tempSubHours += activity.sub || 0;
-            tempCraftCost += Number(activity.craftCost) || 0;
+            tempCraftCost += isSub ? 0 : Number(activity.craftCost) || 0;
             tempWelderCost += activity.welderCost || 0;
             tempSubCost += activity.subContractorCost || 0;
-            tempEquipmentCost += activity.equipmentCost || 0;
-            tempMaterialCost += activity.materialCost || 0;
+            tempEquipmentCost += isSub ? 0 : activity.equipmentCost || 0;
+            tempMaterialCost += isSub ? 0 : activity.materialCost || 0;
             tempCostOnlyCost += activity.costOnlyCost || 0;
             tempSubHours += activity.unit.toLowerCase() == "hours" && activity.activityType == ActivityType.subContractorItem && (activity.time * activity.quantity) || 0;
         });

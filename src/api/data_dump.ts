@@ -337,6 +337,9 @@ const fetchDDPhases = async (
                 activity.area = phase.area;
                 activity.status = phase.status;
             });
+            let sortedActivities = [...activities].sort((a, b) => a!.sortOrder! - b!.sortOrder!);
+            //remove sortorder from each activity
+            sortedActivities.map((activity) => activity.sortOrder = null);
             let newPhase: DataDumpPhase = {
                 phaseId: phase.id,
                 wbsId: phase.wbsId,
@@ -377,7 +380,7 @@ const fetchDDPhases = async (
                 profitTotal: profitTotal,
                 salesTax: salesTax,
                 total: total,
-                activities: [...activities].sort((a, b) => a!.sortOrder! - b!.sortOrder!),
+                activities: sortedActivities,
             }
             return newPhase;
         })
