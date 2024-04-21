@@ -146,7 +146,8 @@ const ActivityDataGrid = () => {
           // Load the column visibility model from Firestore
           const loadedColumnVisibilityModel = await loadColumnVisibilityModel(
             userId,
-            phaseId
+            phaseId,
+              filtered
           );
           setColumnVisibilityModel(loadedColumnVisibilityModel);
         } catch (error) {
@@ -491,7 +492,6 @@ const ActivityDataGrid = () => {
           }
           return "used";
         }}
-        rowReordering
       />
       <EditBaseRateDialog
         open={openBaseRateDialog}

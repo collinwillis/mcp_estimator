@@ -9,7 +9,7 @@ import {
     getSubcontractorCost,
     getTotalCost,
     getWelderLoadedRate
-} from './calculations';
+} from '../api/totals';
 
 // export function processRawActivity(docId: string, firestoreActivity: FirestoreActivity, proposal: Proposal): Activity {
 //     let activity = new Activity(
