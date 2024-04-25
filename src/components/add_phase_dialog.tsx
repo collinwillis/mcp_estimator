@@ -25,7 +25,7 @@ interface Props {
 
 export default function AddPhaseDialog({open, onClose}: Props) {
     const {wbsId, proposalId} = useParams();
-    const data = estimatorStore((state: StoreState) => state.phases[proposalId!] || []);
+    const data = estimatorStore((state: StoreState) => state.phases[proposalId!] || []).filter((p) => p.wbsId == wbsId);
     const currentWbs = useCurrentWbs({
         wbsId: wbsId ?? "",
     });
