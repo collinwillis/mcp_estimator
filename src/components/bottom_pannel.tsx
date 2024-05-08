@@ -10,6 +10,8 @@ import {useUserProfile} from "../hooks/user_profile_hook";
 import {estimatorStore, StoreState} from "../utils/store";
 import {FirestoreActivity} from "../models/firestore models/activity_firestore";
 import {Activity, ActivityType} from "../models/activity";
+import {Wbs} from "../models/wbs";
+import {Phase} from "../models/phase";
 
 const BottomPanel: React.FC = () => {
     const [height, setHeight] = useState<number>(300);
@@ -20,7 +22,7 @@ const BottomPanel: React.FC = () => {
     const ref = useRef<HTMLDivElement>(null);
     const {proposalId, wbsId, phaseId} = useParams();
 
- const [data, setData] = useState<Activity[]>([]);
+ const [data, setData] = useState<Activity[] | Phase[] | Wbs[]>([]);
 
     const [totalCost, setTotalCost] = useState(0);
     const [totalManHours, setTotalManHours] = useState(0);
@@ -35,6 +37,8 @@ const BottomPanel: React.FC = () => {
     const [costOnlyCost, setCostOnlyCost] = useState(0);
 
     const activities = estimatorStore((state: StoreState) => state.activities[proposalId!] || []);
+    const phases = estimatorStore((state: StoreState) => state.phases[proposalId!] || []);
+    const wbs = estimatorStore((state: StoreState) => state.wbs[proposalId!] || []);
 
     useEffect(() => {
         if(phaseId)
@@ -43,11 +47,11 @@ const BottomPanel: React.FC = () => {
             setData(temp);
         }
         else if(wbsId){
-            let temp = activities.filter(activity => activity.wbsId === wbsId);
+            let temp = phases.filter(phase => phase.wbsId === wbsId);
             setData(temp);
         }
         else{
-            setData(activities);
+            setData(wbs);
         }
     }, [activities, phaseId, proposalId, wbsId]);
 
@@ -66,19 +70,29 @@ const BottomPanel: React.FC = () => {
         let tempCostOnlyCost = 0;
 
         data.forEach((activity) => {
-            let isSub = activity.activityType == ActivityType.subContractorItem;
+            if (activity instanceof Activity) {
+                let isSub = activity.activityType == ActivityType.subContractorItem;
+                tempCraftCost += isSub ? 0 : Number(activity.craftCost) || 0;
+                tempEquipmentCost += isSub ? 0 : activity.equipmentCost || 0;
+                tempMaterialCost += isSub ? 0 : activity.materialCost || 0;
+                tempSubHours += activity.unit.toLowerCase() == "hours" && activity.activityType == ActivityType.subContractorItem && (activity.time * activity.quantity) || 0;
+            }
+            else {
+                tempCraftCost += activity.craftCost || 0;
+                tempEquipmentCost +=  activity.equipmentCost || 0;
+                tempMaterialCost += activity.materialCost || 0;
+            }
             tempTotalCost += activity.totalCost || 0;
             tempTotalManHours += (activity.craftManHours || 0) + (activity.welderManHours || 0);
             tempCraftHours += activity.craftManHours || 0;
             tempWelderHours += activity.welderManHours || 0;
             // tempSubHours += activity.sub || 0;
-            tempCraftCost += isSub ? 0 : Number(activity.craftCost) || 0;
+
             tempWelderCost += activity.welderCost || 0;
             tempSubCost += activity.subContractorCost || 0;
-            tempEquipmentCost += isSub ? 0 : activity.equipmentCost || 0;
-            tempMaterialCost += isSub ? 0 : activity.materialCost || 0;
+
             tempCostOnlyCost += activity.costOnlyCost || 0;
-            tempSubHours += activity.unit.toLowerCase() == "hours" && activity.activityType == ActivityType.subContractorItem && (activity.time * activity.quantity) || 0;
+
         });
         console.log("tempMaterialCost", tempMaterialCost);
 

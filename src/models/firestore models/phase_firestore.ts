@@ -10,6 +10,7 @@ export class FirestorePhase {
   size: string | null;
   flc: string | null;
   system: string | null;
+  sys: string | null;
   spec: string | null;
   insulation: string | null;
   insulationSize: string | null;
@@ -31,6 +32,7 @@ export class FirestorePhase {
     size,
     flc,
     system,
+      sys,
     spec,
     insulation,
     insulationSize,
@@ -51,6 +53,7 @@ export class FirestorePhase {
     size?: string | null;
     flc?: string | null;
     system?: string | null;
+    sys?: string | null;
     spec?: string | null;
     insulation?: string | null;
     insulationSize?: string | null;
@@ -71,6 +74,7 @@ export class FirestorePhase {
     this.size = size ?? null;
     this.flc = flc ?? null;
     this.system = system ?? null;
+    this.sys = sys ?? null;
     this.spec = spec ?? null;
     this.insulation = insulation ?? null;
     this.insulationSize = insulationSize ?? null;

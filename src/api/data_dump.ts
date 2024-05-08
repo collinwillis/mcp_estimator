@@ -17,6 +17,8 @@ import {BookType, utils, WorkBook, write} from 'xlsx-js-style';
 import {save} from '@tauri-apps/api/dialog';
 import {writeBinaryFile} from '@tauri-apps/api/fs';
 import {DataDumpItem} from "../models/data_dump/data_dump_item";
+import {getDDQuantityAndUnit, getQuantityAndUnit} from "../utils/utils";
+import {getSingleWbs} from "./wbs";
 
 
 interface UseActivitiesOptions {
@@ -58,23 +60,23 @@ export const fetchDD = async (
         }
     };
     let top = topMarkups;
-    top[17].v = '$' + proposal!.rigRate?.toFixed(2);
-    top[34].v = proposal!.useTaxRate?.toFixed(2) + "%";
+    top[18].v = '$' + proposal!.rigRate?.toFixed(2);
+    top[35].v = proposal!.useTaxRate?.toFixed(2) + "%";
 
     let bm = bottomMarkups;
-    bm[17].v = '$' + proposal!.weldBaseRate?.toFixed(2);
-    bm[20].v = '$' + proposal!.craftBaseRate?.toFixed(2);
-    bm[21].v = proposal!.burdenRate?.toFixed(2) + "%";
-    bm[22].v = proposal!.overheadRate?.toFixed(2) + "%";
-    bm[23].v = proposal!.laborProfitRate?.toFixed(2) + "%";
-    bm[24].v = proposal!.fuelRate?.toFixed(2) + "%";
-    bm[25].v = proposal!.consumablesRate?.toFixed(2) + "%";
-    bm[26].v = '$' + proposal!.subsistenceRate?.toFixed(2);
-    bm[28].v = proposal!.rigProfitRate?.toFixed(2) + "%";
-    bm[29].v = proposal!.materialProfitRate?.toFixed(2) + "%";
-    bm[30].v = proposal!.equipmentProfitRate?.toFixed(2) + "%";
-    bm[31].v = proposal!.subContractorProfitRate?.toFixed(2) + "%";
-    bm[34].v = proposal!.salesTaxRate?.toFixed(2) + "%";
+    bm[18].v = '$' + proposal!.weldBaseRate?.toFixed(2);
+    bm[21].v = '$' + proposal!.craftBaseRate?.toFixed(2);
+    bm[22].v = proposal!.burdenRate?.toFixed(2) + "%";
+    bm[23].v = proposal!.overheadRate?.toFixed(2) + "%";
+    bm[24].v = proposal!.laborProfitRate?.toFixed(2) + "%";
+    bm[25].v = proposal!.fuelRate?.toFixed(2) + "%";
+    bm[26].v = proposal!.consumablesRate?.toFixed(2) + "%";
+    bm[27].v = '$' + proposal!.subsistenceRate?.toFixed(2);
+    bm[29].v = proposal!.rigProfitRate?.toFixed(2) + "%";
+    bm[30].v = proposal!.materialProfitRate?.toFixed(2) + "%";
+    bm[31].v = proposal!.equipmentProfitRate?.toFixed(2) + "%";
+    bm[32].v = proposal!.subContractorProfitRate?.toFixed(2) + "%";
+    bm[35].v = proposal!.salesTaxRate?.toFixed(2) + "%";
 
     let p1 = proposalInfo1;
     let p2 = proposalInfo2;
@@ -102,13 +104,13 @@ export const fetchDD = async (
 // Format the date as "Month Day, Year"
     var formattedDate = month + " " + day + ", " + year;
 
-    p1[31].v = proposal!.proposalNumber ?? "";
-    p2[31].v = proposal!.job ?? "";
+    p1[32].v = proposal!.proposalNumber ?? "";
+    p2[32].v = proposal!.job ?? "";
     // p3[31].v = proposal
-    p4[31].v = proposal!.proposalDescription ?? "";
-    p5[31].v = proposal!.proposalOwner ?? "";
-    p6[31].v = (proposal!.projectCity ?? "") + ", " + (proposal!.projectState ?? "");
-    p7[31].v = formattedDate;
+    p4[32].v = proposal!.proposalDescription ?? "";
+    p5[32].v = proposal!.proposalOwner ?? "";
+    p6[32].v = (proposal!.projectCity ?? "") + ", " + (proposal!.projectState ?? "");
+    p7[32].v = formattedDate;
 
 
     let data = await mapModelsToRows(wbs);
@@ -134,6 +136,7 @@ export const fetchDD = async (
             {v: "SHT", t: "s", s: style},
             {v: "AREA", t: "s", s: style},
             {v: "STATUS", t: "s", s: style},
+            {v: "SYS", t: "s", s: style},
             {v: "SPCL RATE", t: "s", s: style},
             {v: "SPCL SUB", t: "s", s: style},
             {v: "OWNERSHIP", t: "s", s: style},
@@ -201,6 +204,7 @@ export const fetchDD = async (
         {'width': 15},
         {'width': 15},
         {'width': 15},
+        {'width': 15},
         {'width': 18},
 
     ];
@@ -219,14 +223,14 @@ export const fetchDD = async (
     ];
     /* merge cells A1:B1 */
     var merge = [
-        {s: {r: 10, c: 32}, e: {r: 10, c: 33}},
-        {s: {r: 0, c: 31}, e: {r: 0, c: 35}},
-        {s: {r: 1, c: 31}, e: {r: 1, c: 35}},
-        {s: {r: 2, c: 31}, e: {r: 2, c: 35}},
-        {s: {r: 3, c: 31}, e: {r: 3, c: 35}},
-        {s: {r: 4, c: 31}, e: {r: 4, c: 35}},
-        {s: {r: 5, c: 31}, e: {r: 5, c: 35}},
-        {s: {r: 6, c: 31}, e: {r: 6, c: 35}},
+        {s: {r: 10, c: 33}, e: {r: 10, c: 34}},
+        {s: {r: 0, c: 32}, e: {r: 0, c: 36}},
+        {s: {r: 1, c: 32}, e: {r: 1, c: 36}},
+        {s: {r: 2, c: 32}, e: {r: 2, c: 36}},
+        {s: {r: 3, c: 32}, e: {r: 3, c: 36}},
+        {s: {r: 4, c: 32}, e: {r: 4, c: 36}},
+        {s: {r: 5, c: 32}, e: {r: 5, c: 36}},
+        {s: {r: 6, c: 32}, e: {r: 6, c: 36}},
     ];
 //var merge = XLSX.utils.decode_range("A1:B1"); // this is equivalent
 
@@ -273,7 +277,7 @@ export const fetchDDActivities = async (
 
 const fetchDDPhases = async (
     proposalId: string,
-    allActivities: DataDumpActivity[]
+    allActivities: DataDumpActivity[],
 ): Promise<DataDumpPhase[]> => {
     const phaseRef = collection(firestore, "phase");
     const phaseQuery = query(phaseRef, where("proposalId", "==", proposalId));
@@ -282,6 +286,8 @@ const fetchDDPhases = async (
     const phases: DataDumpPhase[] = await Promise.all(
         querySnapshot.docs.map(async (doc) => {
             const phase = doc.data() as Phase;
+            const wbs = await getSingleWbs({wbsId: phase.wbsId!});
+            console.log("PHASE", phase);
             phase.id = doc.id;
 
             let craftMH = 0;
@@ -307,6 +313,7 @@ const fetchDDPhases = async (
             const activities = allActivities.filter(
                 (activity) => activity.phaseId === phase.id
             );
+
 
             activities.forEach((activity) => {
                 craftMH += activity.craftMH ?? 0;
@@ -336,6 +343,7 @@ const fetchDDPhases = async (
                 activity.sheet = phase.sheet;
                 activity.area = phase.area;
                 activity.status = phase.status;
+                activity.sys = phase.sys;
             });
             let sortedActivities = [...activities].sort((a, b) => a!.sortOrder! - b!.sortOrder!);
             //remove sortorder from each activity
@@ -355,11 +363,12 @@ const fetchDDPhases = async (
                 sheet: phase.sheet,
                 area: phase.area,
                 status: phase.status,
+                sys: phase.sys,
                 specialCraftRate: null,
                 specialSubRate: null,
                 ownership: null,
-                quantity: phase.quantity,
-                unit: phase.unit,
+                quantity: phase.customQuantity ?? getDDQuantityAndUnit(sortedActivities, (wbs && wbs.wbsDatabaseId) ? wbs.wbsDatabaseId : 0).quantity,
+                unit: phase.unit ?? getDDQuantityAndUnit(sortedActivities, (wbs && wbs.wbsDatabaseId) ? wbs.wbsDatabaseId : 0).unit,
                 craftMH: currencyRound(craftMH),
                 weldMH: currencyRound(weldMH),
                 subMH: null,
@@ -467,6 +476,7 @@ const fetchDDWbs = async (
                     sheet: null,
                     area: null,
                     status: null,
+                    sys: null,
                     specialCraftRate: null,
                     specialSubRate: null,
                     ownership: null,
@@ -550,6 +560,7 @@ const activityToDataDumpItem = (baseActivity: Activity, proposal: Proposal) => {
         sheet: null,
         area: null,
         status: null,
+        sys: null,
         specialCraftRate: baseActivity.customCraftRate,
         specialSubRate: baseActivity.customSubsistenceRate,
         ownership: baseActivity.equipmentOwnership,
@@ -841,6 +852,7 @@ const createSummaryRow = (wbs: DataDumpWbs[]) => {
         sheet: null,
         area: null,
         status: null,
+        sys: null,
         specialCraftRate: null,
         specialSubRate: null,
         ownership: null,
@@ -960,6 +972,7 @@ let topMarkups: Cell[] = [
     {v: "", t: "s"},
     {v: "", t: "s"},
     {v: "", t: "s"},
+    {v: "", t: "s"},
     {v: "WELD", t: "s", s: markupStyle},
     {v: "", t: "s"},
     {v: "", t: "s"},
@@ -999,6 +1012,7 @@ let topMarkupLabels: Cell[] = [
     {v: "", t: "s"},
     {v: "", t: "s"},
     {v: "", t: "s"},
+    {v: "", t: "s"},
     {v: "RIG", t: "s", s: markupLabelStyle},
     {v: "", t: "s"},
     {v: "", t: "s"},
@@ -1021,6 +1035,7 @@ let topMarkupLabels: Cell[] = [
 ];
 
 let bottomMarkups: Cell[] = [
+    {v: "", t: "s"},
     {v: "", t: "s"},
     {v: "", t: "s"},
     {v: "", t: "s"},
@@ -1090,6 +1105,7 @@ let proposalInfo1: Cell[] = [
     {v: "", t: "s"},
     {v: "", t: "s"},
     {v: "", t: "s"},
+    {v: "", t: "s"},
     {v: "Proposal #:", t: "s", s: proposalInfoLabel},
     {v: "", t: "s", s: proposalInfoBottomBorder},
     {v: "", t: "s", s: proposalInfoBottomBorder},
@@ -1098,6 +1114,7 @@ let proposalInfo1: Cell[] = [
     {v: "", t: "s", s: proposalInfoBottomBorder},
 ];
 let proposalInfo2: Cell[] = [
+    {v: "", t: "s"},
     {v: "", t: "s"},
     {v: "", t: "s"},
     {v: "", t: "s"},
@@ -1166,6 +1183,7 @@ let proposalInfo3: Cell[] = [
     {v: "", t: "s"},
     {v: "", t: "s"},
     {v: "", t: "s"},
+    {v: "", t: "s"},
     {v: "Change #:", t: "s", s: proposalInfoLabel},
     {v: "", t: "s", s: proposalInfoBottomBorder},
     {v: "", t: "s", s: proposalInfoBottomBorder},
@@ -1174,6 +1192,7 @@ let proposalInfo3: Cell[] = [
     {v: "", t: "s", s: proposalInfoBottomBorder},
 ];
 let proposalInfo4: Cell[] = [
+    {v: "", t: "s"},
     {v: "", t: "s"},
     {v: "", t: "s"},
     {v: "", t: "s"},
@@ -1242,6 +1261,7 @@ let proposalInfo5: Cell[] = [
     {v: "", t: "s"},
     {v: "", t: "s"},
     {v: "", t: "s"},
+    {v: "", t: "s"},
     {v: "Owner:", t: "s", s: proposalInfoLabel},
     {v: "", t: "s", s: proposalInfoBottomBorder},
     {v: "", t: "s", s: proposalInfoBottomBorder},
@@ -1250,6 +1270,7 @@ let proposalInfo5: Cell[] = [
     {v: "", t: "s", s: proposalInfoBottomBorder},
 ];
 let proposalInfo6: Cell[] = [
+    {v: "", t: "s"},
     {v: "", t: "s"},
     {v: "", t: "s"},
     {v: "", t: "s"},
@@ -1318,6 +1339,7 @@ let proposalInfo7: Cell[] = [
     {v: "", t: "s"},
     {v: "", t: "s"},
     {v: "", t: "s"},
+    {v: "", t: "s"},
     {v: "Date:", t: "s", s: proposalInfoLabel},
     {v: "", t: "s", s: proposalInfoBottomBorder},
     {v: "", t: "s", s: proposalInfoBottomBorder},
@@ -1335,7 +1357,7 @@ let doNotInclude = [
     'activities'
 ];
 let rightBorderedCells = [
-    'status',
+    'sys',
     'ownership',
     'totalMH',
     'subsistence',

@@ -368,7 +368,7 @@ const columns: GridColumns = [
     },
 
     {
-        field: "cmh",
+        field: "craftManHours",
         headerName: "Craft MH",
         editable: true,
         align: "right",
@@ -407,7 +407,7 @@ const columns: GridColumns = [
     },
 
     {
-        field: "wmh",
+        field: "welderManHours",
         headerName: "Welder MH",
         editable: true,
         minWidth: 120,
@@ -547,9 +547,7 @@ const columns: GridColumns = [
     },
 ];
 const notEditableCells = [
-    "craftManHours",
     "craftCost",
-    "welderManHours",
     "welderCost",
     "materialCost",
     "equipmentCost",

@@ -13,6 +13,7 @@ export interface DataDumpItem {
     sheet?: string | null;
     area?: string | null;
     status?: string | null;
+    sys?: string | null;
     specialCraftRate?: number | null;
     specialSubRate?: number | null;
     ownership?: string | null;

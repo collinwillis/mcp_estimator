@@ -20,8 +20,8 @@ import {Proposal} from "../models/proposal";
 import {getSingleProposal} from "../api/proposal";
 import {
     calculateNewSortOrder,
-    calculateTotals,
-    getQuantityAndUnit,
+    calculateTotals, calculateWbsTotals,
+    getQuantityAndUnit, isNumber,
     numberFields,
     numberToLetters,
     processRawActivity
@@ -83,16 +83,7 @@ export const estimatorStore = create<StoreState>()((set, get) => ({
         }, {} as Record<string, Wbs>);
 
 
-        const updatedWbs = wbs.map(wbsItem => {
-            const relatedActivities = activities.filter(act => act.wbsId === wbsItem.id);
-            const totals = calculateTotals(relatedActivities);
-            return {
-                ...wbsItem,
-                ...totals,
-                quantity: wbsItem.customQuantity ?? getQuantityAndUnit(relatedActivities, wbsItem.wbsDatabaseId!).quantity,
-                unit: wbsItem.customUnit ?? getQuantityAndUnit(relatedActivities, wbsItem.wbsDatabaseId!).unit
-            };
-        });
+
 
         const updatedPhases = phases.map(phase => {
             const relatedActivities = activities.filter(act => act.phaseId === phase.id);
@@ -101,8 +92,23 @@ export const estimatorStore = create<StoreState>()((set, get) => ({
             return {
                 ...phase,
                 ...totals,
+                craftManHours: (phase.craftManHours && isNumber(phase.craftManHours)) ? phase.craftManHours : totals.craftManHours,
+                welderManHours:  (phase.welderManHours && isNumber(phase.welderManHours)) ? phase.welderManHours : totals.welderManHours,
                 quantity: phase.customQuantity ?? getQuantityAndUnit(relatedActivities, wbsLookup[wbsId].wbsDatabaseId!).quantity,
-                unit: phase.customUnit ?? getQuantityAndUnit(relatedActivities, wbsLookup[wbsId].wbsDatabaseId!).unit
+                unit: phase.unit ?? getQuantityAndUnit(relatedActivities, wbsLookup[wbsId].wbsDatabaseId!).unit
+            };
+        });
+
+        const updatedWbs = wbs.map(wbsItem => {
+            const {wbsDatabaseId} = wbsItem;
+            const relatedActivities = activities.filter(act => act.wbsId === wbsItem.id);
+            const relatedPhases = updatedPhases.filter(act => act.wbsId === wbsItem.id);
+            const totals = calculateWbsTotals(relatedPhases, wbsDatabaseId || 0);
+            return {
+                ...wbsItem,
+                ...totals,
+                quantity: wbsItem.customQuantity ?? getQuantityAndUnit(relatedActivities, wbsItem.wbsDatabaseId!).quantity,
+                unit: wbsItem.customUnit ?? getQuantityAndUnit(relatedActivities, wbsItem.wbsDatabaseId!).unit
             };
         });
 

@@ -10,6 +10,8 @@ import {
     getTotalCost,
     getWelderLoadedRate
 } from '../api/totals';
+import {Phase} from "../models/phase";
+import {DataDumpActivity} from "../models/data_dump/data_dump_activity";
 
 // export function processRawActivity(docId: string, firestoreActivity: FirestoreActivity, proposal: Proposal): Activity {
 //     let activity = new Activity(
@@ -240,6 +242,38 @@ export function getQuantityAndUnit(
     return { quantity, unit };
 }
 
+export function getDDQuantityAndUnit(
+    activities: DataDumpActivity[],
+    wbsDatabaseId: number
+) {
+    let quantity = 0;
+    let unit = "";
+
+    const keywordMap = new Map<number, string[]>([
+        [20000, ["EXCAVATE", "BACKFILL / COMPACT"]],
+        [40000, ["CLEAN UP"]],
+        [50000, ["CLEAN UP"]],
+        [60000, ["CLEAN UP"]],
+        [70000, ["HE"]],
+        [130000, ["HE"]],
+        //   [70000, ["HE", "OFF", "HYDRO", "PNEU"]],
+        //   [130000, ["HE", "OFF", "HYDRO", "PNEU"]],
+    ]);
+
+    let keywords = keywordMap.get(wbsDatabaseId) || [];
+
+    activities.forEach((activity) => {
+        const hasKeyword = keywords.some((keyword) =>
+            activity.lineDescription!.toUpperCase().includes(keyword)
+        );
+        if (hasKeyword) {
+            quantity += activity.quantity!;
+            unit = activity.unit!;
+        }
+    });
+    return { quantity, unit };
+}
+
 
 export const calculateTotals = (activities: Activity[]) => {
     return activities.reduce((acc, activity) => ({
@@ -262,6 +296,60 @@ export const calculateTotals = (activities: Activity[]) => {
         craftManHours: 0,
         welderManHours: 0,
         totalCost: 0
+    });
+};
+
+interface Accumulator {
+    costOnlyCost: number;
+    subContractorCost: number;
+    materialCost: number;
+    equipmentCost: number;
+    craftCost: number;
+    welderCost: number;
+    craftManHours: number;
+    welderManHours: number;
+    totalCost: number;
+    quantity: number;
+    unit: string;
+}
+
+export const calculateWbsTotals = (phases: Phase[], wbsDatabaseId: number) => {
+    const keywordMap = new Map<number, string[]>([
+        [20000, ["EXCAVATE", "BACKFILL / COMPACT"]],
+        [40000, ["CLEAN UP"]],
+        [50000, ["CLEAN UP"]],
+        [60000, ["CLEAN UP"]],
+        [70000, ["HE"]],
+        [130000, ["HE"]],
+        //   [70000, ["HE", "OFF", "HYDRO", "PNEU"]],
+        //   [130000, ["HE", "OFF", "HYDRO", "PNEU"]],
+    ]);
+
+    let keywords = keywordMap.get(wbsDatabaseId) || [];
+    return phases.reduce((acc: Accumulator, phase) => ({
+        costOnlyCost: acc.costOnlyCost + (phase.costOnlyCost || 0),
+        subContractorCost: acc.subContractorCost + (phase.subContractorCost || 0),
+        materialCost: acc.materialCost + (phase.materialCost || 0),
+        equipmentCost: acc.equipmentCost + (phase.equipmentCost || 0),
+        craftCost: acc.craftCost + (phase.craftCost || 0),
+        welderCost: acc.welderCost + (phase.welderCost || 0),
+        craftManHours: acc.craftManHours + (phase.craftManHours || 0),
+        welderManHours: acc.welderManHours + (phase.welderManHours || 0),
+        totalCost: acc.totalCost + (phase.totalCost || 0),
+        quantity: acc.quantity + (phase.quantity || 0),
+        unit: acc.unit,
+    }), {
+        costOnlyCost: 0,
+        subContractorCost: 0,
+        materialCost: 0,
+        equipmentCost: 0,
+        craftCost: 0,
+        welderCost: 0,
+        craftManHours: 0,
+        welderManHours: 0,
+        totalCost: 0,
+        quantity: 0,
+        unit: ''
     });
 };
 

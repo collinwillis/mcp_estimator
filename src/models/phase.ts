@@ -9,6 +9,7 @@ export class Phase {
   size?: string;
   flc?: string;
   system?: string;
+  sys?: string;
   spec?: string;
   insulation?: string;
   insulationSize?: string;
