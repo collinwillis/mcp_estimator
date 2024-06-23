@@ -1,6 +1,7 @@
-import { useEffect, useState } from "react";
-import { getSingleWbs } from "../api/wbs";
-import { Wbs } from "../models/wbs";
+import { useEffect, useState } from 'react';
+
+import { getSingleWbs } from '../api/wbs';
+import { Wbs } from '../models/wbs';
 
 interface CurrentWbsProps {
   wbsId: string;

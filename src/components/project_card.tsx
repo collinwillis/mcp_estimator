@@ -1,4 +1,7 @@
-import { CheckIcon } from "@chakra-ui/icons";
+import React from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+
+import { CheckIcon } from '@chakra-ui/icons';
 import {
   Box,
   Button,
@@ -9,11 +12,9 @@ import {
   ListItem,
   Stack,
   Text,
-  useColorModeValue,
   VStack,
-} from "@chakra-ui/react";
-import React from "react";
-import { Link, useNavigate } from "react-router-dom";
+  useColorModeValue,
+} from '@chakra-ui/react';
 
 interface ProjectCardProps {
   name: string;
@@ -26,9 +27,9 @@ function ProjectCard({ name, id }: ProjectCardProps) {
       mb={4}
       shadow="base"
       borderWidth="1px"
-      alignSelf={{ base: "center", lg: "flex-start" }}
-      borderColor={useColorModeValue("gray.200", "gray.500")}
-      borderRadius={"xl"}
+      alignSelf={{ base: 'center', lg: 'flex-start' }}
+      borderColor={useColorModeValue('gray.200', 'gray.500')}
+      borderRadius="xl"
     >
       <Box py={4} px={12}>
         <Text fontWeight="500" fontSize="2xl">
@@ -44,9 +45,9 @@ function ProjectCard({ name, id }: ProjectCardProps) {
         </HStack>
       </Box>
       <VStack
-        bg={useColorModeValue("gray.50", "gray.700")}
+        bg={useColorModeValue('gray.50', 'gray.700')}
         py={4}
-        borderBottomRadius={"xl"}
+        borderBottomRadius="xl"
       >
         <List spacing={3} textAlign="start" px={12}>
           <ListItem>

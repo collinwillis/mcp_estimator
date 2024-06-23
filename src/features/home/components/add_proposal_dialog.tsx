@@ -1,14 +1,15 @@
+import React, { useEffect, useState } from 'react';
+
 import {
   Button,
   Dialog,
   DialogContent,
   DialogTitle,
   TextField,
-} from "@mui/material";
-import React, { useEffect, useState } from "react";
-import { insertProposal } from "../../../api/proposal";
-import { useProposals } from "../../../hooks/proposals_hook";
-import { Proposal } from "../../../models/proposal";
+} from '@mui/material';
+import { insertProposal } from '../../../api/proposal';
+import { useProposals } from '../../../hooks/proposals_hook';
+import { Proposal } from '../../../models/proposal';
 
 interface AddProposalDialogProps {
   open: boolean;
@@ -20,8 +21,8 @@ export default function AddProposalDialog({
 }: AddProposalDialogProps) {
   const { data, loading } = useProposals();
 
-  const [proposalDescription, setProposalDescription] = useState("");
-  const [proposalNumber, setProposalNumber] = useState("");
+  const [proposalDescription, setProposalDescription] = useState('');
+  const [proposalNumber, setProposalNumber] = useState('');
 
   useEffect(() => {
     if (data.length > 0) {
@@ -30,44 +31,44 @@ export default function AddProposalDialog({
       );
       setProposalNumber((highestProposalNumber.proposalNumber! + 1).toString());
     } else {
-      setProposalNumber("1300");
+      setProposalNumber('1300');
     }
   }, [data, open]);
 
   const handleProposalCreate = async () => {
     await insertProposal(proposalDescription, proposalNumber);
     toggleAddDialog();
-    setProposalDescription("");
-    setProposalNumber("");
+    setProposalDescription('');
+    setProposalNumber('');
   };
   return (
     <div>
       <Dialog open={open} onClose={toggleAddDialog}>
         <DialogTitle>New Proposal</DialogTitle>
-        <DialogContent sx={{ height: "200px", width: "300px" }}>
+        <DialogContent sx={{ height: '200px', width: '300px' }}>
           <div
             style={{
-              width: "100%",
-              height: "95%",
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "space-around",
+              width: '100%',
+              height: '95%',
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'space-around',
             }}
           >
             <TextField
               variant="standard"
               label="Proposal Number"
-              type={"number"}
+              type="number"
               value={proposalNumber}
               onChange={(e) => setProposalNumber(e.target.value)}
               placeholder="Proposal Number"
-            ></TextField>
+            />
             <TextField
               variant="standard"
               label="Proposal Description"
               onChange={(e) => setProposalDescription(e.target.value)}
               placeholder="Ex. Proposal"
-            ></TextField>
+            />
 
             <Button
               disabled={

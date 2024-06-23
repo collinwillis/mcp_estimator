@@ -1,4 +1,7 @@
-import {updateProposalPreferencesInFirestore} from "./api";
-import {debounce} from "@mui/material";
+import { debounce } from '@mui/material';
+import { updateProposalPreferencesInFirestore } from './api';
 
-export const debouncedUpdateProposalPreferencesInFirestore = debounce(updateProposalPreferencesInFirestore, 300);
+export const debouncedUpdateProposalPreferencesInFirestore = debounce(
+  updateProposalPreferencesInFirestore,
+  300
+);

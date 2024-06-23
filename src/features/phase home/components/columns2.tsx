@@ -1,48 +1,51 @@
-import { MenuItem, Select } from "@mui/material";
-import { GridColumns, GridValueFormatterParams } from "@mui/x-data-grid-pro";
-import { Activity, ActivityType } from "../../../models/activity";
-import { EquipmentOwnership, EquipmentUnit } from "../../../models/equipment";
+import { MenuItem, Select } from '@mui/material';
+import { GridColumns, GridValueFormatterParams } from '@mui/x-data-grid-pro';
+import { Activity, ActivityType } from '../../../models/activity';
+import { EquipmentOwnership, EquipmentUnit } from '../../../models/equipment';
 
 export const getActivityColumns = ({
   activities,
   hasWritePermissions,
-    updateEquipmentOwnership,
-    updateEquipmentUnit,
+  updateEquipmentOwnership,
+  updateEquipmentUnit,
 }: {
   activities: Activity[];
   hasWritePermissions: boolean;
   updateEquipmentUnit: (activity: Activity, unit: string) => Promise<void>;
-  updateEquipmentOwnership: (activity: Activity, ownership: string) => Promise<void>;
+  updateEquipmentOwnership: (
+    activity: Activity,
+    ownership: string
+  ) => Promise<void>;
 }) => {
   const baseColumns: GridColumns = [
     {
       flex: 1,
-      field: "rowId",
-      headerName: "Item",
+      field: 'rowId',
+      headerName: 'Item',
       editable: true,
-      headerAlign: "center",
-      align: "center",
+      headerAlign: 'center',
+      align: 'center',
       sortComparator: comparator,
     },
     {
       flex: 1,
-      field: "description",
+      field: 'description',
       minWidth: 250,
-      headerName: "Description",
+      headerName: 'Description',
       editable: true,
-      headerAlign: "center",
+      headerAlign: 'center',
     },
     {
       flex: 1,
-      field: "quantity",
-      headerName: "Quantity",
+      field: 'quantity',
+      headerName: 'Quantity',
       editable: true,
-      align: "right",
-      headerAlign: "center",
+      align: 'right',
+      headerAlign: 'center',
     },
     {
       flex: 1,
-      field: "unit",
+      field: 'unit',
       renderCell: (params) => {
         const fullActivity = activities.find(
           (activity) => activity.id === params.id
@@ -52,16 +55,16 @@ export const getActivityColumns = ({
             <Select
               disabled={!hasWritePermissions}
               sx={{
-                width: "100%",
+                width: '100%',
 
-                color: "primary.dark",
-                boxShadow: "none",
-                ".MuiOutlinedInput-notchedOutline": { border: 0 },
-                "&.MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline":
+                color: 'primary.dark',
+                boxShadow: 'none',
+                '.MuiOutlinedInput-notchedOutline': { border: 0 },
+                '&.MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline':
                   {
                     border: 0,
                   },
-                "&.MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline":
+                '&.MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline':
                   {
                     border: 0,
                   },
@@ -92,32 +95,32 @@ export const getActivityColumns = ({
           );
         }
       },
-      headerName: "Unit",
+      headerName: 'Unit',
       editable: true,
-      align: "right",
+      align: 'right',
 
-      headerAlign: "center",
+      headerAlign: 'center',
     },
     {
-      field: "time",
-      headerName: "Duration",
+      field: 'time',
+      headerName: 'Duration',
       editable: true,
-      align: "right",
+      align: 'right',
       hide: false,
 
-      headerAlign: "center",
+      headerAlign: 'center',
     },
     {
-      field: "price",
-      headerName: "Price",
+      field: 'price',
+      headerName: 'Price',
       editable: true,
       hide: false,
-      align: "right",
+      align: 'right',
 
-      headerAlign: "center",
+      headerAlign: 'center',
       valueFormatter: (params: GridValueFormatterParams<number>) => {
         if (params.value == null) {
-          return "";
+          return '';
         }
         const valueFormatted = params.value.toLocaleString(undefined, {
           minimumFractionDigits: 2,
@@ -128,7 +131,7 @@ export const getActivityColumns = ({
     },
     {
       flex: 1,
-      field: "equipmentOwnership",
+      field: 'equipmentOwnership',
       renderCell: (params) => {
         const fullActivity = activities.find(
           (activity) => activity.id === params.id
@@ -138,16 +141,16 @@ export const getActivityColumns = ({
             <Select
               disabled={!hasWritePermissions}
               sx={{
-                width: "100%",
+                width: '100%',
 
-                color: "primary.dark",
-                boxShadow: "none",
-                ".MuiOutlinedInput-notchedOutline": { border: 0 },
-                "&.MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline":
+                color: 'primary.dark',
+                boxShadow: 'none',
+                '.MuiOutlinedInput-notchedOutline': { border: 0 },
+                '&.MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline':
                   {
                     border: 0,
                   },
-                "&.MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline":
+                '&.MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline':
                   {
                     border: 0,
                   },
@@ -174,42 +177,42 @@ export const getActivityColumns = ({
           );
         }
       },
-      headerName: "Ownership",
+      headerName: 'Ownership',
       editable: true,
-      align: "right",
+      align: 'right',
 
-      headerAlign: "center",
+      headerAlign: 'center',
     },
     {
       flex: 1,
-      field: "craftConstant",
-      headerName: "Craft Const.",
+      field: 'craftConstant',
+      headerName: 'Craft Const.',
       editable: true,
-      align: "right",
+      align: 'right',
 
-      headerAlign: "center",
+      headerAlign: 'center',
     },
     {
       flex: 1,
-      field: "welderConstant",
-      headerName: "Welder Const.",
+      field: 'welderConstant',
+      headerName: 'Welder Const.',
       editable: true,
 
-      align: "right",
+      align: 'right',
 
-      headerAlign: "center",
+      headerAlign: 'center',
     },
     {
       flex: 1,
-      field: "craftManHours",
-      headerName: "Craft Hours",
+      field: 'craftManHours',
+      headerName: 'Craft Hours',
 
-      align: "right",
+      align: 'right',
 
-      headerAlign: "center",
+      headerAlign: 'center',
       valueFormatter: (params: GridValueFormatterParams<number>) => {
         if (params.value == null) {
-          return "";
+          return '';
         }
         const valueFormatted = params.value.toLocaleString(undefined, {
           minimumFractionDigits: 2,
@@ -221,15 +224,15 @@ export const getActivityColumns = ({
 
     {
       flex: 1,
-      field: "welderManHours",
-      headerName: "Welder Hours",
+      field: 'welderManHours',
+      headerName: 'Welder Hours',
 
-      align: "right",
+      align: 'right',
 
-      headerAlign: "center",
+      headerAlign: 'center',
       valueFormatter: (params: GridValueFormatterParams<number>) => {
         if (params.value == null) {
-          return "";
+          return '';
         }
         const valueFormatted = params.value.toLocaleString(undefined, {
           minimumFractionDigits: 2,
@@ -241,15 +244,15 @@ export const getActivityColumns = ({
 
     {
       flex: 1,
-      field: "welderCost",
-      headerName: "Welder Total",
+      field: 'welderCost',
+      headerName: 'Welder Total',
 
-      align: "right",
+      align: 'right',
 
-      headerAlign: "center",
+      headerAlign: 'center',
       valueFormatter: (params: GridValueFormatterParams<number>) => {
         if (params.value == null) {
-          return "";
+          return '';
         }
         const valueFormatted = params.value.toLocaleString(undefined, {
           minimumFractionDigits: 2,
@@ -260,14 +263,14 @@ export const getActivityColumns = ({
     },
     {
       flex: 1,
-      field: "craftCost",
-      headerName: "Craft Total",
-      align: "right",
+      field: 'craftCost',
+      headerName: 'Craft Total',
+      align: 'right',
       editable: true,
-      headerAlign: "center",
+      headerAlign: 'center',
       valueFormatter: (params: GridValueFormatterParams<number>) => {
         if (params.value == null) {
-          return "";
+          return '';
         }
         const valueFormatted = params.value.toLocaleString(undefined, {
           minimumFractionDigits: 2,
@@ -278,14 +281,14 @@ export const getActivityColumns = ({
     },
     {
       flex: 1,
-      field: "craftBaseRate",
-      headerName: "Craft Base",
+      field: 'craftBaseRate',
+      headerName: 'Craft Base',
 
-      align: "right",
-      headerAlign: "center",
+      align: 'right',
+      headerAlign: 'center',
       valueFormatter: (params: GridValueFormatterParams<number>) => {
         if (params.value == null) {
-          return "";
+          return '';
         }
         const valueFormatted = Number(params.value).toLocaleString();
         return `$${valueFormatted}`;
@@ -294,14 +297,14 @@ export const getActivityColumns = ({
     },
     {
       flex: 1,
-      field: "subsistenceRate",
-      headerName: "Subsistence",
+      field: 'subsistenceRate',
+      headerName: 'Subsistence',
 
-      align: "right",
-      headerAlign: "center",
+      align: 'right',
+      headerAlign: 'center',
       valueFormatter: (params: GridValueFormatterParams<number>) => {
         if (params.value == null) {
-          return "";
+          return '';
         }
         const valueFormatted = Number(params.value).toLocaleString();
         return `$${valueFormatted}`;
@@ -310,17 +313,17 @@ export const getActivityColumns = ({
     },
     {
       flex: 1,
-      field: "equipmentCost",
-      headerName: "Equipment Total",
+      field: 'equipmentCost',
+      headerName: 'Equipment Total',
 
-      align: "right",
+      align: 'right',
       editable: true,
       hide: false,
 
-      headerAlign: "center",
+      headerAlign: 'center',
       valueFormatter: (params: GridValueFormatterParams<number>) => {
         if (params.value == null) {
-          return "";
+          return '';
         }
         const valueFormatted = params.value.toLocaleString(undefined, {
           minimumFractionDigits: 2,
@@ -331,16 +334,16 @@ export const getActivityColumns = ({
     },
 
     {
-      field: "materialCost",
-      headerName: "Material Total",
+      field: 'materialCost',
+      headerName: 'Material Total',
 
-      align: "right",
+      align: 'right',
       editable: true,
       hide: false,
-      headerAlign: "center",
+      headerAlign: 'center',
       valueFormatter: (params: GridValueFormatterParams<number>) => {
         if (params.value == null) {
-          return "";
+          return '';
         }
         const valueFormatted = params.value.toLocaleString(undefined, {
           minimumFractionDigits: 2,
@@ -350,17 +353,17 @@ export const getActivityColumns = ({
       },
     },
     {
-      field: "costOnlyCost",
-      headerName: "Cost Only Total",
+      field: 'costOnlyCost',
+      headerName: 'Cost Only Total',
 
       hide: false,
 
       editable: true,
-      align: "right",
-      headerAlign: "center",
+      align: 'right',
+      headerAlign: 'center',
       valueFormatter: (params: GridValueFormatterParams<number>) => {
         if (params.value == null) {
-          return "";
+          return '';
         }
         const valueFormatted = params.value.toLocaleString(undefined, {
           minimumFractionDigits: 2,
@@ -370,16 +373,16 @@ export const getActivityColumns = ({
       },
     },
     {
-      field: "subContractorCost",
-      headerName: "Subcontractor Total",
+      field: 'subContractorCost',
+      headerName: 'Subcontractor Total',
 
-      align: "right",
+      align: 'right',
       hide: false,
 
-      headerAlign: "center",
+      headerAlign: 'center',
       valueFormatter: (params: GridValueFormatterParams<number>) => {
         if (params.value == null) {
-          return "";
+          return '';
         }
         const valueFormatted = params.value.toLocaleString(undefined, {
           minimumFractionDigits: 2,
@@ -390,14 +393,14 @@ export const getActivityColumns = ({
     },
     {
       flex: 1,
-      field: "totalCost",
-      headerName: "Total",
+      field: 'totalCost',
+      headerName: 'Total',
 
-      align: "right",
-      headerAlign: "center",
+      align: 'right',
+      headerAlign: 'center',
       valueFormatter: (params: GridValueFormatterParams<number>) => {
         if (params.value == null) {
-          return "";
+          return '';
         }
         const valueFormatted = params.value.toLocaleString(undefined, {
           minimumFractionDigits: 2,

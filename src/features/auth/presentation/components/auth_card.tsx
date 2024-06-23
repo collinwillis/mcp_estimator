@@ -1,5 +1,6 @@
-import Paper from "@mui/material/Box";
-import React from "react";
+import React from 'react';
+
+import Paper from '@mui/material/Box';
 
 interface AuthCardProps {
   children: React.ReactNode;
@@ -7,15 +8,15 @@ interface AuthCardProps {
 export default function AuthCard(props: AuthCardProps) {
   const styles = {
     paper: {
-      display: "flex",
-      flexDirection: "column",
-      alignItems: "center",
-      paddingTop: "20px",
-      backgroundColor: "#FBFBFB",
-      width: "40vw",
-      maxWidth: "450px",
-      minWidth: "300px",
-      borderRadius: "10px",
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      paddingTop: '20px',
+      backgroundColor: '#FBFBFB',
+      width: '40vw',
+      maxWidth: '450px',
+      minWidth: '300px',
+      borderRadius: '10px',
     },
   };
   return <Paper sx={styles.paper}>{props.children}</Paper>;

@@ -1,9 +1,10 @@
-import { collection, onSnapshot, query, where } from "firebase/firestore";
-import { useEffect, useState } from "react";
-import { getCraftLoadedRate, getWelderLoadedRate } from "../api/totals";
-import { Phase } from "../models/phase";
-import { auth, firestore } from "../setup/config/firebase";
-import { useCurrentProposal } from "./current_proposal_hook";
+import { useEffect, useState } from 'react';
+
+import { collection, onSnapshot, query, where } from 'firebase/firestore';
+import { getCraftLoadedRate, getWelderLoadedRate } from '../api/totals';
+import { Phase } from '../models/phase';
+import { auth, firestore } from '../setup/config/firebase';
+import { useCurrentProposal } from './current_proposal_hook';
 
 export const useLoadedRates = ({
   currentProposalId,
@@ -15,11 +16,11 @@ export const useLoadedRates = ({
   const currentProposal = useCurrentProposal({ proposalId: currentProposalId });
   useEffect(() => {
     if (currentProposal) {
-      let tempCraftLoadedRate = getCraftLoadedRate({
+      const tempCraftLoadedRate = getCraftLoadedRate({
         proposal: currentProposal,
       });
 
-      let tempWelderLoadedRate = getWelderLoadedRate({
+      const tempWelderLoadedRate = getWelderLoadedRate({
         proposal: currentProposal,
       });
       setCraftLoadedRate(tempCraftLoadedRate);

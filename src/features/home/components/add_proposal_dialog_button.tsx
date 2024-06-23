@@ -1,6 +1,8 @@
-import AddIcon from "@mui/icons-material/Add";
-import { colors, Divider, ListItemText, MenuItem } from "@mui/material";
-import React from "react";
+import React from 'react';
+
+import AddIcon from '@mui/icons-material/Add';
+import { Divider, ListItemText, MenuItem, colors } from '@mui/material';
+
 interface AddProposalDialogButtonProps {
   toggleDialog: () => void;
 }
@@ -12,7 +14,7 @@ export default function AddProposalDialogButton({
       onClick={toggleDialog}
       sx={{
         height: 60,
-        borderBottom: colors.grey[300] + " 1px solid",
+        borderBottom: `${colors.grey[300]} 1px solid`,
       }}
     >
       <ListItemText>Add Proposal</ListItemText>

@@ -1,18 +1,19 @@
+import React, {
+  ReactNode,
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+} from 'react';
+
 import {
+  User,
   createUserWithEmailAndPassword,
   onAuthStateChanged,
   signInWithEmailAndPassword,
   signOut,
-  User,
-} from "firebase/auth";
-import React, {
-  createContext,
-  ReactNode,
-  useContext,
-  useEffect,
-  useState,
-} from "react";
-import { auth } from "../setup/config/firebase";
+} from 'firebase/auth';
+import { auth } from '../setup/config/firebase';
 
 const AuthContext = createContext({});
 export function AuthProvider({ children }: { children: ReactNode }) {

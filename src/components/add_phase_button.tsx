@@ -1,4 +1,6 @@
-import AddIcon from "@mui/icons-material/Add";
+import React from 'react';
+
+import AddIcon from '@mui/icons-material/Add';
 import {
   Box,
   Button,
@@ -7,8 +9,7 @@ import {
   ListItemText,
   MenuItem,
   Tooltip,
-} from "@mui/material";
-import React from "react";
+} from '@mui/material';
 
 interface AddPhaseButtonProps {
   toggleAddDialog: () => void;
@@ -18,13 +19,13 @@ export default function AddPhaseButton({
   toggleAddDialog,
 }: AddPhaseButtonProps) {
   return (
-    <Tooltip title={"Add new phase"}>
+    <Tooltip title="Add new phase">
       <Fab
         variant="extended"
         color="primary"
         sx={{
-          position: "absolute",
-          bottom: "20px",
+          position: 'absolute',
+          bottom: '20px',
           zIndex: 1,
         }}
         onClick={toggleAddDialog}

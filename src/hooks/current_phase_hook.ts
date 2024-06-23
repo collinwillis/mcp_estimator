@@ -1,8 +1,9 @@
-import { useEffect, useState } from "react";
-import { getSinglePhase } from "../api/phase";
-import { getSingleWbs } from "../api/wbs";
-import { Phase } from "../models/phase";
-import { Wbs } from "../models/wbs";
+import { useEffect, useState } from 'react';
+
+import { getSinglePhase } from '../api/phase';
+import { getSingleWbs } from '../api/wbs';
+import { Phase } from '../models/phase';
+import { Wbs } from '../models/wbs';
 
 interface CurrentPhaseProps {
   phaseId: string;
@@ -10,7 +11,7 @@ interface CurrentPhaseProps {
 export const useCurrentPhase = ({ phaseId }: CurrentPhaseProps) => {
   const [data, setData] = useState<Phase>();
   useEffect(() => {
-    if (phaseId && phaseId != "") {
+    if (phaseId && phaseId != '') {
       getData();
     } else {
       setData(undefined);

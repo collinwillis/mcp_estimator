@@ -4,48 +4,65 @@ export enum DrawerVariation {
   Phase,
 }
 export class WbsEnum {
-  static readonly MOBILIZE = new WbsEnum("MOBILIZE", "MOBILIZE", 10000);
-  static readonly INSULATION = new WbsEnum("INSULATION", "INSULATION", 100000);
-  static readonly PAINTING = new WbsEnum("PAINTING", "PAINTING", 110000);
+  static readonly MOBILIZE = new WbsEnum('MOBILIZE', 'MOBILIZE', 10000);
+
+  static readonly INSULATION = new WbsEnum('INSULATION', 'INSULATION', 100000);
+
+  static readonly PAINTING = new WbsEnum('PAINTING', 'PAINTING', 110000);
+
   static readonly DISMANTLING = new WbsEnum(
-    "DISMANTLING",
-    "DISMANTLING",
+    'DISMANTLING',
+    'DISMANTLING',
     120000
   );
-  static readonly BG_PIPING = new WbsEnum("BG PIPING", "BG PIPING", 130000);
-  static readonly REFRATORY = new WbsEnum("REFRACTORY", "REFRACTORY", 140000);
-  static readonly BUILDINGS = new WbsEnum("BUILDINGS", "BUILDINGS", 150000);
+
+  static readonly BG_PIPING = new WbsEnum('BG PIPING', 'BG PIPING', 130000);
+
+  static readonly REFRATORY = new WbsEnum('REFRACTORY', 'REFRACTORY', 140000);
+
+  static readonly BUILDINGS = new WbsEnum('BUILDINGS', 'BUILDINGS', 150000);
+
   static readonly SPECIALTY_SERVICES = new WbsEnum(
-    "SPECIALTY SERVICES",
-    "SPECIALTY SERVICES",
+    'SPECIALTY SERVICES',
+    'SPECIALTY SERVICES',
     180000
   );
-  static readonly DEMOBILIZE = new WbsEnum("DEMOBILIZE", "DEMOBILIZE", 190000);
+
+  static readonly DEMOBILIZE = new WbsEnum('DEMOBILIZE', 'DEMOBILIZE', 190000);
+
   static readonly SITE_PREPARATION = new WbsEnum(
-    "SITE PREPARATION",
-    "SITE PREPARATION",
+    'SITE PREPARATION',
+    'SITE PREPARATION',
     20000
   );
-  static readonly CONCRETE = new WbsEnum("CONCRETE", "CONCRETE", 30000);
+
+  static readonly CONCRETE = new WbsEnum('CONCRETE', 'CONCRETE', 30000);
+
   static readonly TOWERS_VESSELS_EQUIPMENT = new WbsEnum(
-    "TOWERS/VESSELS/EQUIPMENT",
-    "TOWERS/VESSELS/EQUIPMENT",
+    'TOWERS/VESSELS/EQUIPMENT',
+    'TOWERS/VESSELS/EQUIPMENT',
     40000
   );
+
   static readonly PUMPS_AND_DRIVERS = new WbsEnum(
-    "PUMPS & DRIVERS",
-    "PUMPS & DRIVERS",
+    'PUMPS & DRIVERS',
+    'PUMPS & DRIVERS',
     50000
   );
-  static readonly STRUCTURAL = new WbsEnum("STRUCTURAL", "STRUCTURAL", 60000);
-  static readonly AG_PIPING = new WbsEnum("AG PIPING", "AG PIPING", 70000);
-  static readonly ELECTRICAL = new WbsEnum("ELECTRICAL", "ELECTRICAL", 80000);
+
+  static readonly STRUCTURAL = new WbsEnum('STRUCTURAL', 'STRUCTURAL', 60000);
+
+  static readonly AG_PIPING = new WbsEnum('AG PIPING', 'AG PIPING', 70000);
+
+  static readonly ELECTRICAL = new WbsEnum('ELECTRICAL', 'ELECTRICAL', 80000);
+
   static readonly INSTRUMENTS = new WbsEnum(
-    "INSTRUMENTS",
-    "INSTRUMENTS",
+    'INSTRUMENTS',
+    'INSTRUMENTS',
     90000
   );
-  static readonly SUPPORT = new WbsEnum("SUPPORT", "SUPPORT", 200000);
+
+  static readonly SUPPORT = new WbsEnum('SUPPORT', 'SUPPORT', 200000);
 
   private constructor(
     private readonly key: string,

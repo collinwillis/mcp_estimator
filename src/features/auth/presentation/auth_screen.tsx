@@ -1,18 +1,19 @@
-import { Box, CssBaseline, Stack, Typography } from "@mui/material";
-import { blue } from "@mui/material/colors";
-import React, { useState } from "react";
-import AuthCard from "./components/auth_card";
-import Header from "./components/header";
-import LoginForm from "./components/login_form";
-import RegisterForm from "./components/register_form";
+import React, { useState } from 'react';
+
+import { Box, CssBaseline, Stack, Typography } from '@mui/material';
+import { blue } from '@mui/material/colors';
+import AuthCard from './components/auth_card';
+import Header from './components/header';
+import LoginForm from './components/login_form';
+import RegisterForm from './components/register_form';
 
 const styles = {
   root: {
-    width: "100vw",
-    height: "100vh",
-    alignItems: "center",
-    justifyContent: "center",
-    display: "flex",
+    width: '100vw',
+    height: '100vh',
+    alignItems: 'center',
+    justifyContent: 'center',
+    display: 'flex',
   },
 };
 export default function Welcome() {
@@ -21,19 +22,18 @@ export default function Welcome() {
     <div style={styles.root}>
       <Typography
         sx={{
-          top: "20px",
-          position: "absolute",
-          left: "20px",
-          color: "primary.main",
-          fontWeight: "700",
-
+          top: '20px',
+          position: 'absolute',
+          left: '20px',
+          color: 'primary.main',
+          fontWeight: '700',
         }}
         variant="h5"
       >
         MCP ESTIMATOR
       </Typography>
       <Stack spacing={2}>
-        <Header text={formValue === 1 ? "Welcome Back!" : "Welcome!"} />
+        <Header text={formValue === 1 ? 'Welcome Back!' : 'Welcome!'} />
         <AuthCard>
           {formValue === 2 ? (
             <RegisterForm setFormValue={setFormValue} />

@@ -1,10 +1,14 @@
-import { DocumentReference } from "firebase/firestore";
+import { DocumentReference } from 'firebase/firestore';
 
 export class FirestoreWbs {
   proposalId: string | null;
+
   wbsDatabaseId: number | null;
+
   name: string | null;
+
   customQuantity: number | null;
+
   customUnit: string | null;
 
   constructor({

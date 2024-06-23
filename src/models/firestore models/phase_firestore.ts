@@ -1,25 +1,44 @@
-import { DocumentReference } from "firebase/firestore";
+import { DocumentReference } from 'firebase/firestore';
 
 export class FirestorePhase {
   proposalId: string | null;
+
   wbsId: string | null;
+
   phaseDatabaseId: number | null;
+
   phaseNumber: number | null;
+
   description: string | null;
+
   phaseDatabaseName: string | null;
+
   size: string | null;
+
   flc: string | null;
+
   system: string | null;
+
   sys: string | null;
+
   spec: string | null;
+
   insulation: string | null;
+
   insulationSize: string | null;
+
   sheet: string | null;
+
   area: string | null;
+
   status: string | null;
+
   customQuantity: number | null;
+
   quantity: number | null;
+
   customUnit: string | null;
+
   unit: string | null;
 
   constructor({
@@ -28,11 +47,11 @@ export class FirestorePhase {
     phaseDatabaseId,
     phaseNumber,
     description,
-      phaseDatabaseName,
+    phaseDatabaseName,
     size,
     flc,
     system,
-      sys,
+    sys,
     spec,
     insulation,
     insulationSize,

@@ -1,3 +1,5 @@
+import React, { useEffect, useState } from 'react';
+
 import {
   Button,
   Dialog,
@@ -5,21 +7,20 @@ import {
   DialogContent,
   DialogTitle,
   Input,
-} from "@mui/material";
-import Checkbox from "@mui/material/Checkbox";
-import List from "@mui/material/List";
-import ListItem from "@mui/material/ListItem";
-import ListItemButton from "@mui/material/ListItemButton";
-import ListItemIcon from "@mui/material/ListItemIcon";
-import ListItemText from "@mui/material/ListItemText";
-import React, { useEffect, useState } from "react";
-import { updateProposalPreferences } from "../../../api/proposal_preferences";
-import { useProposalPreferences } from "../../../hooks/proposal_preferences_hook";
-import { FirestoreProposalPreferences } from "../../../models/firestore models/proposal_preferences_firestore";
-import { ProposalPreferences } from "../../../models/proposal_preferences";
-import { auth } from "../../../setup/config/firebase";
-import { WbsArray, WbsEnum } from "../../../utils/enums";
-import {estimatorStore, StoreState} from "../../../utils/store";
+} from '@mui/material';
+import Checkbox from '@mui/material/Checkbox';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemButton from '@mui/material/ListItemButton';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
+import { updateProposalPreferences } from '../../../api/proposal_preferences';
+import { useProposalPreferences } from '../../../hooks/proposal_preferences_hook';
+import { FirestoreProposalPreferences } from '../../../models/firestore models/proposal_preferences_firestore';
+import { ProposalPreferences } from '../../../models/proposal_preferences';
+import { auth } from '../../../setup/config/firebase';
+import { WbsArray, WbsEnum } from '../../../utils/enums';
+import { StoreState, estimatorStore } from '../../../utils/store';
 
 interface Props {
   isOpen: boolean;
@@ -31,9 +32,11 @@ export default function SelectWbsDialog({
   onClose,
   proposalPreferences,
 }: Props) {
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState('');
   const [checked, setChecked] = useState<string[]>([]);
-  const updateFirestorePreferences = estimatorStore((state: StoreState) => state.setPreferences);
+  const updateFirestorePreferences = estimatorStore(
+    (state: StoreState) => state.setPreferences
+  );
   const proposal = estimatorStore((state: StoreState) => state.proposal);
   useEffect(() => {
     if (proposalPreferences) {
@@ -43,8 +46,8 @@ export default function SelectWbsDialog({
 
   const styles = {
     dialogPaper: {
-      minHeight: "80vh",
-      maxHeight: "80vh",
+      minHeight: '80vh',
+      maxHeight: '80vh',
     },
   };
   const handleToggle = (value: string) => () => {
@@ -80,14 +83,14 @@ export default function SelectWbsDialog({
               onChange={(e) => {
                 setSearch(e.target.value);
               }}
-              sx={{ width: "100%" }}
-              autoFocus={true}
+              sx={{ width: '100%' }}
+              autoFocus
             />
           </>
         </DialogTitle>
-        <DialogContent sx={{ height: "400px", width: "400px" }}>
+        <DialogContent sx={{ height: '400px', width: '400px' }}>
           <List
-            sx={{ width: "100%", maxWidth: 360, bgcolor: "background.paper" }}
+            sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}
           >
             {WbsArray?.sort((a, b) => {
               return a.wbsDatabaseId! - b.wbsDatabaseId!;
@@ -106,7 +109,7 @@ export default function SelectWbsDialog({
                         checked={checked?.includes(wbs.name)}
                         tabIndex={-1}
                         disableRipple
-                        inputProps={{ "aria-labelledby": labelId }}
+                        inputProps={{ 'aria-labelledby': labelId }}
                       />
                     </ListItemIcon>
                     <ListItemText id={labelId} primary={wbs.name} />

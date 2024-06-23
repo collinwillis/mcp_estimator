@@ -1,118 +1,125 @@
 import {
-    addDoc,
-    collection,
-    deleteDoc,
-    doc,
-    DocumentReference,
-    getDoc,
-    getDocs,
-    query,
-    setDoc,
-    updateDoc,
-    where,
-    writeBatch
-} from "firebase/firestore";
-import {FirestoreProposal} from "../models/firestore models/proposal_firestore";
-import {Proposal} from "../models/proposal";
-import {firestore} from "../setup/config/firebase";
-import {insertAllBaseWbs} from "./wbs";
+  DocumentReference,
+  addDoc,
+  collection,
+  deleteDoc,
+  doc,
+  getDoc,
+  getDocs,
+  query,
+  setDoc,
+  updateDoc,
+  where,
+  writeBatch,
+} from 'firebase/firestore';
+import { FirestoreProposal } from '../models/firestore models/proposal_firestore';
+import { Proposal } from '../models/proposal';
+import { firestore } from '../setup/config/firebase';
+import { insertAllBaseWbs } from './wbs';
 
 export const insertProposal = async (
-    proposalDescription: string,
-    proposalNumber: string
+  proposalDescription: string,
+  proposalNumber: string
 ) => {
-    const proposal: FirestoreProposal = new FirestoreProposal({
-        proposalDescription: proposalDescription,
-        proposalNumber: parseInt(proposalNumber),
-    });
-    await addDoc(collection(firestore, "proposals"), {
-        ...proposal,
-    }).then(async (docRef) => {
-        await insertAllBaseWbs(docRef.id);
-    });
+  const proposal: FirestoreProposal = new FirestoreProposal({
+    proposalDescription,
+    proposalNumber: parseInt(proposalNumber),
+  });
+  await addDoc(collection(firestore, 'proposals'), {
+    ...proposal,
+  }).then(async (docRef) => {
+    await insertAllBaseWbs(docRef.id);
+  });
 };
 
 export const getSingleProposal = async ({
-                                            proposalId,
-                                        }: {
-    proposalId: string;
+  proposalId,
+}: {
+  proposalId: string;
 }) => {
-    const proposalRef = doc(firestore, "proposals", proposalId);
-    const proposalSnapshot = await getDoc(proposalRef);
-    if (proposalSnapshot.exists()) {
-        const proposal = proposalSnapshot.data() as Proposal;
-        proposal.id = proposalSnapshot.id;
-        return proposal;
-    } else {
-        console.log("No such document!");
-    }
+  const proposalRef = doc(firestore, 'proposals', proposalId);
+  const proposalSnapshot = await getDoc(proposalRef);
+  if (proposalSnapshot.exists()) {
+    const proposal = proposalSnapshot.data() as Proposal;
+    proposal.id = proposalSnapshot.id;
+    return proposal;
+  }
+  console.log('No such document!');
 };
 export const updateSingleProposal = async ({
-                                               proposalId,
-                                               proposal,
-                                           }: {
-    proposalId: string;
-    proposal: FirestoreProposal;
+  proposalId,
+  proposal,
+}: {
+  proposalId: string;
+  proposal: FirestoreProposal;
 }) => {
-    const proposalRef = doc(firestore, "proposals", proposalId);
-    await setDoc(proposalRef, {
-        ...proposal,
-    });
-    console.log("Proposal updated");
+  const proposalRef = doc(firestore, 'proposals', proposalId);
+  await setDoc(proposalRef, {
+    ...proposal,
+  });
+  console.log('Proposal updated');
 };
 
 export const updateProposalField = async ({
-                                              proposalId,
-                                              field,
-                                              value,
-                                          }: {
-    proposalId: string;
-    field: string;
-    value: any;
+  proposalId,
+  field,
+  value,
+}: {
+  proposalId: string;
+  field: string;
+  value: any;
 }) => {
-    const proposalRef = doc(firestore, "proposals", proposalId);
+  const proposalRef = doc(firestore, 'proposals', proposalId);
 
-    await updateDoc(proposalRef, {
-        [field]: value,
-    });
+  await updateDoc(proposalRef, {
+    [field]: value,
+  });
 
-    console.log("Field updated");
+  console.log('Field updated');
 };
 
-
 export async function deleteProposalAndAssociatedData(proposalId: String) {
-    const batch = writeBatch(firestore);
+  const batch = writeBatch(firestore);
 
-    // Step 1: Delete activities associated with the proposal
-    await deleteAssociatedData('activities', proposalId, batch);
+  // Step 1: Delete activities associated with the proposal
+  await deleteAssociatedData('activities', proposalId, batch);
 
-    // Step 2: Delete phases associated with the proposal
-    await deleteAssociatedData('phases', proposalId, batch);
+  // Step 2: Delete phases associated with the proposal
+  await deleteAssociatedData('phases', proposalId, batch);
 
-    // Step 3: Delete wbs associated with the proposal
-    await deleteAssociatedData('wbs', proposalId, batch);
+  // Step 3: Delete wbs associated with the proposal
+  await deleteAssociatedData('wbs', proposalId, batch);
 
-    // Step 4: Delete the proposal itself
-    const proposalRef = doc(firestore, 'proposals', proposalId.toString());
+  // Step 4: Delete the proposal itself
+  const proposalRef = doc(firestore, 'proposals', proposalId.toString());
 
-    try {
-        // Step 5: Commit the batched writes
-        await deleteDoc(proposalRef);
-        await batch.commit();
-        console.log('Proposal and associated data deleted successfully.');
-    } catch (error) {
-        console.error('Error deleting proposal and associated data:', error);
-    }
+  try {
+    // Step 5: Commit the batched writes
+    await deleteDoc(proposalRef);
+    await batch.commit();
+    console.log('Proposal and associated data deleted successfully.');
+  } catch (error) {
+    console.error('Error deleting proposal and associated data:', error);
+  }
 }
 
-async function deleteAssociatedData(collectionName: string, proposalId: unknown, batch: {
+async function deleteAssociatedData(
+  collectionName: string,
+  proposalId: unknown,
+  batch: {
     delete: (arg0: DocumentReference) => void;
-}) {
-    const querySnapshot = await getDocs(query(collection(firestore, collectionName), where('proposalId', '==', proposalId)));
-    querySnapshot.forEach((doc) => {
-        const docRef = doc.ref;
-        batch.delete(docRef);
-    });
+  }
+) {
+  const querySnapshot = await getDocs(
+    query(
+      collection(firestore, collectionName),
+      where('proposalId', '==', proposalId)
+    )
+  );
+  querySnapshot.forEach((doc) => {
+    const docRef = doc.ref;
+    batch.delete(docRef);
+  });
 }
 
 // export async function duplicateProposalAndAssociatedData(proposalId: string) {
@@ -167,4 +174,3 @@ async function deleteAssociatedData(collectionName: string, proposalId: unknown,
 //         batch.set(newDocRef, docData);
 //     });
 // }
-

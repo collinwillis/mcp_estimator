@@ -1,41 +1,78 @@
 export class FirestoreProposal {
   proposalNumber: number | null;
+
   job: string | null;
+
   coNumber: number | null;
+
   proposalDescription: string | null;
+
   proposalOwner: string | null;
+
   projectCity: string | null;
+
   projectState: string | null;
+
   proposalEstimators: string | null;
+
   proposalDateReceived: string | null;
+
   proposalDateDue: string | null;
+
   projectStartDate: string | null;
+
   projectEndDate: string | null;
+
   bidType: string | null;
+
   proposalStatus: string | null;
+
   contactName: string | null;
+
   contactAddress: string | null;
+
   contactCity: string | null;
+
   contactState: string | null;
+
   contactZip: number | null;
+
   contactPhone: string | null;
+
   contactEmail: string | null;
+
   customQuantity: number | null;
+
   customUnit: string | null;
+
   craftBaseRate: number;
+
   weldBaseRate: number;
+
   subsistenceRate: number;
+
   useTaxRate: number;
+
   salesTaxRate: number;
+
   overheadRate: number;
+
   consumablesRate: number;
+
   burdenRate: number;
+
   fuelRate: number;
+
   rigRate: number;
+
   laborProfitRate: number;
+
   materialProfitRate: number;
+
   equipmentProfitRate: number;
+
   subContractorProfitRate: number;
+
   rigProfitRate: number;
 
   constructor({

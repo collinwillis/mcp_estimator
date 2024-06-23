@@ -8,16 +8,16 @@ import {
   updateDoc,
   where,
   writeBatch,
-} from "firebase/firestore";
-import agPiping from "../data/agPiping.json";
-import rawPhases from "../data/phases.json";
-import { Activity, ActivityType } from "../models/activity";
-import { EquipmentOwnership, EquipmentUnit } from "../models/equipment";
-import { FirestoreActivity } from "../models/firestore models/activity_firestore";
-import { FirestorePhase } from "../models/firestore models/phase_firestore";
-import { Proposal } from "../models/proposal";
-import { firestore } from "../setup/config/firebase";
-import { getSingleProposal } from "./proposal";
+} from 'firebase/firestore';
+import agPiping from '../data/agPiping.json';
+import rawPhases from '../data/phases.json';
+import { Activity, ActivityType } from '../models/activity';
+import { EquipmentOwnership, EquipmentUnit } from '../models/equipment';
+import { FirestoreActivity } from '../models/firestore models/activity_firestore';
+import { FirestorePhase } from '../models/firestore models/phase_firestore';
+import { Proposal } from '../models/proposal';
+import { firestore } from '../setup/config/firebase';
+import { getSingleProposal } from './proposal';
 import {
   getCostOnlyCost,
   getCraftLoadedRate,
@@ -26,7 +26,8 @@ import {
   getSubcontractorCost,
   getTotalCost,
   getWelderLoadedRate,
-} from "./totals";
+} from './totals';
+
 // Make sure to import firestore methods properly
 
 export const insertActivityBatch = async (activities: FirestoreActivity[]) => {
@@ -35,7 +36,7 @@ export const insertActivityBatch = async (activities: FirestoreActivity[]) => {
   activities.forEach((activity, index) => {
     // Ensuring unique millisecond timestamp by adding the index
     activity.dateAdded = currentDate + index; // Removed toString()
-    const ref = doc(collection(firestore, "activities"));
+    const ref = doc(collection(firestore, 'activities'));
     batch.set(ref, { ...activity });
   });
 
@@ -44,22 +45,22 @@ export const insertActivityBatch = async (activities: FirestoreActivity[]) => {
 
 // List of fields that should contain numbers
 const numberFields = [
-  "quantity",
-  "craftConstant",
-  "welderConstant",
-  "craftManHours",
-  "welderManHours",
-  "craftCost",
-  "welderCost",
-  "totalCost",
-  "craftBaseRate",
-  "subsistenceRate",
-  "equipmentCost",
-  "materialCost",
-  "costOnlyCost",
-  "price",
-  "time",
-  "subContractorCost",
+  'quantity',
+  'craftConstant',
+  'welderConstant',
+  'craftManHours',
+  'welderManHours',
+  'craftCost',
+  'welderCost',
+  'totalCost',
+  'craftBaseRate',
+  'subsistenceRate',
+  'equipmentCost',
+  'materialCost',
+  'costOnlyCost',
+  'price',
+  'time',
+  'subContractorCost',
 ];
 
 export const updateActivity = async (
@@ -71,23 +72,22 @@ export const updateActivity = async (
 
   // Check if the field is a number field
   if (numberFields.includes(field)) {
-    if (isNaN(parseFloat(value)) || value.trim() === "") {
+    if (isNaN(parseFloat(value)) || value.trim() === '') {
       // Notify the user for non-numeric input
       return {
         success: false,
-        message: "Invalid input: Expected a numeric value.",
+        message: 'Invalid input: Expected a numeric value.',
       };
-    } else {
-      // If value is a valid number, parse it
-      newValue = parseFloat(value);
     }
+    // If value is a valid number, parse it
+    newValue = parseFloat(value);
   } else {
     // For non-number fields, use the value as is
     newValue = value;
   }
 
   try {
-    await updateDoc(doc(firestore, "activities", id), { [field]: newValue });
+    await updateDoc(doc(firestore, 'activities', id), { [field]: newValue });
     return {
       success: true,
       message: `Field '${field}' has been updated to ${newValue}`,
@@ -96,7 +96,7 @@ export const updateActivity = async (
     console.error(error);
     return {
       success: false,
-      message: "An error occurred while updating the document.",
+      message: 'An error occurred while updating the document.',
     };
   }
 };
@@ -105,7 +105,7 @@ export const updateActivitiesBatch = async (activities: Activity[]) => {
   const batch = writeBatch(firestore);
 
   activities.forEach((activity) => {
-    const activityRef = doc(firestore, "activities", activity.id);
+    const activityRef = doc(firestore, 'activities', activity.id);
     batch.update(activityRef, {
       sortOrder: activity.sortOrder,
     });
@@ -119,15 +119,14 @@ export const getSingleActivity = async ({
 }: {
   activityId: string;
 }) => {
-  const ref = doc(firestore, "activities", activityId);
+  const ref = doc(firestore, 'activities', activityId);
   const activitySnapshot = await getDoc(ref);
   if (activitySnapshot.exists()) {
     const activity = activitySnapshot.data() as Activity;
     activity.id = activitySnapshot.id;
     return activity;
-  } else {
-    console.log("No such document!");
   }
+  console.log('No such document!');
 };
 
 export const updateEquipmentUnit = async ({
@@ -137,21 +136,21 @@ export const updateEquipmentUnit = async ({
   activity: Activity;
   unit: string;
 }) => {
-  await updateDoc(doc(firestore, "activities", activity.id), {
-    unit: unit,
+  await updateDoc(doc(firestore, 'activities', activity.id), {
+    unit,
     price:
       unit == EquipmentUnit.hours
         ? activity.equipment?.hourRate
         : unit == EquipmentUnit.days
-        ? activity.equipment?.dayRate
-        : unit == EquipmentUnit.weeks
-        ? activity.equipment?.weekRate
-        : unit == EquipmentUnit.months
-        ? activity.equipment?.monthRate
-        : 0,
+          ? activity.equipment?.dayRate
+          : unit == EquipmentUnit.weeks
+            ? activity.equipment?.weekRate
+            : unit == EquipmentUnit.months
+              ? activity.equipment?.monthRate
+              : 0,
   })
     .then((docRef) => {
-      console.log("Value of an Existing Document Field has been updated");
+      console.log('Value of an Existing Document Field has been updated');
     })
     .catch((error) => {
       console.log(error);
@@ -165,7 +164,7 @@ export const updateEquipmentOwnership = async ({
   activity: Activity;
   ownership: string;
 }) => {
-  await updateDoc(doc(firestore, "activities", activity.id), {
+  await updateDoc(doc(firestore, 'activities', activity.id), {
     equipmentOwnership: ownership,
   })
     .then((docRef) => {
@@ -174,13 +173,13 @@ export const updateEquipmentOwnership = async ({
         (ownership == EquipmentOwnership.owned ||
           ownership == EquipmentOwnership.rental)
       ) {
-        updateEquipmentUnit({ activity: activity, unit: "Months" });
+        updateEquipmentUnit({ activity, unit: 'Months' });
       } else if (
         (activity.equipmentOwnership == EquipmentOwnership.owned ||
           activity.equipmentOwnership == EquipmentOwnership.rental) &&
         ownership == EquipmentOwnership.purchase
       ) {
-        updateEquipmentUnit({ activity: activity, unit: "EA" });
+        updateEquipmentUnit({ activity, unit: 'EA' });
       }
     })
     .catch((error) => {
@@ -189,7 +188,7 @@ export const updateEquipmentOwnership = async ({
 };
 
 function isNumber(value: string | number): boolean {
-  return value != null && value !== "" && !isNaN(Number(value.toString()));
+  return value != null && value !== '' && !isNaN(Number(value.toString()));
 }
 
 export const changeActivityOrder = async (
@@ -203,7 +202,7 @@ export const changeActivityOrder = async (
   );
 
   if (targetActivityIndex === -1) {
-    console.error("Target row ID not found");
+    console.error('Target row ID not found');
     return;
   }
 
@@ -213,7 +212,7 @@ export const changeActivityOrder = async (
   );
 
   if (selectedActivityIndex === -1) {
-    console.error("Selected activity not found");
+    console.error('Selected activity not found');
     return;
   }
 
@@ -239,16 +238,16 @@ export const addCustomLabor = async (
   phaseId: string
 ) => {
   const activity = new FirestoreActivity({
-    proposalId: proposalId,
-    wbsId: wbsId,
-    phaseId: phaseId,
+    proposalId,
+    wbsId,
+    phaseId,
     constant: null,
     equipment: null,
     time: 0,
     craftConstant: 0,
     welderConstant: 0,
     activityType: ActivityType.customLaborItem,
-    description: "NEW CUSTOM LABOR ITEM",
+    description: 'NEW CUSTOM LABOR ITEM',
     quantity: 0,
     price: 0,
     craftBaseRate: null,
@@ -260,7 +259,7 @@ export const addCustomLabor = async (
     dateAdded: Date.now(),
     sortOrder: null,
   });
-  const docRef = await addDoc(collection(firestore, "activities"), {
+  const docRef = await addDoc(collection(firestore, 'activities'), {
     ...activity,
   });
 };
@@ -271,16 +270,16 @@ export const addCostOnly = async (
   phaseId: string
 ) => {
   const activity = new FirestoreActivity({
-    proposalId: proposalId,
-    wbsId: wbsId,
-    phaseId: phaseId,
+    proposalId,
+    wbsId,
+    phaseId,
     constant: null,
     equipment: null,
     time: 0,
     craftConstant: 0,
     welderConstant: 0,
     activityType: ActivityType.costOnlyItem,
-    description: "NEW COST ONLY ITEM",
+    description: 'NEW COST ONLY ITEM',
     quantity: 0,
     price: 0,
     craftBaseRate: null,
@@ -292,7 +291,7 @@ export const addCostOnly = async (
     dateAdded: Date.now(),
     sortOrder: null,
   });
-  const docRef = await addDoc(collection(firestore, "activities"), {
+  const docRef = await addDoc(collection(firestore, 'activities'), {
     ...activity,
   });
 };
@@ -303,16 +302,16 @@ export const addMaterial = async (
   phaseId: string
 ) => {
   const activity = new FirestoreActivity({
-    proposalId: proposalId,
-    wbsId: wbsId,
-    phaseId: phaseId,
+    proposalId,
+    wbsId,
+    phaseId,
     constant: null,
     equipment: null,
     time: 0,
     craftConstant: 0,
     welderConstant: 0,
     activityType: ActivityType.materialItem,
-    description: "NEW MATERIAL ITEM",
+    description: 'NEW MATERIAL ITEM',
     quantity: 0,
     price: 0,
     craftBaseRate: null,
@@ -324,7 +323,7 @@ export const addMaterial = async (
     dateAdded: Date.now(),
     sortOrder: null,
   });
-  const docRef = await addDoc(collection(firestore, "activities"), {
+  const docRef = await addDoc(collection(firestore, 'activities'), {
     ...activity,
   });
 };
@@ -335,17 +334,17 @@ export const addSubcontractor = async (
   phaseId: string
 ) => {
   const activity = new FirestoreActivity({
-    proposalId: proposalId,
-    wbsId: wbsId,
-    unit: "HOURS",
-    phaseId: phaseId,
+    proposalId,
+    wbsId,
+    unit: 'HOURS',
+    phaseId,
     constant: null,
     equipment: null,
     time: 0,
     craftConstant: 0,
     welderConstant: 0,
     activityType: ActivityType.subContractorItem,
-    description: "NEW SUBCONTRACTOR",
+    description: 'NEW SUBCONTRACTOR',
     quantity: 0,
     price: 0,
     craftBaseRate: null,
@@ -357,7 +356,7 @@ export const addSubcontractor = async (
     dateAdded: Date.now(),
     sortOrder: null,
   });
-  const docRef = await addDoc(collection(firestore, "activities"), {
+  const docRef = await addDoc(collection(firestore, 'activities'), {
     ...activity,
   });
 };
@@ -365,7 +364,7 @@ export const addSubcontractor = async (
 export const deleteActivityBatch = async (activityIds: string[]) => {
   const batch = writeBatch(firestore);
   activityIds.forEach((activityId) => {
-    batch.delete(doc(firestore, "activities", activityId));
+    batch.delete(doc(firestore, 'activities', activityId));
   });
   await batch.commit();
 };
@@ -373,7 +372,7 @@ export const deleteActivityBatch = async (activityIds: string[]) => {
 export const resetConstantsBatch = async (activityIds: string[]) => {
   const batch = writeBatch(firestore);
   activityIds.forEach((activityId) => {
-    batch.update(doc(firestore, "activities", activityId), {
+    batch.update(doc(firestore, 'activities', activityId), {
       craftConstant: null,
       welderConstant: null,
       unit: null,
@@ -390,12 +389,12 @@ export const getActivitiesForPhase = async ({
   proposalId: string;
 }) => {
   const q = query(
-    collection(firestore, "activities"),
-    where("phaseId", "==", phaseId)
+    collection(firestore, 'activities'),
+    where('phaseId', '==', phaseId)
   );
-  var temp: Activity[] = [];
-  var proposal = await getSingleProposal({
-    proposalId: proposalId,
+  let temp: Activity[] = [];
+  const proposal = await getSingleProposal({
+    proposalId,
   });
   const querySnapshot = await getDocs(q);
 
@@ -426,12 +425,12 @@ export const getActivitiesForWbs = async ({
   proposalId: string;
 }) => {
   const q = query(
-    collection(firestore, "activities"),
-    where("wbsId", "==", wbsId)
+    collection(firestore, 'activities'),
+    where('wbsId', '==', wbsId)
   );
-  var temp: Activity[] = [];
-  var proposal = await getSingleProposal({
-    proposalId: proposalId,
+  let temp: Activity[] = [];
+  const proposal = await getSingleProposal({
+    proposalId,
   });
   const querySnapshot = await getDocs(q);
   const activityPromises = querySnapshot.docs.map((doc) => {
@@ -461,7 +460,7 @@ export async function updateActivityRates(
   const batch = writeBatch(firestore);
   activities.forEach((activity) => {
     if (activity) {
-      batch.update(doc(firestore, "activities", activity.id), {
+      batch.update(doc(firestore, 'activities', activity.id), {
         craftBaseRate: newBaseRate,
         subsistenceRate: newSubsistenceRate,
       });
@@ -476,22 +475,22 @@ export const calculateActivityData = async (
   proposal: Proposal
 ) => {
   const rawActivity = activity;
-  var craftConstant =
+  const craftConstant =
     rawActivity.craftConstant ?? rawActivity.constant?.craftConstant ?? 0;
-  var welderConstant =
+  const welderConstant =
     rawActivity.welderConstant ?? rawActivity.constant?.weldConstant ?? 0;
-  let cmh = (rawActivity.quantity ?? 0) * craftConstant;
-  let wmh = (rawActivity.quantity ?? 0) * welderConstant;
-  var proposalCraftBase = proposal?.craftBaseRate;
-  var proposalSubsistenceRate = proposal?.subsistenceRate;
-  var proposalWeldBase = proposal?.weldBaseRate;
+  const cmh = (rawActivity.quantity ?? 0) * craftConstant;
+  const wmh = (rawActivity.quantity ?? 0) * welderConstant;
+  const proposalCraftBase = proposal?.craftBaseRate;
+  const proposalSubsistenceRate = proposal?.subsistenceRate;
+  const proposalWeldBase = proposal?.weldBaseRate;
 
   const newActivity = new Activity(
     docId,
-    rawActivity.description ?? "",
-    rawActivity.proposalId ?? "",
-    rawActivity.wbsId ?? "",
-    rawActivity.phaseId ?? "",
+    rawActivity.description ?? '',
+    rawActivity.proposalId ?? '',
+    rawActivity.wbsId ?? '',
+    rawActivity.phaseId ?? '',
     rawActivity.constant ?? null,
     rawActivity.equipment ?? null,
     rawActivity.quantity ?? 0,
@@ -500,7 +499,7 @@ export const calculateActivityData = async (
       rawActivity.dateAdded ??
       0,
     rawActivity.activityType ?? ActivityType.laborItem,
-    rawActivity.unit ?? rawActivity.constant?.craftUnits ?? "",
+    rawActivity.unit ?? rawActivity.constant?.craftUnits ?? '',
     craftConstant,
     welderConstant,
     cmh,
@@ -524,14 +523,14 @@ export const calculateActivityData = async (
     null
   );
 
-  let craftLoadedRate = getCraftLoadedRate({
-    proposal: proposal,
+  const craftLoadedRate = getCraftLoadedRate({
+    proposal,
     customCraftBaseRate: newActivity.craftBaseRate!,
     customSubsistenceRate: newActivity.subsistenceRate!,
   });
 
-  let welderLoadedRate = getWelderLoadedRate({
-    proposal: proposal,
+  const welderLoadedRate = getWelderLoadedRate({
+    proposal,
   });
   if (newActivity.activityType != ActivityType.subContractorItem) {
     newActivity.craftCost = newActivity.craftManHours * craftLoadedRate;
@@ -539,13 +538,13 @@ export const calculateActivityData = async (
   if (newActivity.activityType == ActivityType.equipmentItem) {
     newActivity.equipmentCost = getEquipmentCost({
       activity: newActivity,
-      proposal: proposal,
+      proposal,
     });
   }
   if (newActivity.activityType == ActivityType.materialItem) {
     newActivity.materialCost = getMaterialCost({
       activity: newActivity,
-      proposal: proposal,
+      proposal,
     });
   }
   newActivity.welderCost = newActivity.welderManHours * welderLoadedRate;
@@ -558,7 +557,7 @@ export const calculateActivityData = async (
   if (newActivity.activityType == ActivityType.subContractorItem) {
     newActivity.subContractorCost = getSubcontractorCost({
       activity: newActivity,
-      proposal: proposal,
+      proposal,
     });
   }
   if (newActivity.activityType != ActivityType.subContractorItem) {
@@ -574,20 +573,20 @@ export function getQuantityAndUnit(
   wbsDatabaseId: number
 ) {
   let quantity = 0;
-  let unit = "";
+  let unit = '';
 
   const keywordMap = new Map<number, string[]>([
-    [20000, ["EXCAVATE", "BACKFILL / COMPACT"]],
-    [40000, ["CLEAN UP"]],
-    [50000, ["CLEAN UP"]],
-    [60000, ["CLEAN UP"]],
-    [70000, ["HE"]],
-    [130000, ["HE"]],
+    [20000, ['EXCAVATE', 'BACKFILL / COMPACT']],
+    [40000, ['CLEAN UP']],
+    [50000, ['CLEAN UP']],
+    [60000, ['CLEAN UP']],
+    [70000, ['HE']],
+    [130000, ['HE']],
     //   [70000, ["HE", "OFF", "HYDRO", "PNEU"]],
     //   [130000, ["HE", "OFF", "HYDRO", "PNEU"]],
   ]);
 
-  let keywords = keywordMap.get(wbsDatabaseId) || [];
+  const keywords = keywordMap.get(wbsDatabaseId) || [];
 
   activities.forEach((activity) => {
     const hasKeyword = keywords.some((keyword) =>
@@ -605,9 +604,9 @@ export function getQuantityAndUnit(
         activity.constant &&
         [30011, 30012, 30013, 30015].includes(activity.constant.phaseDatabaseId)
       ) {
-        unit = "EA";
+        unit = 'EA';
       } else {
-        unit = "CY";
+        unit = 'CY';
       }
     }
   });
@@ -653,8 +652,8 @@ export async function insertActivitiesFromFile() {
       phaseDatabaseId: phase.phaseDatabaseId,
       phaseDatabaseName: localPhase?.description,
       phaseNumber: phase.phaseNumber,
-      wbsId: "0Qy1yBkK3wa2fjycSSp5",
-      proposalId: "tms3XRwF8R3SXaqkjbqd",
+      wbsId: '0Qy1yBkK3wa2fjycSSp5',
+      proposalId: 'tms3XRwF8R3SXaqkjbqd',
       area: phase.area,
     });
     phasesToAdd.push(newPhase);
@@ -671,7 +670,7 @@ export async function insertActivitiesFromFile() {
     const batchPhases = phasesToAdd.slice(batchStart, batchEnd);
 
     batchPhases.forEach((phase) => {
-      const docRef = doc(collection(firestore, "phase"));
+      const docRef = doc(collection(firestore, 'phase'));
       batch.set(docRef, { ...phase });
     });
 

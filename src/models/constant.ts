@@ -1,11 +1,18 @@
 export class Constant {
   id: number;
+
   phaseDatabaseId: number;
+
   description: string;
+
   sortOrder: number;
+
   craftConstant: number;
+
   craftUnits: string;
+
   weldConstant: number;
+
   weldUnits: string;
 
   constructor(
