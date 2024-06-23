@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-
 import { Box } from '@mui/material';
+
 import { getCraftLoadedRate } from '../../api/totals';
 import BottomPanel from '../../components/bottom_pannel';
 import { useCurrentProposal } from '../../hooks/current_proposal_hook';
@@ -22,13 +22,13 @@ function ProposalHomeScreen() {
     proposalId: proposalId ?? '',
   });
   const wbs = estimatorStore(
-    (state: StoreState) => state.visibleWbs[proposalId!] || []
+    (state: StoreState) => state.visibleWbs[proposalId!] || [],
   );
   const prefs = estimatorStore(
-    (state: StoreState) => state.preferences[proposalId!] || []
+    (state: StoreState) => state.preferences[proposalId!] || [],
   );
   const loadFullProposalData = estimatorStore(
-    (state: StoreState) => state.loadFullProposalData
+    (state: StoreState) => state.loadFullProposalData,
   );
 
   useEffect(() => {

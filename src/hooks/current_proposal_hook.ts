@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
-
 import { ref as databaseRef, off, onValue } from 'firebase/database';
 import { collection, doc, onSnapshot } from 'firebase/firestore';
+
 import { getSingleProposal } from '../api/proposal';
 import { Proposal } from '../models/proposal';
 import { auth, firestore } from '../setup/config/firebase';

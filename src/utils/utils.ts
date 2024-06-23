@@ -88,7 +88,7 @@ import { Proposal } from '../models/proposal';
 export function processRawActivity(
   docId: string,
   activity: FirestoreActivity,
-  proposal: Proposal
+  proposal: Proposal,
 ) {
   const rawActivity = activity;
   const craftConstant =
@@ -136,7 +136,7 @@ export function processRawActivity(
     rawActivity.subsistenceRate ?? null,
     rawActivity.equipmentOwnership ?? null,
     rawActivity.dateAdded,
-    null
+    null,
   );
 
   const craftLoadedRate = getCraftLoadedRate({
@@ -197,7 +197,7 @@ export function numberToLetters(num: number) {
 
 export function getQuantityAndUnit(
   activities: Activity[],
-  wbsDatabaseId: number
+  wbsDatabaseId: number,
 ) {
   let quantity = 0;
   let unit = '';
@@ -217,7 +217,7 @@ export function getQuantityAndUnit(
 
   activities.forEach((activity) => {
     const hasKeyword = keywords.some((keyword) =>
-      activity.description.toUpperCase().includes(keyword)
+      activity.description.toUpperCase().includes(keyword),
     );
     if (hasKeyword) {
       quantity += activity.quantity;
@@ -243,7 +243,7 @@ export function getQuantityAndUnit(
 
 export function getDDQuantityAndUnit(
   activities: DataDumpActivity[],
-  wbsDatabaseId: number
+  wbsDatabaseId: number,
 ) {
   let quantity = 0;
   let unit = '';
@@ -263,7 +263,7 @@ export function getDDQuantityAndUnit(
 
   activities.forEach((activity) => {
     const hasKeyword = keywords.some((keyword) =>
-      activity.lineDescription!.toUpperCase().includes(keyword)
+      activity.lineDescription!.toUpperCase().includes(keyword),
     );
     if (hasKeyword) {
       quantity += activity.quantity!;
@@ -306,7 +306,7 @@ export const calculateTotals = (activities: Activity[]) => {
       craftManHours: 0,
       welderManHours: 0,
       totalCost: 0,
-    }
+    },
   );
 };
 
@@ -351,7 +351,7 @@ export const calculateWbsTotals = (phases: Phase[]) => {
       totalCost: 0,
       quantity: 0,
       unit: '',
-    }
+    },
   );
 };
 
@@ -363,7 +363,7 @@ export function isNumber(value: string | number): boolean {
 
 export function calculateNewSortOrder(
   activities: Activity[],
-  newIndex: number
+  newIndex: number,
 ) {
   const prevSortOrder =
     newIndex > 0

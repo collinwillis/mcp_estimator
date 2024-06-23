@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-
 import {
   Button,
   Dialog,
@@ -14,6 +13,7 @@ import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
+
 import { updateProposalPreferences } from '../../../api/proposal_preferences';
 import { useProposalPreferences } from '../../../hooks/proposal_preferences_hook';
 import { FirestoreProposalPreferences } from '../../../models/firestore models/proposal_preferences_firestore';
@@ -35,7 +35,7 @@ export default function SelectWbsDialog({
   const [search, setSearch] = useState('');
   const [checked, setChecked] = useState<string[]>([]);
   const updateFirestorePreferences = estimatorStore(
-    (state: StoreState) => state.setPreferences
+    (state: StoreState) => state.setPreferences,
   );
   const proposal = estimatorStore((state: StoreState) => state.proposal);
   useEffect(() => {
@@ -79,7 +79,7 @@ export default function SelectWbsDialog({
           <>
             <h2>Select WBS</h2>
             <Input
-              placeholder="Search WBS"
+              placeholder='Search WBS'
               onChange={(e) => {
                 setSearch(e.target.value);
               }}
@@ -105,7 +105,7 @@ export default function SelectWbsDialog({
                   >
                     <ListItemIcon>
                       <Checkbox
-                        edge="start"
+                        edge='start'
                         checked={checked?.includes(wbs.name)}
                         tabIndex={-1}
                         disableRipple
@@ -120,10 +120,10 @@ export default function SelectWbsDialog({
           </List>
         </DialogContent>
         <DialogActions>
-          <Button onClick={onClose} color="primary">
+          <Button onClick={onClose} color='primary'>
             Cancel
           </Button>
-          <Button onClick={handleSave} color="primary">
+          <Button onClick={handleSave} color='primary'>
             Save
           </Button>
         </DialogActions>

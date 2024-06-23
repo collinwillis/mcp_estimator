@@ -1,4 +1,5 @@
 import { Previews } from '@react-buddy/ide-toolbox';
+
 import { PaletteTree } from './palette';
 
 function ComponentPreviews() {

@@ -13,7 +13,7 @@ export class WbsEnum {
   static readonly DISMANTLING = new WbsEnum(
     'DISMANTLING',
     'DISMANTLING',
-    120000
+    120000,
   );
 
   static readonly BG_PIPING = new WbsEnum('BG PIPING', 'BG PIPING', 130000);
@@ -25,7 +25,7 @@ export class WbsEnum {
   static readonly SPECIALTY_SERVICES = new WbsEnum(
     'SPECIALTY SERVICES',
     'SPECIALTY SERVICES',
-    180000
+    180000,
   );
 
   static readonly DEMOBILIZE = new WbsEnum('DEMOBILIZE', 'DEMOBILIZE', 190000);
@@ -33,7 +33,7 @@ export class WbsEnum {
   static readonly SITE_PREPARATION = new WbsEnum(
     'SITE PREPARATION',
     'SITE PREPARATION',
-    20000
+    20000,
   );
 
   static readonly CONCRETE = new WbsEnum('CONCRETE', 'CONCRETE', 30000);
@@ -41,13 +41,13 @@ export class WbsEnum {
   static readonly TOWERS_VESSELS_EQUIPMENT = new WbsEnum(
     'TOWERS/VESSELS/EQUIPMENT',
     'TOWERS/VESSELS/EQUIPMENT',
-    40000
+    40000,
   );
 
   static readonly PUMPS_AND_DRIVERS = new WbsEnum(
     'PUMPS & DRIVERS',
     'PUMPS & DRIVERS',
-    50000
+    50000,
   );
 
   static readonly STRUCTURAL = new WbsEnum('STRUCTURAL', 'STRUCTURAL', 60000);
@@ -59,7 +59,7 @@ export class WbsEnum {
   static readonly INSTRUMENTS = new WbsEnum(
     'INSTRUMENTS',
     'INSTRUMENTS',
-    90000
+    90000,
   );
 
   static readonly SUPPORT = new WbsEnum('SUPPORT', 'SUPPORT', 200000);
@@ -67,7 +67,7 @@ export class WbsEnum {
   private constructor(
     private readonly key: string,
     public readonly name: string,
-    public readonly wbsDatabaseId: number
+    public readonly wbsDatabaseId: number,
   ) {}
 
   toString() {

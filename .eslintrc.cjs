@@ -30,7 +30,31 @@ module.exports = {
   },
   plugins: ['react', '@typescript-eslint'],
   rules: {
+    'unused-imports/no-unused-imports': 'error',
+    'unused-imports/no-unused-vars': [
+      'warn',
+      {
+        vars: 'all',
+        varsIgnorePattern: '^_',
+        args: 'after-used',
+        argsIgnorePattern: '^_',
+      },
+    ],
     'import/prefer-default-export': 'off',
+    'no-console': 'off',
+    'space-before-function-paren': ['error', 'always'], // Ensure consistent spacing before function parentheses
+    'import/order': [
+      'error',
+      {
+        'newlines-between': 'always',
+        groups: [
+          'builtin',
+          'external',
+          'internal',
+          ['parent', 'sibling', 'index'],
+        ],
+      },
+    ], // Ensure a consistent order for imports
   },
   settings: {
     react: {

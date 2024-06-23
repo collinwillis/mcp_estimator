@@ -1,6 +1,5 @@
 import React, { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-
 import { Button } from '@mui/material';
 import { Box } from '@mui/system';
 import {
@@ -13,6 +12,7 @@ import {
   GridToolbarDensitySelector,
   GridValueFormatterParams,
 } from '@mui/x-data-grid';
+
 import { updateWbs } from '../../../api/wbs';
 import { StyledDataGrid } from '../../../components/custom_data_grid';
 import { useProposalPreferences } from '../../../hooks/proposal_preferences_hook';
@@ -29,7 +29,7 @@ function WbsDataGrid({
 }) {
   const { proposalId, wbsId, phaseId } = useParams();
   const wbs = estimatorStore(
-    (state: StoreState) => state.visibleWbs[proposalId!] || []
+    (state: StoreState) => state.visibleWbs[proposalId!] || [],
   );
   const loading = estimatorStore((state: StoreState) => state.loading);
   const proposalPreferences = useProposalPreferences(proposalId ?? '');

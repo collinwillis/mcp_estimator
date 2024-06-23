@@ -12,6 +12,7 @@ import {
   where,
   writeBatch,
 } from 'firebase/firestore';
+
 import { FirestoreProposal } from '../models/firestore models/proposal_firestore';
 import { Proposal } from '../models/proposal';
 import { firestore } from '../setup/config/firebase';
@@ -19,7 +20,7 @@ import { insertAllBaseWbs } from './wbs';
 
 export const insertProposal = async (
   proposalDescription: string,
-  proposalNumber: string
+  proposalNumber: string,
 ) => {
   const proposal: FirestoreProposal = new FirestoreProposal({
     proposalDescription,
@@ -108,13 +109,13 @@ async function deleteAssociatedData(
   proposalId: unknown,
   batch: {
     delete: (arg0: DocumentReference) => void;
-  }
+  },
 ) {
   const querySnapshot = await getDocs(
     query(
       collection(firestore, collectionName),
-      where('proposalId', '==', proposalId)
-    )
+      where('proposalId', '==', proposalId),
+    ),
   );
   querySnapshot.forEach((doc) => {
     const docRef = doc.ref;

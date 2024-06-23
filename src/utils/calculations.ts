@@ -33,7 +33,7 @@ export const getCraftLoadedRate = ({
     overheadRate!,
     laborProfitRate!,
     fuelRate!,
-    consumablesRate!
+    consumablesRate!,
   );
   return craftBase! + craftBase! * totalRateSum + subsistence!;
 };
@@ -61,7 +61,7 @@ export const getWelderLoadedRate = ({
     laborProfitRate!,
     fuelRate!,
     consumablesRate!,
-    rigProfitRate!
+    rigProfitRate!,
   );
   return (
     weldBaseRate! +
@@ -112,7 +112,7 @@ export const getSubcontractorCost = ({
   proposal: Proposal;
 }): number => {
   const { materialCost, quantity, equipmentCost, craftCost } = activity;
-  const { subContractorProfitRate, salesTaxRate, useTaxRate } = proposal;
+  const { subContractorProfitRate, salesTaxRate } = proposal;
   return (
     quantity *
     (craftCost * (1 + pctToDecimal(subContractorProfitRate!)) +

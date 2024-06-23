@@ -1,5 +1,6 @@
 import { MenuItem, Select } from '@mui/material';
 import { GridColumns, GridValueFormatterParams } from '@mui/x-data-grid';
+
 import {
   updateEquipmentOwnership,
   updateEquipmentUnit,
@@ -50,7 +51,7 @@ export const getActivityColumns = ({
       field: 'unit',
       renderCell: (params) => {
         const fullActivity = activities.find(
-          (activity) => activity.id === params.id
+          (activity) => activity.id === params.id,
         );
         if (fullActivity?.activityType == ActivityType.equipmentItem) {
           return (
@@ -72,8 +73,8 @@ export const getActivityColumns = ({
                     border: 0,
                   },
               }}
-              labelId="demo-simple-select-label"
-              id="demo-simple-select"
+              labelId='demo-simple-select-label'
+              id='demo-simple-select'
               value={fullActivity.unit}
               onChange={(event) =>
                 updateEquipmentUnit({
@@ -94,7 +95,7 @@ export const getActivityColumns = ({
                       <MenuItem key={unit} value={unit}>
                         {unit}
                       </MenuItem>
-                    )
+                    ),
                 )
               )}
             </Select>
@@ -312,7 +313,7 @@ export const getActivityColumns = ({
       field: 'equipmentOwnership',
       renderCell: (params) => {
         const fullActivity = activities.find(
-          (activity) => activity.id === params.id
+          (activity) => activity.id === params.id,
         );
         if (fullActivity?.activityType == ActivityType.equipmentItem) {
           return (
@@ -334,8 +335,8 @@ export const getActivityColumns = ({
                     border: 0,
                   },
               }}
-              labelId="demo-simple-select-label"
-              id="demo-simple-select"
+              labelId='demo-simple-select-label'
+              id='demo-simple-select'
               value={
                 fullActivity.equipmentOwnership ?? EquipmentOwnership.rental
               }

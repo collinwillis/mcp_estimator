@@ -1,6 +1,5 @@
 import React, { SyntheticEvent, useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-
 import { Download, EditRounded } from '@mui/icons-material';
 import TrashIcon from '@mui/icons-material/DeleteForever';
 import RefreshIcon from '@mui/icons-material/Refresh';
@@ -18,6 +17,7 @@ import {
   GridToolbarContainer,
   GridToolbarDensitySelector,
 } from '@mui/x-data-grid-pro';
+
 import {
   loadColumnVisibilityModel,
   saveColumnVisibilityModel,
@@ -53,7 +53,7 @@ function ActivityDataGrid() {
 
   const handleSnackbarClose = (
     event: SyntheticEvent<Element, Event> | Event,
-    reason?: string
+    reason?: string,
   ) => {
     if (reason === 'clickaway') {
       return;
@@ -82,41 +82,41 @@ function ActivityDataGrid() {
   const userId = user?.userProfile?.uid;
 
   const myactivities = estimatorStore(
-    (state: StoreState) => state.activities[proposalId!] || []
+    (state: StoreState) => state.activities[proposalId!] || [],
   );
   const updateActivity = estimatorStore(
-    (state: StoreState) => state.updateActivity
+    (state: StoreState) => state.updateActivity,
   );
   const updateEquipmentOwnership = estimatorStore(
-    (state: StoreState) => state.updateEquipmentOwnership
+    (state: StoreState) => state.updateEquipmentOwnership,
   );
   const updateEquipmentUnit = estimatorStore(
-    (state: StoreState) => state.updateEquipmentUnit
+    (state: StoreState) => state.updateEquipmentUnit,
   );
   const recalculatePhase = estimatorStore(
-    (state: StoreState) => state.recalculatePhase
+    (state: StoreState) => state.recalculatePhase,
   );
   const changeActivityOrder = estimatorStore(
-    (state: StoreState) => state.changeActivityOrder
+    (state: StoreState) => state.changeActivityOrder,
   );
   const resetConstants = estimatorStore(
-    (state: StoreState) => state.resetConstants
+    (state: StoreState) => state.resetConstants,
   );
   const deleteActivities = estimatorStore(
-    (state: StoreState) => state.deleteActivities
+    (state: StoreState) => state.deleteActivities,
   );
   const [filtered, setFiltered] = useState<Activity[]>([]);
   const changeSortOrder = estimatorStore(
-    (state: StoreState) => state.changeActivitySortOrder
+    (state: StoreState) => state.changeActivitySortOrder,
   );
   useEffect(() => {
     console.log(phaseId);
     const temp = myactivities.filter(
-      (activity) => activity.phaseId === phaseId
+      (activity) => activity.phaseId === phaseId,
     );
     console.log(temp);
     const sortedActivities = [...temp].sort(
-      (a, b) => a!.sortOrder - b!.sortOrder
+      (a, b) => a!.sortOrder - b!.sortOrder,
     );
     console.log(sortedActivities);
 
@@ -139,7 +139,7 @@ function ActivityDataGrid() {
 
   const handleRowOrderChangeByRowId = async (
     activityId: string,
-    targetRowId: string
+    targetRowId: string,
   ) => {
     if (!filtered || filtered.length === 0) {
       console.log('No activities to reorder.');
@@ -150,7 +150,7 @@ function ActivityDataGrid() {
 
     // Combine search for the activity and getting its index
     const targetActivityIndex = filtered.findIndex(
-      (act) => act.rowId?.toLowerCase() === targetRowIdLower
+      (act) => act.rowId?.toLowerCase() === targetRowIdLower,
     );
 
     if (targetActivityIndex === -1) {
@@ -176,7 +176,7 @@ function ActivityDataGrid() {
           const loadedColumnVisibilityModel = await loadColumnVisibilityModel(
             userId,
             phaseId,
-            filtered
+            filtered,
           );
           setColumnVisibilityModel(loadedColumnVisibilityModel);
         } catch (error) {
@@ -252,7 +252,7 @@ function ActivityDataGrid() {
               onResizeCapture={undefined}
             />
           </div>
-          <Typography variant="h5">
+          <Typography variant='h5'>
             {currentPhase?.phaseDatabaseName}
           </Typography>
           {hasWritePermissions && (
@@ -272,7 +272,7 @@ function ActivityDataGrid() {
               </Button>
               <Divider
                 light
-                orientation="vertical"
+                orientation='vertical'
                 sx={{
                   width: '1px',
                   backgroundColor: 'lightgray',
@@ -296,7 +296,7 @@ function ActivityDataGrid() {
               </Button>
               <Divider
                 light
-                orientation="vertical"
+                orientation='vertical'
                 sx={{
                   width: '1px',
                   backgroundColor: 'lightgray',
@@ -315,7 +315,7 @@ function ActivityDataGrid() {
               </Button>
               <Divider
                 light
-                orientation="vertical"
+                orientation='vertical'
                 sx={{
                   width: '1px',
                   backgroundColor: 'lightgray',
@@ -371,12 +371,12 @@ function ActivityDataGrid() {
               // Save the new column visibility model to Firestore
               await saveColumnVisibilityModel(userId, phaseId, newModel);
               console.log(
-                'Column visibility model updated successfully in Firestore.'
+                'Column visibility model updated successfully in Firestore.',
               );
             } catch (error) {
               console.error(
                 'Error saving column visibility model to Firestore:',
-                error
+                error,
               );
               // Optionally, handle the error (e.g., by showing an error message to the user)
             }
@@ -393,7 +393,7 @@ function ActivityDataGrid() {
           setFilterModel(newModel);
         }}
         onRowOrderChange={handleRowOrderChange}
-        density="compact"
+        density='compact'
         columns={columns}
         onCellEditCommit={async (params, event) => {
           const { id, field, value } = params;
@@ -415,7 +415,7 @@ function ActivityDataGrid() {
             return false;
           }
           const activity = filtered.find(
-            (activity) => activity.id === params.row.id
+            (activity) => activity.id === params.row.id,
           );
           if (!activity) return false;
           const editableCellsMap: Record<string, string[]> = {
@@ -437,7 +437,7 @@ function ActivityDataGrid() {
             return ''; // Return an empty string to not apply any additional styling
           }
           const activity = filtered.find(
-            (activity) => activity.id === params.row.id
+            (activity) => activity.id === params.row.id,
           );
           if (activity) {
             if (params.field == '__check__') {
@@ -525,8 +525,8 @@ function ActivityDataGrid() {
         selectedRowIds={selectedRows}
       />
       <DeleteConfirmationDialog
-        title="Are you sure you want to delete the selected activity?"
-        content="Once deleted, this activity cannot be recovered."
+        title='Are you sure you want to delete the selected activity?'
+        content='Once deleted, this activity cannot be recovered.'
         open={deleteDialogOpen}
         onClose={() => setDeleteDialogOpen(false)}
         onConfirm={handleDelete} // Delete activities when confirmed
@@ -543,7 +543,7 @@ function ActivityDataGrid() {
       >
         <Alert
           onClose={handleSnackbarClose}
-          severity="error"
+          severity='error'
           sx={{ width: '100%' }}
         >
           {snackbarMessage}

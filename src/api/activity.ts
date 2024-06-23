@@ -9,6 +9,7 @@ import {
   where,
   writeBatch,
 } from 'firebase/firestore';
+
 import agPiping from '../data/agPiping.json';
 import rawPhases from '../data/phases.json';
 import { Activity, ActivityType } from '../models/activity';
@@ -66,7 +67,7 @@ const numberFields = [
 export const updateActivity = async (
   id: string,
   field: string,
-  value: string
+  value: string,
 ): Promise<{ success: boolean; message: string }> => {
   let newValue: number | string;
 
@@ -194,11 +195,11 @@ function isNumber(value: string | number): boolean {
 export const changeActivityOrder = async (
   activityId: string,
   newRowId: string,
-  activities: Activity[]
+  activities: Activity[],
 ) => {
   // Find the target activity based on newRowId
   const targetActivityIndex = activities.findIndex(
-    (activity) => activity.rowId === newRowId
+    (activity) => activity.rowId === newRowId,
   );
 
   if (targetActivityIndex === -1) {
@@ -208,7 +209,7 @@ export const changeActivityOrder = async (
 
   // Find the selected activity
   const selectedActivityIndex = activities.findIndex(
-    (activity) => activity.id === activityId
+    (activity) => activity.id === activityId,
   );
 
   if (selectedActivityIndex === -1) {
@@ -235,7 +236,7 @@ export const changeActivityOrder = async (
 export const addCustomLabor = async (
   proposalId: string,
   wbsId: string,
-  phaseId: string
+  phaseId: string,
 ) => {
   const activity = new FirestoreActivity({
     proposalId,
@@ -267,7 +268,7 @@ export const addCustomLabor = async (
 export const addCostOnly = async (
   proposalId: string,
   wbsId: string,
-  phaseId: string
+  phaseId: string,
 ) => {
   const activity = new FirestoreActivity({
     proposalId,
@@ -299,7 +300,7 @@ export const addCostOnly = async (
 export const addMaterial = async (
   proposalId: string,
   wbsId: string,
-  phaseId: string
+  phaseId: string,
 ) => {
   const activity = new FirestoreActivity({
     proposalId,
@@ -331,7 +332,7 @@ export const addMaterial = async (
 export const addSubcontractor = async (
   proposalId: string,
   wbsId: string,
-  phaseId: string
+  phaseId: string,
 ) => {
   const activity = new FirestoreActivity({
     proposalId,
@@ -390,7 +391,7 @@ export const getActivitiesForPhase = async ({
 }) => {
   const q = query(
     collection(firestore, 'activities'),
-    where('phaseId', '==', phaseId)
+    where('phaseId', '==', phaseId),
   );
   let temp: Activity[] = [];
   const proposal = await getSingleProposal({
@@ -426,7 +427,7 @@ export const getActivitiesForWbs = async ({
 }) => {
   const q = query(
     collection(firestore, 'activities'),
-    where('wbsId', '==', wbsId)
+    where('wbsId', '==', wbsId),
   );
   let temp: Activity[] = [];
   const proposal = await getSingleProposal({
@@ -455,7 +456,7 @@ export const getActivitiesForWbs = async ({
 export async function updateActivityRates(
   activities: Activity[],
   newBaseRate: number,
-  newSubsistenceRate: number
+  newSubsistenceRate: number,
 ) {
   const batch = writeBatch(firestore);
   activities.forEach((activity) => {
@@ -472,7 +473,7 @@ export async function updateActivityRates(
 export const calculateActivityData = async (
   docId: string,
   activity: FirestoreActivity,
-  proposal: Proposal
+  proposal: Proposal,
 ) => {
   const rawActivity = activity;
   const craftConstant =
@@ -520,7 +521,7 @@ export const calculateActivityData = async (
     rawActivity.subsistenceRate ?? null,
     rawActivity.equipmentOwnership ?? null,
     rawActivity.dateAdded,
-    null
+    null,
   );
 
   const craftLoadedRate = getCraftLoadedRate({
@@ -570,7 +571,7 @@ export const calculateActivityData = async (
 
 export function getQuantityAndUnit(
   activities: Activity[],
-  wbsDatabaseId: number
+  wbsDatabaseId: number,
 ) {
   let quantity = 0;
   let unit = '';
@@ -590,7 +591,7 @@ export function getQuantityAndUnit(
 
   activities.forEach((activity) => {
     const hasKeyword = keywords.some((keyword) =>
-      activity.description.toUpperCase().includes(keyword)
+      activity.description.toUpperCase().includes(keyword),
     );
     if (hasKeyword) {
       quantity += activity.quantity;

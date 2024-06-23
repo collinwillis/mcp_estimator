@@ -21,17 +21,17 @@ export const PaletteTree = () => (
   <Palette>
     <AntdPalette />
     <ReactIntlPalette />
-    <Category name="App templates">
-      <Component name="Card">
-        <Variant name="Loading">
-          <Card title="Card title">
+    <Category name='App templates'>
+      <Component name='Card'>
+        <Variant name='Loading'>
+          <Card title='Card title'>
             <Skeleton loading={true} avatar active>
               Card content
             </Skeleton>
           </Card>
         </Variant>
       </Component>
-      <Component name="Form">
+      <Component name='Form'>
         <Variant proto={FormTemplate} />
       </Component>
     </Category>
@@ -43,7 +43,7 @@ React Buddy explicitly registers any previewed component in the `previews.tsx`
 file so that you can specify required props.
 
 ```jsx
-<ComponentPreview path="/Page">
+<ComponentPreview path='/Page'>
   <Page title={'Hello'} />
 </ComponentPreview>
 ```

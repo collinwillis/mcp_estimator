@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-
 import { Box, CssBaseline, Stack, Typography } from '@mui/material';
 import { blue } from '@mui/material/colors';
+
 import AuthCard from './components/auth_card';
 import Header from './components/header';
 import LoginForm from './components/login_form';
@@ -28,7 +28,7 @@ export default function Welcome() {
           color: 'primary.main',
           fontWeight: '700',
         }}
-        variant="h5"
+        variant='h5'
       >
         MCP ESTIMATOR
       </Typography>

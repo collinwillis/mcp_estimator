@@ -1,5 +1,4 @@
 import React from 'react';
-
 import { AppBar, Box, Typography, dividerClasses } from '@mui/material';
 
 interface HeaderProps {
@@ -9,7 +8,7 @@ export default function Header(props: HeaderProps) {
   return (
     <Box sx={{ textAlign: 'center' }}>
       <Typography
-        variant="h1"
+        variant='h1'
         sx={{
           fontSize: 40,
           fontWeight: 'bold',

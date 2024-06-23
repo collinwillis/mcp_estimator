@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useState } from 'react';
-
 import {
   QueryConstraint,
   QuerySnapshot,
@@ -9,6 +8,7 @@ import {
   query,
   where,
 } from 'firebase/firestore';
+
 import { calculateActivityData } from '../api/activity';
 import { Activity } from '../models/activity';
 import { Proposal } from '../models/proposal';
@@ -46,19 +46,19 @@ const useActivities = ({
           return currentProposal
             ? calculateActivityData(doc.id, rawActivity, currentProposal)
             : null;
-        })
+        }),
       ).then((activities) => activities.filter(Boolean));
 
       // Separate activities into two arrays based on the presence of 'dateAdded'
       const withDateAdded = activities.filter(
-        (a) => a && a.dateAdded !== null && a.dateAdded !== undefined
+        (a) => a && a.dateAdded !== null && a.dateAdded !== undefined,
       );
       const withoutDateAdded = activities.filter(
-        (a) => a && (a.dateAdded === null || a.dateAdded === undefined)
+        (a) => a && (a.dateAdded === null || a.dateAdded === undefined),
       );
 
       const sortedActivities = [...activities].sort(
-        (a, b) => a!.sortOrder - b!.sortOrder
+        (a, b) => a!.sortOrder - b!.sortOrder,
       );
 
       // Process the sorted activities
@@ -73,7 +73,7 @@ const useActivities = ({
       setData(sortedActivities as Activity[]);
       setLoading(false);
     },
-    [currentProposalId, currentProposal] // Dependencies for the callback
+    [currentProposalId, currentProposal], // Dependencies for the callback
   );
 
   // Effect to observe changes in the proposal and update the currentProposal state

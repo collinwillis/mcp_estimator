@@ -1,5 +1,6 @@
 import { GridColumnVisibilityModel } from '@mui/x-data-grid-pro';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
+
 import { Activity, ActivityType } from '../models/activity';
 import { firestore } from '../setup/config/firebase';
 
@@ -32,7 +33,7 @@ const defaultColumns = {
 export const loadColumnVisibilityModel = async (
   userId: string,
   phaseId: string,
-  activities: Activity[]
+  activities: Activity[],
 ) => {
   const path = getVisibilityModelPath(userId, phaseId);
   const docRef = doc(firestore, path);
@@ -101,7 +102,7 @@ export const loadColumnVisibilityModel = async (
 export const saveColumnVisibilityModel = async (
   userId: string,
   phaseId: string,
-  model: GridColumnVisibilityModel
+  model: GridColumnVisibilityModel,
 ) => {
   const path = getVisibilityModelPath(userId, phaseId);
   const docRef = doc(firestore, path);

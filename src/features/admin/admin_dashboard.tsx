@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-
 import { ArrowBack } from '@mui/icons-material';
 import BlockIcon from '@mui/icons-material/Block';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -31,6 +30,7 @@ import {
   getFirestore,
   updateDoc,
 } from 'firebase/firestore';
+
 import { UserPermission, UserProfile, UserRole } from '../../models/user';
 
 const AdminDashboard: React.FC = () => {
@@ -57,41 +57,41 @@ const AdminDashboard: React.FC = () => {
     const userRef = doc(db, 'users', userId);
     await updateDoc(userRef, data);
     setUsers((prev) =>
-      prev.map((user) => (user.uid === userId ? { ...user, ...data } : user))
+      prev.map((user) => (user.uid === userId ? { ...user, ...data } : user)),
     );
   };
   const navigate = useNavigate();
   return (
     <>
-      <AppBar position="static">
+      <AppBar position='static'>
         <Toolbar>
-          <Box display="flex" flexGrow={1}>
+          <Box display='flex' flexGrow={1}>
             <IconButton
-              edge="start"
-              color="inherit"
+              edge='start'
+              color='inherit'
               onClick={() => navigate(-1)}
-              aria-label="back"
+              aria-label='back'
             >
               <ArrowBack />
             </IconButton>
           </Box>
-          <Box display="flex" justifyContent="center" width="100%">
-            <Typography variant="h6" component="div">
+          <Box display='flex' justifyContent='center' width='100%'>
+            <Typography variant='h6' component='div'>
               Admin Console
             </Typography>
           </Box>
-          <Box display="flex" flexGrow={1} justifyContent="flex-end">
+          <Box display='flex' flexGrow={1} justifyContent='flex-end'>
             {/* Here you can add icons for future actions */}
           </Box>
         </Toolbar>
       </AppBar>
       <Box p={3}>
-        <Box display="flex" alignItems="center" marginBottom={2}>
+        <Box display='flex' alignItems='center' marginBottom={2}>
           <TextField
-            label="Search Users"
-            variant="outlined"
+            label='Search Users'
+            variant='outlined'
             fullWidth
-            margin="normal"
+            margin='normal'
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
@@ -114,17 +114,17 @@ const AdminDashboard: React.FC = () => {
                 .filter(
                   (user) =>
                     user.name.toLowerCase().includes(search.toLowerCase()) &&
-                    !user.deleted
+                    !user.deleted,
                 )
                 .map((user) => (
                   <TableRow key={user.uid}>
                     <TableCell>{user.name}</TableCell>
                     <TableCell>{user.email}</TableCell>
                     <TableCell>
-                      <FormControl variant="outlined" size="small" fullWidth>
+                      <FormControl variant='outlined' size='small' fullWidth>
                         <InputLabel>Permission</InputLabel>
                         <Select
-                          label="Permission"
+                          label='Permission'
                           value={user.permission}
                           onChange={(e) =>
                             updateUser(user.uid, {
@@ -141,10 +141,10 @@ const AdminDashboard: React.FC = () => {
                       </FormControl>
                     </TableCell>
                     <TableCell>
-                      <FormControl variant="outlined" size="small" fullWidth>
+                      <FormControl variant='outlined' size='small' fullWidth>
                         <InputLabel>Role</InputLabel>
                         <Select
-                          label="Role"
+                          label='Role'
                           value={user.role}
                           onChange={(e) =>
                             updateUser(user.uid, {

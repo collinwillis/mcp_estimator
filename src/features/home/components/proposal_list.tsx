@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-
 import { List, ListItem, ListItemText, colors } from '@mui/material';
+
 import { useProposals } from '../../../hooks/proposals_hook';
 import { Proposal } from '../../../models/proposal';
 

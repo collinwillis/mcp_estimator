@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-
 import {
   Alert,
   Button,
@@ -15,6 +14,7 @@ import {
   signInWithEmailAndPassword,
 } from 'firebase/auth';
 import { collection, getDocs, query, where } from 'firebase/firestore';
+
 import { firestore as db } from '../../../../setup/config/firebase';
 import { getFirebaseAuthErrorMessage } from '../../../../config/error_handler';
 
@@ -92,34 +92,34 @@ function LoginForm(props: LoginFormProps) {
   return (
     <Stack
       spacing={2.5}
-      alignItems="center"
-      justifyContent="center"
-      width="100%"
-      height="100%"
-      p="20px"
+      alignItems='center'
+      justifyContent='center'
+      width='100%'
+      height='100%'
+      p='20px'
     >
       <TextField
         error={Boolean(error)}
         sx={styles.textField}
-        placeholder="email"
+        placeholder='email'
         value={userName}
         onChange={(e) => setUserName(e.target.value)}
       />
       <TextField
         error={Boolean(error)}
         sx={styles.textField}
-        placeholder="password"
+        placeholder='password'
         value={password}
         onChange={(e) => setPassword(e.target.value)}
       />
 
       {error && (
-        <Alert severity="error" sx={{ width: '80%', mt: 2 }}>
+        <Alert severity='error' sx={{ width: '80%', mt: 2 }}>
           {error}
         </Alert>
       )}
       {message && (
-        <Alert severity="success" sx={{ width: '80%', mt: 2 }}>
+        <Alert severity='success' sx={{ width: '80%', mt: 2 }}>
           {message}
         </Alert>
       )}
@@ -132,16 +132,16 @@ function LoginForm(props: LoginFormProps) {
           fontSize: '1rem',
           mt: error || message ? 1 : 0,
         }}
-        variant="contained"
-        color="primary"
+        variant='contained'
+        color='primary'
         onClick={onLogin}
       >
         Login
       </Button>
       <Link
-        component="button"
-        variant="body2"
-        underline="hover"
+        component='button'
+        variant='body2'
+        underline='hover'
         sx={{ mt: 2 }}
         onClick={sendResetEmail}
       >
@@ -153,8 +153,8 @@ function LoginForm(props: LoginFormProps) {
       </div>
 
       <Button
-        variant="contained"
-        color="secondary"
+        variant='contained'
+        color='secondary'
         sx={{
           width: '50%',
           height: '50',

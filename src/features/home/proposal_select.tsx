@@ -18,7 +18,7 @@ function ProposalSelectScreen() {
     >
       <img
         src={logo}
-        alt="Company Logo"
+        alt='Company Logo'
         style={{
           maxWidth: '350px',
           maxHeight: '350px',

@@ -38,23 +38,23 @@ export class Wbs {
   }
 }
 
-enum WbsEnum {
-  mobilize = 'MOBILIZE',
-  sitePreperation = 'SITE PREPERATION',
-  concrete = 'CONCRETE',
-  towersVesselsEquipment = 'TOWERS/VESSELS/EQUIPMENT',
-  pumpsAndDrivers = 'PUMPS & DRIVERS',
-  structural = 'STRUCTURAL',
-  agPiping = 'AG PIPING',
-  electrical = 'ELECTRICAL',
-  instruments = 'INSTRUMENTS',
-  insulation = 'INSULATION',
-  painting = 'PAINTING',
-  dismantling = 'DISMANTLING',
-  bgPiping = 'BG PIPING',
-  refractory = 'REFRACTORY',
-  buildings = 'BUILDINGS',
-  specialtyServices = 'SPECIALTY SERVICES',
-  demobilize = 'DEMOBILIZE',
-  support = 'SUPPORT',
-}
+// enum WbsEnum {
+//   mobilize = 'MOBILIZE',
+//   sitePreperation = 'SITE PREPERATION',
+//   concrete = 'CONCRETE',
+//   towersVesselsEquipment = 'TOWERS/VESSELS/EQUIPMENT',
+//   pumpsAndDrivers = 'PUMPS & DRIVERS',
+//   structural = 'STRUCTURAL',
+//   agPiping = 'AG PIPING',
+//   electrical = 'ELECTRICAL',
+//   instruments = 'INSTRUMENTS',
+//   insulation = 'INSULATION',
+//   painting = 'PAINTING',
+//   dismantling = 'DISMANTLING',
+//   bgPiping = 'BG PIPING',
+//   refractory = 'REFRACTORY',
+//   buildings = 'BUILDINGS',
+//   specialtyServices = 'SPECIALTY SERVICES',
+//   demobilize = 'DEMOBILIZE',
+//   support = 'SUPPORT',
+// }

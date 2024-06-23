@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-
 import { collection, onSnapshot, query, where } from 'firebase/firestore';
+
 import { getCraftLoadedRate, getWelderLoadedRate } from '../api/totals';
 import { Phase } from '../models/phase';
 import { auth, firestore } from '../setup/config/firebase';

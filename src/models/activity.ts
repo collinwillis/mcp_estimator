@@ -98,7 +98,7 @@ export class Activity {
     customSubsistenceRate: number | null,
     equipmentOwnership: string | null,
     dateAdded: number | null, // Added new parameter
-    rowId: string | null // Added new parameter
+    rowId: string | null, // Added new parameter
   ) {
     this.id = id;
     this.description = description;

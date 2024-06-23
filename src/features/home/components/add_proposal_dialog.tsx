@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-
 import {
   Button,
   Dialog,
@@ -7,6 +6,7 @@ import {
   DialogTitle,
   TextField,
 } from '@mui/material';
+
 import { insertProposal } from '../../../api/proposal';
 import { useProposals } from '../../../hooks/proposals_hook';
 import { Proposal } from '../../../models/proposal';
@@ -27,7 +27,7 @@ export default function AddProposalDialog({
   useEffect(() => {
     if (data.length > 0) {
       const highestProposalNumber = data.reduce((prev, current) =>
-        prev.proposalNumber! > current.proposalNumber! ? prev : current
+        prev.proposalNumber! > current.proposalNumber! ? prev : current,
       );
       setProposalNumber((highestProposalNumber.proposalNumber! + 1).toString());
     } else {
@@ -56,25 +56,25 @@ export default function AddProposalDialog({
             }}
           >
             <TextField
-              variant="standard"
-              label="Proposal Number"
-              type="number"
+              variant='standard'
+              label='Proposal Number'
+              type='number'
               value={proposalNumber}
               onChange={(e) => setProposalNumber(e.target.value)}
-              placeholder="Proposal Number"
+              placeholder='Proposal Number'
             />
             <TextField
-              variant="standard"
-              label="Proposal Description"
+              variant='standard'
+              label='Proposal Description'
               onChange={(e) => setProposalDescription(e.target.value)}
-              placeholder="Ex. Proposal"
+              placeholder='Ex. Proposal'
             />
 
             <Button
               disabled={
                 proposalDescription.length === 0 || proposalNumber.length === 0
               }
-              variant="contained"
+              variant='contained'
               onClick={() => {
                 if (
                   proposalDescription.length > 0 &&

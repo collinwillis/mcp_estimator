@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-
 import { HStack } from '@chakra-ui/react';
 import {
   AdminPanelSettings,
@@ -38,6 +37,7 @@ import TextField from '@mui/material/TextField';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import { styled, useTheme } from '@mui/material/styles';
+
 import WbsDropdown from './wbs_drop_down';
 import PhaseList from './phase_list';
 import DrawerIcon from './drawer_icon';
@@ -58,7 +58,6 @@ import EditProposalsDialog from '../features/home/components/edit_proposals_dial
 import AddProposalDialog from '../features/home/components/add_proposal_dialog';
 
 const drawerWidth = 300;
-const appBar = document.querySelector('header.MuiAppBar-root');
 const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })<{
   open?: boolean;
   proposalId?: string;
@@ -183,14 +182,14 @@ export default function EstimatorDrawer({ children }: EstimatorDrawerProps) {
     }) || [];
 
   const [menuAnchorEl, setMenuAnchorEl] = React.useState<null | HTMLElement>(
-    null
+    null,
   );
   const [proposalMenuOpen, setProposalMenuOpen] = React.useState(false);
   const handleDrawerOpen = () => {
     setOpen(true);
   };
   const loadFullProposalData = estimatorStore(
-    (state: StoreState) => state.loadFullProposalData
+    (state: StoreState) => state.loadFullProposalData,
   );
   const handleDrawerClose = () => {
     setOpen(false);
@@ -216,22 +215,22 @@ export default function EstimatorDrawer({ children }: EstimatorDrawerProps) {
   return (
     <Box sx={{ display: 'flex', overflow: 'hidden' }}>
       <CssBaseline />
-      <AppBar position="fixed" open={open}>
+      <AppBar position='fixed' open={open}>
         <Toolbar>
           <IconButton
-            color="inherit"
-            aria-label="open drawer"
+            color='inherit'
+            aria-label='open drawer'
             onClick={handleDrawerOpen}
-            edge="start"
+            edge='start'
             sx={{ mr: 2, ...(open && { display: 'none' }) }}
           >
-            <DrawerIcon color="white" />
+            <DrawerIcon color='white' />
           </IconButton>
 
-          <Breadcrumbs aria-label="breadcrumb" aria-activedescendant="">
+          <Breadcrumbs aria-label='breadcrumb' aria-activedescendant=''>
             {currentProposal && (
               <Link
-                underline="hover"
+                underline='hover'
                 color={currentWbs ? 'inherit' : 'white'}
                 onClick={() => navigate(`/proposal/${currentProposal?.id}`)}
               >
@@ -242,11 +241,11 @@ export default function EstimatorDrawer({ children }: EstimatorDrawerProps) {
             )}
             {currentWbs && (
               <Link
-                underline="hover"
+                underline='hover'
                 color={currentPhase ? 'inherit' : 'white'}
                 onClick={() =>
                   navigate(
-                    `/proposal/${currentProposal?.id}/wbs/${currentWbs?.id}`
+                    `/proposal/${currentProposal?.id}/wbs/${currentWbs?.id}`,
                   )
                 }
               >
@@ -255,13 +254,13 @@ export default function EstimatorDrawer({ children }: EstimatorDrawerProps) {
             )}
             {currentPhase && (
               <Link
-                underline="hover"
-                color="white"
+                underline='hover'
+                color='white'
                 onClick={() =>
                   navigate(
                     `/proposal/${currentProposal?.id}/wbs/${
                       currentWbs?.id
-                    }phase/${currentPhase?.id}`
+                    }phase/${currentPhase?.id}`,
                   )
                 }
               >
@@ -270,10 +269,10 @@ export default function EstimatorDrawer({ children }: EstimatorDrawerProps) {
             )}
           </Breadcrumbs>
           <IconButton
-            color="inherit"
-            aria-label="menu"
+            color='inherit'
+            aria-label='menu'
             onClick={handleMenuOpen}
-            edge="end"
+            edge='end'
             sx={{ ml: 'auto' }} // Adjust the margin to position the button on the right
           >
             <MenuIcon />
@@ -281,10 +280,10 @@ export default function EstimatorDrawer({ children }: EstimatorDrawerProps) {
           <HStack gap={2}>
             {proposalId && (
               <IconButton
-                color="inherit"
-                aria-label="menu"
+                color='inherit'
+                aria-label='menu'
                 onClick={() => loadFullProposalData(proposalId)}
-                edge="end"
+                edge='end'
               >
                 <DownloadForOffline />
               </IconButton>
@@ -304,9 +303,9 @@ export default function EstimatorDrawer({ children }: EstimatorDrawerProps) {
                   }}
                 >
                   <ListItemIcon>
-                    <AdminPanelSettings fontSize="small" />
+                    <AdminPanelSettings fontSize='small' />
                   </ListItemIcon>
-                  <ListItemText primary="Admin Console" />
+                  <ListItemText primary='Admin Console' />
                 </MenuItem>
               )}
               <MenuItem
@@ -317,9 +316,9 @@ export default function EstimatorDrawer({ children }: EstimatorDrawerProps) {
                 sx={{ color: 'red' }} // This line changes the text color to red
               >
                 <ListItemIcon>
-                  <ExitToApp fontSize="small" sx={{ color: 'inherit' }} />
+                  <ExitToApp fontSize='small' sx={{ color: 'inherit' }} />
                 </ListItemIcon>
-                <ListItemText primary="Logout" />
+                <ListItemText primary='Logout' />
               </MenuItem>
             </Menu>
           </HStack>
@@ -337,8 +336,8 @@ export default function EstimatorDrawer({ children }: EstimatorDrawerProps) {
             boxSizing: 'border-box',
           },
         }}
-        variant="persistent"
-        anchor="left"
+        variant='persistent'
+        anchor='left'
         open={open}
       >
         <DrawerHeader>
@@ -371,7 +370,7 @@ export default function EstimatorDrawer({ children }: EstimatorDrawerProps) {
                     color: 'primary.dark',
                   },
                 }}
-                variant="h5"
+                variant='h5'
               >
                 {currentProposal?.proposalDescription}
               </Typography>
@@ -395,9 +394,9 @@ export default function EstimatorDrawer({ children }: EstimatorDrawerProps) {
             {!proposalId && !currentProposal && (
               <Box sx={{ display: 'flex', width: '100%' }}>
                 <Typography
-                  variant="h6"
-                  color="inherit"
-                  component="div"
+                  variant='h6'
+                  color='inherit'
+                  component='div'
                   sx={{
                     flexGrow: 1,
                     textAlign: 'center',
@@ -434,12 +433,12 @@ export default function EstimatorDrawer({ children }: EstimatorDrawerProps) {
             {/* Adjust padding as needed */}
             <TextField
               fullWidth
-              variant="outlined"
-              size="small" // Makes the TextField slightly smaller
-              placeholder="Search Proposals..."
+              variant='outlined'
+              size='small' // Makes the TextField slightly smaller
+              placeholder='Search Proposals...'
               InputProps={{
                 startAdornment: (
-                  <InputAdornment position="start">
+                  <InputAdornment position='start'>
                     <SearchIcon />
                   </InputAdornment>
                 ),
@@ -473,12 +472,12 @@ export default function EstimatorDrawer({ children }: EstimatorDrawerProps) {
         )}
 
         {proposalId != null && (
-          <Stack direction="column">
+          <Stack direction='column'>
             <Button
               onClick={() => navigate(`/proposal/${currentProposal?.id}`)}
               disabled={wbsId == null}
               disableElevation
-              color="secondary"
+              color='secondary'
               sx={{
                 height: '50px',
                 width: '100%',
@@ -490,12 +489,12 @@ export default function EstimatorDrawer({ children }: EstimatorDrawerProps) {
             <Button
               onClick={() =>
                 navigate(
-                  `/proposal/${currentProposal?.id}/wbs/${currentWbs?.id}`
+                  `/proposal/${currentProposal?.id}/wbs/${currentWbs?.id}`,
                 )
               }
               disabled={phaseId == null}
               disableElevation
-              color="secondary"
+              color='secondary'
               sx={{
                 height: '50px',
                 width: '100%',
@@ -580,7 +579,7 @@ const ProposalMenu: React.FC<ProposalMenuProps> = ({
 
   return (
     <Menu
-      id="basic-menu"
+      id='basic-menu'
       anchorEl={anchorEl}
       open={open}
       onClose={handleClose}
@@ -596,7 +595,7 @@ const ProposalMenu: React.FC<ProposalMenuProps> = ({
         }}
       >
         <AddIcon>
-          <ContentCopy fontSize="small" />
+          <ContentCopy fontSize='small' />
         </AddIcon>
         <ListItemText>Add</ListItemText>
       </MenuItem>
@@ -609,7 +608,7 @@ const ProposalMenu: React.FC<ProposalMenuProps> = ({
         }}
       >
         <EditRounded>
-          <ContentCopy fontSize="small" />
+          <ContentCopy fontSize='small' />
         </EditRounded>
         <ListItemText>Edit</ListItemText>
       </MenuItem>

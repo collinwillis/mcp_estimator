@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+
 import { Activity } from '../models/activity';
 import { Proposal } from '../models/proposal';
 import { fetchAllActivitiesFromFirestore } from '../newAPI/api';
@@ -16,7 +17,7 @@ export const useActivityStore = create<ActivityState>((set) => ({
     set({ loading: true });
     const activities = await fetchAllActivitiesFromFirestore(
       proposalId,
-      proposal
+      proposal,
     );
     set({ activities, loading: false });
   },

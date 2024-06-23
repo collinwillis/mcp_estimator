@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-
 import { ArrowBackIcon, SearchIcon } from '@chakra-ui/icons';
 import DeleteIcon from '@mui/icons-material/Delete';
 import {
@@ -18,6 +17,7 @@ import {
 } from '@mui/material';
 import { styled } from '@mui/system';
 import { getFunctions, httpsCallable } from 'firebase/functions';
+
 import { Proposal } from '../../../models/proposal';
 import { useProposals } from '../../../hooks/proposals_hook';
 import DeleteConfirmationDialog from '../../../components/alert_dialog';
@@ -106,7 +106,7 @@ const EditProposalsDialog: React.FC<EditProposalsDialogProps> = ({
   const { data, loading } = useProposals();
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [selectedProposal, setSelectedProposal] = useState<Proposal | null>(
-    null
+    null,
   );
   const [searchTerm, setSearchTerm] = useState('');
   const [isDeleting, setIsDeleting] = useState(false);
@@ -133,27 +133,27 @@ const EditProposalsDialog: React.FC<EditProposalsDialogProps> = ({
   };
 
   return (
-    <StyledDialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
+    <StyledDialog open={open} onClose={onClose} maxWidth='sm' fullWidth>
       <DialogTitle>
         <IconButton
-          edge="start"
-          aria-label="back"
+          edge='start'
+          aria-label='back'
           onClick={onClose}
           sx={{ marginRight: 2, color: 'white' }}
         >
           <ArrowBackIcon />
         </IconButton>
-        <Typography variant="h6" sx={{ flex: 1, textAlign: 'center' }}>
+        <Typography variant='h6' sx={{ flex: 1, textAlign: 'center' }}>
           Edit Proposals
         </Typography>
       </DialogTitle>
       <SearchBar>
         <InputBase
-          placeholder="Search..."
+          placeholder='Search...'
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
         />
-        <IconButton aria-label="search">
+        <IconButton aria-label='search'>
           <SearchIcon />
         </IconButton>
       </SearchBar>
@@ -164,7 +164,7 @@ const EditProposalsDialog: React.FC<EditProposalsDialogProps> = ({
               <ListItem disableRipple button>
                 <ListItemText
                   primary={
-                    <Typography variant="body1" color="textPrimary">
+                    <Typography variant='body1' color='textPrimary'>
                       {`${proposal.proposalNumber} - ${
                         proposal.proposalDescription
                       }`}
@@ -172,16 +172,16 @@ const EditProposalsDialog: React.FC<EditProposalsDialogProps> = ({
                   }
                 />
                 <Button
-                  variant="outlined"
-                  color="primary"
+                  variant='outlined'
+                  color='primary'
                   onClick={() => handleDuplicate(proposal)}
                   disabled={isDuplicating}
                 >
                   {isDuplicating ? <CircularProgress size={20} /> : 'Duplicate'}
                 </Button>
                 <StyledIconButton
-                  edge="end"
-                  aria-label="delete"
+                  edge='end'
+                  aria-label='delete'
                   onClick={() => {
                     setSelectedProposal(proposal);
                     setDeleteDialogOpen(true);
@@ -199,11 +199,11 @@ const EditProposalsDialog: React.FC<EditProposalsDialogProps> = ({
       <DeleteConfirmationDialog
         title={
           <>
-            <Typography component="span">
+            <Typography component='span'>
               {'Are you sure you would like to delete: '}
             </Typography>
             <Typography
-              component="span"
+              component='span'
               sx={{ color: (theme) => theme.palette.primary.dark }}
             >
               {`${selectedProposal?.proposalNumber} - ${
@@ -212,7 +212,7 @@ const EditProposalsDialog: React.FC<EditProposalsDialogProps> = ({
             </Typography>
           </>
         }
-        content="Once deleted, this proposal and all of its data cannot be recovered."
+        content='Once deleted, this proposal and all of its data cannot be recovered.'
         open={deleteDialogOpen}
         onClose={() => setDeleteDialogOpen(false)}
         onConfirm={async () => {

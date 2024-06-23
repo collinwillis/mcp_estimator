@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import { Alert, Button, Stack, TextField, Typography } from '@mui/material';
 import { createUserWithEmailAndPassword, getAuth } from 'firebase/auth';
 import { doc, setDoc } from 'firebase/firestore';
+
 import { getFirebaseAuthErrorMessage } from '../../../../config/error_handler';
 import { UserPermission, UserProfile, UserRole } from '../../../../models/user';
 import { firestore as db } from '../../../../setup/config/firebase';
@@ -46,7 +47,7 @@ export default function RegisterForm(props: RegisterFormProps) {
       const userCredential = await createUserWithEmailAndPassword(
         auth,
         email,
-        password
+        password,
       );
       const { user } = userCredential;
 
@@ -73,36 +74,36 @@ export default function RegisterForm(props: RegisterFormProps) {
   return (
     <Stack
       spacing={2.5}
-      alignItems="center"
-      justifyContent="center"
-      width="100%"
-      height="100%"
-      p="20px"
+      alignItems='center'
+      justifyContent='center'
+      width='100%'
+      height='100%'
+      p='20px'
     >
       <TextField
         error={Boolean(error)}
         sx={styles.textField}
-        placeholder="Full Name"
+        placeholder='Full Name'
         value={fullName}
         onChange={(e) => setFullName(e.target.value)}
       />
       <TextField
         error={Boolean(error)}
         sx={styles.textField}
-        placeholder="email"
+        placeholder='email'
         value={email}
         onChange={(e) => setEmail(e.target.value)}
       />
       <TextField
         error={Boolean(error)}
         sx={styles.textField}
-        placeholder="password"
+        placeholder='password'
         value={password}
         onChange={(e) => setPassword(e.target.value)}
       />
 
       {error && (
-        <Alert severity="error" sx={{ width: '80%', mt: 2 }}>
+        <Alert severity='error' sx={{ width: '80%', mt: 2 }}>
           {error}
         </Alert>
       )}
@@ -116,8 +117,8 @@ export default function RegisterForm(props: RegisterFormProps) {
           color: 'text.light',
           mt: error ? 1 : 0,
         }}
-        variant="contained"
-        color="secondary"
+        variant='contained'
+        color='secondary'
         onClick={onRegister}
       >
         Register
@@ -128,8 +129,8 @@ export default function RegisterForm(props: RegisterFormProps) {
       </div>
 
       <Button
-        color="primary"
-        variant="contained"
+        color='primary'
+        variant='contained'
         sx={{ width: '50%', height: '50' }}
         onClick={() => props.setFormValue(1)}
       >

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-
 import { collection, onSnapshot, query, where } from 'firebase/firestore';
+
 import { getActivitiesForPhase, getQuantityAndUnit } from '../api/activity';
 import { getSingleWbs } from '../api/wbs';
 import { Phase } from '../models/phase';
@@ -24,7 +24,7 @@ export const usePhases = ({
       setIsLoading(true);
       const currentWbs = await getSingleWbs({ wbsId: currentWbsId });
       const phases = querySnapshot.docs.map(
-        (doc) => ({ ...doc.data(), id: doc.id }) as Phase
+        (doc) => ({ ...doc.data(), id: doc.id }) as Phase,
       );
 
       const updatedPhases = await Promise.all(
@@ -61,7 +61,7 @@ export const usePhases = ({
           const wbsDatabaseId = currentWbs?.wbsDatabaseId ?? 0;
           let quantityResult = getQuantityAndUnit(
             activities,
-            wbsDatabaseId
+            wbsDatabaseId,
           ).quantity;
 
           // Ensure quantityResult is a finite number
@@ -80,12 +80,12 @@ export const usePhases = ({
             ...phase,
             ...costs,
           };
-        })
+        }),
       );
       setData(
         updatedPhases.sort(
-          (a, b) => (a.phaseNumber ?? 0) - (b.phaseNumber ?? 0)
-        )
+          (a, b) => (a.phaseNumber ?? 0) - (b.phaseNumber ?? 0),
+        ),
       );
 
       setIsLoading(false);

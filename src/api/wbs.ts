@@ -1,4 +1,5 @@
 import { addDoc, collection, doc, getDoc, updateDoc } from 'firebase/firestore';
+
 import { FirestoreWbs } from '../models/firestore models/wbs_firestore';
 import { Phase } from '../models/phase';
 import { Wbs } from '../models/wbs';
@@ -79,7 +80,7 @@ function isNumber(value: string | number): boolean {
 
 export function getQuantityAndUnitForWbs(
   phases: Phase[],
-  wbsDatabaseId: number
+  wbsDatabaseId: number,
 ) {
   let quantity = 0;
   let unit = '';

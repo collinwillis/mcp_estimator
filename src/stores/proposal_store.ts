@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+
 import { getSingleProposal } from '../api/proposal';
 import { Proposal } from '../models/proposal';
 

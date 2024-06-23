@@ -2,6 +2,7 @@ import { save } from '@tauri-apps/api/dialog';
 import { writeBinaryFile } from '@tauri-apps/api/fs';
 import { collection, getDocs, query, where } from 'firebase/firestore';
 import { BookType, WorkBook, utils, write } from 'xlsx-js-style';
+
 import { calculateActivityData } from './activity';
 import { Activity, ActivityType } from '../models/activity';
 import { DataDumpActivity } from '../models/data_dump/data_dump_activity';
@@ -35,13 +36,13 @@ interface Cell {
 
 export const fetchDD = async (
   proposalId: string,
-  preferences: ProposalPreferences
+  preferences: ProposalPreferences,
 ) => {
   const proposal = await getSingleProposal({ proposalId });
   const activities = await fetchDDActivities(proposalId);
   const phases = await fetchDDPhases(proposalId, activities);
   const wbs = (await fetchDDWbs(proposalId, phases, preferences)).filter(
-    (item) => item.phases && item.phases.length > 0
+    (item) => item.phases && item.phases.length > 0,
   );
   wbs.sort((a, b) => a.wbs! - b.wbs!);
 
@@ -248,12 +249,12 @@ export const fetchDD = async (
 };
 
 export const fetchDDActivities = async (
-  proposalId: string
+  proposalId: string,
 ): Promise<DataDumpActivity[]> => {
   const activitiesRef = collection(firestore, 'activities');
   const activityQuery = query(
     activitiesRef,
-    where('proposalId', '==', proposalId)
+    where('proposalId', '==', proposalId),
   );
 
   const querySnapshot = await getDocs(activityQuery);
@@ -265,7 +266,7 @@ export const fetchDDActivities = async (
       const baseActivity = await calculateActivityData(
         doc.id,
         rawActivity,
-        proposal
+        proposal,
       );
       return activityToDataDumpItem(baseActivity, proposal);
     }
@@ -277,7 +278,7 @@ export const fetchDDActivities = async (
 
   // Filter out null values and ensure a valid Activity array
   const validActivities = activities.filter(
-    (activity): activity is DataDumpActivity => activity !== null
+    (activity): activity is DataDumpActivity => activity !== null,
   );
 
   return validActivities;
@@ -285,7 +286,7 @@ export const fetchDDActivities = async (
 
 const fetchDDPhases = async (
   proposalId: string,
-  allActivities: DataDumpActivity[]
+  allActivities: DataDumpActivity[],
 ): Promise<DataDumpPhase[]> => {
   const phaseRef = collection(firestore, 'phase');
   const phaseQuery = query(phaseRef, where('proposalId', '==', proposalId));
@@ -319,7 +320,7 @@ const fetchDDPhases = async (
       let total = 0;
 
       const activities = allActivities.filter(
-        (activity) => activity.phaseId === phase.id
+        (activity) => activity.phaseId === phase.id,
       );
 
       activities.forEach((activity) => {
@@ -353,7 +354,7 @@ const fetchDDPhases = async (
         activity.sys = phase.sys;
       });
       const sortedActivities = [...activities].sort(
-        (a, b) => a!.sortOrder! - b!.sortOrder!
+        (a, b) => a!.sortOrder! - b!.sortOrder!,
       );
       // remove sortorder from each activity
       sortedActivities.map((activity) => (activity.sortOrder = null));
@@ -380,13 +381,13 @@ const fetchDDPhases = async (
           phase.customQuantity ??
           getDDQuantityAndUnit(
             sortedActivities,
-            wbs && wbs.wbsDatabaseId ? wbs.wbsDatabaseId : 0
+            wbs && wbs.wbsDatabaseId ? wbs.wbsDatabaseId : 0,
           ).quantity,
         unit:
           phase.unit ??
           getDDQuantityAndUnit(
             sortedActivities,
-            wbs && wbs.wbsDatabaseId ? wbs.wbsDatabaseId : 0
+            wbs && wbs.wbsDatabaseId ? wbs.wbsDatabaseId : 0,
           ).unit,
         craftMH: currencyRound(craftMH),
         weldMH: currencyRound(weldMH),
@@ -411,7 +412,7 @@ const fetchDDPhases = async (
         activities: sortedActivities,
       };
       return newPhase;
-    })
+    }),
   );
   return phases.sort((a, b) => a.phase! - b.phase!);
 };
@@ -419,7 +420,7 @@ const fetchDDPhases = async (
 const fetchDDWbs = async (
   proposalId: string,
   allPhases: DataDumpPhase[],
-  preferences: ProposalPreferences
+  preferences: ProposalPreferences,
 ): Promise<DataDumpWbs[]> => {
   const wbsRef = collection(firestore, 'wbs');
   const q = query(wbsRef, where('proposalId', '==', proposalId));
@@ -527,7 +528,7 @@ const fetchDDWbs = async (
           returnMe.push(newWbs);
         }
         return curr;
-      })
+      }),
   );
   return returnMe;
 };
@@ -574,7 +575,7 @@ const activityToDataDumpItem = (baseActivity: Activity, proposal: Proposal) => {
       ? currencyRound(
           baseActivity.quantity *
             (baseActivity.craftCost +
-              (baseActivity.equipmentCost + baseActivity.materialCost))
+              (baseActivity.equipmentCost + baseActivity.materialCost)),
         )
       : 0;
   const profitTotal =
@@ -619,7 +620,7 @@ const activityToDataDumpItem = (baseActivity: Activity, proposal: Proposal) => {
     weldMH: currencyRound(baseActivity.welderManHours),
     subMH: null,
     totalMH: currencyRound(
-      baseActivity.craftManHours + baseActivity.welderManHours
+      baseActivity.craftManHours + baseActivity.welderManHours,
     ),
     baseCost: currencyRound(craftBase),
     burden: currencyRound(burden),
@@ -635,7 +636,7 @@ const activityToDataDumpItem = (baseActivity: Activity, proposal: Proposal) => {
         laborProfit +
         fuel +
         consumables +
-        subsistence
+        subsistence,
     ),
     rigCost: currencyRound(rig),
     materialCost: isMat ? currencyRound(materialCost) : null,
@@ -648,7 +649,7 @@ const activityToDataDumpItem = (baseActivity: Activity, proposal: Proposal) => {
       ? currencyRound(
           baseActivity.quantity *
             (baseActivity.craftCost +
-              (baseActivity.equipmentCost + baseActivity.materialCost))
+              (baseActivity.equipmentCost + baseActivity.materialCost)),
         )
       : null,
     costOnlyCost: isCostOnly ? currencyRound(baseActivity.costOnlyCost) : null,
@@ -664,7 +665,7 @@ const activityToDataDumpItem = (baseActivity: Activity, proposal: Proposal) => {
             subCost +
             baseActivity.costOnlyCost +
             profitTotal +
-            salesTax
+            salesTax,
         ),
     sortOrder: baseActivity.sortOrder ?? 0,
   };

@@ -1,5 +1,4 @@
 import * as React from 'react';
-
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
@@ -26,20 +25,20 @@ const DeleteConfirmationDialog: React.FC<DeleteConfirmationDialogProps> = ({
     <Dialog
       open={open}
       onClose={onClose}
-      aria-labelledby="alert-dialog-title"
-      aria-describedby="alert-dialog-description"
+      aria-labelledby='alert-dialog-title'
+      aria-describedby='alert-dialog-description'
     >
-      <DialogTitle id="alert-dialog-title">{title}</DialogTitle>
+      <DialogTitle id='alert-dialog-title'>{title}</DialogTitle>
       <DialogContent>
-        <DialogContentText id="alert-dialog-description">
+        <DialogContentText id='alert-dialog-description'>
           {content}
         </DialogContentText>
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose} color="primary">
+        <Button onClick={onClose} color='primary'>
           Cancel
         </Button>
-        <Button onClick={onConfirm} color="error" variant="outlined" autoFocus>
+        <Button onClick={onConfirm} color='error' variant='outlined' autoFocus>
           Delete
         </Button>
       </DialogActions>

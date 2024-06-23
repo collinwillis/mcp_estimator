@@ -1,5 +1,3 @@
-import { FirestoreProposalPreferences } from './firestore models/proposal_preferences_firestore';
-
 export class ProposalPreferences {
   id?: string | null;
 

@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-
 import { ExpandMoreOutlined } from '@mui/icons-material';
 import {
   Accordion,
@@ -10,6 +9,7 @@ import {
   Dialog,
   Typography,
 } from '@mui/material';
+
 import { updateSingleProposal } from '../../../api/proposal';
 import FormattedNumberInput from '../../../components/formatted_number_input';
 import { useCurrentProposalListener } from '../../../hooks/current_proposal_listener_hook';
@@ -127,36 +127,36 @@ export default function ProposalRatesAccordion({
               >
                 <FormattedNumberInput
                   readOnly={!hasWritePermissions}
-                  prefix="$"
-                  label="Craft Base"
+                  prefix='$'
+                  label='Craft Base'
                   value={craftbaseState}
                   setValue={setCraftbaseState}
                 />
                 <FormattedNumberInput
                   readOnly={!hasWritePermissions}
-                  prefix="$"
-                  label="Weld Base"
+                  prefix='$'
+                  label='Weld Base'
                   value={weldbaseState}
                   setValue={setWeldbaseState}
                 />
                 <FormattedNumberInput
                   readOnly={!hasWritePermissions}
-                  prefix="$"
-                  label="Subsistence"
+                  prefix='$'
+                  label='Subsistence'
                   value={subsistState}
                   setValue={setSubsistState}
                 />
                 <FormattedNumberInput
                   readOnly={!hasWritePermissions}
-                  suffix="%"
-                  label="Use Tax"
+                  suffix='%'
+                  label='Use Tax'
                   value={useTaxState}
                   setValue={setUseTaxState}
                 />
                 <FormattedNumberInput
                   readOnly={!hasWritePermissions}
-                  suffix="%"
-                  label="Sales Tax"
+                  suffix='%'
+                  label='Sales Tax'
                   value={salesTaxState}
                   setValue={setSalesTaxState}
                 />
@@ -173,36 +173,36 @@ export default function ProposalRatesAccordion({
               >
                 <FormattedNumberInput
                   readOnly={!hasWritePermissions}
-                  suffix="%"
-                  label="Overhead"
+                  suffix='%'
+                  label='Overhead'
                   value={overheadState}
                   setValue={setOverheadState}
                 />
                 <FormattedNumberInput
                   readOnly={!hasWritePermissions}
-                  suffix="%"
-                  label="Consumables"
+                  suffix='%'
+                  label='Consumables'
                   value={consumableState}
                   setValue={setConsumableState}
                 />
                 <FormattedNumberInput
                   readOnly={!hasWritePermissions}
-                  suffix="%"
-                  label="Burden"
+                  suffix='%'
+                  label='Burden'
                   value={burdenState}
                   setValue={setBurdenState}
                 />
                 <FormattedNumberInput
                   readOnly={!hasWritePermissions}
-                  suffix="%"
-                  label="Fuel"
+                  suffix='%'
+                  label='Fuel'
                   value={fuelState}
                   setValue={setFuelState}
                 />
                 <FormattedNumberInput
                   readOnly={!hasWritePermissions}
-                  prefix="$"
-                  label="Rig Pay"
+                  prefix='$'
+                  label='Rig Pay'
                   value={rigState}
                   setValue={setRigState}
                 />
@@ -219,46 +219,46 @@ export default function ProposalRatesAccordion({
               >
                 <FormattedNumberInput
                   readOnly={!hasWritePermissions}
-                  suffix="%"
-                  label="Labor Profit"
+                  suffix='%'
+                  label='Labor Profit'
                   value={laborprofitsState}
                   setValue={setLaborProfitsState}
                 />
                 <FormattedNumberInput
                   readOnly={!hasWritePermissions}
-                  suffix="%"
-                  label="Material Profit"
+                  suffix='%'
+                  label='Material Profit'
                   value={materialProfitsState}
                   setValue={setMaterialProfitsState}
                 />
                 <FormattedNumberInput
                   readOnly={!hasWritePermissions}
-                  suffix="%"
-                  label="Equipment Profit"
+                  suffix='%'
+                  label='Equipment Profit'
                   value={equipmentProfitsState}
                   setValue={setEquipmentProfitsState}
                 />
                 <FormattedNumberInput
                   readOnly={!hasWritePermissions}
-                  suffix="%"
-                  label="Subcontractor Profit"
+                  suffix='%'
+                  label='Subcontractor Profit'
                   value={subProfitsState}
                   setValue={setSubProfitsState}
                 />
                 <FormattedNumberInput
                   readOnly={!hasWritePermissions}
-                  suffix="%"
-                  label="Rig Profit"
+                  suffix='%'
+                  label='Rig Profit'
                   value={rigProfit}
                   setValue={setRigProfit}
                 />
               </div>
             </div>
             <Button
-              variant="contained"
-              size="large"
+              variant='contained'
+              size='large'
               sx={{ width: 200, alignSelf: 'center' }}
-              color="primary"
+              color='primary'
               onClick={onSubmit}
               style={{ marginTop: 20 }}
             >
@@ -271,7 +271,7 @@ export default function ProposalRatesAccordion({
         open={successDialogOpen}
         onClose={() => setSuccessDialogOpen(false)}
       >
-        <Alert severity="info">Markups successfully saved.</Alert>
+        <Alert severity='info'>Markups successfully saved.</Alert>
       </Dialog>
     </div>
   );

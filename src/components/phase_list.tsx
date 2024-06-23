@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-
 import {
   Box,
   List,
@@ -9,7 +8,7 @@ import {
   Tooltip,
   Typography,
 } from '@mui/material';
-import { usePhases } from '../hooks/phase_hook';
+
 import { Phase } from '../models/phase';
 import { StoreState, estimatorStore } from '../utils/store';
 
@@ -20,7 +19,7 @@ interface PhaseListProps {
 export default function PhaseList({ onClick }: PhaseListProps) {
   const { proposalId, wbsId, phaseId } = useParams();
   const phases = estimatorStore(
-    (state: StoreState) => state.phases[proposalId!] || []
+    (state: StoreState) => state.phases[proposalId!] || [],
   );
   const navigate = useNavigate();
   const [data, setData] = useState<Phase[]>([]);
@@ -46,13 +45,13 @@ export default function PhaseList({ onClick }: PhaseListProps) {
             <Tooltip
               title={`${phase.phaseNumber} - ${phase.description}`}
               key={phase.id}
-              placement="right"
+              placement='right'
             >
               <ListItem
                 onClick={() => {
                   onClick(phase);
                   navigate(
-                    `/proposal/${proposalId}/wbs/${wbsId}/phase/${phase.id}`
+                    `/proposal/${proposalId}/wbs/${wbsId}/phase/${phase.id}`,
                   );
                 }}
                 sx={{
@@ -90,7 +89,7 @@ export default function PhaseList({ onClick }: PhaseListProps) {
           ))
         ) : (
           <Box sx={{ p: 2 }}>
-            <Typography variant="body1" color="text.secondary">
+            <Typography variant='body1' color='text.secondary'>
               No phases found.
             </Typography>
           </Box>

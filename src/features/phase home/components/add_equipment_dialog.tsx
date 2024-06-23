@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-
 import {
   Button,
   Dialog,
@@ -16,6 +15,7 @@ import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
+
 import { StoreState, estimatorStore } from '../../../utils/store';
 import { FirestoreActivity } from '../../../models/firestore models/activity_firestore';
 import {
@@ -43,10 +43,10 @@ export default function AddEquipmentDialog({
   const [checked, setChecked] = useState<Equipment[]>([]);
   const [equipment, setEquipment] = useState<Equipment[]>([]);
   const addActivities = estimatorStore(
-    (state: StoreState) => state.addActivities
+    (state: StoreState) => state.addActivities,
   );
   const recalculatePhase = estimatorStore(
-    (state: StoreState) => state.recalculatePhase
+    (state: StoreState) => state.recalculatePhase,
   );
 
   // batch add new activities to db
@@ -119,7 +119,7 @@ export default function AddEquipmentDialog({
         (equipment) =>
           equipment.description.includes(search.toLowerCase()) ||
           equipment.description.toLowerCase().includes(search.toLowerCase()) ||
-          equipment.description.toUpperCase().includes(search.toUpperCase())
+          equipment.description.toUpperCase().includes(search.toUpperCase()),
       );
     }
     setSearchResults(temp);
@@ -128,12 +128,12 @@ export default function AddEquipmentDialog({
   return (
     <Dialog open={open} onClose={onClose}>
       <DialogTitle>
-        <Typography variant="h3" sx={{ pb: '20px' }}>
+        <Typography variant='h3' sx={{ pb: '20px' }}>
           Add Equipment
         </Typography>
 
         <Input
-          placeholder="Search Equipment"
+          placeholder='Search Equipment'
           onChange={(e) => {
             setSearch(e.target.value);
           }}
@@ -160,7 +160,7 @@ export default function AddEquipmentDialog({
                 >
                   <ListItemIcon>
                     <Checkbox
-                      edge="start"
+                      edge='start'
                       checked={isChecked}
                       tabIndex={-1}
                       disableRipple
@@ -178,10 +178,10 @@ export default function AddEquipmentDialog({
         </List>
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose} color="primary">
+        <Button onClick={onClose} color='primary'>
           Cancel
         </Button>
-        <Button onClick={addToDb} color="primary">
+        <Button onClick={addToDb} color='primary'>
           Add
         </Button>
       </DialogActions>

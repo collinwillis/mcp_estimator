@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+
 import { ProposalPreferences } from '../models/proposal_preferences';
 import { fetchProposalPreferencesFromFirestore } from '../newAPI/api';
 

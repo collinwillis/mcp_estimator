@@ -10,6 +10,7 @@ import {
   where,
   writeBatch,
 } from 'firebase/firestore';
+
 import constants from '../data/constants.json';
 import { Activity, ActivityType } from '../models/activity';
 import { FirestoreActivity } from '../models/firestore models/activity_firestore';
@@ -117,7 +118,7 @@ export const duplicatePhases = async (phaseIds: string[]) => {
       // Get all activities for this phase
       const activitiesQuery = query(
         collection(firestore, 'activities'),
-        where('phaseId', '==', phaseId)
+        where('phaseId', '==', phaseId),
       );
 
       const activitiesQuerySnapshot = await getDocs(activitiesQuery);
@@ -137,7 +138,7 @@ export const duplicatePhases = async (phaseIds: string[]) => {
 
     // Duplicate activities for this phase
     const activitiesForPhase = activitiesToDuplicate.filter(
-      (activity) => activity.phaseId == phase.id
+      (activity) => activity.phaseId == phase.id,
     );
     for (const activity of activitiesForPhase) {
       // Update the phaseId to point to the new phase
@@ -146,21 +147,21 @@ export const duplicatePhases = async (phaseIds: string[]) => {
     }
     const newPhaseRef = await setDoc(
       doc(collection(firestore, 'phase'), newId),
-      firestorePhase
+      firestorePhase,
     );
   }
 };
 
 export const copyActivitiesFromPhase = async (
   fromPhaseId: string,
-  toPhaseId: string
+  toPhaseId: string,
 ) => {
   const activitiesToCopy: FirestoreActivity[] = [];
 
   // Get all activities for the fromPhase
   const activitiesQuery = query(
     collection(firestore, 'activities'),
-    where('phaseId', '==', fromPhaseId)
+    where('phaseId', '==', fromPhaseId),
   );
   const toPhase = await getSinglePhase({ phaseId: toPhaseId });
   const fromPhase = await getSinglePhase({ phaseId: fromPhaseId });
@@ -224,7 +225,7 @@ interface Costs {
 
 export async function getPhasesForWbs(
   currentWbsId: string,
-  currentProposalId: string
+  currentProposalId: string,
 ): Promise<Phase[]> {
   const phaseRef = collection(firestore, 'phase');
   const phaseQuery = query(phaseRef, where('wbsId', '==', currentWbsId));
@@ -232,7 +233,7 @@ export async function getPhasesForWbs(
   const querySnapshot = await getDocs(phaseQuery);
   const currentWbs = await getSingleWbs({ wbsId: currentWbsId });
   const phases = querySnapshot.docs.map(
-    (doc) => ({ ...doc.data(), id: doc.id }) as Phase
+    (doc) => ({ ...doc.data(), id: doc.id }) as Phase,
   );
 
   const updatedPhases = await Promise.all(
@@ -285,10 +286,10 @@ export async function getPhasesForWbs(
         ...phase,
         ...costs,
       };
-    })
+    }),
   );
 
   return updatedPhases.sort(
-    (a, b) => (a.phaseNumber ?? 0) - (b.phaseNumber ?? 0)
+    (a, b) => (a.phaseNumber ?? 0) - (b.phaseNumber ?? 0),
   );
 }

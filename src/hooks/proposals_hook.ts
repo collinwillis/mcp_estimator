@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-
 import { collection, onSnapshot } from 'firebase/firestore';
+
 import { Proposal } from '../models/proposal';
 import { firestore } from '../setup/config/firebase';
 
@@ -20,8 +20,8 @@ export const useProposals = () => {
       // Use the sort function inline within the setData call
       setData(
         proposals.sort(
-          (a, b) => (b.proposalNumber ?? 0) - (a.proposalNumber ?? 0)
-        )
+          (a, b) => (b.proposalNumber ?? 0) - (a.proposalNumber ?? 0),
+        ),
       );
       setLoading(false);
     });

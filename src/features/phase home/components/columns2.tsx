@@ -1,5 +1,6 @@
 import { MenuItem, Select } from '@mui/material';
 import { GridColumns, GridValueFormatterParams } from '@mui/x-data-grid-pro';
+
 import { Activity, ActivityType } from '../../../models/activity';
 import { EquipmentOwnership, EquipmentUnit } from '../../../models/equipment';
 
@@ -14,7 +15,7 @@ export const getActivityColumns = ({
   updateEquipmentUnit: (activity: Activity, unit: string) => Promise<void>;
   updateEquipmentOwnership: (
     activity: Activity,
-    ownership: string
+    ownership: string,
   ) => Promise<void>;
 }) => {
   const baseColumns: GridColumns = [
@@ -48,7 +49,7 @@ export const getActivityColumns = ({
       field: 'unit',
       renderCell: (params) => {
         const fullActivity = activities.find(
-          (activity) => activity.id === params.id
+          (activity) => activity.id === params.id,
         );
         if (fullActivity?.activityType == ActivityType.equipmentItem) {
           return (
@@ -69,8 +70,8 @@ export const getActivityColumns = ({
                     border: 0,
                   },
               }}
-              labelId="demo-simple-select-label"
-              id="demo-simple-select"
+              labelId='demo-simple-select-label'
+              id='demo-simple-select'
               value={fullActivity.unit}
               onChange={(event) =>
                 updateEquipmentUnit(fullActivity, event.target.value)
@@ -88,7 +89,7 @@ export const getActivityColumns = ({
                       <MenuItem key={unit} value={unit}>
                         {unit}
                       </MenuItem>
-                    )
+                    ),
                 )
               )}
             </Select>
@@ -134,7 +135,7 @@ export const getActivityColumns = ({
       field: 'equipmentOwnership',
       renderCell: (params) => {
         const fullActivity = activities.find(
-          (activity) => activity.id === params.id
+          (activity) => activity.id === params.id,
         );
         if (fullActivity?.activityType == ActivityType.equipmentItem) {
           return (
@@ -155,8 +156,8 @@ export const getActivityColumns = ({
                     border: 0,
                   },
               }}
-              labelId="demo-simple-select-label"
-              id="demo-simple-select"
+              labelId='demo-simple-select-label'
+              id='demo-simple-select'
               value={
                 fullActivity.equipmentOwnership ?? EquipmentOwnership.rental
               }

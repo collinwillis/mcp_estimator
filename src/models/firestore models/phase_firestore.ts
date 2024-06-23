@@ -1,5 +1,3 @@
-import { DocumentReference } from 'firebase/firestore';
-
 export class FirestorePhase {
   proposalId: string | null;
 

@@ -18,6 +18,7 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
+
 import { updateSingleProposal } from '../../../api/proposal';
 import { useCurrentProposalListener } from '../../../hooks/current_proposal_listener_hook';
 import { useUserProfile } from '../../../hooks/user_profile_hook';
@@ -103,7 +104,7 @@ export default function ProposalInfoAccordion({
       setPhone(`(${input.substring(0, 3)}) ${input.substring(3)}`);
     } else {
       setPhone(
-        `(${input.substring(0, 3)}) ${input.substring(3, 6)}-${input.substring(6, 10)}`
+        `(${input.substring(0, 3)}) ${input.substring(3, 6)}-${input.substring(6, 10)}`,
       );
     }
   };
@@ -174,10 +175,10 @@ export default function ProposalInfoAccordion({
                   <div style={{ width: '50%' }}>
                     <TextField
                       InputProps={{ readOnly: !hasWritePermissions }}
-                      variant="filled"
-                      size="small"
-                      type="number"
-                      label="Proposal #"
+                      variant='filled'
+                      size='small'
+                      type='number'
+                      label='Proposal #'
                       sx={{ width: '100%' }}
                       InputLabelProps={{ shrink: true }}
                       onChange={(e) => setProposalNumber(e.target.value || '')}
@@ -186,10 +187,10 @@ export default function ProposalInfoAccordion({
 
                     <TextField
                       InputProps={{ readOnly: !hasWritePermissions }}
-                      variant="filled"
-                      size="small"
-                      type="text"
-                      label="Job"
+                      variant='filled'
+                      size='small'
+                      type='text'
+                      label='Job'
                       sx={{ width: '100%' }}
                       InputLabelProps={{ shrink: true }}
                       onChange={(e) => setJob(e.target.value)}
@@ -198,10 +199,10 @@ export default function ProposalInfoAccordion({
 
                     <TextField
                       InputProps={{ readOnly: !hasWritePermissions }}
-                      variant="filled"
-                      size="small"
-                      type="number"
-                      label="CO #"
+                      variant='filled'
+                      size='small'
+                      type='number'
+                      label='CO #'
                       sx={{ width: '100%' }}
                       InputLabelProps={{ shrink: true }}
                       onChange={(e) => setCoNumber(e.target.value || '')}
@@ -210,10 +211,10 @@ export default function ProposalInfoAccordion({
 
                     <TextField
                       InputProps={{ readOnly: !hasWritePermissions }}
-                      variant="filled"
-                      size="small"
-                      type="text"
-                      label="Description"
+                      variant='filled'
+                      size='small'
+                      type='text'
+                      label='Description'
                       sx={{ width: '100%' }}
                       InputLabelProps={{ shrink: true }}
                       onChange={(e) => setDescription(e.target.value)}
@@ -222,10 +223,10 @@ export default function ProposalInfoAccordion({
 
                     <TextField
                       InputProps={{ readOnly: !hasWritePermissions }}
-                      variant="filled"
-                      size="small"
-                      type="text"
-                      label="Owner"
+                      variant='filled'
+                      size='small'
+                      type='text'
+                      label='Owner'
                       sx={{ width: '100%' }}
                       InputLabelProps={{ shrink: true }}
                       onChange={(e) => setOwner(e.target.value)}
@@ -234,23 +235,23 @@ export default function ProposalInfoAccordion({
 
                     <TextField
                       InputProps={{ readOnly: !hasWritePermissions }}
-                      variant="filled"
-                      size="small"
-                      type="text"
-                      label="City"
+                      variant='filled'
+                      size='small'
+                      type='text'
+                      label='City'
                       sx={{ width: '100%' }}
                       InputLabelProps={{ shrink: true }}
                       onChange={(e) => setJobLocationCity(e.target.value)}
                       value={jobLocationCity ?? ''}
                     />
-                    <FormControl variant="filled" fullWidth>
-                      <InputLabel id="demo-simple-select-filled-label" shrink>
+                    <FormControl variant='filled' fullWidth>
+                      <InputLabel id='demo-simple-select-filled-label' shrink>
                         State
                       </InputLabel>
                       <Select
                         disabled={!hasWritePermissions}
-                        labelId="demo-simple-select-filled-label"
-                        id="demo-simple-select-filled"
+                        labelId='demo-simple-select-filled-label'
+                        id='demo-simple-select-filled'
                         value={proposalInfoState ?? ''}
                         onChange={(e) => setProposalInfoState(e.target.value)}
                       >
@@ -265,10 +266,10 @@ export default function ProposalInfoAccordion({
                   <div style={{ width: '50%' }}>
                     <TextField
                       InputProps={{ readOnly: !hasWritePermissions }}
-                      variant="filled"
-                      size="small"
-                      type="text"
-                      label="Estimator(s)"
+                      variant='filled'
+                      size='small'
+                      type='text'
+                      label='Estimator(s)'
                       sx={{ width: '100%' }}
                       InputLabelProps={{ shrink: true }}
                       onChange={(e) => setEstimator(e.target.value)}
@@ -276,11 +277,11 @@ export default function ProposalInfoAccordion({
                     />
                     <TextField
                       InputProps={{ readOnly: !hasWritePermissions }}
-                      variant="filled"
-                      size="small"
-                      type="date"
-                      label="Date Rec."
-                      placeholder="none"
+                      variant='filled'
+                      size='small'
+                      type='date'
+                      label='Date Rec.'
+                      placeholder='none'
                       sx={{ width: '100%' }}
                       InputLabelProps={{ shrink: true }}
                       onChange={(e) => setDateReceived(e.target.value)}
@@ -288,10 +289,10 @@ export default function ProposalInfoAccordion({
                     />
                     <TextField
                       InputProps={{ readOnly: !hasWritePermissions }}
-                      variant="filled"
-                      size="small"
-                      type="date"
-                      label="Due Date"
+                      variant='filled'
+                      size='small'
+                      type='date'
+                      label='Due Date'
                       sx={{ width: '100%' }}
                       InputLabelProps={{ shrink: true }}
                       onChange={(e) => setDateDue(e.target.value)}
@@ -299,10 +300,10 @@ export default function ProposalInfoAccordion({
                     />
                     <TextField
                       InputProps={{ readOnly: !hasWritePermissions }}
-                      variant="filled"
-                      size="small"
-                      type="date"
-                      label="Project Start Date"
+                      variant='filled'
+                      size='small'
+                      type='date'
+                      label='Project Start Date'
                       sx={{ width: '100%' }}
                       InputLabelProps={{ shrink: true }}
                       onChange={(e) => setProjectStartDate(e.target.value)}
@@ -310,23 +311,23 @@ export default function ProposalInfoAccordion({
                     />
                     <TextField
                       InputProps={{ readOnly: !hasWritePermissions }}
-                      variant="filled"
-                      size="small"
-                      type="date"
-                      label="Project End Date"
+                      variant='filled'
+                      size='small'
+                      type='date'
+                      label='Project End Date'
                       sx={{ width: '100%' }}
                       InputLabelProps={{ shrink: true }}
                       onChange={(e) => setProjectEndDate(e.target.value)}
                       value={projectEndDate ?? ''}
                     />
-                    <FormControl variant="filled" fullWidth>
-                      <InputLabel id="demo-simple-select-filled-label" shrink>
+                    <FormControl variant='filled' fullWidth>
+                      <InputLabel id='demo-simple-select-filled-label' shrink>
                         Bid Type
                       </InputLabel>
                       <Select
                         disabled={!hasWritePermissions}
-                        labelId="demo-simple-select-filled-label"
-                        id="demo-simple-select-filled"
+                        labelId='demo-simple-select-filled-label'
+                        id='demo-simple-select-filled'
                         value={bidType ?? ''}
                         onChange={(e) => setBidType(e.target.value)}
                       >
@@ -337,14 +338,14 @@ export default function ProposalInfoAccordion({
                         ))}
                       </Select>
                     </FormControl>
-                    <FormControl variant="filled" fullWidth>
-                      <InputLabel id="demo-simple-select-filled-label" shrink>
+                    <FormControl variant='filled' fullWidth>
+                      <InputLabel id='demo-simple-select-filled-label' shrink>
                         Status
                       </InputLabel>
                       <Select
                         disabled={!hasWritePermissions}
-                        labelId="demo-simple-select-filled-label"
-                        id="demo-simple-select-filled"
+                        labelId='demo-simple-select-filled-label'
+                        id='demo-simple-select-filled'
                         value={status ?? ''}
                         onChange={(e) => setStatus(e.target.value)}
                       >
@@ -371,10 +372,10 @@ export default function ProposalInfoAccordion({
                 <p>Contact Information</p>
                 <TextField
                   InputProps={{ readOnly: !hasWritePermissions }}
-                  variant="filled"
-                  size="small"
-                  type="text"
-                  label="Contact"
+                  variant='filled'
+                  size='small'
+                  type='text'
+                  label='Contact'
                   sx={{ width: '100%' }}
                   InputLabelProps={{ shrink: true }}
                   onChange={(e) => setContact(e.target.value)}
@@ -383,10 +384,10 @@ export default function ProposalInfoAccordion({
 
                 <TextField
                   InputProps={{ readOnly: !hasWritePermissions }}
-                  variant="filled"
-                  size="small"
-                  type="text"
-                  label="Address"
+                  variant='filled'
+                  size='small'
+                  type='text'
+                  label='Address'
                   sx={{ width: '100%' }}
                   InputLabelProps={{ shrink: true }}
                   onChange={(e) => setAddress(e.target.value)}
@@ -395,23 +396,23 @@ export default function ProposalInfoAccordion({
 
                 <TextField
                   InputProps={{ readOnly: !hasWritePermissions }}
-                  variant="filled"
-                  size="small"
-                  type="text"
-                  label="City"
+                  variant='filled'
+                  size='small'
+                  type='text'
+                  label='City'
                   sx={{ width: '100%' }}
                   InputLabelProps={{ shrink: true }}
                   onChange={(e) => setCity(e.target.value)}
                   value={city ?? ''}
                 />
-                <FormControl variant="filled" fullWidth>
-                  <InputLabel id="demo-simple-select-filled-label" shrink>
+                <FormControl variant='filled' fullWidth>
+                  <InputLabel id='demo-simple-select-filled-label' shrink>
                     State
                   </InputLabel>
                   <Select
                     disabled={!hasWritePermissions}
-                    labelId="demo-simple-select-filled-label"
-                    id="demo-simple-select-filled"
+                    labelId='demo-simple-select-filled-label'
+                    id='demo-simple-select-filled'
                     value={contactInfoState ?? ''}
                     onChange={(e) => setContactInfoState(e.target.value)}
                   >
@@ -424,10 +425,10 @@ export default function ProposalInfoAccordion({
                 </FormControl>
                 <TextField
                   InputProps={{ readOnly: !hasWritePermissions }}
-                  variant="filled"
-                  size="small"
-                  type="number"
-                  label="Zip"
+                  variant='filled'
+                  size='small'
+                  type='number'
+                  label='Zip'
                   sx={{ width: '100%' }}
                   InputLabelProps={{ shrink: true }}
                   onChange={(e) => setZip(e.target.value)}
@@ -436,9 +437,9 @@ export default function ProposalInfoAccordion({
 
                 <TextField
                   InputProps={{ readOnly: !hasWritePermissions }}
-                  variant="filled"
-                  size="small"
-                  label="Phone"
+                  variant='filled'
+                  size='small'
+                  label='Phone'
                   sx={{ width: '100%' }}
                   onChange={formatPhoneNumber}
                   value={phone ?? ''}
@@ -446,10 +447,10 @@ export default function ProposalInfoAccordion({
 
                 <TextField
                   InputProps={{ readOnly: !hasWritePermissions }}
-                  variant="filled"
-                  size="small"
-                  type="email"
-                  label="Email"
+                  variant='filled'
+                  size='small'
+                  type='email'
+                  label='Email'
                   sx={{ width: '100%' }}
                   InputLabelProps={{ shrink: true }}
                   onChange={(e) => setEmail(e.target.value)}
@@ -458,10 +459,10 @@ export default function ProposalInfoAccordion({
               </div>
             </div>
             <Button
-              variant="contained"
-              size="large"
+              variant='contained'
+              size='large'
               sx={{ width: 200, alignSelf: 'center' }}
-              color="primary"
+              color='primary'
               onClick={onSubmit}
               style={{ marginTop: 20 }}
             >
@@ -471,7 +472,7 @@ export default function ProposalInfoAccordion({
         </AccordionDetails>
       </Accordion>
       <Dialog open={alertOpen} onClose={() => setAlertOpen(false)}>
-        <Alert severity="info">Proposal information successfully saved.</Alert>
+        <Alert severity='info'>Proposal information successfully saved.</Alert>
       </Dialog>
     </div>
   );

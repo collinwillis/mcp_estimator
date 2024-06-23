@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
-
 import { ref as databaseRef, off, onValue } from 'firebase/database';
 import { collection, doc, onSnapshot, query, where } from 'firebase/firestore';
+
 import { insertProposalPreferences } from '../api/proposal_preferences';
 import { FirestoreProposalPreferences } from '../models/firestore models/proposal_preferences_firestore';
 import { Proposal } from '../models/proposal';
@@ -17,7 +17,7 @@ export const useProposalPreferences = (proposalId: string) => {
       const proposalPrefRef = doc(
         firestore,
         'proposal-preferences',
-        proposalId
+        proposalId,
       );
 
       const unsubscribe = onSnapshot(proposalPrefRef, (doc) => {

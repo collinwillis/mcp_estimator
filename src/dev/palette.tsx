@@ -1,5 +1,4 @@
 import { Fragment } from 'react';
-
 import {
   Category,
   Component,
@@ -12,8 +11,8 @@ import MUIPalette from '@react-buddy/palette-mui';
 export function PaletteTree() {
   return (
     <Palette>
-      <Category name="App">
-        <Component name="Loader">
+      <Category name='App'>
+        <Component name='Loader'>
           <Variant>
             <ExampleLoaderComponent />
           </Variant>

@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react';
 import { Route, MemoryRouter as Router, Routes } from 'react-router-dom';
-
 import { ThemeProvider } from '@mui/material';
 import { LicenseInfo } from '@mui/x-license-pro';
 import { md5 } from '@mui/x-license-pro/encoding/md5';
 import { LICENSE_SCOPES } from '@mui/x-license-pro/utils/licenseScope';
 import { LICENSING_MODELS } from '@mui/x-license-pro/utils/licensingModel';
 import { User, getAuth, onAuthStateChanged } from 'firebase/auth';
+
 import AuthRoute from './components/auth_route';
 import EstimatorDrawer from './components/drawer';
 import { estimatorTheme } from './config/theme';
@@ -45,13 +45,13 @@ export default function App() {
     <ThemeProvider theme={estimatorTheme}>
       <Router>
         <Routes>
-          <Route path="/login" element={<AuthScreen />} />
+          <Route path='/login' element={<AuthScreen />} />
           <Route
-            path="/verify-email"
+            path='/verify-email'
             element={<EmailVerificationScreen user={currentUser} />}
           />
           <Route
-            path="/"
+            path='/'
             element={
               <AuthRoute>
                 <EstimatorDrawer>
@@ -61,7 +61,7 @@ export default function App() {
             }
           />
           <Route
-            path="/proposal/:proposalId"
+            path='/proposal/:proposalId'
             element={
               <AuthRoute>
                 <EstimatorDrawer>
@@ -71,7 +71,7 @@ export default function App() {
             }
           />
           <Route
-            path="/proposal/:proposalId/wbs/:wbsId"
+            path='/proposal/:proposalId/wbs/:wbsId'
             element={
               <AuthRoute>
                 <EstimatorDrawer>
@@ -81,7 +81,7 @@ export default function App() {
             }
           />
           <Route
-            path="/proposal/:proposalId/wbs/:wbsId/phase/:phaseId"
+            path='/proposal/:proposalId/wbs/:wbsId/phase/:phaseId'
             element={
               <AuthRoute>
                 <EstimatorDrawer>
@@ -91,7 +91,7 @@ export default function App() {
             }
           />
           <Route
-            path="/admin"
+            path='/admin'
             element={
               <AuthRoute>
                 <AdminDashboard />

@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-
 import {
   Button,
   Dialog,
@@ -12,9 +11,9 @@ import {
   MenuItem,
   Select,
 } from '@mui/material';
+
 import { useCurrentPhase } from '../hooks/current_phase_hook';
 import { useCurrentWbs } from '../hooks/current_wbs_hook';
-import { usePhases } from '../hooks/phase_hook';
 import { Activity } from '../models/activity';
 import { StoreState, estimatorStore } from '../utils/store';
 
@@ -26,16 +25,16 @@ interface Props {
 export default function CopyFromPhaseDialog({ open, onClose }: Props) {
   const { wbsId, proposalId, phaseId } = useParams();
   const copyActivitiesFromPhase = estimatorStore(
-    (state: StoreState) => state.copyActivitiesFromPhase
+    (state: StoreState) => state.copyActivitiesFromPhase,
   );
   const recalculatePhase = estimatorStore(
-    (state: StoreState) => state.recalculatePhase
+    (state: StoreState) => state.recalculatePhase,
   );
   const currentWbs = useCurrentWbs({
     wbsId: wbsId ?? '',
   });
   const data = estimatorStore(
-    (state: StoreState) => state.phases[proposalId!] || []
+    (state: StoreState) => state.phases[proposalId!] || [],
   );
   const [disabled, setDisabled] = useState(true);
   const [fromPhase, setFromPhase] = useState('');
@@ -60,7 +59,7 @@ export default function CopyFromPhaseDialog({ open, onClose }: Props) {
 
   const checkSameValue = (
     array: Activity[],
-    propName: keyof Activity
+    propName: keyof Activity,
   ): boolean => {
     const firstValue = array[0][propName];
     return array.every((obj) => obj[propName] === firstValue);
@@ -80,13 +79,13 @@ export default function CopyFromPhaseDialog({ open, onClose }: Props) {
               justifyContent: 'space-around',
             }}
           >
-            <FormControl variant="filled" fullWidth>
-              <InputLabel id="demo-simple-select-filled-label" shrink>
+            <FormControl variant='filled' fullWidth>
+              <InputLabel id='demo-simple-select-filled-label' shrink>
                 From
               </InputLabel>
               <Select
-                labelId="demo-simple-select-filled-label"
-                id="demo-simple-select-filled"
+                labelId='demo-simple-select-filled-label'
+                id='demo-simple-select-filled'
                 value={fromPhase ?? ''}
                 onChange={(e) => setFromPhase(e.target.value)}
               >
@@ -107,14 +106,14 @@ export default function CopyFromPhaseDialog({ open, onClose }: Props) {
                 ))}
               </Select>
             </FormControl>
-            <FormControl variant="filled" fullWidth>
-              <InputLabel id="demo-simple-select-filled-label" shrink>
+            <FormControl variant='filled' fullWidth>
+              <InputLabel id='demo-simple-select-filled-label' shrink>
                 To
               </InputLabel>
               <Select
-                labelId="demo-simple-select-filled-label"
+                labelId='demo-simple-select-filled-label'
                 disabled
-                id="demo-simple-select-filled"
+                id='demo-simple-select-filled'
                 value={currentPhase?.id ?? ''}
                 // onChange={(e) => setFromPhase(e.target.value)}
               >
@@ -137,7 +136,7 @@ export default function CopyFromPhaseDialog({ open, onClose }: Props) {
             </FormControl>
 
             <Button
-              variant="contained"
+              variant='contained'
               disabled={fromPhase.length == 0}
               onClick={onSubmit}
             >

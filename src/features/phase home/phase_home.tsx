@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { useCollection } from 'react-firebase-hooks/firestore';
 import { useParams } from 'react-router-dom';
-
 import { Box, Typography } from '@mui/material';
 import { collection, doc, query, where } from 'firebase/firestore';
+
 import BottomPanel from '../../components/bottom_pannel';
 import useActivities from '../../hooks/activity_hook';
 import { useLoadedRates } from '../../hooks/rates_hook';

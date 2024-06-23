@@ -1,6 +1,5 @@
 import React from 'react';
 import { useParams } from 'react-router-dom';
-
 import { ControlPointDuplicate } from '@mui/icons-material';
 import TrashIcon from '@mui/icons-material/DeleteForever';
 import { Button, Divider } from '@mui/material';
@@ -19,6 +18,7 @@ import {
   GridToolbarDensitySelector,
   GridValueFormatterParams,
 } from '@mui/x-data-grid';
+
 import DeleteConfirmationDialog from '../../../components/alert_dialog';
 import { StyledDataGrid } from '../../../components/custom_data_grid';
 import { useUserProfile } from '../../../hooks/user_profile_hook';
@@ -34,14 +34,13 @@ function PhaseDataGrid({
 }) {
   const { hasWritePermissions } = useUserProfile();
   const [selectedRows, setSelectedRows] = React.useState<GridRowId[]>([]);
-  const { proposalId, wbsId, phaseId } = useParams();
   const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
   const updatePhase = estimatorStore((state: StoreState) => state.updatePhase);
   const deletePhases = estimatorStore(
-    (state: StoreState) => state.deletePhases
+    (state: StoreState) => state.deletePhases,
   );
   const duplicatePhases = estimatorStore(
-    (state: StoreState) => state.duplicatePhases
+    (state: StoreState) => state.duplicatePhases,
   );
 
   const handleDelete = async () => {
@@ -108,7 +107,7 @@ function PhaseDataGrid({
             >
               <Button
                 disabled={selectedRows == null || selectedRows.length <= 0}
-                color="error"
+                color='error'
                 sx={{ color: '#424242', fontSize: '14px' }}
                 onClick={async () => {
                   const ids: string[] = [];
@@ -123,7 +122,7 @@ function PhaseDataGrid({
               </Button>
               <Divider
                 light
-                orientation="vertical"
+                orientation='vertical'
                 sx={{
                   width: '1px',
                   backgroundColor: 'lightgray',
@@ -132,7 +131,7 @@ function PhaseDataGrid({
               />
               <Button
                 disabled={selectedRows == null || selectedRows.length <= 0}
-                color="error"
+                color='error'
                 sx={{ color: '#424242', fontSize: '14px' }}
                 onClick={() => setDeleteDialogOpen(true)}
                 startIcon={<TrashIcon />}
@@ -141,7 +140,7 @@ function PhaseDataGrid({
               </Button>
               <Divider
                 light
-                orientation="vertical"
+                orientation='vertical'
                 sx={{
                   width: '1px',
                   backgroundColor: 'lightgray',
@@ -192,7 +191,7 @@ function PhaseDataGrid({
           localStorage.setItem('phases_filter', JSON.stringify(newModel));
           setFilterModel(newModel);
         }}
-        density="compact"
+        density='compact'
         loading={isLoading}
         columns={columns}
         rows={phaseList}
@@ -225,8 +224,8 @@ function PhaseDataGrid({
         }}
       />
       <DeleteConfirmationDialog
-        title="Are you sure you want to delete the selected phase?"
-        content="Once deleted, this phase and its associated activities cannot be recovered."
+        title='Are you sure you want to delete the selected phase?'
+        content='Once deleted, this phase and its associated activities cannot be recovered.'
         open={deleteDialogOpen}
         onClose={() => setDeleteDialogOpen(false)}
         onConfirm={handleDelete} // Pass the delete logic to onConfirm prop

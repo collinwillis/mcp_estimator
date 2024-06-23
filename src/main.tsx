@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-
 import { DevSupport } from '@react-buddy/ide-toolbox';
+
 import App from './App';
 import { ComponentPreviews, useInitial } from './dev';
 
@@ -13,5 +13,5 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
     >
       <App />
     </DevSupport>
-  </React.StrictMode>
+  </React.StrictMode>,
 );

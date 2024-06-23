@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-
 import {
   Button,
   Dialog,
@@ -12,6 +11,7 @@ import {
   Select,
   TextField,
 } from '@mui/material';
+
 import localPhaseArray from '../data/phases.json';
 import { useCurrentProposal } from '../hooks/current_proposal_hook';
 import { useCurrentWbs } from '../hooks/current_wbs_hook';
@@ -27,7 +27,7 @@ interface Props {
 export default function AddPhaseDialog({ open, onClose }: Props) {
   const { wbsId, proposalId } = useParams();
   const data = estimatorStore(
-    (state: StoreState) => state.phases[proposalId!] || []
+    (state: StoreState) => state.phases[proposalId!] || [],
   ).filter((p) => p.wbsId == wbsId);
   const currentWbs = useCurrentWbs({
     wbsId: wbsId ?? '',
@@ -69,7 +69,7 @@ export default function AddPhaseDialog({ open, onClose }: Props) {
 
   useEffect(() => {
     const filteredPhasesForWbs = localPhaseArray.filter(
-      (phase) => phase.wbsDatabaseId === currentWbs?.wbsDatabaseId
+      (phase) => phase.wbsDatabaseId === currentWbs?.wbsDatabaseId,
     );
     setPhaseOptions(filteredPhasesForWbs);
   }, [currentWbs, wbsId]);
@@ -79,7 +79,7 @@ export default function AddPhaseDialog({ open, onClose }: Props) {
     let maxPhaseNumber = currentWbs?.wbsDatabaseId!;
     if (selectedPhaseOption) {
       const option = phaseOptions.find(
-        (option) => option.description === selectedPhaseOption.description
+        (option) => option.description === selectedPhaseOption.description,
       );
       if (
         listOfWbsNamesNoDescription.includes(currentWbs?.name!) ||
@@ -148,15 +148,15 @@ export default function AddPhaseDialog({ open, onClose }: Props) {
               justifyContent: 'space-around',
             }}
           >
-            <FormControl variant="standard" sx={{ width: '100%' }} size="small">
-              <InputLabel id="demo-simple-select-filled-label">
+            <FormControl variant='standard' sx={{ width: '100%' }} size='small'>
+              <InputLabel id='demo-simple-select-filled-label'>
                 Database
               </InputLabel>
               <Select
-                labelId="demo-simple-select-label"
-                id="demo-simple-select"
+                labelId='demo-simple-select-label'
+                id='demo-simple-select'
                 value={selectedPhaseOption?.description}
-                label="Description"
+                label='Description'
               >
                 {phaseOptions.map((option, index) => (
                   <MenuItem
@@ -175,8 +175,8 @@ export default function AddPhaseDialog({ open, onClose }: Props) {
             {!listOfWbsNamesNoDescription.includes(currentWbs?.name!) && (
               <TextField
                 InputLabelProps={{ shrink: true }}
-                variant="standard"
-                label="Phase Description"
+                variant='standard'
+                label='Phase Description'
                 value={newPhaseDescription}
                 onChange={(event) => {
                   setNewPhaseDescription(event.target.value);
@@ -186,8 +186,8 @@ export default function AddPhaseDialog({ open, onClose }: Props) {
             )}
             <TextField
               InputLabelProps={{ shrink: true }}
-              variant="standard"
-              label="Phase Number"
+              variant='standard'
+              label='Phase Number'
               disabled={
                 listOfWbsNamesNoDescription.includes(currentWbs?.name!) ||
                 !selectedPhaseOption
@@ -198,7 +198,7 @@ export default function AddPhaseDialog({ open, onClose }: Props) {
               }}
               sx={{ width: '100%' }}
             />
-            <Button variant="contained" onClick={handlePhaseCreate}>
+            <Button variant='contained' onClick={handlePhaseCreate}>
               Add Phase
             </Button>
           </div>

@@ -17,7 +17,7 @@ export class Equipment {
     hourRate: number,
     dayRate: number,
     weekRate: number,
-    monthRate: number
+    monthRate: number,
   ) {
     this.id = id;
     this.description = description;

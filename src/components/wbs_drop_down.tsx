@@ -1,40 +1,32 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-
-import {
-  HomeRepairServiceOutlined,
-  House,
-  HouseRounded,
-} from '@mui/icons-material';
 import {
   Box,
   Divider,
   FormControl,
-  IconButton,
   InputLabel,
   ListItemText,
   MenuItem,
   Select,
 } from '@mui/material';
-import { useWbs } from '../hooks/wbs_hook';
-import { WbsArray } from '../utils/enums';
+
 import { StoreState, estimatorStore } from '../utils/store';
 
 export default function WbsDropdown() {
   const { proposalId, wbsId } = useParams();
   const data = estimatorStore(
-    (state: StoreState) => state.visibleWbs[proposalId!] || []
+    (state: StoreState) => state.visibleWbs[proposalId!] || [],
   );
   const navigate = useNavigate();
   return (
     <Box sx={{ width: '100%', pt: '20px' }}>
-      <FormControl variant="standard" sx={{ display: 'flex' }}>
-        <InputLabel id="demo-simple-select-filled-label" sx={{ pl: '10px' }}>
+      <FormControl variant='standard' sx={{ display: 'flex' }}>
+        <InputLabel id='demo-simple-select-filled-label' sx={{ pl: '10px' }}>
           Select WBS
         </InputLabel>
         <Select
-          labelId="demo-simple-select-filled-label"
-          id="demo-simple-select-filled"
+          labelId='demo-simple-select-filled-label'
+          id='demo-simple-select-filled'
           value={wbsId || ''}
           sx={{
             '& .MuiSelect-select': {
@@ -53,7 +45,7 @@ export default function WbsDropdown() {
             },
           }}
         >
-          <MenuItem value="" disabled>
+          <MenuItem value='' disabled>
             Select Wbs
           </MenuItem>
           {[...data]

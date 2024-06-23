@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
-
 import { getAuth } from 'firebase/auth';
 import { doc, getDoc, getFirestore } from 'firebase/firestore';
+
 import { UserPermission, UserProfile, UserRole } from '../models/user';
 
 // Import your UserProfile model here
@@ -27,7 +27,7 @@ export const useUserProfile = () => {
           setUserProfile(profile);
           setIsAdmin(profile.role === UserRole.ADMIN);
           setHasWritePermissions(
-            profile.permission === UserPermission.READ_WRITE
+            profile.permission === UserPermission.READ_WRITE,
           );
         } else {
           console.error('No user profile found in Firestore');

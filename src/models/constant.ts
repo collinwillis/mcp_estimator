@@ -23,7 +23,7 @@ export class Constant {
     craftConstant: number,
     craftUnits: string,
     weldConstant: number,
-    weldUnits: string
+    weldUnits: string,
   ) {
     this.id = id;
     this.phaseDatabaseId = phaseDatabaseId;

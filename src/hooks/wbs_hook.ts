@@ -1,13 +1,13 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-
 import {
   QuerySnapshot,
   collection,
-  doc,
+  doc as firestoreDoc,
   onSnapshot,
   query,
   where,
 } from 'firebase/firestore';
+
 import { getActivitiesForWbs, getQuantityAndUnit } from '../api/activity';
 import { getPhasesForWbs } from '../api/phase';
 import { Proposal } from '../models/proposal';
@@ -27,8 +27,8 @@ export const useWbs = ({
 
   // Memoizing the reference to the proposal in Firestore
   const proposalRef = useMemo(
-    () => doc(firestore, 'proposals', currentProposalId),
-    [currentProposalId]
+    () => firestoreDoc(firestore, 'proposals', currentProposalId),
+    [currentProposalId],
   );
 
   // Effect to fetch the current proposal data whenever the proposal ID changes
@@ -48,7 +48,7 @@ export const useWbs = ({
   // Memoizing the query to get WBS data associated with the current proposal ID
   const wbsQuery = useMemo(
     () => query(wbsRef, where('proposalId', '==', currentProposalId)),
-    [wbsRef, currentProposalId]
+    [wbsRef, currentProposalId],
   );
 
   // Callback to process the fetched WBS data
@@ -57,15 +57,14 @@ export const useWbs = ({
       setLoading(true); // Setting the loading state to true during data processing
 
       // Mapping through the snapshot docs to construct the WBS data array
-      const temp: Wbs[] = querySnapshot.docs.map((doc) => {
-        const wbs = doc.data() as Wbs;
-        wbs.id = doc.id;
-        return wbs;
+      const temp: Wbs[] = querySnapshot.docs.map((document) => {
+        const wbsData = document.data() as Wbs;
+        return { ...wbsData, id: document.id };
       });
 
       // Filtering WBS data based on user preferences
       const filteredWbs = temp.filter((wbs) =>
-        proposalPreferences?.wbsToDisplay?.includes(wbs.name!)
+        proposalPreferences?.wbsToDisplay?.includes(wbs.name!),
       );
 
       // Sorting WBS data based on database IDs
@@ -81,23 +80,31 @@ export const useWbs = ({
           const phases = await getPhasesForWbs(wbs.id!, currentProposalId);
           // console.log(phases);
 
+          // Creating a new object instead of mutating the function parameter
+          const updatedWbs = { ...wbs };
+
           // Calculating the accumulated costs and hours from activities
           activities.forEach((activity) => {
-            wbs.costOnlyCost =
-              (wbs.costOnlyCost ?? 0) + (activity.costOnlyCost ?? 0);
-            wbs.subContractorCost =
-              (wbs.subContractorCost ?? 0) + activity.subContractorCost;
-            wbs.materialCost = (wbs.materialCost ?? 0) + activity.materialCost;
-            wbs.equipmentCost =
-              (wbs.equipmentCost ?? 0) + activity.equipmentCost;
-            wbs.craftCost = (wbs.craftCost ?? 0) + activity.craftCost;
-            wbs.welderCost = (wbs.welderCost ?? 0) + activity.welderCost;
-            wbs.craftManHours =
-              (wbs.craftManHours ?? 0) + activity.craftManHours;
-            wbs.welderManHours =
-              (wbs.welderManHours ?? 0) + activity.welderManHours;
-            wbs.totalCost = (wbs.totalCost ?? 0) + activity.totalCost;
+            updatedWbs.costOnlyCost =
+              (updatedWbs.costOnlyCost ?? 0) + (activity.costOnlyCost ?? 0);
+            updatedWbs.subContractorCost =
+              (updatedWbs.subContractorCost ?? 0) + activity.subContractorCost;
+            updatedWbs.materialCost =
+              (updatedWbs.materialCost ?? 0) + activity.materialCost;
+            updatedWbs.equipmentCost =
+              (updatedWbs.equipmentCost ?? 0) + activity.equipmentCost;
+            updatedWbs.craftCost =
+              (updatedWbs.craftCost ?? 0) + activity.craftCost;
+            updatedWbs.welderCost =
+              (updatedWbs.welderCost ?? 0) + activity.welderCost;
+            updatedWbs.craftManHours =
+              (updatedWbs.craftManHours ?? 0) + activity.craftManHours;
+            updatedWbs.welderManHours =
+              (updatedWbs.welderManHours ?? 0) + activity.welderManHours;
+            updatedWbs.totalCost =
+              (updatedWbs.totalCost ?? 0) + activity.totalCost;
           });
+
           const unitMap = new Map<number, string>([
             [20000, 'CY'],
             [40000, 'TON'],
@@ -107,40 +114,40 @@ export const useWbs = ({
             [130000, 'LF'],
           ]);
 
-          const unit = unitMap.get(wbs.wbsDatabaseId!) || '';
+          const unit = unitMap.get(updatedWbs.wbsDatabaseId!) || '';
           const phasesWithCustomQuantities = phases.filter(
-            (phase) => phase.customQuantity !== null
+            (phase) => phase.customQuantity !== null,
           );
           const sumOfCustomQuantities = phasesWithCustomQuantities.reduce(
             (acc, phase) =>
               acc + (phase.unit === unit ? phase.customQuantity || 0 : 0),
-            0
+            0,
           );
           const filteredActivities = activities.filter(
             (activity) =>
               !phasesWithCustomQuantities
                 .map((phase) => phase.id)
-                .includes(activity.phaseId)
+                .includes(activity.phaseId),
           );
           const calculatedQuantity = getQuantityAndUnit(
             filteredActivities,
-            wbs.wbsDatabaseId!
+            updatedWbs.wbsDatabaseId!,
           ).quantity;
 
-          wbs.quantity = calculatedQuantity + sumOfCustomQuantities;
-          wbs.unit = unit; // Assuming unit handling remains as is
-          if (wbs.unit == '') {
-            wbs.quantity = undefined;
+          updatedWbs.quantity = calculatedQuantity + sumOfCustomQuantities;
+          updatedWbs.unit = unit; // Assuming unit handling remains as is
+          if (updatedWbs.unit === '') {
+            updatedWbs.quantity = undefined;
           }
-          return wbs;
-        })
+          return updatedWbs;
+        }),
       );
 
       setData(updatedWbs); // Updating the local state with the processed WBS data
       setLoading(false); // Setting the loading state to false after data processing is complete
     },
     // Dependencies for the useCallback hook to ensure it's updated when any of these values change
-    [currentProposalId, proposalPreferences, currentProposal]
+    [currentProposalId, proposalPreferences],
   );
 
   // Effect to fetch and process WBS data whenever the query or current proposal data changes
@@ -150,7 +157,7 @@ export const useWbs = ({
 
     // Cleanup: Unsubscribing from the real-time updates when the component is unmounted or the dependencies change
     return () => unsubscribe();
-  }, [wbsQuery, updateData, currentProposal]);
+  }, [wbsQuery, updateData]);
 
   // Returning the processed WBS data and the loading state to the consuming components
   return { data, loading };

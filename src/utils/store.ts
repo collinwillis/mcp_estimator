@@ -1,5 +1,6 @@
 // src/store/useStore.ts
 import { create } from 'zustand';
+
 import { getSingleProposal } from '../api/proposal';
 import { Activity } from '../models/activity';
 import { FirestoreActivity } from '../models/firestore models/activity_firestore';
@@ -48,7 +49,7 @@ export interface StoreState {
   recalculatePhase(phaseId: string): void;
   setPreferences: (
     proposalId: string,
-    preferences: ProposalPreferences
+    preferences: ProposalPreferences,
   ) => void;
   setVisibleWbs: (proposalId: string) => void;
   addPhase: (newPhase: FirestorePhase) => Promise<void>;
@@ -57,18 +58,18 @@ export interface StoreState {
   duplicatePhases: (phaseIds: string[]) => Promise<void>;
   copyActivitiesFromPhase: (
     fromPhaseId: string,
-    toPhaseId: string
+    toPhaseId: string,
   ) => Promise<void>;
   addActivities: (activities: FirestoreActivity[]) => Promise<void>;
   updateActivity: (
     activityId: string,
     field: string,
-    value: any
+    value: any,
   ) => Promise<void>;
   updateEquipmentUnit: (activity: Activity, unit: string) => Promise<void>;
   updateEquipmentOwnership: (
     activity: Activity,
-    ownership: string
+    ownership: string,
   ) => Promise<void>;
   changeActivityOrder: (activityId: string, newRowId: string) => Promise<void>;
   resetConstants: (ids: string[]) => Promise<void>;
@@ -76,12 +77,12 @@ export interface StoreState {
   updateActivityRates: (
     ids: string[],
     baseRate: number,
-    sub: number
+    sub: number,
   ) => Promise<void>;
   changeActivitySortOrder: (
     activityId: string,
     newIndex: number,
-    phaseId: string
+    phaseId: string,
   ) => Promise<void>;
 }
 
@@ -100,7 +101,7 @@ export const estimatorStore = create<StoreState>()((set, get) => ({
     const preferences = await fetchProposalPreferencesFromFirestore(proposalId);
     const { wbs, phases, activities } = await fetchProposalData(
       proposalId,
-      proposal!
+      proposal!,
     );
 
     const wbsLookup = wbs.reduce(
@@ -108,12 +109,12 @@ export const estimatorStore = create<StoreState>()((set, get) => ({
         acc[wbsItem.id!] = wbsItem;
         return acc;
       },
-      {} as Record<string, Wbs>
+      {} as Record<string, Wbs>,
     );
 
     const updatedPhases = phases.map((phase) => {
       const relatedActivities = activities.filter(
-        (act) => act.phaseId === phase.id
+        (act) => act.phaseId === phase.id,
       );
       const wbsId = phase.wbsId!;
       const totals = calculateTotals(relatedActivities);
@@ -140,12 +141,11 @@ export const estimatorStore = create<StoreState>()((set, get) => ({
     });
 
     const updatedWbs = wbs.map((wbsItem) => {
-      const { wbsDatabaseId } = wbsItem;
       const relatedActivities = activities.filter(
-        (act) => act.wbsId === wbsItem.id
+        (act) => act.wbsId === wbsItem.id,
       );
       const relatedPhases = updatedPhases.filter(
-        (act) => act.wbsId === wbsItem.id
+        (act) => act.wbsId === wbsItem.id,
       );
       const totals = calculateWbsTotals(relatedPhases);
       return {
@@ -168,7 +168,7 @@ export const estimatorStore = create<StoreState>()((set, get) => ({
       visibleWbs: {
         ...state.visibleWbs,
         [proposalId]: updatedWbs.filter((wbsItem) =>
-          preferences.wbsToDisplay?.includes(wbsItem.name!)
+          preferences.wbsToDisplay?.includes(wbsItem.name!),
         ),
       },
       phases: { ...state.phases, [proposalId]: updatedPhases },
@@ -184,7 +184,7 @@ export const estimatorStore = create<StoreState>()((set, get) => ({
         acc[wbsItem.id!] = wbsItem;
         return acc;
       },
-      {} as Record<string, Wbs>
+      {} as Record<string, Wbs>,
     );
     set((state) => {
       const existingPhases = state.phases[state.proposal?.id!] || [];
@@ -192,18 +192,18 @@ export const estimatorStore = create<StoreState>()((set, get) => ({
 
       // Find the phase to recalculate totals
       const phaseIndex = existingPhases.findIndex(
-        (phase) => phase.id === phaseId
+        (phase) => phase.id === phaseId,
       );
       if (phaseIndex === -1) return state; // Exit if phase not found
 
       const phaseActivities = existingActivities.filter(
-        (activity) => activity.phaseId === phaseId
+        (activity) => activity.phaseId === phaseId,
       );
       const totals = calculateTotals(phaseActivities);
       const { wbsId } = existingPhases[phaseIndex];
       const { quantity } = getQuantityAndUnit(
         phaseActivities,
-        wbsLookup[wbsId!].wbsDatabaseId!
+        wbsLookup[wbsId!].wbsDatabaseId!,
       );
       console.log('QUANTITY', quantity);
 
@@ -251,7 +251,7 @@ export const estimatorStore = create<StoreState>()((set, get) => ({
       visibleWbs: {
         ...get().visibleWbs,
         [proposalId]: wbs[proposalId].filter((wbsItem) =>
-          preferences[proposalId].wbsToDisplay?.includes(wbsItem.name!)
+          preferences[proposalId].wbsToDisplay?.includes(wbsItem.name!),
         ),
       },
     });
@@ -303,14 +303,14 @@ export const estimatorStore = create<StoreState>()((set, get) => ({
       // Filter out the deleted phases
       Object.keys(updatedPhases).forEach((proposalId) => {
         updatedPhases[proposalId] = updatedPhases[proposalId].filter(
-          (phase) => !phaseIds.includes(phase.id!)
+          (phase) => !phaseIds.includes(phase.id!),
         );
       });
 
       // Filter out activities related to the deleted phases
       Object.keys(updatedActivities).forEach((proposalId) => {
         updatedActivities[proposalId] = updatedActivities[proposalId].filter(
-          (activity) => !phaseIds.includes(activity.phaseId)
+          (activity) => !phaseIds.includes(activity.phaseId),
         );
       });
 
@@ -324,6 +324,7 @@ export const estimatorStore = create<StoreState>()((set, get) => ({
   duplicatePhases: async (phaseIds: string[]) => {
     const { newPhaseIds, newActivityMappings } =
       await duplicatePhasesAndActivitiesInFirestore(phaseIds);
+
     set((state) => {
       const proposalId = state.proposal?.id;
       if (!proposalId) return state; // If there's no current proposal, do nothing
@@ -332,37 +333,30 @@ export const estimatorStore = create<StoreState>()((set, get) => ({
       const existingActivities = state.activities[proposalId] || [];
 
       // Duplicate phases and create mappings for new phases
-      const newPhases: Phase[] = [];
-      for (const newPhaseId of newPhaseIds) {
-        const oldPhaseId = phaseIds[newPhaseIds.indexOf(newPhaseId)]; // Map newPhaseId back to oldPhaseId
-        const oldPhase = existingPhases.find(
-          (phase) => phase.id === oldPhaseId
-        );
-        if (oldPhase) {
-          const duplicatedPhase = { ...oldPhase, id: newPhaseId };
-          newPhases.push(duplicatedPhase);
-        }
-      }
+      const newPhases: Phase[] = newPhaseIds
+        .map((newPhaseId, index) => {
+          const oldPhaseId = phaseIds[index]; // Map newPhaseId back to oldPhaseId
+          const oldPhase = existingPhases.find(
+            (phase) => phase.id === oldPhaseId,
+          );
+          return oldPhase ? { ...oldPhase, id: newPhaseId } : null;
+        })
+        .filter(Boolean) as Phase[];
 
       // Duplicate activities and map them to the new phase IDs
-      const newActivities: Activity[] = [];
-      Object.entries(newActivityMappings).forEach(
-        ([oldActivityId, newActivityId]) => {
+      const newActivities: Activity[] = Object.entries(newActivityMappings)
+        .map(([oldActivityId, newActivityId]) => {
           const oldActivity = existingActivities.find(
-            (activity) => activity.id === oldActivityId
+            (activity) => activity.id === oldActivityId,
           );
           if (oldActivity) {
             const newPhaseId =
               newPhaseIds[phaseIds.indexOf(oldActivity.phaseId)]; // Map old phase ID to new phase ID
-            const duplicatedActivity = {
-              ...oldActivity,
-              id: newActivityId,
-              phaseId: newPhaseId,
-            };
-            newActivities.push(duplicatedActivity);
+            return { ...oldActivity, id: newActivityId, phaseId: newPhaseId };
           }
-        }
-      );
+          return null;
+        })
+        .filter(Boolean) as Activity[];
 
       return {
         ...state,
@@ -377,10 +371,11 @@ export const estimatorStore = create<StoreState>()((set, get) => ({
       };
     });
   },
+
   copyActivitiesFromPhase: async (fromPhaseId: string, toPhaseId: string) => {
     const activityIdMap = await copyActivitiesFromPhaseToPhaseInFirestore(
       fromPhaseId,
-      toPhaseId
+      toPhaseId,
     );
     set((state) => {
       const proposalId = state.proposal?.id;
@@ -390,7 +385,7 @@ export const estimatorStore = create<StoreState>()((set, get) => ({
       const newActivities = Object.entries(activityIdMap)
         .map(([oldId, newId]) => {
           const originalActivity = existingActivities.find(
-            (act) => act.id === oldId
+            (act) => act.id === oldId,
           );
           if (originalActivity) {
             // Return a new activity object with the new ID and updated phaseId
@@ -416,7 +411,7 @@ export const estimatorStore = create<StoreState>()((set, get) => ({
     }
     const newActivities = await insertActivityBatchToFirestore(
       activities,
-      proposal
+      proposal,
     );
     set((state) => {
       const existingActivities = state.activities[proposal?.id!] || [];
@@ -434,7 +429,7 @@ export const estimatorStore = create<StoreState>()((set, get) => ({
     const result = await updateActivityFieldInFirestore(
       activityId,
       field,
-      value
+      value,
     );
     if (result.success) {
       set((state) => {
@@ -442,7 +437,7 @@ export const estimatorStore = create<StoreState>()((set, get) => ({
         Object.keys(updatedActivities).forEach((proposalId) => {
           const activities = updatedActivities[proposalId];
           const index = activities.findIndex(
-            (activity) => activity.id === activityId
+            (activity) => activity.id === activityId,
           );
           if (index !== -1) {
             let newValue = value;
@@ -456,7 +451,7 @@ export const estimatorStore = create<StoreState>()((set, get) => ({
             const processedActivity = processRawActivity(
               activities[index].id!,
               updatedActivity,
-              state.proposal!
+              state.proposal!,
             );
             updatedActivities[proposalId] = [
               ...activities.slice(0, index),
@@ -484,7 +479,7 @@ export const estimatorStore = create<StoreState>()((set, get) => ({
         updatedActivities[index] = processRawActivity(
           activity.id!,
           temp,
-          state.proposal!
+          state.proposal!,
         );
         return {
           ...state,
@@ -516,7 +511,7 @@ export const estimatorStore = create<StoreState>()((set, get) => ({
         updatedActivities[index] = processRawActivity(
           activity.id!,
           temp,
-          state.proposal!
+          state.proposal!,
         );
         return {
           ...state,
@@ -537,7 +532,7 @@ export const estimatorStore = create<StoreState>()((set, get) => ({
 
       const activities = state.activities[proposalId] || [];
       const selectedActivityIndex = activities.findIndex(
-        (activity) => activity.id === activityId
+        (activity) => activity.id === activityId,
       );
 
       // Early exit if selected activity is not found, returning current state to ensure type safety
@@ -548,15 +543,15 @@ export const estimatorStore = create<StoreState>()((set, get) => ({
 
       const filteredActivities = activities.filter(
         (activity) =>
-          activity.phaseId === activities[selectedActivityIndex].phaseId
+          activity.phaseId === activities[selectedActivityIndex].phaseId,
       );
       const newActivities = [...filteredActivities];
 
       const targetActivityIndex = newActivities.findIndex(
-        (activity) => activity.rowId === newRowId.toUpperCase()
+        (activity) => activity.rowId === newRowId.toUpperCase(),
       );
       const selectedFilteredActivityIndex = newActivities.findIndex(
-        (activity) => activity.id === activityId
+        (activity) => activity.id === activityId,
       );
 
       // Exit if target or selected indexes are invalid or no change is needed, returning current state
@@ -571,7 +566,7 @@ export const estimatorStore = create<StoreState>()((set, get) => ({
 
       const [selectedActivity] = newActivities.splice(
         selectedFilteredActivityIndex,
-        1
+        1,
       );
       newActivities.splice(targetActivityIndex, 0, selectedActivity);
       console.log(newActivities[selectedFilteredActivityIndex].sortOrder);
@@ -592,7 +587,7 @@ export const estimatorStore = create<StoreState>()((set, get) => ({
       // Merge the sorted activities back into the full list
       const updatedActivities = activities.map(
         (activity) =>
-          newActivities.find((a) => a.id === activity.id) || activity
+          newActivities.find((a) => a.id === activity.id) || activity,
       );
 
       // Construct and return the new state
@@ -645,7 +640,7 @@ export const estimatorStore = create<StoreState>()((set, get) => ({
 
       Object.keys(updatedActivities).forEach((proposalId) => {
         updatedActivities[proposalId] = updatedActivities[proposalId].filter(
-          (activity) => !ids.includes(activity.id)
+          (activity) => !ids.includes(activity.id),
         );
       });
 
@@ -676,7 +671,7 @@ export const estimatorStore = create<StoreState>()((set, get) => ({
               craftBaseRate: baseRate,
               subsistenceRate: sub,
             },
-            state.proposal!
+            state.proposal!,
           );
         }
         return activity;
@@ -694,7 +689,7 @@ export const estimatorStore = create<StoreState>()((set, get) => ({
   changeActivitySortOrder: async (
     activityId: string,
     newIndex: number,
-    phaseId: string
+    phaseId: string,
   ) => {
     set((state) => {
       const proposalId = state.proposal?.id;
@@ -730,7 +725,7 @@ export const estimatorStore = create<StoreState>()((set, get) => ({
 
       const merged = activities.map(
         (current) =>
-          updatedActivities.find((a) => a.id === current.id) || current
+          updatedActivities.find((a) => a.id === current.id) || current,
       );
 
       // Return new state to update the Zustand store

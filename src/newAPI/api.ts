@@ -1,5 +1,3 @@
-// src/api/fetchAllData.ts
-
 import {
   collection,
   doc,
@@ -11,6 +9,7 @@ import {
   where,
   writeBatch,
 } from 'firebase/firestore';
+
 import { Activity } from '../models/activity';
 import { EquipmentOwnership, EquipmentUnit } from '../models/equipment';
 import { FirestoreActivity } from '../models/firestore models/activity_firestore';
@@ -26,17 +25,17 @@ import { isNumber, numberFields, processRawActivity } from '../utils/utils';
  * Fetches all WBS for a given proposal.
  */
 export async function fetchAllWbsFromFirestore(
-  proposalId: string
+  proposalId: string,
 ): Promise<Wbs[]> {
   const wbsRef = collection(firestore, 'wbs');
   const wbsQuery = query(wbsRef, where('proposalId', '==', proposalId));
   const snapshot = await getDocs(wbsQuery);
   return snapshot.docs.map(
-    (doc) =>
+    (document) =>
       ({
-        id: doc.id, // Include the document ID
-        ...doc.data(),
-      }) as Wbs
+        id: document.id, // Include the document ID
+        ...document.data(),
+      }) as Wbs,
   );
 }
 
@@ -44,17 +43,17 @@ export async function fetchAllWbsFromFirestore(
  * Fetches all phases for a given proposal.
  */
 export async function fetchAllPhasesFromFirestore(
-  proposalId: string
+  proposalId: string,
 ): Promise<Phase[]> {
   const phaseRef = collection(firestore, 'phase');
   const phaseQuery = query(phaseRef, where('proposalId', '==', proposalId));
   const snapshot = await getDocs(phaseQuery);
   return snapshot.docs.map(
-    (doc) =>
+    (document) =>
       ({
-        ...doc.data(),
-        id: doc.id, // Include the document ID
-      }) as Phase
+        ...document.data(),
+        id: document.id, // Include the document ID
+      }) as Phase,
   );
 }
 
@@ -63,34 +62,37 @@ export async function fetchAllPhasesFromFirestore(
  */
 export async function fetchAllActivitiesFromFirestore(
   proposalId: string,
-  proposal: Proposal
+  proposal: Proposal,
 ): Promise<Activity[]> {
   const activityRef = collection(firestore, 'activities');
   const activityQuery = query(
     activityRef,
-    where('proposalId', '==', proposalId)
+    where('proposalId', '==', proposalId),
   );
   const snapshot = await getDocs(activityQuery);
-  return snapshot.docs.map((doc) =>
-    processRawActivity(doc.id, doc.data() as FirestoreActivity, proposal)
+  return snapshot.docs.map((document) =>
+    processRawActivity(
+      document.id,
+      document.data() as FirestoreActivity,
+      proposal,
+    ),
   );
 }
 
 export async function fetchProposalData(
   proposalId: string,
-  proposal: Proposal
+  proposal: Proposal,
 ): Promise<{ wbs: Wbs[]; phases: Phase[]; activities: Activity[] }> {
   const [wbs, phases, activities] = await Promise.all([
     fetchAllWbsFromFirestore(proposalId),
     fetchAllPhasesFromFirestore(proposalId),
     fetchAllActivitiesFromFirestore(proposalId, proposal),
   ]);
-  console.log('phases', phases);
   return { wbs, phases, activities };
 }
 
 export async function fetchProposalPreferencesFromFirestore(
-  proposalId: string
+  proposalId: string,
 ): Promise<ProposalPreferences> {
   const docRef = doc(firestore, 'proposal-preferences', proposalId);
   const docSnap = await getDoc(docRef);
@@ -102,7 +104,7 @@ export async function fetchProposalPreferencesFromFirestore(
 }
 
 export async function updateProposalPreferencesInFirestore(
-  preferences: ProposalPreferences
+  preferences: ProposalPreferences,
 ) {
   const prefDocRef = doc(firestore, 'proposal-preferences', preferences.id!);
   await setDoc(prefDocRef, preferences, { merge: true });
@@ -117,18 +119,18 @@ export const insertPhaseToFirestore = async (newPhase: FirestorePhase) => {
 export const updatePhaseFieldInFirestore = async (
   phaseId: string,
   field: string,
-  value: any
+  value: any,
 ) => {
   let newField = field;
   let newValue;
   if (
     isNumber(value) &&
-    field != 'area' &&
-    field != 'quantity' &&
-    field != 'description'
+    field !== 'area' &&
+    field !== 'quantity' &&
+    field !== 'description'
   ) {
     newValue = parseFloat(value);
-  } else if (field == 'quantity') {
+  } else if (field === 'quantity') {
     newField = 'customQuantity';
     newValue = parseFloat(value);
     if (!isNumber(value)) {
@@ -141,13 +143,7 @@ export const updatePhaseFieldInFirestore = async (
   const data = {
     [newField]: newValue,
   };
-  await updateDoc(doc(firestore, 'phase', phaseId), data)
-    .then((docRef) => {
-      console.log('Value of an Existing Document Field has been updated');
-    })
-    .catch((error) => {
-      console.log(error);
-    });
+  await updateDoc(doc(firestore, 'phase', phaseId), data);
 };
 
 export const deletePhasesInFirestore = async (phaseIds: string[]) => {
@@ -163,15 +159,14 @@ export const deletePhasesInFirestore = async (phaseIds: string[]) => {
   const activitiesRef = collection(firestore, 'activities');
   const activitiesQuery = query(
     activitiesRef,
-    where('phaseId', 'in', phaseIds)
+    where('phaseId', 'in', phaseIds),
   );
   const activitiesSnapshot = await getDocs(activitiesQuery);
-  activitiesSnapshot.forEach((doc) => {
-    batch.delete(doc.ref);
+  activitiesSnapshot.forEach((document) => {
+    batch.delete(document.ref);
   });
 
   await batch.commit();
-  console.log('Phases and associated activities successfully deleted');
 };
 
 export interface NewActivityMappings {
@@ -179,7 +174,7 @@ export interface NewActivityMappings {
 }
 
 export const duplicatePhasesAndActivitiesInFirestore = async (
-  phaseIds: string[]
+  phaseIds: string[],
 ): Promise<{
   newPhaseIds: string[];
   newActivityMappings: NewActivityMappings;
@@ -203,7 +198,7 @@ export const duplicatePhasesAndActivitiesInFirestore = async (
       const activitiesRef = collection(firestore, 'activities');
       const activitiesQuery = query(
         activitiesRef,
-        where('phaseId', '==', phaseId)
+        where('phaseId', '==', phaseId),
       );
       const activitiesSnapshot = await getDocs(activitiesQuery);
       activitiesSnapshot.forEach((activityDoc) => {
@@ -224,12 +219,12 @@ export const duplicatePhasesAndActivitiesInFirestore = async (
 
 export const copyActivitiesFromPhaseToPhaseInFirestore = async (
   fromPhaseId: string,
-  toPhaseId: string
+  toPhaseId: string,
 ) => {
   const activitiesRef = collection(firestore, 'activities');
   const fromPhaseQuery = query(
     activitiesRef,
-    where('phaseId', '==', fromPhaseId)
+    where('phaseId', '==', fromPhaseId),
   );
   const fromPhaseActivitiesSnapshot = await getDocs(fromPhaseQuery);
 
@@ -250,11 +245,9 @@ export const copyActivitiesFromPhaseToPhaseInFirestore = async (
   return activityIdMap;
 };
 
-// Function to add multiple activities in a single batch operation
-
 export const insertActivityBatchToFirestore = async (
   activities: FirestoreActivity[],
-  proposal: Proposal
+  proposal: Proposal,
 ): Promise<Activity[]> => {
   const batch = writeBatch(firestore);
   const newActivities: Activity[] = [];
@@ -272,11 +265,11 @@ export const insertActivityBatchToFirestore = async (
 export const updateActivityFieldInFirestore = async (
   activityId: string,
   field: string,
-  value: any
+  value: any,
 ) => {
   let newValue: number | string;
   if (numberFields.includes(field)) {
-    if (isNaN(parseFloat(value)) || value.trim() === '') {
+    if (Number.isNaN(parseFloat(value)) || value.trim() === '') {
       return {
         success: false,
         message: 'Invalid input: Expected a numeric value.',
@@ -286,7 +279,6 @@ export const updateActivityFieldInFirestore = async (
   } else {
     newValue = value;
   }
-  console.log(newValue);
 
   try {
     await updateDoc(doc(firestore, 'activities', activityId), {
@@ -297,13 +289,13 @@ export const updateActivityFieldInFirestore = async (
       message: `Field '${field}' has been updated to ${newValue}`,
     };
   } catch (error) {
-    console.error(error);
     return {
       success: false,
       message: 'An error occurred while updating the document.',
     };
   }
 };
+
 export interface EquipmentUpdateResult {
   unit: string;
   price: number | null;
@@ -341,7 +333,6 @@ export const updateEquipmentUnitInFirestore = async ({
       price: newPrice!,
     };
   } catch (error) {
-    console.error('Failed to update equipment unit:', error);
     return {
       unit: activity.unit,
       price: activity.price,
@@ -396,7 +387,6 @@ export const updateEquipmentOwnershipInFirestore = async ({
       equipmentOwnership: ownership,
     };
   } catch (error) {
-    console.error('Failed to update equipment ownership:', error);
     return {
       unit: activity.unit,
       price: activity.price,
@@ -406,7 +396,7 @@ export const updateEquipmentOwnershipInFirestore = async ({
 };
 
 export const updateSortOrderBatchInFirestore = async (
-  activities: Activity[]
+  activities: Activity[],
 ) => {
   const batch = writeBatch(firestore);
   activities.forEach((activity) => {
@@ -439,12 +429,12 @@ export const deleteActivityBatchInFirestore = async (activityIds: string[]) => {
 export async function updateActivityRatesInFirestore(
   ids: string[],
   newBaseRate: number,
-  newSubsistenceRate: number
+  newSubsistenceRate: number,
 ) {
   const batch = writeBatch(firestore);
-  ids.forEach((activity) => {
-    if (activity) {
-      batch.update(doc(firestore, 'activities', activity), {
+  ids.forEach((activityId) => {
+    if (activityId) {
+      batch.update(doc(firestore, 'activities', activityId), {
         craftBaseRate: newBaseRate,
         subsistenceRate: newSubsistenceRate,
       });
@@ -460,13 +450,11 @@ export async function duplicateProposal(proposalId: string): Promise<string> {
   const proposalCollection = collection(firestore, 'proposals');
   const allProposalsSnapshot = await getDocs(proposalCollection);
   const highestProposalNumber = Math.max(
-    ...allProposalsSnapshot.docs.map((doc) =>
-      Number(doc.data().proposalNumber || 0)
-    )
+    ...allProposalsSnapshot.docs.map((document) =>
+      Number(document.data().proposalNumber || 0),
+    ),
   );
-  console.log('Highest proposal number:', highestProposalNumber);
   const newProposalNumber = highestProposalNumber + 1;
-  console.log('New proposal number:', newProposalNumber);
 
   // Duplicate proposal
   const proposalDocRef = doc(firestore, 'proposals', proposalId);
@@ -492,7 +480,7 @@ export async function duplicateProposal(proposalId: string): Promise<string> {
     const newPreferencesRef = doc(
       firestore,
       'proposal-preferences',
-      newProposalId
+      newProposalId,
     );
     const newPreferencesData = { ...preferencesDoc.data(), id: newProposalId };
     batch.set(newPreferencesRef, newPreferencesData);
@@ -501,7 +489,7 @@ export async function duplicateProposal(proposalId: string): Promise<string> {
   // Map old WBS IDs to new WBS IDs
   const wbsQuery = query(
     collection(firestore, 'wbs'),
-    where('proposalId', '==', proposalId)
+    where('proposalId', '==', proposalId),
   );
   const wbsSnapshot = await getDocs(wbsQuery);
   const wbsIdMap: { [key: string]: string } = {};
@@ -522,7 +510,7 @@ export async function duplicateProposal(proposalId: string): Promise<string> {
   // Map old Phase IDs to new Phase IDs and duplicate phases
   const phaseQuery = query(
     collection(firestore, 'phase'),
-    where('proposalId', '==', proposalId)
+    where('proposalId', '==', proposalId),
   );
   const phaseSnapshot = await getDocs(phaseQuery);
   const phaseIdMap: { [key: string]: string } = {};
@@ -543,7 +531,7 @@ export async function duplicateProposal(proposalId: string): Promise<string> {
     // Duplicate activities for each phase
     const activityQuery = query(
       collection(firestore, 'activities'),
-      where('phaseId', '==', phaseDoc.id)
+      where('phaseId', '==', phaseDoc.id),
     );
     const activitySnapshot = await getDocs(activityQuery);
     activitySnapshot.forEach((activityDoc) => {

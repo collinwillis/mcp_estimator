@@ -1,5 +1,3 @@
-import { DocumentReference } from 'firebase/firestore';
-
 export class FirestoreWbs {
   proposalId: string | null;
 

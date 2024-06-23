@@ -1,11 +1,11 @@
 import * as React from 'react';
-
 import TrashIcon from '@mui/icons-material/DeleteForever';
 import ExportIcon from '@mui/icons-material/SaveAlt';
 import { Backdrop, CircularProgress } from '@mui/material';
 import Button from '@mui/material/Button';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
+
 import { ProposalPreferences } from '../../../models/proposal_preferences';
 import { fetchDD } from '../../../api/data_dump';
 
@@ -37,7 +37,7 @@ export default function ExportMenu({
         Data Dump
       </Button>
       <Menu
-        id="basic-menu"
+        id='basic-menu'
         anchorEl={anchorEl}
         open={open}
         onClose={handleClose}
@@ -59,7 +59,7 @@ export default function ExportMenu({
         sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
         open={loading}
       >
-        <CircularProgress color="inherit" />
+        <CircularProgress color='inherit' />
       </Backdrop>
     </div>
   );

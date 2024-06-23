@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-
 import { Button, Dialog, DialogContent, DialogTitle } from '@mui/material';
 import { GridRowId } from '@mui/x-data-grid';
+
 import { getSingleActivity } from '../api/activity';
 import { useCurrentPhase } from '../hooks/current_phase_hook';
 import { useCurrentProposal } from '../hooks/current_proposal_hook';
@@ -37,16 +37,16 @@ export default function EditBaseRateDialog({
   const [baseRate, setBaseRate] = useState<number>();
   const [subsistence, setSubsistence] = useState<number>();
   const recalculatePhase = estimatorStore(
-    (state: StoreState) => state.recalculatePhase
+    (state: StoreState) => state.recalculatePhase,
   );
   const updateActivityRates = estimatorStore(
-    (state: StoreState) => state.updateActivityRates
+    (state: StoreState) => state.updateActivityRates,
   );
 
   const phaseDatabasesAllowed = ['180002', '180003', '180004'];
   const onSubmit = async () => {
     const filteredActivities = activities.filter(
-      (activity) => activity !== undefined
+      (activity) => activity !== undefined,
     ) as Activity[];
     const activityIds = filteredActivities.map((activity) => activity.id);
     await updateActivityRates(activityIds, baseRate ?? 0, subsistence ?? 0);
@@ -65,7 +65,7 @@ export default function EditBaseRateDialog({
       });
       const fetchedActivities = await Promise.all(promises);
       const filteredActivities = fetchedActivities.filter(
-        (activity) => activity !== undefined
+        (activity) => activity !== undefined,
       );
       setActivities(filteredActivities);
     };
@@ -81,7 +81,7 @@ export default function EditBaseRateDialog({
           activity.activityType != ActivityType.customLaborItem &&
           currentWbs.wbsDatabaseId != 200000 &&
           !phaseDatabasesAllowed.includes(
-            currentPhase!.phaseDatabaseId!.toString()
+            currentPhase!.phaseDatabaseId!.toString(),
           )
         ) {
           disabled = true;
@@ -90,15 +90,15 @@ export default function EditBaseRateDialog({
     if (activities && activities.length > 0 && disabled == false) {
       if (activities.length > 1) {
         const filteredActivities = activities.filter(
-          (activity) => activity !== undefined
+          (activity) => activity !== undefined,
         ) as Activity[];
         const sameBaseRates = checkSameValue(
           filteredActivities,
-          'craftBaseRate'
+          'craftBaseRate',
         );
         const sameSubsistenceRate = checkSameValue(
           filteredActivities,
-          'subsistenceRate'
+          'subsistenceRate',
         );
         if (sameBaseRates && sameSubsistenceRate) {
           disabled = false;
@@ -108,7 +108,7 @@ export default function EditBaseRateDialog({
       }
     }
     setSubsistence(
-      activities[0]?.subsistenceRate ?? currentProposal?.subsistenceRate
+      activities[0]?.subsistenceRate ?? currentProposal?.subsistenceRate,
     );
     setBaseRate(activities[0]?.craftBaseRate ?? currentProposal?.craftBaseRate);
     setDisabled(disabled);
@@ -116,7 +116,7 @@ export default function EditBaseRateDialog({
 
   const checkSameValue = (
     array: Activity[],
-    propName: keyof Activity
+    propName: keyof Activity,
   ): boolean => {
     const firstValue = array[0][propName];
     return array.every((obj) => obj[propName] === firstValue);
@@ -139,18 +139,18 @@ export default function EditBaseRateDialog({
             <FormattedNumberInput
               disabled={disabled}
               value={baseRate?.toString()}
-              label="Base Rate"
-              prefix="$"
+              label='Base Rate'
+              prefix='$'
               setValue={(_) => setBaseRate(parseFloat(_))}
             />
             <FormattedNumberInput
               disabled={disabled}
               value={subsistence?.toString()}
-              label="Subsistence"
-              prefix="$"
+              label='Subsistence'
+              prefix='$'
               setValue={(_) => setSubsistence(parseFloat(_))}
             />
-            <Button variant="contained" disabled={disabled} onClick={onSubmit}>
+            <Button variant='contained' disabled={disabled} onClick={onSubmit}>
               Add Phase
             </Button>
           </div>
