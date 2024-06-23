@@ -2,9 +2,9 @@ import { styled } from '@mui/material';
 import { DataGridPro } from '@mui/x-data-grid-pro';
 
 export const StyledDataGrid = styled(DataGridPro)(({ theme }) => ({
-  border: 0,
-  color: 'rgba(0,0,0,.85)',
-  fontFamily: [
+  'border': 0,
+  'color': 'rgba(0,0,0,.85)',
+  'fontFamily': [
     '-apple-system',
     'BlinkMacSystemFont',
     '"Segoe UI"',
@@ -16,8 +16,8 @@ export const StyledDataGrid = styled(DataGridPro)(({ theme }) => ({
     '"Segoe UI Emoji"',
     '"Segoe UI Symbol"',
   ].join(','),
-  WebkitFontSmoothing: 'auto',
-  letterSpacing: 'normal',
+  'WebkitFontSmoothing': 'auto',
+  'letterSpacing': 'normal',
   '& .MuiDataGrid-columnsContainer': {
     backgroundColor: '#fafafa',
   },

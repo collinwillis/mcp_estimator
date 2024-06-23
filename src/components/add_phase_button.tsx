@@ -19,8 +19,7 @@ export default function AddPhaseButton({
           bottom: '20px',
           zIndex: 1,
         }}
-        onClick={toggleAddDialog}
-      >
+        onClick={toggleAddDialog}>
         Add Phase
         <AddIcon />
       </Fab>

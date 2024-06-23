@@ -1,15 +1,13 @@
 import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { CheckIcon } from '@chakra-ui/icons';
 import {
   Box,
   Button,
-  Center,
   HStack,
   List,
   ListIcon,
   ListItem,
-  Stack,
   Text,
   VStack,
   useColorModeValue,
@@ -28,8 +26,7 @@ function ProjectCard({ name, id }: ProjectCardProps) {
       borderWidth='1px'
       alignSelf={{ base: 'center', lg: 'flex-start' }}
       borderColor={useColorModeValue('gray.200', 'gray.500')}
-      borderRadius='xl'
-    >
+      borderRadius='xl'>
       <Box py={4} px={12}>
         <Text fontWeight='500' fontSize='2xl'>
           {name}
@@ -46,8 +43,7 @@ function ProjectCard({ name, id }: ProjectCardProps) {
       <VStack
         bg={useColorModeValue('gray.50', 'gray.700')}
         py={4}
-        borderBottomRadius='xl'
-      >
+        borderBottomRadius='xl'>
         <List spacing={3} textAlign='start' px={12}>
           <ListItem>
             <ListIcon as={CheckIcon} color='green.500' />
@@ -69,8 +65,7 @@ function ProjectCard({ name, id }: ProjectCardProps) {
             variant='outline'
             onClick={() => {
               navigate(`/proposal/${id}`);
-            }}
-          >
+            }}>
             View Proposal
           </Button>
         </Box>

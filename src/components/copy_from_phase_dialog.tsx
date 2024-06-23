@@ -77,8 +77,7 @@ export default function CopyFromPhaseDialog({ open, onClose }: Props) {
               display: 'flex',
               flexDirection: 'column',
               justifyContent: 'space-around',
-            }}
-          >
+            }}>
             <FormControl variant='filled' fullWidth>
               <InputLabel id='demo-simple-select-filled-label' shrink>
                 From
@@ -87,8 +86,7 @@ export default function CopyFromPhaseDialog({ open, onClose }: Props) {
                 labelId='demo-simple-select-filled-label'
                 id='demo-simple-select-filled'
                 value={fromPhase ?? ''}
-                onChange={(e) => setFromPhase(e.target.value)}
-              >
+                onChange={(e) => setFromPhase(e.target.value)}>
                 {availablePhases.map((item) => (
                   <MenuItem key={item.id} value={item.id}>
                     <ListItemText
@@ -138,8 +136,7 @@ export default function CopyFromPhaseDialog({ open, onClose }: Props) {
             <Button
               variant='contained'
               disabled={fromPhase.length == 0}
-              onClick={onSubmit}
-            >
+              onClick={onSubmit}>
               Copy
             </Button>
           </div>

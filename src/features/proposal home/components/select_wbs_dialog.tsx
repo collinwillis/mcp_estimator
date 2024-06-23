@@ -14,12 +14,8 @@ import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 
-import { updateProposalPreferences } from '../../../api/proposal_preferences';
-import { useProposalPreferences } from '../../../hooks/proposal_preferences_hook';
-import { FirestoreProposalPreferences } from '../../../models/firestore models/proposal_preferences_firestore';
 import { ProposalPreferences } from '../../../models/proposal_preferences';
-import { auth } from '../../../setup/config/firebase';
-import { WbsArray, WbsEnum } from '../../../utils/enums';
+import { WbsArray } from '../../../utils/enums';
 import { StoreState, estimatorStore } from '../../../utils/store';
 
 interface Props {
@@ -73,8 +69,7 @@ export default function SelectWbsDialog({
       <Dialog
         open={isOpen}
         onClose={onClose}
-        classes={{ paper: styles.dialogPaper.toString() }}
-      >
+        classes={{ paper: styles.dialogPaper.toString() }}>
         <DialogTitle>
           <>
             <h2>Select WBS</h2>
@@ -90,8 +85,7 @@ export default function SelectWbsDialog({
         </DialogTitle>
         <DialogContent sx={{ height: '400px', width: '400px' }}>
           <List
-            sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}
-          >
+            sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}>
             {WbsArray?.sort((a, b) => {
               return a.wbsDatabaseId! - b.wbsDatabaseId!;
             }).map((wbs) => {
@@ -101,8 +95,7 @@ export default function SelectWbsDialog({
                   <ListItemButton
                     role={undefined}
                     onClick={handleToggle(wbs.name)}
-                    dense
-                  >
+                    dense>
                     <ListItemIcon>
                       <Checkbox
                         edge='start'

@@ -249,18 +249,17 @@ const BottomPanel: React.FC = () => {
   return (
     <Box
       sx={{
-        bottom: '0',
+        'bottom': '0',
         height,
-        backgroundColor: 'white',
-        position: 'relative',
-        width: '100%',
-        overflow: 'auto',
+        'backgroundColor': 'white',
+        'position': 'relative',
+        'width': '100%',
+        'overflow': 'auto',
         '& .MuiBox-root': {
           position: 'relative',
           userSelect: 'auto',
         },
-      }}
-    >
+      }}>
       {/* The resizing handle at the top of the drawer */}
       <div
         ref={ref}
@@ -285,8 +284,7 @@ const BottomPanel: React.FC = () => {
           justifyContent: 'space-around',
           alignItems: 'center',
           height: '100%',
-        }}
-      >
+        }}>
         <Box
           sx={{
             pt: { lg: '0px', md: '80px', sm: '80px', xs: '80px' },
@@ -297,15 +295,13 @@ const BottomPanel: React.FC = () => {
             height: '100%',
             alignContent: 'center',
             flexDirection: 'row',
-          }}
-        >
+          }}>
           <Stack
             sx={{
               pr: '35px',
               justifyContent: 'center',
               whiteSpace: 'nowrap',
-            }}
-          >
+            }}>
             <Box
               sx={{
                 flex: 1,
@@ -315,8 +311,7 @@ const BottomPanel: React.FC = () => {
                 display: { xs: 'none', lg: 'flex' },
                 justifyContent: 'center',
                 whiteSpace: 'nowrap',
-              }}
-            >
+              }}>
               <Stack direction='row' spacing={1} sx={{ alignItems: 'center' }}>
                 <Avatar sx={{ backgroundColor: green[500] }}>
                   <AttachMoneyIcon />
@@ -337,8 +332,7 @@ const BottomPanel: React.FC = () => {
               <Stack
                 direction='row'
                 spacing={1}
-                sx={{ marginTop: '30px', alignItems: 'center' }}
-              >
+                sx={{ marginTop: '30px', alignItems: 'center' }}>
                 <Avatar sx={{ backgroundColor: blue[500] }}>
                   <ClockIcon />
                 </Avatar>
@@ -473,8 +467,7 @@ const BottomPanel: React.FC = () => {
                   disabled={phaseId == null}
                   fullWidth
                   variant='contained'
-                  onClick={() => setOpenAddActivityDialog(true)}
-                >
+                  onClick={() => setOpenAddActivityDialog(true)}>
                   Activity
                 </Button>
               </Grid>
@@ -483,8 +476,7 @@ const BottomPanel: React.FC = () => {
                   disabled={phaseId == null}
                   fullWidth
                   variant='contained'
-                  onClick={() => setOpenEquipmentDialog(true)}
-                >
+                  onClick={() => setOpenEquipmentDialog(true)}>
                   Equipment
                 </Button>
               </Grid>
@@ -493,8 +485,7 @@ const BottomPanel: React.FC = () => {
                   disabled={phaseId == null}
                   fullWidth
                   variant='contained'
-                  onClick={() => addMaterial()}
-                >
+                  onClick={() => addMaterial()}>
                   Material
                 </Button>
               </Grid>
@@ -503,8 +494,7 @@ const BottomPanel: React.FC = () => {
                   disabled={phaseId == null}
                   fullWidth
                   variant='contained'
-                  onClick={() => addCostOnly()}
-                >
+                  onClick={() => addCostOnly()}>
                   Cost Only
                 </Button>
               </Grid>
@@ -518,8 +508,7 @@ const BottomPanel: React.FC = () => {
                     textOverflow: 'ellipsis',
                   }}
                   variant='contained'
-                  onClick={() => addCustomLabor()}
-                >
+                  onClick={() => addCustomLabor()}>
                   Custom Labor
                 </Button>
               </Grid>
@@ -528,8 +517,7 @@ const BottomPanel: React.FC = () => {
                   disabled={phaseId == null}
                   fullWidth
                   variant='contained'
-                  onClick={() => addSubcontractor()}
-                >
+                  onClick={() => addSubcontractor()}>
                   Subcontractor
                 </Button>
               </Grid>

@@ -184,34 +184,36 @@ export const duplicatePhasesAndActivitiesInFirestore = async (
   const newActivityMappings: NewActivityMappings = {};
 
   // Duplicate phases
-  for (const phaseId of phaseIds) {
-    const oldPhaseRef = doc(firestore, 'phase', phaseId);
-    const oldPhaseDoc = await getDoc(oldPhaseRef);
-    const newPhaseRef = doc(collection(firestore, 'phase'));
-    newPhaseIds.push(newPhaseRef.id);
+  await Promise.all(
+    phaseIds.map(async (phaseId) => {
+      const oldPhaseRef = doc(firestore, 'phase', phaseId);
+      const oldPhaseDoc = await getDoc(oldPhaseRef);
+      const newPhaseRef = doc(collection(firestore, 'phase'));
+      newPhaseIds.push(newPhaseRef.id);
 
-    if (oldPhaseDoc.exists()) {
-      const newPhaseData = { ...oldPhaseDoc.data(), createdAt: new Date() };
-      batch.set(newPhaseRef, newPhaseData);
+      if (oldPhaseDoc.exists()) {
+        const newPhaseData = { ...oldPhaseDoc.data(), createdAt: new Date() };
+        batch.set(newPhaseRef, newPhaseData);
 
-      // Fetch and duplicate all activities linked to this phase
-      const activitiesRef = collection(firestore, 'activities');
-      const activitiesQuery = query(
-        activitiesRef,
-        where('phaseId', '==', phaseId),
-      );
-      const activitiesSnapshot = await getDocs(activitiesQuery);
-      activitiesSnapshot.forEach((activityDoc) => {
-        const newActivityRef = doc(collection(firestore, 'activities'));
-        const newActivityData = {
-          ...activityDoc.data(),
-          phaseId: newPhaseRef.id,
-        };
-        batch.set(newActivityRef, newActivityData);
-        newActivityMappings[activityDoc.id] = newActivityRef.id;
-      });
-    }
-  }
+        // Fetch and duplicate all activities linked to this phase
+        const activitiesRef = collection(firestore, 'activities');
+        const activitiesQuery = query(
+          activitiesRef,
+          where('phaseId', '==', phaseId),
+        );
+        const activitiesSnapshot = await getDocs(activitiesQuery);
+        activitiesSnapshot.forEach((activityDoc) => {
+          const newActivityRef = doc(collection(firestore, 'activities'));
+          const newActivityData = {
+            ...activityDoc.data(),
+            phaseId: newPhaseRef.id,
+          };
+          batch.set(newActivityRef, newActivityData);
+          newActivityMappings[activityDoc.id] = newActivityRef.id;
+        });
+      }
+    }),
+  );
 
   await batch.commit();
   return { newPhaseIds, newActivityMappings };
@@ -312,16 +314,17 @@ export const updateEquipmentUnitInFirestore = async ({
   activity: Activity;
   unit: string;
 }): Promise<EquipmentUpdateResult> => {
-  const newPrice =
-    unit === EquipmentUnit.hours
-      ? activity.equipment?.hourRate
-      : unit === EquipmentUnit.days
-        ? activity.equipment?.dayRate
-        : unit === EquipmentUnit.weeks
-          ? activity.equipment?.weekRate
-          : unit === EquipmentUnit.months
-            ? activity.equipment?.monthRate
-            : 0;
+  let newPrice = 0;
+
+  if (unit === EquipmentUnit.hours) {
+    newPrice = activity.equipment?.hourRate || 0;
+  } else if (unit === EquipmentUnit.days) {
+    newPrice = activity.equipment?.dayRate || 0;
+  } else if (unit === EquipmentUnit.weeks) {
+    newPrice = activity.equipment?.weekRate || 0;
+  } else if (unit === EquipmentUnit.months) {
+    newPrice = activity.equipment?.monthRate || 0;
+  }
 
   try {
     await updateDoc(doc(firestore, 'activities', activity.id), {
@@ -515,38 +518,40 @@ export async function duplicateProposal(proposalId: string): Promise<string> {
   const phaseSnapshot = await getDocs(phaseQuery);
   const phaseIdMap: { [key: string]: string } = {};
 
-  for (const phaseDoc of phaseSnapshot.docs) {
-    const newPhaseRef = doc(collection(firestore, 'phase'));
-    const newPhaseId = newPhaseRef.id;
-    phaseIdMap[phaseDoc.id] = newPhaseId;
+  await Promise.all(
+    phaseSnapshot.docs.map(async (phaseDoc) => {
+      const newPhaseRef = doc(collection(firestore, 'phase'));
+      const newPhaseId = newPhaseRef.id;
+      phaseIdMap[phaseDoc.id] = newPhaseId;
 
-    const newPhaseData = {
-      ...phaseDoc.data(),
-      proposalId: newProposalId,
-      wbsId: wbsIdMap[phaseDoc.data().wbsId],
-      id: newPhaseId,
-    };
-    batch.set(newPhaseRef, newPhaseData);
-
-    // Duplicate activities for each phase
-    const activityQuery = query(
-      collection(firestore, 'activities'),
-      where('phaseId', '==', phaseDoc.id),
-    );
-    const activitySnapshot = await getDocs(activityQuery);
-    activitySnapshot.forEach((activityDoc) => {
-      const newActivityRef = doc(collection(firestore, 'activities'));
-      const newActivityId = newActivityRef.id;
-      const newActivityData = {
-        ...activityDoc.data(),
-        phaseId: newPhaseId,
+      const newPhaseData = {
+        ...phaseDoc.data(),
         proposalId: newProposalId,
-        wbsId: wbsIdMap[activityDoc.data().wbsId],
-        id: newActivityId,
+        wbsId: wbsIdMap[phaseDoc.data().wbsId],
+        id: newPhaseId,
       };
-      batch.set(newActivityRef, newActivityData);
-    });
-  }
+      batch.set(newPhaseRef, newPhaseData);
+
+      // Duplicate activities for each phase
+      const activityQuery = query(
+        collection(firestore, 'activities'),
+        where('phaseId', '==', phaseDoc.id),
+      );
+      const activitySnapshot = await getDocs(activityQuery);
+      activitySnapshot.forEach((activityDoc) => {
+        const newActivityRef = doc(collection(firestore, 'activities'));
+        const newActivityId = newActivityRef.id;
+        const newActivityData = {
+          ...activityDoc.data(),
+          phaseId: newPhaseId,
+          proposalId: newProposalId,
+          wbsId: wbsIdMap[activityDoc.data().wbsId],
+          id: newActivityId,
+        };
+        batch.set(newActivityRef, newActivityData);
+      });
+    }),
+  );
 
   await batch.commit();
 

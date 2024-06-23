@@ -30,8 +30,7 @@ function WbsHomeScreen() {
         overflow: 'auto',
         flexDirection: 'column',
         justifyContent: 'space-between',
-      }}
-    >
+      }}>
       <PhaseDataGrid phaseList={filtered} isLoading={false} />
 
       <BottomPanel />

@@ -17,7 +17,6 @@ import { updateWbs } from '../../../api/wbs';
 import { StyledDataGrid } from '../../../components/custom_data_grid';
 import { useProposalPreferences } from '../../../hooks/proposal_preferences_hook';
 import { useUserProfile } from '../../../hooks/user_profile_hook';
-import { useWbs } from '../../../hooks/wbs_hook';
 import { Wbs } from '../../../models/wbs';
 import { StoreState, estimatorStore } from '../../../utils/store';
 import ExportMenu from './export_menu';
@@ -45,23 +44,20 @@ function WbsDataGrid({
   function CustomToolbar() {
     return (
       <GridToolbarContainer
-        sx={{ marginBottom: '14px', borderBottom: '1px solid lightgray' }}
-      >
+        sx={{ marginBottom: '14px', borderBottom: '1px solid lightgray' }}>
         <div
           style={{
             display: 'flex',
             flexDirection: 'row',
             justifyContent: 'space-between',
             width: '100%',
-          }}
-        >
+          }}>
           <div
             style={{
               display: 'flex',
               flexDirection: 'row',
               gap: 15,
-            }}
-          >
+            }}>
             <GridToolbarColumnsButton
               sx={{ color: '#424242' }}
               onResize={undefined}
@@ -83,8 +79,7 @@ function WbsDataGrid({
             style={{
               display: 'flex',
               flexDirection: 'row',
-            }}
-          >
+            }}>
             <Button sx={{ color: '#424242' }} onClick={openSelectWbsDialog}>
               WBS Select
             </Button>
@@ -97,7 +92,7 @@ function WbsDataGrid({
   return (
     <Box
       sx={{
-        height: '80%',
+        'height': '80%',
         '& .under': {
           backgroundColor: '#ff525240',
           color: 'primary.dark',
@@ -113,8 +108,7 @@ function WbsDataGrid({
         '& .editable-cell': {
           color: 'blue',
         },
-      }}
-    >
+      }}>
       <StyledDataGrid
         loading={loading}
         columns={columns}

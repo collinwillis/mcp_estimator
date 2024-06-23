@@ -58,11 +58,11 @@ export const getActivityColumns = ({
             <Select
               disabled={!hasWritePermissions}
               sx={{
-                width: '100%',
-                flex: 1,
-                minWidth: 50,
-                color: 'primary.dark',
-                boxShadow: 'none',
+                'width': '100%',
+                'flex': 1,
+                'minWidth': 50,
+                'color': 'primary.dark',
+                'boxShadow': 'none',
                 '.MuiOutlinedInput-notchedOutline': { border: 0 },
                 '&.MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline':
                   {
@@ -81,8 +81,7 @@ export const getActivityColumns = ({
                   activity: fullActivity,
                   unit: event.target.value,
                 })
-              }
-            >
+              }>
               {fullActivity.equipmentOwnership ===
               EquipmentOwnership.purchase ? (
                 <MenuItem value={EquipmentUnit.each}>
@@ -320,11 +319,11 @@ export const getActivityColumns = ({
             <Select
               disabled={!hasWritePermissions}
               sx={{
-                width: '100%',
-                flex: 1,
-                minWidth: 50,
-                color: 'primary.dark',
-                boxShadow: 'none',
+                'width': '100%',
+                'flex': 1,
+                'minWidth': 50,
+                'color': 'primary.dark',
+                'boxShadow': 'none',
                 '.MuiOutlinedInput-notchedOutline': { border: 0 },
                 '&.MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline':
                   {
@@ -345,8 +344,7 @@ export const getActivityColumns = ({
                   activity: fullActivity,
                   ownership: event.target.value,
                 })
-              }
-            >
+              }>
               <MenuItem value={EquipmentOwnership.rental}>
                 {EquipmentOwnership.rental}
               </MenuItem>

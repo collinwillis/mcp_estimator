@@ -16,7 +16,6 @@ import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 
-import { insertActivityBatch } from '../../../api/activity';
 import rawConstantData from '../../../data/constants.json';
 import { useCurrentPhase } from '../../../hooks/current_phase_hook';
 import { ActivityType } from '../../../models/activity';
@@ -143,8 +142,7 @@ export default function AddActivityDialog({
       </DialogTitle>
       <DialogContent sx={{ height: '400px', width: '400px' }}>
         <List
-          sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}
-        >
+          sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}>
           {searchResults?.map((constant) => {
             const labelId = `checkbox-list-label-${constant.id}`;
             const isChecked = checked.indexOf(constant) !== -1;
@@ -153,8 +151,7 @@ export default function AddActivityDialog({
                 <ListItemButton
                   role={undefined}
                   onClick={handleToggle(constant)}
-                  dense
-                >
+                  dense>
                   <ListItemIcon>
                     <Checkbox
                       edge='start'

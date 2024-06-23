@@ -46,17 +46,17 @@ export const usePhases = ({
             totalCost: 0,
           };
           const costs = activities.reduce((accum, activity) => {
-            accum.costOnlyCost += activity.costOnlyCost ?? 0;
-            accum.subCost += activity.subContractorCost ?? 0;
-            accum.materialCost += activity.materialCost ?? 0;
-            accum.equipmentCost += activity.equipmentCost ?? 0;
-            accum.craftCost += activity.craftCost ?? 0;
-            accum.welderCost += activity.welderCost ?? 0;
-            accum.cmh += activity.craftManHours ?? 0;
-            accum.wmh += activity.welderManHours ?? 0;
-            accum.totalCost += activity.totalCost ?? 0;
-
-            return accum;
+            const updatedAccum = { ...accum };
+            updatedAccum.costOnlyCost += activity.costOnlyCost ?? 0;
+            updatedAccum.subCost += activity.subContractorCost ?? 0;
+            updatedAccum.materialCost += activity.materialCost ?? 0;
+            updatedAccum.equipmentCost += activity.equipmentCost ?? 0;
+            updatedAccum.craftCost += activity.craftCost ?? 0;
+            updatedAccum.welderCost += activity.welderCost ?? 0;
+            updatedAccum.cmh += activity.craftManHours ?? 0;
+            updatedAccum.wmh += activity.welderManHours ?? 0;
+            updatedAccum.totalCost += activity.totalCost ?? 0;
+            return updatedAccum;
           }, initialCosts);
           const wbsDatabaseId = currentWbs?.wbsDatabaseId ?? 0;
           let quantityResult = getQuantityAndUnit(
@@ -68,16 +68,18 @@ export const usePhases = ({
           if (!Number.isFinite(quantityResult)) {
             quantityResult = 0;
           }
+
+          const updatedPhase = { ...phase };
           if (phase.customQuantity == null) {
-            phase.quantity = parseFloat(quantityResult.toFixed(2));
+            updatedPhase.quantity = parseFloat(quantityResult.toFixed(2));
           } else {
-            phase.quantity = phase.customQuantity;
+            updatedPhase.quantity = phase.customQuantity;
           }
 
-          phase.unit =
+          updatedPhase.unit =
             phase.unit ?? getQuantityAndUnit(activities, wbsDatabaseId).unit;
           return {
-            ...phase,
+            ...updatedPhase,
             ...costs,
           };
         }),

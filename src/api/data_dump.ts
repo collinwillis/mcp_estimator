@@ -16,7 +16,7 @@ import { Proposal } from '../models/proposal';
 import { ProposalPreferences } from '../models/proposal_preferences';
 import { Wbs } from '../models/wbs';
 import { firestore } from '../setup/config/firebase';
-import { getDDQuantityAndUnit, getQuantityAndUnit } from '../utils/utils';
+import { getDDQuantityAndUnit } from '../utils/utils';
 import { currencyRound } from './helpers';
 import { getSingleProposal } from './proposal';
 import { getSingleWbs } from './wbs';

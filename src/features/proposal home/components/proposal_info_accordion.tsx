@@ -154,8 +154,7 @@ export default function ProposalInfoAccordion({
               flexDirection: 'column',
               width: '100%',
               height: '100%',
-            }}
-          >
+            }}>
             <Divider sx={{ marginTop: '10px' }} />
             <div style={{ display: 'flex', flexDirection: 'row' }}>
               <div
@@ -166,12 +165,14 @@ export default function ProposalInfoAccordion({
                   flexDirection: 'column',
                   outline: '.2px solid #EBEBEB',
                   alignItems: 'center',
-                }}
-              >
+                }}>
                 <p>Project Information</p>
                 <div
-                  style={{ display: 'flex', flexDirection: 'row', gap: '10px' }}
-                >
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'row',
+                    gap: '10px',
+                  }}>
                   <div style={{ width: '50%' }}>
                     <TextField
                       InputProps={{ readOnly: !hasWritePermissions }}
@@ -253,8 +254,7 @@ export default function ProposalInfoAccordion({
                         labelId='demo-simple-select-filled-label'
                         id='demo-simple-select-filled'
                         value={proposalInfoState ?? ''}
-                        onChange={(e) => setProposalInfoState(e.target.value)}
-                      >
+                        onChange={(e) => setProposalInfoState(e.target.value)}>
                         {Object.values(UnitedStatesStates).map((item) => (
                           <MenuItem key={item} value={item}>
                             <ListItemText primary={item} />
@@ -329,8 +329,7 @@ export default function ProposalInfoAccordion({
                         labelId='demo-simple-select-filled-label'
                         id='demo-simple-select-filled'
                         value={bidType ?? ''}
-                        onChange={(e) => setBidType(e.target.value)}
-                      >
+                        onChange={(e) => setBidType(e.target.value)}>
                         {Object.values(BidType).map((item) => (
                           <MenuItem key={item} value={item}>
                             <ListItemText primary={item} />
@@ -347,8 +346,7 @@ export default function ProposalInfoAccordion({
                         labelId='demo-simple-select-filled-label'
                         id='demo-simple-select-filled'
                         value={status ?? ''}
-                        onChange={(e) => setStatus(e.target.value)}
-                      >
+                        onChange={(e) => setStatus(e.target.value)}>
                         {Object.values(ProposalStatus).map((item) => (
                           <MenuItem key={item} value={item}>
                             <ListItemText primary={item} />
@@ -367,8 +365,7 @@ export default function ProposalInfoAccordion({
                   outline: '.2px solid #EBEBEB',
                   padding: '10px',
                   alignItems: 'center',
-                }}
-              >
+                }}>
                 <p>Contact Information</p>
                 <TextField
                   InputProps={{ readOnly: !hasWritePermissions }}
@@ -414,8 +411,7 @@ export default function ProposalInfoAccordion({
                     labelId='demo-simple-select-filled-label'
                     id='demo-simple-select-filled'
                     value={contactInfoState ?? ''}
-                    onChange={(e) => setContactInfoState(e.target.value)}
-                  >
+                    onChange={(e) => setContactInfoState(e.target.value)}>
                     {Object.values(UnitedStatesStates).map((item) => (
                       <MenuItem key={item} value={item}>
                         <ListItemText primary={item} />
@@ -464,8 +460,7 @@ export default function ProposalInfoAccordion({
               sx={{ width: 200, alignSelf: 'center' }}
               color='primary'
               onClick={onSubmit}
-              style={{ marginTop: 20 }}
-            >
+              style={{ marginTop: 20 }}>
               Save
             </Button>
           </div>

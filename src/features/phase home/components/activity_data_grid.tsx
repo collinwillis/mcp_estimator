@@ -29,7 +29,6 @@ import EditBaseRateDialog from '../../../components/edit_base_rate_dialog';
 import { useCurrentPhase } from '../../../hooks/current_phase_hook';
 import { useUserProfile } from '../../../hooks/user_profile_hook';
 import { Activity, ActivityType } from '../../../models/activity';
-import { Phase } from '../../../models/phase';
 import { StoreState, estimatorStore } from '../../../utils/store';
 import { numberToLetters } from '../../../utils/utils';
 import {
@@ -228,16 +227,14 @@ function ActivityDataGrid() {
   function CustomToolbar() {
     return (
       <GridToolbarContainer
-        sx={{ marginBottom: '0px', borderBottom: '1px solid lightgray' }}
-      >
+        sx={{ marginBottom: '0px', borderBottom: '1px solid lightgray' }}>
         <div
           style={{
             display: 'flex',
             flexDirection: 'row',
             justifyContent: 'space-between',
             width: '100%',
-          }}
-        >
+          }}>
           <div>
             <GridToolbarColumnsButton
               sx={{ color: '#424242' }}
@@ -260,14 +257,12 @@ function ActivityDataGrid() {
               style={{
                 display: 'flex',
                 flexDirection: 'row',
-              }}
-            >
+              }}>
               <Button
                 disabled={selectedRows == null || selectedRows.length <= 0}
                 sx={{ color: '#424242', fontSize: '14px' }}
                 onClick={() => setDeleteDialogOpen(true)} // Open delete confirmation dialog
-                startIcon={<TrashIcon />}
-              >
+                startIcon={<TrashIcon />}>
                 Delete
               </Button>
               <Divider
@@ -290,8 +285,7 @@ function ActivityDataGrid() {
                   await resetConstants(ids);
                   recalculatePhase(phaseId!);
                 }}
-                startIcon={<RefreshIcon />}
-              >
+                startIcon={<RefreshIcon />}>
                 Constants / Units
               </Button>
               <Divider
@@ -309,8 +303,7 @@ function ActivityDataGrid() {
                 onClick={() => {
                   setOpenBaseRateDialog(true);
                 }}
-                startIcon={<EditRounded />}
-              >
+                startIcon={<EditRounded />}>
                 Edit Rates
               </Button>
               <Divider
@@ -327,8 +320,7 @@ function ActivityDataGrid() {
                 onClick={() => {
                   setOpenCopyDialog(true);
                 }}
-                startIcon={<Download />}
-              >
+                startIcon={<Download />}>
                 Copy from Phase
               </Button>
             </div>
@@ -341,7 +333,7 @@ function ActivityDataGrid() {
   return (
     <Box
       sx={{
-        height: '100%',
+        'height': '100%',
         '& .under': {
           backgroundColor: '#ff525240',
           color: 'primary.dark',
@@ -359,8 +351,7 @@ function ActivityDataGrid() {
         '& .editable-cell': {
           color: 'primary.dark',
         },
-      }}
-    >
+      }}>
       <StyledDataGrid
         columnVisibilityModel={columnVisibilityModel}
         onColumnVisibilityModelChange={async (newModel) => {
@@ -539,13 +530,11 @@ function ActivityDataGrid() {
         open={snackbarOpen}
         autoHideDuration={6000}
         onClose={handleSnackbarClose}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-      >
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}>
         <Alert
           onClose={handleSnackbarClose}
           severity='error'
-          sx={{ width: '100%' }}
-        >
+          sx={{ width: '100%' }}>
           {snackbarMessage}
         </Alert>
       </Snackbar>

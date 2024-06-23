@@ -28,7 +28,7 @@ module.exports = {
     sourceType: 'module',
     project: './tsconfig.json',
   },
-  plugins: ['react', '@typescript-eslint'],
+  plugins: ['react', '@typescript-eslint', 'unused-imports'],
   rules: {
     'unused-imports/no-unused-imports': 'error',
     'unused-imports/no-unused-vars': [
@@ -42,7 +42,6 @@ module.exports = {
     ],
     'import/prefer-default-export': 'off',
     'no-console': 'off',
-    'space-before-function-paren': ['error', 'always'], // Ensure consistent spacing before function parentheses
     'import/order': [
       'error',
       {
@@ -74,5 +73,6 @@ module.exports = {
     'README.md',
     'tsconfig.json',
     'yarn.lock',
+    'vite-env.d.ts',
   ],
 };

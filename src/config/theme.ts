@@ -1,12 +1,4 @@
 import { createTheme } from '@mui/material';
-import {
-  amber,
-  blue,
-  deepOrange,
-  green,
-  lightBlue,
-  red,
-} from '@mui/material/colors';
 
 // export const estimatorTheme = createTheme({
 //   palette: {

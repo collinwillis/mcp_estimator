@@ -70,8 +70,7 @@ const AdminDashboard: React.FC = () => {
               edge='start'
               color='inherit'
               onClick={() => navigate(-1)}
-              aria-label='back'
-            >
+              aria-label='back'>
               <ArrowBack />
             </IconButton>
           </Box>
@@ -131,8 +130,7 @@ const AdminDashboard: React.FC = () => {
                               permission: e.target.value as UserPermission,
                             })
                           }
-                          fullWidth
-                        >
+                          fullWidth>
                           <MenuItem value={UserPermission.READ}>Read</MenuItem>
                           <MenuItem value={UserPermission.READ_WRITE}>
                             Read & Write
@@ -151,8 +149,7 @@ const AdminDashboard: React.FC = () => {
                               role: e.target.value as UserRole,
                             })
                           }
-                          fullWidth
-                        >
+                          fullWidth>
                           <MenuItem value={UserRole.USER}>User</MenuItem>
                           <MenuItem value={UserRole.ADMIN}>Admin</MenuItem>
                         </Select>
@@ -166,18 +163,17 @@ const AdminDashboard: React.FC = () => {
                             updateUser(user.uid, { disabled: !user.disabled })
                           }
                           sx={{
-                            backgroundColor: user.disabled
+                            'backgroundColor': user.disabled
                               ? 'orange'
                               : 'lightgrey',
-                            color: 'white',
-                            marginRight: 1,
+                            'color': 'white',
+                            'marginRight': 1,
                             '&:hover': {
                               backgroundColor: user.disabled
                                 ? '#FFA500'
                                 : 'grey',
                             },
-                          }}
-                        >
+                          }}>
                           {user.disabled ? 'Enable' : 'Disable'}
                         </Button>
                       </Tooltip>
@@ -188,13 +184,12 @@ const AdminDashboard: React.FC = () => {
                             updateUser(user.uid, { deleted: true })
                           }
                           sx={{
-                            backgroundColor: 'red',
-                            color: 'white',
+                            'backgroundColor': 'red',
+                            'color': 'white',
                             '&:hover': {
                               backgroundColor: 'darkred',
                             },
-                          }}
-                        >
+                          }}>
                           Delete
                         </Button>
                       </Tooltip>

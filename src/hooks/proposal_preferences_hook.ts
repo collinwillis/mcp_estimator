@@ -1,12 +1,9 @@
 import { useEffect, useState } from 'react';
-import { ref as databaseRef, off, onValue } from 'firebase/database';
-import { collection, doc, onSnapshot, query, where } from 'firebase/firestore';
+import { doc, onSnapshot } from 'firebase/firestore';
 
 import { insertProposalPreferences } from '../api/proposal_preferences';
-import { FirestoreProposalPreferences } from '../models/firestore models/proposal_preferences_firestore';
-import { Proposal } from '../models/proposal';
 import { ProposalPreferences } from '../models/proposal_preferences';
-import { auth, firestore } from '../setup/config/firebase';
+import { firestore } from '../setup/config/firebase';
 
 export const useProposalPreferences = (proposalId: string) => {
   const [data, setData] = useState<ProposalPreferences | undefined>();

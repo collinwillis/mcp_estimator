@@ -143,21 +143,18 @@ export default function AddEquipmentDialog({
       </DialogTitle>
       <DialogContent sx={{ height: '400px', width: '400px' }}>
         <List
-          sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}
-        >
+          sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}>
           {searchResults?.map((currentEquipment) => {
             const labelId = `checkbox-list-label-${currentEquipment.id}`;
             const isChecked = checked.indexOf(currentEquipment) !== -1;
             return (
               <ListItem
                 key={equipment.indexOf(currentEquipment)}
-                disablePadding
-              >
+                disablePadding>
                 <ListItemButton
                   role={undefined}
                   onClick={handleToggle(currentEquipment)}
-                  dense
-                >
+                  dense>
                   <ListItemIcon>
                     <Checkbox
                       edge='start'

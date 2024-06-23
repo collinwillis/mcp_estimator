@@ -35,16 +35,15 @@ export default function WbsDropdown() {
               textAlign: 'center',
             },
             '& .MuiSelect-root': {
-              minWidth: '200px',
-              borderRadius: '20px',
-              boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
-              backgroundColor: 'white',
+              'minWidth': '200px',
+              'borderRadius': '20px',
+              'boxShadow': '0 2px 4px rgba(0,0,0,0.2)',
+              'backgroundColor': 'white',
               '&:hover': {
                 backgroundColor: '#f5f5f5',
               },
             },
-          }}
-        >
+          }}>
           <MenuItem value='' disabled>
             Select Wbs
           </MenuItem>
@@ -63,8 +62,7 @@ export default function WbsDropdown() {
                   padding: '5px 10px',
                   minWidth: '200px',
                   textAlign: 'center',
-                }}
-              >
+                }}>
                 <ListItemText
                   primary={`${item.wbsDatabaseId} ${item.name}`}
                   sx={{ overflow: 'hidden', textOverflow: 'ellipsis' }}

@@ -146,8 +146,7 @@ export default function AddPhaseDialog({ open, onClose }: Props) {
               display: 'flex',
               flexDirection: 'column',
               justifyContent: 'space-around',
-            }}
-          >
+            }}>
             <FormControl variant='standard' sx={{ width: '100%' }} size='small'>
               <InputLabel id='demo-simple-select-filled-label'>
                 Database
@@ -156,8 +155,7 @@ export default function AddPhaseDialog({ open, onClose }: Props) {
                 labelId='demo-simple-select-label'
                 id='demo-simple-select'
                 value={selectedPhaseOption?.description}
-                label='Description'
-              >
+                label='Description'>
                 {phaseOptions.map((option, index) => (
                   <MenuItem
                     value={option.description}
@@ -165,8 +163,7 @@ export default function AddPhaseDialog({ open, onClose }: Props) {
                     sx={{ paddingTop: 2, paddingBottom: 2 }}
                     onClick={() => {
                       setSelectedPhaseOption(option);
-                    }}
-                  >
+                    }}>
                     {option?.description}
                   </MenuItem>
                 ))}

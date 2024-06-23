@@ -134,8 +134,7 @@ export default function EditBaseRateDialog({
               display: 'flex',
               flexDirection: 'column',
               justifyContent: 'space-around',
-            }}
-          >
+            }}>
             <FormattedNumberInput
               disabled={disabled}
               value={baseRate?.toString()}

@@ -41,8 +41,7 @@ const EmailVerificationScreen: React.FC<VerifyEmailProps> = ({ user }) => {
         justifyContent: 'center',
         height: '100vh',
         width: '100%',
-      }}
-    >
+      }}>
       <Container
         component={Paper}
         maxWidth='xs'
@@ -52,8 +51,7 @@ const EmailVerificationScreen: React.FC<VerifyEmailProps> = ({ user }) => {
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
-        }}
-      >
+        }}>
         <EmailOutlinedIcon sx={{ fontSize: 80, mb: 2 }} color='primary' />
         <Typography variant='h5' gutterBottom>
           Verify Your Email
@@ -72,8 +70,7 @@ const EmailVerificationScreen: React.FC<VerifyEmailProps> = ({ user }) => {
             color='primary'
             variant='contained'
             fullWidth
-            onClick={resendVerificationEmail}
-          >
+            onClick={resendVerificationEmail}>
             Resend Verification Email
           </Button>
           <Link
@@ -87,8 +84,7 @@ const EmailVerificationScreen: React.FC<VerifyEmailProps> = ({ user }) => {
               display: 'inline-block',
               width: '100%',
               textAlign: 'center',
-            }}
-          >
+            }}>
             Logout
           </Link>
         </Box>

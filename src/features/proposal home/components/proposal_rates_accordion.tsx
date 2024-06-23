@@ -15,7 +15,6 @@ import FormattedNumberInput from '../../../components/formatted_number_input';
 import { useCurrentProposalListener } from '../../../hooks/current_proposal_listener_hook';
 import { useUserProfile } from '../../../hooks/user_profile_hook';
 import { FirestoreProposal } from '../../../models/firestore models/proposal_firestore';
-import { StoreState, estimatorStore } from '../../../utils/store';
 
 interface ProposalRatesAccordionProps {
   proposalId: string;
@@ -123,8 +122,7 @@ export default function ProposalRatesAccordion({
                   display: 'flex',
                   flexDirection: 'column',
                   gap: '10px',
-                }}
-              >
+                }}>
                 <FormattedNumberInput
                   readOnly={!hasWritePermissions}
                   prefix='$'
@@ -169,8 +167,7 @@ export default function ProposalRatesAccordion({
                   display: 'flex',
                   flexDirection: 'column',
                   gap: '10px',
-                }}
-              >
+                }}>
                 <FormattedNumberInput
                   readOnly={!hasWritePermissions}
                   suffix='%'
@@ -215,8 +212,7 @@ export default function ProposalRatesAccordion({
                   display: 'flex',
                   flexDirection: 'column',
                   gap: '10px',
-                }}
-              >
+                }}>
                 <FormattedNumberInput
                   readOnly={!hasWritePermissions}
                   suffix='%'
@@ -260,8 +256,7 @@ export default function ProposalRatesAccordion({
               sx={{ width: 200, alignSelf: 'center' }}
               color='primary'
               onClick={onSubmit}
-              style={{ marginTop: 20 }}
-            >
+              style={{ marginTop: 20 }}>
               Save
             </Button>
           </div>
@@ -269,8 +264,7 @@ export default function ProposalRatesAccordion({
       </Accordion>
       <Dialog
         open={successDialogOpen}
-        onClose={() => setSuccessDialogOpen(false)}
-      >
+        onClose={() => setSuccessDialogOpen(false)}>
         <Alert severity='info'>Markups successfully saved.</Alert>
       </Dialog>
     </div>

@@ -1,9 +1,7 @@
 import { useEffect, useState } from 'react';
 
 import { getSinglePhase } from '../api/phase';
-import { getSingleWbs } from '../api/wbs';
 import { Phase } from '../models/phase';
-import { Wbs } from '../models/wbs';
 
 interface CurrentPhaseProps {
   phaseId: string;

@@ -37,16 +37,14 @@ export default function PhaseList({ onClick }: PhaseListProps) {
         borderRadius: 0,
         overflow: 'hidden',
         pb: '65px',
-      }}
-    >
+      }}>
       <List sx={{ py: 0 }}>
         {data.length > 0 ? (
           data.map((phase) => (
             <Tooltip
               title={`${phase.phaseNumber} - ${phase.description}`}
               key={phase.id}
-              placement='right'
-            >
+              placement='right'>
               <ListItem
                 onClick={() => {
                   onClick(phase);
@@ -55,15 +53,14 @@ export default function PhaseList({ onClick }: PhaseListProps) {
                   );
                 }}
                 sx={{
-                  bgcolor: phase.id == phaseId ? 'primary.main' : 'white',
-                  cursor: 'pointer',
-                  transition: 'background-color 0.3s ease-in-out',
+                  'bgcolor': phase.id == phaseId ? 'primary.main' : 'white',
+                  'cursor': 'pointer',
+                  'transition': 'background-color 0.3s ease-in-out',
                   '&:hover': {
                     bgcolor: 'primary.light',
                     color: 'primary.contrastText',
                   },
-                }}
-              >
+                }}>
                 <ListItemText
                   primaryTypographyProps={{
                     sx: {

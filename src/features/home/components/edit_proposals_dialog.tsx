@@ -87,10 +87,10 @@ const SearchBar = styled('div')(({ theme }) => ({
 }));
 
 const StyledIconButton = styled(IconButton)(({ theme }) => ({
-  backgroundColor: 'transparent',
-  color: theme.palette.error.main,
-  transition: 'color 0.3s',
-  pointerEvents: 'none', // Disable pointer events on the button
+  'backgroundColor': 'transparent',
+  'color': theme.palette.error.main,
+  'transition': 'color 0.3s',
+  'pointerEvents': 'none', // Disable pointer events on the button
   '&:hover': {
     color: theme.palette.error.dark,
     backgroundColor: 'transparent',
@@ -139,8 +139,7 @@ const EditProposalsDialog: React.FC<EditProposalsDialogProps> = ({
           edge='start'
           aria-label='back'
           onClick={onClose}
-          sx={{ marginRight: 2, color: 'white' }}
-        >
+          sx={{ marginRight: 2, color: 'white' }}>
           <ArrowBackIcon />
         </IconButton>
         <Typography variant='h6' sx={{ flex: 1, textAlign: 'center' }}>
@@ -175,8 +174,7 @@ const EditProposalsDialog: React.FC<EditProposalsDialogProps> = ({
                   variant='outlined'
                   color='primary'
                   onClick={() => handleDuplicate(proposal)}
-                  disabled={isDuplicating}
-                >
+                  disabled={isDuplicating}>
                   {isDuplicating ? <CircularProgress size={20} /> : 'Duplicate'}
                 </Button>
                 <StyledIconButton
@@ -186,8 +184,7 @@ const EditProposalsDialog: React.FC<EditProposalsDialogProps> = ({
                     setSelectedProposal(proposal);
                     setDeleteDialogOpen(true);
                   }}
-                  sx={{ pointerEvents: 'auto' }}
-                >
+                  sx={{ pointerEvents: 'auto' }}>
                   {isDeleting ? <CircularProgress size={20} /> : <DeleteIcon />}
                 </StyledIconButton>
               </ListItem>
@@ -204,8 +201,7 @@ const EditProposalsDialog: React.FC<EditProposalsDialogProps> = ({
             </Typography>
             <Typography
               component='span'
-              sx={{ color: (theme) => theme.palette.primary.dark }}
-            >
+              sx={{ color: (theme) => theme.palette.primary.dark }}>
               {`${selectedProposal?.proposalNumber} - ${
                 selectedProposal?.proposalDescription
               }`}

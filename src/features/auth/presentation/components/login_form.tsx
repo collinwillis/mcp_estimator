@@ -96,8 +96,7 @@ function LoginForm(props: LoginFormProps) {
       justifyContent='center'
       width='100%'
       height='100%'
-      p='20px'
-    >
+      p='20px'>
       <TextField
         error={Boolean(error)}
         sx={styles.textField}
@@ -134,8 +133,7 @@ function LoginForm(props: LoginFormProps) {
         }}
         variant='contained'
         color='primary'
-        onClick={onLogin}
-      >
+        onClick={onLogin}>
         Login
       </Button>
       <Link
@@ -143,8 +141,7 @@ function LoginForm(props: LoginFormProps) {
         variant='body2'
         underline='hover'
         sx={{ mt: 2 }}
-        onClick={sendResetEmail}
-      >
+        onClick={sendResetEmail}>
         Forgot password?
       </Link>
 
@@ -160,8 +157,7 @@ function LoginForm(props: LoginFormProps) {
           height: '50',
           fontWeight: '600',
         }}
-        onClick={() => props.setFormValue(2)}
-      >
+        onClick={() => props.setFormValue(2)}>
         Register
       </Button>
     </Stack>

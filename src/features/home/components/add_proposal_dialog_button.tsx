@@ -14,8 +14,7 @@ export default function AddProposalDialogButton({
       sx={{
         height: 60,
         borderBottom: `${colors.grey[300]} 1px solid`,
-      }}
-    >
+      }}>
       <ListItemText>Add Proposal</ListItemText>
       <AddIcon />
       <Divider />

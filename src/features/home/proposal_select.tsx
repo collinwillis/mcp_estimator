@@ -14,8 +14,7 @@ function ProposalSelectScreen() {
         justifyContent: 'center',
         alignItems: 'center',
         flexDirection: 'column', // Added to stack the children vertically
-      }}
-    >
+      }}>
       <img
         src={logo}
         alt='Company Logo'

@@ -26,8 +26,7 @@ const DeleteConfirmationDialog: React.FC<DeleteConfirmationDialogProps> = ({
       open={open}
       onClose={onClose}
       aria-labelledby='alert-dialog-title'
-      aria-describedby='alert-dialog-description'
-    >
+      aria-describedby='alert-dialog-description'>
       <DialogTitle id='alert-dialog-title'>{title}</DialogTitle>
       <DialogContent>
         <DialogContentText id='alert-dialog-description'>

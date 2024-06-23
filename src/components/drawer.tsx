@@ -222,8 +222,7 @@ export default function EstimatorDrawer({ children }: EstimatorDrawerProps) {
             aria-label='open drawer'
             onClick={handleDrawerOpen}
             edge='start'
-            sx={{ mr: 2, ...(open && { display: 'none' }) }}
-          >
+            sx={{ mr: 2, ...(open && { display: 'none' }) }}>
             <DrawerIcon color='white' />
           </IconButton>
 
@@ -232,8 +231,7 @@ export default function EstimatorDrawer({ children }: EstimatorDrawerProps) {
               <Link
                 underline='hover'
                 color={currentWbs ? 'inherit' : 'white'}
-                onClick={() => navigate(`/proposal/${currentProposal?.id}`)}
-              >
+                onClick={() => navigate(`/proposal/${currentProposal?.id}`)}>
                 {`${currentProposal?.proposalNumber} - ${
                   currentProposal?.proposalDescription
                 }`}
@@ -247,8 +245,7 @@ export default function EstimatorDrawer({ children }: EstimatorDrawerProps) {
                   navigate(
                     `/proposal/${currentProposal?.id}/wbs/${currentWbs?.id}`,
                   )
-                }
-              >
+                }>
                 {currentWbs?.name}
               </Link>
             )}
@@ -262,8 +259,7 @@ export default function EstimatorDrawer({ children }: EstimatorDrawerProps) {
                       currentWbs?.id
                     }phase/${currentPhase?.id}`,
                   )
-                }
-              >
+                }>
                 {`${currentPhase.phaseNumber} - ${currentPhase.description}`}
               </Link>
             )}
@@ -283,8 +279,7 @@ export default function EstimatorDrawer({ children }: EstimatorDrawerProps) {
                 color='inherit'
                 aria-label='menu'
                 onClick={() => loadFullProposalData(proposalId)}
-                edge='end'
-              >
+                edge='end'>
                 <DownloadForOffline />
               </IconButton>
             )}
@@ -293,15 +288,13 @@ export default function EstimatorDrawer({ children }: EstimatorDrawerProps) {
             <Menu
               anchorEl={mainMenuAnchorEl}
               open={Boolean(mainMenuAnchorEl)}
-              onClose={handleMenuClose}
-            >
+              onClose={handleMenuClose}>
               {isAdmin && (
                 <MenuItem
                   onClick={() => {
                     handleMenuClose();
                     navigate('/admin');
-                  }}
-                >
+                  }}>
                   <ListItemIcon>
                     <AdminPanelSettings fontSize='small' />
                   </ListItemIcon>
@@ -326,9 +319,9 @@ export default function EstimatorDrawer({ children }: EstimatorDrawerProps) {
       </AppBar>
       <Drawer
         sx={{
-          width: drawerWidth,
-          flexShrink: 0,
-          zIndex: 999,
+          'width': drawerWidth,
+          'flexShrink': 0,
+          'zIndex': 999,
 
           '& .MuiDrawer-paper': {
             backgroundColor: '#FBFBFB',
@@ -338,8 +331,7 @@ export default function EstimatorDrawer({ children }: EstimatorDrawerProps) {
         }}
         variant='persistent'
         anchor='left'
-        open={open}
-      >
+        open={open}>
         <DrawerHeader>
           <div
             style={{
@@ -347,8 +339,7 @@ export default function EstimatorDrawer({ children }: EstimatorDrawerProps) {
               display: 'flex',
               justifyContent: 'space-between',
               alignItems: 'center',
-            }}
-          >
+            }}>
             {proposalId && currentProposal && (
               <IconButton onClick={() => navigate('/')}>
                 <ArrowBack />
@@ -358,20 +349,19 @@ export default function EstimatorDrawer({ children }: EstimatorDrawerProps) {
               <Typography
                 onClick={() => navigate(`/proposal/${currentProposal?.id}`)}
                 sx={{
-                  alignSelf: 'center',
-                  textAlign: 'center',
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis',
-                  whiteSpace: 'nowrap',
-                  color: 'primary.main',
-                  cursor: 'pointer',
-                  width: '100%',
+                  'alignSelf': 'center',
+                  'textAlign': 'center',
+                  'overflow': 'hidden',
+                  'textOverflow': 'ellipsis',
+                  'whiteSpace': 'nowrap',
+                  'color': 'primary.main',
+                  'cursor': 'pointer',
+                  'width': '100%',
                   ':hover': {
                     color: 'primary.dark',
                   },
                 }}
-                variant='h5'
-              >
+                variant='h5'>
                 {currentProposal?.proposalDescription}
               </Typography>
             )}
@@ -382,8 +372,7 @@ export default function EstimatorDrawer({ children }: EstimatorDrawerProps) {
                   alignSelf: 'flex-end',
                   textAlign: 'flex-end',
                   marginLeft: 'auto',
-                }}
-              >
+                }}>
                 {theme.direction === 'ltr' ? (
                   <ChevronLeftIcon />
                 ) : (
@@ -402,15 +391,13 @@ export default function EstimatorDrawer({ children }: EstimatorDrawerProps) {
                     textAlign: 'center',
                     justifySelf: 'center',
                     alignSelf: 'center',
-                  }}
-                >
+                  }}>
                   {!proposalId && 'MCP Estimator'}
                 </Typography>
                 {!proposalId && !currentProposal && hasWritePermissions && (
                   <Box sx={{ marginLeft: 'auto' }}>
                     <IconButton
-                      onClick={(e) => setMenuAnchorEl(e.currentTarget)}
-                    >
+                      onClick={(e) => setMenuAnchorEl(e.currentTarget)}>
                       <Settings />
                     </IconButton>
                   </Box>
@@ -446,8 +433,8 @@ export default function EstimatorDrawer({ children }: EstimatorDrawerProps) {
               sx={{
                 // Adjust TextField styles
                 '.MuiOutlinedInput-root': {
-                  borderRadius: '20px', // Rounded corners
-                  height: '40px', // Adjust the height as needed
+                  'borderRadius': '20px', // Rounded corners
+                  'height': '40px', // Adjust the height as needed
                   '.MuiInputBase-input': {
                     height: '20px', // Adjust the input field height
                     padding: '10px 14px', // Adjust padding for proper alignment
@@ -482,8 +469,7 @@ export default function EstimatorDrawer({ children }: EstimatorDrawerProps) {
                 height: '50px',
                 width: '100%',
                 borderRadius: 0,
-              }}
-            >
+              }}>
               <Typography>Proposal Home</Typography>
             </Button>
             <Button
@@ -500,8 +486,7 @@ export default function EstimatorDrawer({ children }: EstimatorDrawerProps) {
                 width: '100%',
 
                 borderRadius: 0,
-              }}
-            >
+              }}>
               <Typography>WBS Home</Typography>
             </Button>
             <WbsDropdown />
@@ -517,8 +502,7 @@ export default function EstimatorDrawer({ children }: EstimatorDrawerProps) {
               w: '100%',
               alignItems: 'center',
               justifyItems: 'center',
-            }}
-          >
+            }}>
             {hasWritePermissions && (
               <AddPhaseButton
                 toggleAddDialog={() => setAddPhaseDialogOpen(true)}
@@ -585,15 +569,13 @@ const ProposalMenu: React.FC<ProposalMenuProps> = ({
       onClose={handleClose}
       MenuListProps={{
         'aria-labelledby': 'basic-button',
-      }}
-    >
+      }}>
       <MenuItem
         sx={{ gap: 2 }}
         onClick={() => {
           handleClose();
           openAddProposalDialog();
-        }}
-      >
+        }}>
         <AddIcon>
           <ContentCopy fontSize='small' />
         </AddIcon>
@@ -605,8 +587,7 @@ const ProposalMenu: React.FC<ProposalMenuProps> = ({
         onClick={() => {
           handleClose();
           onEditClicked();
-        }}
-      >
+        }}>
         <EditRounded>
           <ContentCopy fontSize='small' />
         </EditRounded>

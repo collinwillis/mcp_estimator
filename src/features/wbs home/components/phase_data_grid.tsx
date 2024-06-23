@@ -1,5 +1,4 @@
 import React from 'react';
-import { useParams } from 'react-router-dom';
 import { ControlPointDuplicate } from '@mui/icons-material';
 import TrashIcon from '@mui/icons-material/DeleteForever';
 import { Button, Divider } from '@mui/material';
@@ -74,16 +73,14 @@ function PhaseDataGrid({
   function CustomToolbar() {
     return (
       <GridToolbarContainer
-        sx={{ marginBottom: '14px', borderBottom: '1px solid lightgray' }}
-      >
+        sx={{ marginBottom: '14px', borderBottom: '1px solid lightgray' }}>
         <div
           style={{
             display: 'flex',
             flexDirection: 'row',
             justifyContent: 'space-between',
             width: '100%',
-          }}
-        >
+          }}>
           <div>
             <GridToolbarColumnsButton
               sx={{ color: '#424242' }}
@@ -103,8 +100,7 @@ function PhaseDataGrid({
               style={{
                 display: 'flex',
                 flexDirection: 'row',
-              }}
-            >
+              }}>
               <Button
                 disabled={selectedRows == null || selectedRows.length <= 0}
                 color='error'
@@ -116,8 +112,7 @@ function PhaseDataGrid({
                   });
                   await duplicatePhases(ids);
                 }}
-                startIcon={<ControlPointDuplicate />}
-              >
+                startIcon={<ControlPointDuplicate />}>
                 Duplicate
               </Button>
               <Divider
@@ -134,8 +129,7 @@ function PhaseDataGrid({
                 color='error'
                 sx={{ color: '#424242', fontSize: '14px' }}
                 onClick={() => setDeleteDialogOpen(true)}
-                startIcon={<TrashIcon />}
-              >
+                startIcon={<TrashIcon />}>
                 Delete
               </Button>
               <Divider
@@ -157,7 +151,7 @@ function PhaseDataGrid({
   return (
     <Box
       sx={{
-        height: '100%',
+        'height': '100%',
         '& .under': {
           backgroundColor: '#ff525240',
           color: 'primary.dark',
@@ -173,8 +167,7 @@ function PhaseDataGrid({
         '& .editable-cell': {
           color: 'primary.dark',
         },
-      }}
-    >
+      }}>
       <StyledDataGrid
         sortModel={sortModel}
         onSortModelChange={(newModel) => {

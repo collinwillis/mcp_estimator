@@ -157,7 +157,7 @@ export const useWbs = ({
 
     // Cleanup: Unsubscribing from the real-time updates when the component is unmounted or the dependencies change
     return () => unsubscribe();
-  }, [wbsQuery, updateData]);
+  }, [wbsQuery, updateData, currentProposal]);
 
   // Returning the processed WBS data and the loading state to the consuming components
   return { data, loading };

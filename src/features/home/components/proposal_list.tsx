@@ -27,10 +27,9 @@ export default function ProposalList({
                 navigate(`/proposal/${item.id}`);
               }}
               sx={{
-                cursor: 'pointer',
+                'cursor': 'pointer',
                 ':hover': { backgroundColor: colors.blue[700], color: 'white' },
-              }}
-            >
+              }}>
               <ListItemText
                 primary={`${item.proposalNumber} - ${item.proposalDescription}`}
               />

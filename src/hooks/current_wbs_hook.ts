@@ -8,16 +8,19 @@ interface CurrentWbsProps {
 }
 export const useCurrentWbs = ({ wbsId }: CurrentWbsProps) => {
   const [data, setData] = useState<Wbs>();
+
   useEffect(() => {
+    const getData = async () => {
+      const wbs = await getSingleWbs({ wbsId });
+      setData(wbs);
+    };
+
     if (wbsId != null && wbsId.length > 0) {
       getData();
     } else {
       setData(undefined);
     }
   }, [wbsId]);
-  const getData = async () => {
-    const wbs = await getSingleWbs({ wbsId });
-    setData(wbs);
-  };
+
   return data;
 };

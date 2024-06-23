@@ -1,5 +1,4 @@
 import * as React from 'react';
-import TrashIcon from '@mui/icons-material/DeleteForever';
 import ExportIcon from '@mui/icons-material/SaveAlt';
 import { Backdrop, CircularProgress } from '@mui/material';
 import Button from '@mui/material/Button';
@@ -32,8 +31,7 @@ export default function ExportMenu({
       <Button
         sx={{ color: '#424242', fontSize: '14px' }}
         onClick={handleClick}
-        startIcon={<ExportIcon />}
-      >
+        startIcon={<ExportIcon />}>
         Data Dump
       </Button>
       <Menu
@@ -43,22 +41,19 @@ export default function ExportMenu({
         onClose={handleClose}
         MenuListProps={{
           'aria-labelledby': 'basic-button',
-        }}
-      >
+        }}>
         <MenuItem
           onClick={async () => {
             setLoading(true);
             await fetchDD(proposalId!, proposalPreferences!);
             setLoading(false);
-          }}
-        >
+          }}>
           WBS Cost Report
         </MenuItem>
       </Menu>
       <Backdrop
         sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
-        open={loading}
-      >
+        open={loading}>
         <CircularProgress color='inherit' />
       </Backdrop>
     </div>

@@ -9,7 +9,6 @@ import {
 
 import { insertProposal } from '../../../api/proposal';
 import { useProposals } from '../../../hooks/proposals_hook';
-import { Proposal } from '../../../models/proposal';
 
 interface AddProposalDialogProps {
   open: boolean;
@@ -53,8 +52,7 @@ export default function AddProposalDialog({
               display: 'flex',
               flexDirection: 'column',
               justifyContent: 'space-around',
-            }}
-          >
+            }}>
             <TextField
               variant='standard'
               label='Proposal Number'
@@ -82,8 +80,7 @@ export default function AddProposalDialog({
                 ) {
                   handleProposalCreate();
                 }
-              }}
-            >
+              }}>
               Add
             </Button>
           </div>

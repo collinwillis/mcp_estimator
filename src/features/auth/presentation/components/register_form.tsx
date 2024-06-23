@@ -78,8 +78,7 @@ export default function RegisterForm(props: RegisterFormProps) {
       justifyContent='center'
       width='100%'
       height='100%'
-      p='20px'
-    >
+      p='20px'>
       <TextField
         error={Boolean(error)}
         sx={styles.textField}
@@ -119,8 +118,7 @@ export default function RegisterForm(props: RegisterFormProps) {
         }}
         variant='contained'
         color='secondary'
-        onClick={onRegister}
-      >
+        onClick={onRegister}>
         Register
       </Button>
 
@@ -132,8 +130,7 @@ export default function RegisterForm(props: RegisterFormProps) {
         color='primary'
         variant='contained'
         sx={{ width: '50%', height: '50' }}
-        onClick={() => props.setFormValue(1)}
-      >
+        onClick={() => props.setFormValue(1)}>
         Sign In
       </Button>
     </Stack>
