@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { ArrowBackIcon, SearchIcon } from '@chakra-ui/icons';
 import DeleteIcon from '@mui/icons-material/Delete';
 import {
-  Button,
   CircularProgress,
   Dialog,
   DialogTitle,
@@ -17,6 +16,7 @@ import {
 } from '@mui/material';
 import { styled } from '@mui/system';
 import { getFunctions, httpsCallable } from 'firebase/functions';
+import { CopyAllRounded } from '@mui/icons-material';
 
 import { Proposal } from '../../../models/proposal';
 import { useProposals } from '../../../hooks/proposals_hook';
@@ -31,7 +31,7 @@ interface EditProposalsDialogProps {
 
 const StyledDialog = styled(Dialog)(({ theme }) => ({
   '& .MuiDialogTitle-root': {
-    backgroundColor: '#007AFF',
+    backgroundColor: 'steelblue',
     color: 'white',
     padding: theme.spacing(2),
     position: 'sticky',
@@ -93,6 +93,18 @@ const StyledIconButton = styled(IconButton)(({ theme }) => ({
   'pointerEvents': 'none', // Disable pointer events on the button
   '&:hover': {
     color: theme.palette.error.dark,
+    backgroundColor: 'transparent',
+    pointerEvents: 'auto', // Re-enable pointer events on hover
+  },
+}));
+
+const StyledIconButton2 = styled(IconButton)(({ theme }) => ({
+  'backgroundColor': 'transparent',
+  'color': theme.palette.primary.main,
+  'transition': 'color 0.3s',
+  'pointerEvents': 'none', // Disable pointer events on the button
+  '&:hover': {
+    color: theme.palette.primary.dark,
     backgroundColor: 'transparent',
     pointerEvents: 'auto', // Re-enable pointer events on hover
   },
@@ -170,13 +182,19 @@ const EditProposalsDialog: React.FC<EditProposalsDialogProps> = ({
                     </Typography>
                   }
                 />
-                <Button
-                  variant='outlined'
-                  color='primary'
+                <StyledIconButton2
+                  style={{ marginRight: '15px' }}
+                  edge='end'
+                  aria-label='duplicate'
                   onClick={() => handleDuplicate(proposal)}
-                  disabled={isDuplicating}>
-                  {isDuplicating ? <CircularProgress size={20} /> : 'Duplicate'}
-                </Button>
+                  sx={{ pointerEvents: 'auto' }}>
+                  {isDuplicating ? (
+                    <CircularProgress size={20} />
+                  ) : (
+                    <CopyAllRounded />
+                  )}
+                </StyledIconButton2>
+
                 <StyledIconButton
                   edge='end'
                   aria-label='delete'

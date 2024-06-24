@@ -1,9 +1,9 @@
 import React, { SyntheticEvent, useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { Download, EditRounded } from '@mui/icons-material';
+import { EditRounded, FileCopy } from '@mui/icons-material';
 import TrashIcon from '@mui/icons-material/DeleteForever';
 import RefreshIcon from '@mui/icons-material/Refresh';
-import { Alert, Button, Divider, Snackbar, Typography } from '@mui/material';
+import { Alert, Button, Snackbar, Switch, Typography } from '@mui/material';
 import { Box } from '@mui/system';
 import {
   GridCellParams,
@@ -26,7 +26,6 @@ import DeleteConfirmationDialog from '../../../components/alert_dialog';
 import CopyFromPhaseDialog from '../../../components/copy_from_phase_dialog';
 import { StyledDataGrid } from '../../../components/custom_data_grid';
 import EditBaseRateDialog from '../../../components/edit_base_rate_dialog';
-import { useCurrentPhase } from '../../../hooks/current_phase_hook';
 import { useUserProfile } from '../../../hooks/user_profile_hook';
 import { Activity, ActivityType } from '../../../models/activity';
 import { StoreState, estimatorStore } from '../../../utils/store';
@@ -49,7 +48,7 @@ import { getActivityColumns } from './columns2';
 function ActivityDataGrid() {
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
-
+  const updatePhase = estimatorStore((state: StoreState) => state.updatePhase);
   const handleSnackbarClose = (
     event: SyntheticEvent<Element, Event> | Event,
     reason?: string,
@@ -61,9 +60,6 @@ function ActivityDataGrid() {
   };
 
   const { proposalId, wbsId, phaseId } = useParams();
-  const currentPhase = useCurrentPhase({
-    phaseId: phaseId ?? '',
-  });
   const { hasWritePermissions } = useUserProfile();
   const [selectedRows, setSelectedRows] = React.useState<GridRowId[]>([]);
   const [columns, setColumns] = React.useState<GridColumns>([]);
@@ -108,6 +104,19 @@ function ActivityDataGrid() {
   const changeSortOrder = estimatorStore(
     (state: StoreState) => state.changeActivitySortOrder,
   );
+
+  // Determine the current phase from phaseList based on phaseId
+  const phaseList = estimatorStore(
+    (state: StoreState) => state.phases[proposalId!] || [],
+  );
+  const currentPhase = phaseList.find((phase) => phase.id === phaseId);
+
+  const handlePhaseCompletionChange = async (completed: boolean) => {
+    if (currentPhase) {
+      await updatePhase(currentPhase.id!, 'completed', completed);
+    }
+  };
+
   useEffect(() => {
     console.log(phaseId);
     const temp = myactivities.filter(
@@ -225,55 +234,62 @@ function ActivityDataGrid() {
   };
 
   function CustomToolbar() {
+    const buttonWidth = '180px';
     return (
       <GridToolbarContainer
-        sx={{ marginBottom: '0px', borderBottom: '1px solid lightgray' }}>
-        <div
-          style={{
+        sx={{
+          marginBottom: '0px',
+          borderBottom: '1px solid lightgray',
+          padding: '10px 20px',
+          backgroundColor: '#ffffff', // White background for a clean look
+          boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)', // Subtle shadow for the toolbar
+          borderRadius: '4px',
+        }}>
+        <Box
+          sx={{
             display: 'flex',
             flexDirection: 'row',
-            justifyContent: 'space-between',
+            justifyContent: !hasWritePermissions ? 'start' : 'space-evenly',
             width: '100%',
+            alignItems: 'center',
           }}>
-          <div>
-            <GridToolbarColumnsButton
-              sx={{ color: '#424242' }}
-              onResize={undefined}
-              nonce={undefined}
-              onResizeCapture={undefined}
-            />
-            <GridToolbarDensitySelector
-              sx={{ color: '#424242' }}
-              onResize={undefined}
-              nonce={undefined}
-              onResizeCapture={undefined}
-            />
-          </div>
-          <Typography variant='h5'>
-            {currentPhase?.phaseDatabaseName}
-          </Typography>
+          {/* <Typography */}
+          {/*  variant='h5' */}
+          {/*  sx={{ flexGrow: 1, textAlign: 'center', color: '#333' }}> */}
+          {/*  {currentPhase?.phaseDatabaseName} */}
+          {/* </Typography> */}
+          <GridToolbarColumnsButton
+            sx={{
+              'color': 'black',
+              '&:hover': {
+                backgroundColor: 'rgba(6, 124, 193, 0.1)',
+              },
+            }}
+            onResize={undefined}
+            nonce={undefined}
+            onResizeCapture={undefined}
+          />
+          <GridToolbarDensitySelector
+            sx={{
+              'color': 'black',
+              '&:hover': {
+                backgroundColor: 'rgba(6, 124, 193, 0.1)',
+              },
+            }}
+            onResize={undefined}
+            nonce={undefined}
+            onResizeCapture={undefined}
+          />
+
           {hasWritePermissions && (
-            <div
-              style={{
-                display: 'flex',
-                flexDirection: 'row',
-              }}>
+            <>
               <Button
                 disabled={selectedRows == null || selectedRows.length <= 0}
                 sx={{ color: '#424242', fontSize: '14px' }}
-                onClick={() => setDeleteDialogOpen(true)} // Open delete confirmation dialog
+                onClick={() => setDeleteDialogOpen(true)}
                 startIcon={<TrashIcon />}>
                 Delete
               </Button>
-              <Divider
-                light
-                orientation='vertical'
-                sx={{
-                  width: '1px',
-                  backgroundColor: 'lightgray',
-                  margin: '0px 14px',
-                }}
-              />
               <Button
                 disabled={selectedRows == null || selectedRows.length <= 0}
                 sx={{ color: '#424242', fontSize: '14px' }}
@@ -288,15 +304,6 @@ function ActivityDataGrid() {
                 startIcon={<RefreshIcon />}>
                 Constants / Units
               </Button>
-              <Divider
-                light
-                orientation='vertical'
-                sx={{
-                  width: '1px',
-                  backgroundColor: 'lightgray',
-                  margin: '0px 14px',
-                }}
-              />
               <Button
                 disabled={selectedRows.length == 0}
                 sx={{ color: '#424242', fontSize: '14px' }}
@@ -306,26 +313,55 @@ function ActivityDataGrid() {
                 startIcon={<EditRounded />}>
                 Edit Rates
               </Button>
-              <Divider
-                light
-                orientation='vertical'
-                sx={{
-                  width: '1px',
-                  backgroundColor: 'lightgray',
-                  margin: '0px 14px',
-                }}
-              />
               <Button
                 sx={{ color: '#424242', fontSize: '14px' }}
                 onClick={() => {
                   setOpenCopyDialog(true);
                 }}
-                startIcon={<Download />}>
+                startIcon={<FileCopy />}>
                 Copy from Phase
               </Button>
-            </div>
+              <Box
+                sx={{
+                  width: buttonWidth,
+                  display: 'flex',
+                  alignItems: 'center',
+                  padding: '1px 12px',
+                  border: `1px solid ${
+                    currentPhase?.completed ? '#4caf50' : '#424242'
+                  }`,
+                  borderRadius: '4px',
+                  backgroundColor: currentPhase?.completed
+                    ? 'rgba(76, 175, 80, 0.1)'
+                    : 'rgba(66, 66, 66, 0.1)',
+                }}>
+                <Switch
+                  checked={currentPhase?.completed || false}
+                  onChange={() =>
+                    handlePhaseCompletionChange(!currentPhase?.completed)
+                  }
+                  sx={{
+                    'color': currentPhase?.completed ? '#4caf50' : '#424242',
+                    '& .MuiSwitch-switchBase.Mui-checked': {
+                      color: '#4caf50',
+                    },
+                    '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
+                      backgroundColor: '#4caf50',
+                    },
+                  }}
+                />
+                <Typography
+                  sx={{
+                    marginLeft: 1,
+                    color: currentPhase?.completed ? '#4caf50' : '#424242',
+                    fontSize: '14px',
+                  }}>
+                  {currentPhase?.completed ? 'Complete' : 'Incomplete'}
+                </Typography>
+              </Box>
+            </>
           )}
-        </div>
+        </Box>
       </GridToolbarContainer>
     );
   }
@@ -349,7 +385,16 @@ function ActivityDataGrid() {
           fontStyle: 'italic', // Optional, to make it distinct that it's not active or in use
         },
         '& .editable-cell': {
-          color: 'primary.dark',
+          color: 'primary.main',
+        },
+        '& .completed-row': {
+          'backgroundColor': 'rgba(0, 255, 0, 0.1)', // Subtle green background
+          '& .editable-cell': {
+            color: 'white', // White text for editable cells
+          },
+          '& .true': {
+            color: 'black', // Black text for non-editable cells
+          },
         },
       }}>
       <StyledDataGrid

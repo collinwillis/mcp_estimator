@@ -17,6 +17,7 @@ import {
   Select,
   TextField,
   Typography,
+  Box,
 } from '@mui/material';
 
 import { updateSingleProposal } from '../../../api/proposal';
@@ -142,45 +143,28 @@ export default function ProposalInfoAccordion({
   };
 
   return (
-    <div style={{ marginBottom: 10, marginTop: 10 }}>
-      <Accordion>
+    <Box mb={2} mt={2}>
+      <Accordion elevation={0}>
         <AccordionSummary expandIcon={<ExpandMoreOutlined />}>
-          <Typography>Proposal Information</Typography>
+          <Typography variant='h6'>Proposal Information</Typography>
         </AccordionSummary>
         <AccordionDetails>
-          <div
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              width: '100%',
-              height: '100%',
-            }}>
-            <Divider sx={{ marginTop: '10px' }} />
-            <div style={{ display: 'flex', flexDirection: 'row' }}>
-              <div
-                style={{
-                  width: '66.6%',
-                  padding: '10px',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  outline: '.2px solid #EBEBEB',
-                  alignItems: 'center',
-                }}>
-                <p>Project Information</p>
-                <div
-                  style={{
-                    display: 'flex',
-                    flexDirection: 'row',
-                    gap: '10px',
-                  }}>
-                  <div style={{ width: '50%' }}>
+          <Box display='flex' flexDirection='column' width='100%' height='100%'>
+            <Divider sx={{ mb: 2 }} />
+            <Box display='flex' flexDirection='row'>
+              <Box width='66.6%' p={2} display='flex' flexDirection='column'>
+                <Typography variant='subtitle1' gutterBottom>
+                  Project Information
+                </Typography>
+                <Box display='flex' flexDirection='row' gap={2}>
+                  <Box width='50%'>
                     <TextField
                       InputProps={{ readOnly: !hasWritePermissions }}
                       variant='filled'
                       size='small'
                       type='number'
                       label='Proposal #'
-                      sx={{ width: '100%' }}
+                      fullWidth
                       InputLabelProps={{ shrink: true }}
                       onChange={(e) => setProposalNumber(e.target.value || '')}
                       value={proposalNumber ?? ''}
@@ -192,7 +176,7 @@ export default function ProposalInfoAccordion({
                       size='small'
                       type='text'
                       label='Job'
-                      sx={{ width: '100%' }}
+                      fullWidth
                       InputLabelProps={{ shrink: true }}
                       onChange={(e) => setJob(e.target.value)}
                       value={job ?? ''}
@@ -204,7 +188,7 @@ export default function ProposalInfoAccordion({
                       size='small'
                       type='number'
                       label='CO #'
-                      sx={{ width: '100%' }}
+                      fullWidth
                       InputLabelProps={{ shrink: true }}
                       onChange={(e) => setCoNumber(e.target.value || '')}
                       value={coNumber ?? ''}
@@ -216,7 +200,7 @@ export default function ProposalInfoAccordion({
                       size='small'
                       type='text'
                       label='Description'
-                      sx={{ width: '100%' }}
+                      fullWidth
                       InputLabelProps={{ shrink: true }}
                       onChange={(e) => setDescription(e.target.value)}
                       value={description ?? ''}
@@ -228,7 +212,7 @@ export default function ProposalInfoAccordion({
                       size='small'
                       type='text'
                       label='Owner'
-                      sx={{ width: '100%' }}
+                      fullWidth
                       InputLabelProps={{ shrink: true }}
                       onChange={(e) => setOwner(e.target.value)}
                       value={owner ?? ''}
@@ -240,19 +224,15 @@ export default function ProposalInfoAccordion({
                       size='small'
                       type='text'
                       label='City'
-                      sx={{ width: '100%' }}
+                      fullWidth
                       InputLabelProps={{ shrink: true }}
                       onChange={(e) => setJobLocationCity(e.target.value)}
                       value={jobLocationCity ?? ''}
                     />
                     <FormControl variant='filled' fullWidth>
-                      <InputLabel id='demo-simple-select-filled-label' shrink>
-                        State
-                      </InputLabel>
+                      <InputLabel shrink>State</InputLabel>
                       <Select
                         disabled={!hasWritePermissions}
-                        labelId='demo-simple-select-filled-label'
-                        id='demo-simple-select-filled'
                         value={proposalInfoState ?? ''}
                         onChange={(e) => setProposalInfoState(e.target.value)}>
                         {Object.values(UnitedStatesStates).map((item) => (
@@ -262,15 +242,15 @@ export default function ProposalInfoAccordion({
                         ))}
                       </Select>
                     </FormControl>
-                  </div>
-                  <div style={{ width: '50%' }}>
+                  </Box>
+                  <Box width='50%'>
                     <TextField
                       InputProps={{ readOnly: !hasWritePermissions }}
                       variant='filled'
                       size='small'
                       type='text'
                       label='Estimator(s)'
-                      sx={{ width: '100%' }}
+                      fullWidth
                       InputLabelProps={{ shrink: true }}
                       onChange={(e) => setEstimator(e.target.value)}
                       value={estimator ?? ''}
@@ -282,7 +262,7 @@ export default function ProposalInfoAccordion({
                       type='date'
                       label='Date Rec.'
                       placeholder='none'
-                      sx={{ width: '100%' }}
+                      fullWidth
                       InputLabelProps={{ shrink: true }}
                       onChange={(e) => setDateReceived(e.target.value)}
                       value={dateReceived?.toString() ?? ''}
@@ -293,7 +273,7 @@ export default function ProposalInfoAccordion({
                       size='small'
                       type='date'
                       label='Due Date'
-                      sx={{ width: '100%' }}
+                      fullWidth
                       InputLabelProps={{ shrink: true }}
                       onChange={(e) => setDateDue(e.target.value)}
                       value={dateDue ?? ''}
@@ -304,7 +284,7 @@ export default function ProposalInfoAccordion({
                       size='small'
                       type='date'
                       label='Project Start Date'
-                      sx={{ width: '100%' }}
+                      fullWidth
                       InputLabelProps={{ shrink: true }}
                       onChange={(e) => setProjectStartDate(e.target.value)}
                       value={projectStartDate ?? ''}
@@ -315,19 +295,15 @@ export default function ProposalInfoAccordion({
                       size='small'
                       type='date'
                       label='Project End Date'
-                      sx={{ width: '100%' }}
+                      fullWidth
                       InputLabelProps={{ shrink: true }}
                       onChange={(e) => setProjectEndDate(e.target.value)}
                       value={projectEndDate ?? ''}
                     />
                     <FormControl variant='filled' fullWidth>
-                      <InputLabel id='demo-simple-select-filled-label' shrink>
-                        Bid Type
-                      </InputLabel>
+                      <InputLabel shrink>Bid Type</InputLabel>
                       <Select
                         disabled={!hasWritePermissions}
-                        labelId='demo-simple-select-filled-label'
-                        id='demo-simple-select-filled'
                         value={bidType ?? ''}
                         onChange={(e) => setBidType(e.target.value)}>
                         {Object.values(BidType).map((item) => (
@@ -338,13 +314,9 @@ export default function ProposalInfoAccordion({
                       </Select>
                     </FormControl>
                     <FormControl variant='filled' fullWidth>
-                      <InputLabel id='demo-simple-select-filled-label' shrink>
-                        Status
-                      </InputLabel>
+                      <InputLabel shrink>Status</InputLabel>
                       <Select
                         disabled={!hasWritePermissions}
-                        labelId='demo-simple-select-filled-label'
-                        id='demo-simple-select-filled'
                         value={status ?? ''}
                         onChange={(e) => setStatus(e.target.value)}>
                         {Object.values(ProposalStatus).map((item) => (
@@ -354,26 +326,25 @@ export default function ProposalInfoAccordion({
                         ))}
                       </Select>
                     </FormControl>
-                  </div>
-                </div>
-              </div>
-              <div
-                style={{
-                  width: '33.3%',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  outline: '.2px solid #EBEBEB',
-                  padding: '10px',
-                  alignItems: 'center',
-                }}>
-                <p>Contact Information</p>
+                  </Box>
+                </Box>
+              </Box>
+              <Box
+                width='33.3%'
+                display='flex'
+                flexDirection='column'
+                p={2}
+                borderLeft='1px solid #e0e0e0'>
+                <Typography variant='subtitle1' gutterBottom>
+                  Contact Information
+                </Typography>
                 <TextField
                   InputProps={{ readOnly: !hasWritePermissions }}
                   variant='filled'
                   size='small'
                   type='text'
                   label='Contact'
-                  sx={{ width: '100%' }}
+                  fullWidth
                   InputLabelProps={{ shrink: true }}
                   onChange={(e) => setContact(e.target.value)}
                   value={contact ?? ''}
@@ -385,7 +356,7 @@ export default function ProposalInfoAccordion({
                   size='small'
                   type='text'
                   label='Address'
-                  sx={{ width: '100%' }}
+                  fullWidth
                   InputLabelProps={{ shrink: true }}
                   onChange={(e) => setAddress(e.target.value)}
                   value={address ?? ''}
@@ -397,19 +368,15 @@ export default function ProposalInfoAccordion({
                   size='small'
                   type='text'
                   label='City'
-                  sx={{ width: '100%' }}
+                  fullWidth
                   InputLabelProps={{ shrink: true }}
                   onChange={(e) => setCity(e.target.value)}
                   value={city ?? ''}
                 />
                 <FormControl variant='filled' fullWidth>
-                  <InputLabel id='demo-simple-select-filled-label' shrink>
-                    State
-                  </InputLabel>
+                  <InputLabel shrink>State</InputLabel>
                   <Select
                     disabled={!hasWritePermissions}
-                    labelId='demo-simple-select-filled-label'
-                    id='demo-simple-select-filled'
                     value={contactInfoState ?? ''}
                     onChange={(e) => setContactInfoState(e.target.value)}>
                     {Object.values(UnitedStatesStates).map((item) => (
@@ -425,7 +392,7 @@ export default function ProposalInfoAccordion({
                   size='small'
                   type='number'
                   label='Zip'
-                  sx={{ width: '100%' }}
+                  fullWidth
                   InputLabelProps={{ shrink: true }}
                   onChange={(e) => setZip(e.target.value)}
                   value={zip ?? ''}
@@ -436,7 +403,7 @@ export default function ProposalInfoAccordion({
                   variant='filled'
                   size='small'
                   label='Phone'
-                  sx={{ width: '100%' }}
+                  fullWidth
                   onChange={formatPhoneNumber}
                   value={phone ?? ''}
                 />
@@ -447,28 +414,27 @@ export default function ProposalInfoAccordion({
                   size='small'
                   type='email'
                   label='Email'
-                  sx={{ width: '100%' }}
+                  fullWidth
                   InputLabelProps={{ shrink: true }}
                   onChange={(e) => setEmail(e.target.value)}
                   value={email ?? ''}
                 />
-              </div>
-            </div>
+              </Box>
+            </Box>
             <Button
               variant='contained'
               size='large'
-              sx={{ width: 200, alignSelf: 'center' }}
+              sx={{ width: 200, alignSelf: 'center', mt: 2 }}
               color='primary'
-              onClick={onSubmit}
-              style={{ marginTop: 20 }}>
+              onClick={onSubmit}>
               Save
             </Button>
-          </div>
+          </Box>
         </AccordionDetails>
       </Accordion>
       <Dialog open={alertOpen} onClose={() => setAlertOpen(false)}>
         <Alert severity='info'>Proposal information successfully saved.</Alert>
       </Dialog>
-    </div>
+    </Box>
   );
 }

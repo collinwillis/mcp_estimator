@@ -59,6 +59,8 @@ export class Phase {
 
   totalCost?: number;
 
+  completed?: boolean;
+
   constructor(data: Partial<Phase>) {
     Object.assign(this, data);
   }

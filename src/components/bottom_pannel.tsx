@@ -249,34 +249,12 @@ const BottomPanel: React.FC = () => {
   return (
     <Box
       sx={{
-        'bottom': '0',
-        height,
-        'backgroundColor': 'white',
-        'position': 'relative',
-        'width': '100%',
-        'overflow': 'auto',
-        '& .MuiBox-root': {
-          position: 'relative',
-          userSelect: 'auto',
-        },
+        display: 'flex',
+        bottom: '0',
+        width: '100%',
+        backgroundColor: 'white',
+        pb: '30px',
       }}>
-      {/* The resizing handle at the top of the drawer */}
-      <div
-        ref={ref}
-        style={{
-          position: 'absolute',
-          top: '0',
-          left: '0',
-          right: '0',
-          height: '10px',
-          cursor: 'ns-resize',
-          bottom: 'auto',
-          zIndex: 9999,
-        }}
-        onMouseDown={handleMouseDown}
-      />
-
-      {/* The content of the bottom panel */}
       <Box
         sx={{
           display: 'flex',

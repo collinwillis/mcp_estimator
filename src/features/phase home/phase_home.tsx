@@ -6,16 +6,25 @@ import ActivityDataGrid from './components/activity_data_grid';
 
 function PhaseHomeScreen() {
   return (
-    <Box
-      sx={{
-        height: '95%',
+    <div
+      style={{
         display: 'flex',
-        overflow: 'auto',
         flexDirection: 'column',
+        width: '100%',
+        height: '96%',
       }}>
-      <ActivityDataGrid />
+      <Box
+        sx={{
+          height: '100%',
+          display: 'flex',
+          overflow: 'auto',
+          flexDirection: 'column',
+        }}>
+        <ActivityDataGrid />
+      </Box>
+
       <BottomPanel />
-    </Box>
+    </div>
   );
 }
 

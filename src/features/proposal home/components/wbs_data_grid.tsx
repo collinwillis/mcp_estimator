@@ -92,7 +92,8 @@ function WbsDataGrid({
   return (
     <Box
       sx={{
-        'height': '80%',
+        'height': '100%',
+        'width': '100%',
         '& .under': {
           backgroundColor: '#ff525240',
           color: 'primary.dark',
@@ -106,7 +107,7 @@ function WbsDataGrid({
           color: '#2d2d2d',
         },
         '& .editable-cell': {
-          color: 'blue',
+          color: 'steelblue',
         },
       }}>
       <StyledDataGrid

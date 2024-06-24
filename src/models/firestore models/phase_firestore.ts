@@ -39,6 +39,8 @@ export class FirestorePhase {
 
   unit: string | null;
 
+  completed: boolean;
+
   constructor({
     proposalId,
     wbsId,
@@ -60,6 +62,7 @@ export class FirestorePhase {
     quantity,
     customUnit,
     unit,
+    completed = false,
   }: {
     proposalId?: string | null;
     wbsId?: string | null;
@@ -81,6 +84,7 @@ export class FirestorePhase {
     quantity?: number | null;
     customUnit?: string | null;
     unit?: string | null;
+    completed?: boolean;
   }) {
     this.proposalId = proposalId ?? null;
     this.wbsId = wbsId ?? null;
@@ -102,5 +106,6 @@ export class FirestorePhase {
     this.quantity = quantity ?? null;
     this.customUnit = customUnit ?? null;
     this.unit = unit ?? null;
+    this.completed = completed;
   }
 }

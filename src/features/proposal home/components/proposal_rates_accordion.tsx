@@ -8,6 +8,8 @@ import {
   Button,
   Dialog,
   Typography,
+  Box,
+  Divider,
 } from '@mui/material';
 
 import { updateSingleProposal } from '../../../api/proposal';
@@ -98,31 +100,16 @@ export default function ProposalRatesAccordion({
   };
 
   return (
-    <div style={{ marginBottom: 10, marginTop: 10 }}>
-      <Accordion>
+    <Box mb={2} mt={2}>
+      <Accordion elevation={0}>
         <AccordionSummary expandIcon={<ExpandMoreOutlined />}>
-          <Typography>Rates</Typography>
+          <Typography variant='h6'>Rates</Typography>
         </AccordionSummary>
         <AccordionDetails>
-          <div style={{ display: 'flex', flexDirection: 'column' }}>
-            <div
-              style={{
-                display: 'flex',
-                flexDirection: 'row',
-                width: '25%',
-                justifyContent: 'space-between',
-              }}
-            />
-            <div style={{ display: 'flex', flexDirection: 'row' }}>
-              <div
-                style={{
-                  width: '33.3%',
-                  outline: '.2px solid #EBEBEB',
-                  padding: '10px',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: '10px',
-                }}>
+          <Box display='flex' flexDirection='column'>
+            <Divider sx={{ mb: 2 }} />
+            <Box display='flex' flexDirection='row' gap={2}>
+              <Box width='33.3%' p={2} display='flex' flexDirection='column'>
                 <FormattedNumberInput
                   readOnly={!hasWritePermissions}
                   prefix='$'
@@ -158,16 +145,8 @@ export default function ProposalRatesAccordion({
                   value={salesTaxState}
                   setValue={setSalesTaxState}
                 />
-              </div>
-              <div
-                style={{
-                  width: '33.3%',
-                  outline: '.2px solid #EBEBEB',
-                  padding: '10px',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: '10px',
-                }}>
+              </Box>
+              <Box width='33.3%' p={2} display='flex' flexDirection='column'>
                 <FormattedNumberInput
                   readOnly={!hasWritePermissions}
                   suffix='%'
@@ -203,16 +182,8 @@ export default function ProposalRatesAccordion({
                   value={rigState}
                   setValue={setRigState}
                 />
-              </div>
-              <div
-                style={{
-                  width: '33.3%',
-                  outline: '.2px solid #EBEBEB',
-                  padding: '10px',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: '10px',
-                }}>
+              </Box>
+              <Box width='33.3%' p={2} display='flex' flexDirection='column'>
                 <FormattedNumberInput
                   readOnly={!hasWritePermissions}
                   suffix='%'
@@ -248,18 +219,17 @@ export default function ProposalRatesAccordion({
                   value={rigProfit}
                   setValue={setRigProfit}
                 />
-              </div>
-            </div>
+              </Box>
+            </Box>
             <Button
               variant='contained'
               size='large'
-              sx={{ width: 200, alignSelf: 'center' }}
+              sx={{ width: 200, alignSelf: 'center', mt: 2 }}
               color='primary'
-              onClick={onSubmit}
-              style={{ marginTop: 20 }}>
+              onClick={onSubmit}>
               Save
             </Button>
-          </div>
+          </Box>
         </AccordionDetails>
       </Accordion>
       <Dialog
@@ -267,6 +237,6 @@ export default function ProposalRatesAccordion({
         onClose={() => setSuccessDialogOpen(false)}>
         <Alert severity='info'>Markups successfully saved.</Alert>
       </Dialog>
-    </div>
+    </Box>
   );
 }

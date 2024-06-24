@@ -1,22 +1,12 @@
 import * as React from 'react';
 import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { HStack } from '@chakra-ui/react';
 import {
-  AdminPanelSettings,
-  ArrowBack,
-  ContentCopy,
-  DownloadForOffline,
-  EditRounded,
-  ExitToApp,
-  Settings,
-} from '@mui/icons-material';
-import AddIcon from '@mui/icons-material/Add';
-import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
-import ChevronRightIcon from '@mui/icons-material/ChevronRight';
-import MenuIcon from '@mui/icons-material/Menu';
-import SearchIcon from '@mui/icons-material/Search';
-import {
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
+  TextField,
+  InputAdornment,
   Breadcrumbs,
   Button,
   Link,
@@ -24,19 +14,33 @@ import {
   ListItemText,
   Stack,
 } from '@mui/material';
+import {
+  AdminPanelSettings,
+  ArrowBack,
+  ExpandMore,
+  ExitToApp,
+  Settings,
+  EditRounded,
+  ContentCopy,
+  AddRounded,
+  DownloadForOffline,
+  ChevronLeftRounded,
+  ChevronRightRounded,
+  SearchRounded,
+  MenuRounded,
+} from '@mui/icons-material';
 import MuiAppBar, { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import CssBaseline from '@mui/material/CssBaseline';
 import Divider from '@mui/material/Divider';
 import Drawer from '@mui/material/Drawer';
 import IconButton from '@mui/material/IconButton';
-import InputAdornment from '@mui/material/InputAdornment';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
-import TextField from '@mui/material/TextField';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import { styled, useTheme } from '@mui/material/styles';
+import { HStack } from '@chakra-ui/react';
 
 import WbsDropdown from './wbs_drop_down';
 import PhaseList from './phase_list';
@@ -58,15 +62,16 @@ import EditProposalsDialog from '../features/home/components/edit_proposals_dial
 import AddProposalDialog from '../features/home/components/add_proposal_dialog';
 
 const drawerWidth = 300;
+
 const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })<{
   open?: boolean;
   proposalId?: string;
 }>(({ theme, open, proposalId }) => ({
   overflow: 'hidden',
-  backgroundColor: '#F5F5F5',
+  backgroundColor: '#f5f5f5',
   height: `100vh`,
   flexGrow: 1,
-  padding: proposalId ? theme.spacing(3) : 0,
+  padding: proposalId ? theme.spacing(0) : 0,
   transition: theme.transitions.create('margin', {
     easing: theme.transitions.easing.sharp,
     duration: theme.transitions.duration.leavingScreen,
@@ -88,7 +93,7 @@ interface AppBarProps extends MuiAppBarProps {
 const AppBar = styled(MuiAppBar, {
   shouldForwardProp: (prop) => prop !== 'open',
 })<AppBarProps>(({ theme, open }) => ({
-  backgroundColor: '#007AFF',
+  backgroundColor: '#067cc1',
   transition: theme.transitions.create(['margin', 'width'], {
     easing: theme.transitions.easing.sharp,
     duration: theme.transitions.duration.leavingScreen,
@@ -107,7 +112,6 @@ const DrawerHeader = styled('div')(({ theme }) => ({
   display: 'flex',
   alignItems: 'center',
   padding: theme.spacing(0, 1),
-  // necessary for content to be below app bar
   ...theme.mixins.toolbar,
   justifyContent: 'flex-end',
 }));
@@ -126,31 +130,18 @@ export default function EstimatorDrawer({ children }: EstimatorDrawerProps) {
   const [selectedWbs, setSelectedWbs] = React.useState<Wbs>();
   const { proposalId, wbsId, phaseId } = useParams();
   const [open, setOpen] = React.useState(proposalId === undefined);
-
   const [addPhaseDialogOpen, setAddPhaseDialogOpen] = React.useState(false);
-
-  const currentProposal = useCurrentProposal({
-    proposalId: proposalId ?? '',
-  });
-  const currentWbs: Wbs | undefined = useCurrentWbs({
-    wbsId: wbsId ?? '',
-  });
+  const currentProposal = useCurrentProposal({ proposalId: proposalId ?? '' });
+  const currentWbs: Wbs | undefined = useCurrentWbs({ wbsId: wbsId ?? '' });
   const currentPhase: Phase | undefined = useCurrentPhase({
     phaseId: phaseId ?? '',
   });
-
   const { data, loading } = useProposals();
-
-  // State for search input
   const [proposalSearchInput, setProposalSearchInput] = useState('');
 
-  // Function to filter proposals based on search input
   const filteredProposals: Proposal[] =
     data?.filter((proposal) => {
       const searchKey = proposalSearchInput.toLowerCase();
-
-      // Prepare a combined string of all important fields for the proposal
-      // Note: Ensure to safely handle possibly undefined or null fields
       const proposalFieldsCombined = [
         proposal.proposalNumber?.toString().toLowerCase(),
         proposal.job?.toString().toString().toLowerCase(),
@@ -175,16 +166,13 @@ export default function EstimatorDrawer({ children }: EstimatorDrawerProps) {
         proposal.contactEmail?.toLowerCase(),
       ]
         .filter(Boolean)
-        .join(' '); // Filters out any undefined or null values and joins the rest into a single string
-
-      // Check if the combined fields string includes the search key
+        .join(' ');
       return proposalFieldsCombined.includes(searchKey);
     }) || [];
 
   const [menuAnchorEl, setMenuAnchorEl] = React.useState<null | HTMLElement>(
     null,
   );
-  const [proposalMenuOpen, setProposalMenuOpen] = React.useState(false);
   const handleDrawerOpen = () => {
     setOpen(true);
   };
@@ -195,19 +183,12 @@ export default function EstimatorDrawer({ children }: EstimatorDrawerProps) {
     setOpen(false);
   };
   const navigate = useNavigate();
-
   const [isEditProposals, setIsEditProposals] = React.useState<boolean>(false);
-
-  // New state for managing the menu's open/close state
   const [mainMenuAnchorEl, setMainMenuAnchorEl] =
     React.useState<null | HTMLElement>(null);
-
-  // Corrected function to handle menu open
   const handleMenuOpen = (event: React.MouseEvent<HTMLButtonElement>) => {
     setMainMenuAnchorEl(event.currentTarget);
   };
-
-  // Corrected function to handle menu close
   const handleMenuClose = () => {
     setMainMenuAnchorEl(null);
   };
@@ -216,7 +197,13 @@ export default function EstimatorDrawer({ children }: EstimatorDrawerProps) {
     <Box sx={{ display: 'flex', overflow: 'hidden' }}>
       <CssBaseline />
       <AppBar position='fixed' open={open}>
-        <Toolbar>
+        <Toolbar
+          sx={{
+            display: 'flex',
+            flexDirection: 'row',
+            width: 'full',
+            justifyContent: 'space-between',
+          }}>
           <IconButton
             color='inherit'
             aria-label='open drawer'
@@ -225,16 +212,13 @@ export default function EstimatorDrawer({ children }: EstimatorDrawerProps) {
             sx={{ mr: 2, ...(open && { display: 'none' }) }}>
             <DrawerIcon color='white' />
           </IconButton>
-
           <Breadcrumbs aria-label='breadcrumb' aria-activedescendant=''>
             {currentProposal && (
               <Link
                 underline='hover'
                 color={currentWbs ? 'inherit' : 'white'}
                 onClick={() => navigate(`/proposal/${currentProposal?.id}`)}>
-                {`${currentProposal?.proposalNumber} - ${
-                  currentProposal?.proposalDescription
-                }`}
+                {`${currentProposal?.proposalNumber} - ${currentProposal?.proposalDescription}`}
               </Link>
             )}
             {currentWbs && (
@@ -255,25 +239,24 @@ export default function EstimatorDrawer({ children }: EstimatorDrawerProps) {
                 color='white'
                 onClick={() =>
                   navigate(
-                    `/proposal/${currentProposal?.id}/wbs/${
-                      currentWbs?.id
-                    }phase/${currentPhase?.id}`,
+                    `/proposal/${currentProposal?.id}/wbs/${currentWbs?.id}phase/${currentPhase?.id}`,
                   )
                 }>
                 {`${currentPhase.phaseNumber} - ${currentPhase.description}`}
               </Link>
             )}
           </Breadcrumbs>
-          <IconButton
-            color='inherit'
-            aria-label='menu'
-            onClick={handleMenuOpen}
-            edge='end'
-            sx={{ ml: 'auto' }} // Adjust the margin to position the button on the right
-          >
-            <MenuIcon />
-          </IconButton>
-          <HStack gap={2}>
+          <HStack gap={3}>
+            <IconButton
+              color='inherit'
+              aria-label='menu'
+              onClick={handleMenuOpen}
+              edge='end'
+              sx={{ ml: 'auto' }} // Adjust the margin to position the button on the right
+            >
+              <MenuRounded />
+            </IconButton>
+
             {proposalId && (
               <IconButton
                 color='inherit'
@@ -324,7 +307,7 @@ export default function EstimatorDrawer({ children }: EstimatorDrawerProps) {
           'zIndex': 999,
 
           '& .MuiDrawer-paper': {
-            backgroundColor: '#FBFBFB',
+            backgroundColor: 'white',
             width: drawerWidth,
             boxSizing: 'border-box',
           },
@@ -357,9 +340,7 @@ export default function EstimatorDrawer({ children }: EstimatorDrawerProps) {
                   'color': 'primary.main',
                   'cursor': 'pointer',
                   'width': '100%',
-                  ':hover': {
-                    color: 'primary.dark',
-                  },
+                  ':hover': { color: 'primary.dark' },
                 }}
                 variant='h5'>
                 {currentProposal?.proposalDescription}
@@ -374,9 +355,9 @@ export default function EstimatorDrawer({ children }: EstimatorDrawerProps) {
                   marginLeft: 'auto',
                 }}>
                 {theme.direction === 'ltr' ? (
-                  <ChevronLeftIcon />
+                  <ChevronLeftRounded />
                 ) : (
-                  <ChevronRightIcon />
+                  <ChevronRightRounded />
                 )}
               </IconButton>
             )}
@@ -412,32 +393,28 @@ export default function EstimatorDrawer({ children }: EstimatorDrawerProps) {
             onEditClicked={() => setIsEditProposals(true)}
           />
         </DrawerHeader>
-
         <Divider />
         {proposalId == null && (
           <Box sx={{ padding: '16px' }}>
-            {' '}
-            {/* Adjust padding as needed */}
             <TextField
               fullWidth
               variant='outlined'
-              size='small' // Makes the TextField slightly smaller
+              size='small'
               placeholder='Search Proposals...'
               InputProps={{
                 startAdornment: (
                   <InputAdornment position='start'>
-                    <SearchIcon />
+                    <SearchRounded />
                   </InputAdornment>
                 ),
               }}
               sx={{
-                // Adjust TextField styles
                 '.MuiOutlinedInput-root': {
-                  'borderRadius': '20px', // Rounded corners
-                  'height': '40px', // Adjust the height as needed
+                  'borderRadius': '20px',
+                  'height': '40px',
                   '.MuiInputBase-input': {
-                    height: '20px', // Adjust the input field height
-                    padding: '10px 14px', // Adjust padding for proper alignment
+                    height: '20px',
+                    padding: '10px 14px',
                   },
                 },
               }}
@@ -448,7 +425,7 @@ export default function EstimatorDrawer({ children }: EstimatorDrawerProps) {
         )}
         {proposalId == null && (
           <>
-            <Divider sx={{}} />
+            <Divider />
             <Box sx={{ height: 'calc(100% - 64px)', overflowY: 'auto' }}>
               <ProposalList
                 onClick={(proposal: Proposal) => setSelectedProposal(proposal)}
@@ -457,45 +434,104 @@ export default function EstimatorDrawer({ children }: EstimatorDrawerProps) {
             </Box>
           </>
         )}
-
         {proposalId != null && (
-          <Stack direction='column'>
-            <Button
-              onClick={() => navigate(`/proposal/${currentProposal?.id}`)}
-              disabled={wbsId == null}
-              disableElevation
-              color='secondary'
-              sx={{
-                height: '50px',
-                width: '100%',
-                borderRadius: 0,
-              }}>
-              <Typography>Proposal Home</Typography>
-            </Button>
-            <Button
-              onClick={() =>
-                navigate(
-                  `/proposal/${currentProposal?.id}/wbs/${currentWbs?.id}`,
-                )
-              }
-              disabled={phaseId == null}
-              disableElevation
-              color='secondary'
-              sx={{
-                height: '50px',
-                width: '100%',
-
-                borderRadius: 0,
-              }}>
-              <Typography>WBS Home</Typography>
-            </Button>
-            <WbsDropdown />
-          </Stack>
+          <Accordion
+            defaultExpanded
+            sx={{
+              'margin': 0,
+              'boxShadow': 'none',
+              '&:before': {
+                display: 'none',
+              },
+            }}>
+            <AccordionSummary expandIcon={<ExpandMore />}>
+              <Typography>Navigation</Typography>
+            </AccordionSummary>
+            <AccordionDetails>
+              <Stack direction='column' spacing={1}>
+                <Button
+                  onClick={() => navigate(`/proposal/${currentProposal?.id}`)}
+                  disabled={wbsId == null}
+                  disableElevation
+                  color='primary'
+                  sx={{
+                    'height': '40px',
+                    'width': '80%',
+                    'alignSelf': 'center',
+                    'borderRadius': '4px',
+                    'backgroundColor': '#067cc1',
+                    'color': '#fff',
+                    'boxShadow': '0 2px 4px rgba(0, 0, 0, 0.1)',
+                    'transition': 'background-color 0.3s, box-shadow 0.3s',
+                    '&:hover': {
+                      backgroundColor: '#005a8c',
+                      boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
+                    },
+                    '&:disabled': {
+                      backgroundColor: '#e0e0e0',
+                      borderColor: 'transparent',
+                    },
+                    '& .MuiButton-startIcon': {
+                      marginLeft: 0,
+                    },
+                    '& .MuiTypography-root': {
+                      fontSize: '14px',
+                      fontWeight: 500,
+                    },
+                  }}
+                  startIcon={<ArrowBack />}>
+                  <Typography sx={{ color: wbsId == null ? '' : 'white' }}>
+                    Proposal Home
+                  </Typography>
+                </Button>
+                <Button
+                  onClick={() =>
+                    navigate(
+                      `/proposal/${currentProposal?.id}/wbs/${currentWbs?.id}`,
+                    )
+                  }
+                  disabled={phaseId == null}
+                  disableElevation
+                  color='primary'
+                  sx={{
+                    'height': '40px',
+                    'width': '80%',
+                    'alignSelf': 'center',
+                    'borderRadius': '4px',
+                    'backgroundColor': '#067cc1',
+                    'color': '#fff',
+                    'boxShadow': '0 2px 4px rgba(0, 0, 0, 0.1)',
+                    'transition': 'background-color 0.3s, box-shadow 0.3s',
+                    '&:hover': {
+                      backgroundColor: '#005a8c',
+                      boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
+                    },
+                    '&:disabled': {
+                      backgroundColor: '#e0e0e0',
+                      borderColor: 'transparent',
+                    },
+                    '& .MuiButton-startIcon': {
+                      marginLeft: 0,
+                    },
+                    '& .MuiTypography-root': {
+                      fontSize: '14px',
+                      fontWeight: 500,
+                    },
+                  }}
+                  startIcon={<ArrowBack />}>
+                  <Typography sx={{ color: phaseId == null ? '' : 'white' }}>
+                    WBS Home
+                  </Typography>
+                </Button>
+                <WbsDropdown />
+              </Stack>
+            </AccordionDetails>
+          </Accordion>
         )}
         {wbsId != null && (
           <Box
             sx={{
-              pt: '10px',
+              pt: '5px',
               display: 'flex',
               flexDirection: 'column',
               justifyContent: 'center',
@@ -510,15 +546,8 @@ export default function EstimatorDrawer({ children }: EstimatorDrawerProps) {
             )}
           </Box>
         )}
-        {wbsId != null && (
-          <Box sx={{ height: 'calc(100% - 64px)', overflowY: 'auto' }}>
-            <>
-              <PhaseList onClick={(_) => {}} />
-            </>
-          </Box>
-        )}
+        {wbsId != null && <PhaseList onClick={(_) => {}} />}
       </Drawer>
-
       <Main open={open} proposalId={proposalId}>
         <DrawerHeader />
         {children}
@@ -576,9 +605,9 @@ const ProposalMenu: React.FC<ProposalMenuProps> = ({
           handleClose();
           openAddProposalDialog();
         }}>
-        <AddIcon>
+        <AddRounded>
           <ContentCopy fontSize='small' />
-        </AddIcon>
+        </AddRounded>
         <ListItemText>Add</ListItemText>
       </MenuItem>
       <MenuItem

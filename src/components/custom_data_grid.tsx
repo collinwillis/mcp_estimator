@@ -19,22 +19,48 @@ export const StyledDataGrid = styled(DataGridPro)(({ theme }) => ({
   'WebkitFontSmoothing': 'auto',
   'letterSpacing': 'normal',
   '& .MuiDataGrid-columnsContainer': {
-    backgroundColor: '#fafafa',
+    backgroundColor: '#ffffff', // Header background color
+    fontWeight: 'bold', // Make header text bold
+    borderBottom: '2px solid #e0e0e0', // Slightly thicker border for header
+  },
+  '& .MuiDataGrid-footerContainer': {
+    backgroundColor: '#ffffff', // Footer background color
+    borderTop: '2px solid #e0e0e0', // Slightly thicker border for footer
   },
   '& .MuiPaginationItem-root': {
-    backgroundColor: 'blue',
-    borderRadius: 0,
+    'backgroundColor': '#067cc1', // Primary color for pagination items
+    'color': '#ffffff', // White text for pagination items
+    'borderRadius': '50%', // Rounded pagination items
+    '&:hover': {
+      backgroundColor: '#005a8c', // Darker primary color on hover
+    },
   },
   '& .MuiDataGrid-columnHeader, .MuiDataGrid-cell': {
     borderRight: '1px solid #e0e0e0',
+    padding: '8px', // Consistent padding for cells
   },
   '& .MuiDataGrid-columnsContainer, .MuiDataGrid-cell': {
-    borderBottom: '1px solid  #e0e0e0',
+    borderBottom: '1px solid #e0e0e0',
   },
   '& .MuiDataGrid-cell': {
-    color: 'rgba(0,0,0,.85)',
+    'color': 'rgba(0,0,0,.85)',
+    '&:hover': {
+      backgroundColor: '#f5f5f5', // Light background on hover
+    },
   },
-  // ...CustomCheckBox(),
+  '& .MuiDataGrid-columnHeader': {
+    backgroundColor: '#f5f5f5', // Light background for headers
+  },
+  '& .MuiDataGrid-row': {
+    '&:nth-of-type(even)': {
+      backgroundColor: '#fafafa', // Light background for alternate rows
+    },
+    '&:hover': {
+      backgroundColor: '#f0f0f0', // Light background on hover for rows
+    },
+  },
+  // Custom checkbox styles
+  ...CustomCheckBox(),
 }));
 
 function CustomCheckBox() {
@@ -50,8 +76,8 @@ function CustomCheckBox() {
       display: 'none',
     },
     '& .MuiCheckbox-root.Mui-checked:not(.MuiCheckbox-indeterminate) svg': {
-      backgroundColor: '#1890ff',
-      borderColor: '#1890ff',
+      backgroundColor: '#067cc1',
+      borderColor: '#067cc1',
     },
     '& .MuiCheckbox-root.Mui-checked .MuiIconButton-label:after': {
       position: 'absolute',
@@ -72,7 +98,7 @@ function CustomCheckBox() {
       {
         width: 8,
         height: 8,
-        backgroundColor: '#1890ff',
+        backgroundColor: '#067cc1',
         transform: 'none',
         top: '39%',
         border: 0,
