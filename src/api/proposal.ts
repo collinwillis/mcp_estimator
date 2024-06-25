@@ -33,6 +33,44 @@ export const insertProposal = async (
   });
 };
 
+const convertRatesToNumbers = (proposal: Proposal): Proposal => {
+  const rateFields = [
+    'craftBaseRate',
+    'weldBaseRate',
+    'subsistenceRate',
+    'useTaxRate',
+    'salesTaxRate',
+    'overheadRate',
+    'consumablesRate',
+    'burdenRate',
+    'fuelRate',
+    'rigRate',
+    'laborProfitRate',
+    'materialProfitRate',
+    'equipmentProfitRate',
+    'subContractorProfitRate',
+    'rigProfitRate',
+    'craftManHours',
+    'craftCost',
+    'welderManHours',
+    'welderCost',
+    'materialCost',
+    'equipmentCost',
+    'subContractorCost',
+    'costOnlyCost',
+    'totalCost',
+  ] as const;
+
+  rateFields.forEach((field) => {
+    const value = proposal[field];
+    if (typeof value === 'string') {
+      proposal[field] = parseFloat(value);
+    }
+  });
+
+  return proposal;
+};
+
 export const getSingleProposal = async ({
   proposalId,
 }: {
@@ -41,8 +79,12 @@ export const getSingleProposal = async ({
   const proposalRef = doc(firestore, 'proposals', proposalId);
   const proposalSnapshot = await getDoc(proposalRef);
   if (proposalSnapshot.exists()) {
-    const proposal = proposalSnapshot.data() as Proposal;
+    let proposal = proposalSnapshot.data() as Proposal;
     proposal.id = proposalSnapshot.id;
+
+    // Convert rates to numbers
+    proposal = convertRatesToNumbers(proposal);
+
     return proposal;
   }
   console.log('No such document!');
