@@ -94,6 +94,7 @@ function WbsDataGrid({
       sx={{
         'height': '100%',
         'width': '100%',
+
         '& .under': {
           backgroundColor: '#ff525240',
           color: 'primary.dark',
@@ -108,6 +109,30 @@ function WbsDataGrid({
         },
         '& .editable-cell': {
           color: 'steelblue',
+        },
+        '& .completed-row-light': {
+          'backgroundColor': '#c0e8d4 !important', // Light green background for completed rows
+          '& .editable-cell': {
+            color: 'white', // White text for editable cells
+          },
+          '& .MuiDataGrid-cell--editable': {
+            color: 'white', // White text for editable cells
+          },
+          '& .MuiDataGrid-cell': {
+            color: 'black', // Black text for non-editable cells
+          },
+        },
+        '& .completed-row-dark': {
+          'backgroundColor': '#9fcbb9 !important', // Darker green background for completed rows
+          '& .editable-cell': {
+            color: 'white', // White text for editable cells
+          },
+          '& .MuiDataGrid-cell--editable': {
+            color: 'white', // White text for editable cells
+          },
+          '& .MuiDataGrid-cell': {
+            color: 'black', // Black text for non-editable cells
+          },
         },
       }}>
       <StyledDataGrid
@@ -133,10 +158,22 @@ function WbsDataGrid({
           return true;
         }}
         getCellClassName={(params: GridCellParams<number>) => {
-          if (notEditableCells.includes(params.field)) {
-            return '';
+          let className = '';
+          if (params.row.completed) {
+            className += 'completed-row ';
           }
-          return 'editable-cell';
+          if (!notEditableCells.includes(params.field)) {
+            className += 'editable-cell';
+          }
+          return className;
+        }}
+        getRowClassName={(params) => {
+          if (params.row.completed) {
+            return params.indexRelativeToCurrentPage % 2 === 0
+              ? 'completed-row-light'
+              : 'completed-row-dark';
+          }
+          return '';
         }}
       />
     </Box>

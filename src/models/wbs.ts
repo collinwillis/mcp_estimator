@@ -33,6 +33,8 @@ export class Wbs {
 
   totalCost?: number;
 
+  completed?: boolean;
+
   constructor(data: Partial<Wbs>) {
     Object.assign(this, data);
   }

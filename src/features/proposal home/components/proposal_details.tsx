@@ -56,7 +56,7 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = ({
     { label: 'Craft Base Rate', value: 'craftBaseRate', prefix: '$' },
     { label: 'Weld Base Rate', value: 'weldBaseRate', prefix: '$' },
     { label: 'Subsistence Rate', value: 'subsistenceRate', prefix: '$' },
-    { label: 'Use Tax Rate', value: 'useTaxRate', suffix: '%' },
+    { label: 'Equip Tax Rate', value: 'useTaxRate', suffix: '%' },
     { label: 'Sales Tax Rate', value: 'salesTaxRate', suffix: '%' },
     { label: 'Overhead Rate', value: 'overheadRate', suffix: '%' },
     { label: 'Consumables Rate', value: 'consumablesRate', suffix: '%' },

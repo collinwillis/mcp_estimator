@@ -48,6 +48,14 @@ function ProposalHomeScreen() {
     }
   }, [currentProposal]);
 
+  useEffect(() => {
+    // Restore the last selected tab from sessionStorage
+    const savedTab = sessionStorage.getItem('activeTab');
+    if (savedTab !== null) {
+      setActiveTab(parseInt(savedTab, 10));
+    }
+  }, []);
+
   const handleEditClick = () => {
     setIsEditMode(true);
   };
@@ -92,6 +100,7 @@ function ProposalHomeScreen() {
 
   const handleTabChange = (event: React.ChangeEvent<{}>, newValue: number) => {
     setActiveTab(newValue);
+    sessionStorage.setItem('activeTab', newValue.toString()); // Save the selected tab in sessionStorage
   };
 
   return (

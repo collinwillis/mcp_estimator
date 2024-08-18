@@ -348,11 +348,15 @@ function ActivityDataGrid() {
             width: '100%',
             alignItems: 'center',
           }}>
-          <FormControl variant='standard' size='small'>
+          <FormControl
+            sx={{ display: 'flex', width: '25%' }}
+            variant='standard'
+            size='small'>
             <InputLabel id='demo-simple-select-filled-label'>
               Database
             </InputLabel>
             <Select
+              sx={{ width: '100%' }}
               labelId='demo-simple-select-label'
               id='demo-simple-select'
               value={selectedPhaseDatabaseOption.description}
@@ -535,12 +539,12 @@ function ActivityDataGrid() {
             }
           }
         }}
-        sortModel={sortModel}
+        // sortModel={sortModel}
         onSortModelChange={(newModel) => {
           localStorage.setItem('activities_sort', JSON.stringify(newModel));
           setSortModel(newModel);
         }}
-        filterModel={filterModel}
+        // filterModel={filterModel}
         onFilterModelChange={(newModel) => {
           localStorage.setItem('activities_filter', JSON.stringify(newModel));
           setFilterModel(newModel);

@@ -498,8 +498,20 @@ function PhaseDataGrid({
         '& .editable-cell': {
           color: 'primary.dark',
         },
-        '& .completed-row': {
-          'backgroundColor': '#e0f7e9', // Subtle green background for completed rows
+        '& .completed-row-light': {
+          'backgroundColor': '#c0e8d4 !important', // Light green background for completed rows
+          '& .editable-cell': {
+            color: 'white', // White text for editable cells
+          },
+          '& .MuiDataGrid-cell--editable': {
+            color: 'white', // White text for editable cells
+          },
+          '& .MuiDataGrid-cell': {
+            color: 'black', // Black text for non-editable cells
+          },
+        },
+        '& .completed-row-dark': {
+          'backgroundColor': '#9fcbb9 !important', // Darker green background for completed rows
           '& .editable-cell': {
             color: 'white', // White text for editable cells
           },
@@ -512,7 +524,7 @@ function PhaseDataGrid({
         },
       }}>
       <StyledDataGrid
-        sortModel={sortModel}
+        // sortModel={sortModel}
         onSortModelChange={(newModel) => {
           localStorage.setItem('phases_sort', JSON.stringify(newModel));
           setSortModel(newModel);
@@ -522,7 +534,7 @@ function PhaseDataGrid({
           localStorage.setItem('phases_visibility', JSON.stringify(newModel));
           setColumnVisibilityModel(newModel);
         }}
-        filterModel={filterModel}
+        // filterModel={filterModel}
         onFilterModelChange={(newModel) => {
           localStorage.setItem('phases_filter', JSON.stringify(newModel));
           setFilterModel(newModel);
@@ -561,7 +573,9 @@ function PhaseDataGrid({
         }}
         getRowClassName={(params) => {
           if (params.row.completed) {
-            return 'completed-row';
+            return params.indexRelativeToCurrentPage % 2 === 0
+              ? 'completed-row-light'
+              : 'completed-row-dark';
           }
           return '';
         }}

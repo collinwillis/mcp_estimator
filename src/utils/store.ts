@@ -152,12 +152,19 @@ export const estimatorStore = create<StoreState>()((set, get) => ({
         (act) => act.wbsId === wbsItem.id,
       );
       const relatedPhases = updatedPhases.filter(
-        (act) => act.wbsId === wbsItem.id,
+        (phase) => phase.wbsId === wbsItem.id,
       );
+
+      // Check if the Wbs has phases and if all related phases are completed
+      const allPhasesCompleted =
+        relatedPhases.length > 0 &&
+        relatedPhases.every((phase) => phase.completed);
+
       const totals = calculateWbsTotals(relatedPhases);
-      return {
+      const updatedWbsItem = {
         ...wbsItem,
         ...totals,
+        completed: allPhasesCompleted, // Set completed to true if all phases are completed
         quantity:
           wbsItem.customQuantity ??
           getQuantityAndUnit(relatedActivities, wbsItem.wbsDatabaseId!)
@@ -166,6 +173,8 @@ export const estimatorStore = create<StoreState>()((set, get) => ({
           wbsItem.customUnit ??
           getQuantityAndUnit(relatedActivities, wbsItem.wbsDatabaseId!).unit,
       };
+
+      return updatedWbsItem;
     });
 
     set((state) => ({

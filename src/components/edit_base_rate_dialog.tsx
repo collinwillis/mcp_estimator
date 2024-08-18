@@ -150,7 +150,7 @@ export default function EditBaseRateDialog({
               setValue={(_) => setSubsistence(parseFloat(_))}
             />
             <Button variant='contained' disabled={disabled} onClick={onSubmit}>
-              Add Phase
+              Save
             </Button>
           </div>
         </DialogContent>

@@ -950,5 +950,29 @@
     "dayRate": 1200,
     "weekRate": 0,
     "monthRate": 0
+  },
+  {
+    "id": 119,
+    "description": "MISC - PORT-A-JON",
+    "hourRate": 0,
+    "dayRate": 25,
+    "weekRate": 175,
+    "monthRate": 700
+  },
+  {
+    "id": 120,
+    "description": "MISC - HANDWASH",
+    "hourRate": 0,
+    "dayRate": 25,
+    "weekRate": 175,
+    "monthRate": 700
+  },
+  {
+    "id": 121,
+    "description": "MISC - DUMPSTER",
+    "hourRate": 0,
+    "dayRate": 45,
+    "weekRate": 315,
+    "monthRate": 1260
   }
 ]

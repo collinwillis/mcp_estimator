@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import {
   Accordion,
@@ -138,6 +138,12 @@ export default function EstimatorDrawer({ children }: EstimatorDrawerProps) {
   });
   const { data, loading } = useProposals();
   const [proposalSearchInput, setProposalSearchInput] = useState('');
+
+  useEffect(() => {
+    return () => {
+      sessionStorage.removeItem('selectedProposalId');
+    };
+  }, []);
 
   const filteredProposals: Proposal[] =
     data?.filter((proposal) => {
@@ -539,11 +545,11 @@ export default function EstimatorDrawer({ children }: EstimatorDrawerProps) {
               alignItems: 'center',
               justifyItems: 'center',
             }}>
-            {hasWritePermissions && (
-              <AddPhaseButton
-                toggleAddDialog={() => setAddPhaseDialogOpen(true)}
-              />
-            )}
+            {/*{hasWritePermissions && (*/}
+            {/*  <AddPhaseButton*/}
+            {/*    toggleAddDialog={() => setAddPhaseDialogOpen(true)}*/}
+            {/*  />*/}
+            {/*)}*/}
           </Box>
         )}
         {wbsId != null && <PhaseList onClick={(_) => {}} />}
