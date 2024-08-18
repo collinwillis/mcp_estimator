@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import {
   Button,
@@ -17,120 +17,148 @@ import { useCurrentProposal } from '../hooks/current_proposal_hook';
 import { useCurrentWbs } from '../hooks/current_wbs_hook';
 import { FirestorePhase } from '../models/firestore models/phase_firestore';
 import { Phase } from '../models/phase';
-import { StoreState, estimatorStore } from '../utils/store';
+import { estimatorStore, StoreState } from '../utils/store';
 
 interface Props {
   open: boolean;
   onClose: () => void;
 }
 
+type PhaseOption = {
+  wbsDatabaseId: number;
+  phaseDatabaseId: number;
+  description: string;
+};
+
 export default function AddPhaseDialog({ open, onClose }: Props) {
   const { wbsId, proposalId } = useParams();
   const data = estimatorStore(
     (state: StoreState) => state.phases[proposalId!] || [],
-  ).filter((p) => p.wbsId == wbsId);
+  ).filter((p) => p.wbsId === wbsId);
   const currentWbs = useCurrentWbs({
     wbsId: wbsId ?? '',
   });
   const currentProposal = useCurrentProposal({
     proposalId: proposalId ?? '',
   });
-  const [phaseOptions, setPhaseOptions] = useState<
-    { wbsDatabaseId: number; phaseDatabaseId: number; description: string }[]
-  >([]);
   // the selected material
-  const [selectedPhaseOption, setSelectedPhaseOption] = useState<{
-    wbsDatabaseId: number;
-    phaseDatabaseId: number;
-    description: string;
-  }>({
-    wbsDatabaseId: 0,
-    phaseDatabaseId: 0,
-    description: '',
-  });
+  const [selectedPhaseDescription, setSelectedPhaseDescription] = useState('');
+  const [selectedPhaseDatabaseId, setSelectedPhaseDatabaseId] = useState(0);
+
   const [newPhaseNumber, setNewPhaseNumber] = useState(0);
   const [newPhaseDescription, setNewPhaseDescription] = useState('');
 
-  const listOfWbsNamesNoDescription = ['MOBILIZE', 'DEMOBILIZE', 'SUPPORT'];
-  const listOfPhaseNumbersForSetPhaseName = [
-    10001, 10002, 10003, 10004, 10005, 10006, 10007, 10008, 10009, 10010, 10011,
-    19999, 29987, 29998, 29999, 39982, 39987, 39991, 39998, 39999, 49982, 49988,
-    49991, 49992, 49993, 49994, 49995, 49996, 49998, 49999, 59982, 59991, 59998,
-    59999, 69982, 69990, 69998, 69999, 79984, 79988, 79989, 79990, 79992, 79993,
-    79994, 79995, 79996, 79997, 79998, 79999, 89999, 99986, 99990, 99998, 99999,
-    100001, 109999, 110001, 119999, 129998, 129999, 139983, 139984, 139985,
-    139989, 139990, 139992, 139993, 139994, 139995, 139996, 139997, 139998,
-    139999, 140001, 149999, 159999, 180001, 180002, 180003, 180004, 189999,
-    190001, 190002, 190003, 190004, 190005, 190006, 190007, 199999, 200100,
-    200200, 200300, 200400, 200500, 200600, 200700, 200800, 200900, 201010,
-    201020, 201030, 201040, 201050, 201060, 209980, 209981, 209982, 209998,
-    209999,
-  ];
+  const [isDescriptionEdited, setIsDescriptionEdited] = useState(false);
+  const [isPhaseNumberEdited, setIsPhaseNumberEdited] = useState(false);
 
-  useEffect(() => {
-    const filteredPhasesForWbs = localPhaseArray.filter(
+  const listOfWbsNamesNoDescription = useMemo(
+    () => ['MOBILIZE', 'DEMOBILIZE', 'SUPPORT'],
+    [],
+  );
+  const listOfPhaseNumbersForSetPhaseName = useMemo(
+    () => [
+      10001, 10002, 10003, 10004, 10005, 10006, 10007, 10008, 10009, 10010,
+      10011, 19999, 29987, 29998, 29999, 39982, 39987, 39991, 39998, 39999,
+      49982, 49988, 49991, 49992, 49993, 49994, 49995, 49996, 49998, 49999,
+      59982, 59991, 59998, 59999, 69982, 69990, 69998, 69999, 79984, 79988,
+      79989, 79990, 79992, 79993, 79994, 79995, 79996, 79997, 79998, 79999,
+      89999, 99986, 99990, 99998, 99999, 100001, 109999, 110001, 119999, 129998,
+      129999, 139983, 139984, 139985, 139989, 139990, 139992, 139993, 139994,
+      139995, 139996, 139997, 139998, 139999, 140001, 149999, 159999, 180001,
+      180002, 180003, 180004, 189999, 190001, 190002, 190003, 190004, 190005,
+      190006, 190007, 199999, 200100, 200200, 200300, 200400, 200500, 200600,
+      200700, 200800, 200900, 201010, 201020, 201030, 201040, 201050, 201060,
+      209980, 209981, 209982, 209998, 209999,
+    ],
+    [],
+  );
+
+  const filteredPhasesForWbs = useMemo(() => {
+    return localPhaseArray.filter(
       (phase) => phase.wbsDatabaseId === currentWbs?.wbsDatabaseId,
     );
-    setPhaseOptions(filteredPhasesForWbs);
-  }, [currentWbs, wbsId]);
+  }, [currentWbs]);
 
-  // Generate the phase name
+  const handleOptionSelect = (option: PhaseOption) => {
+    setSelectedPhaseDescription(option.description);
+    setSelectedPhaseDatabaseId(option.phaseDatabaseId);
+    setIsDescriptionEdited(false);
+    setIsPhaseNumberEdited(false);
+  };
+
   useEffect(() => {
-    let maxPhaseNumber = currentWbs?.wbsDatabaseId!;
-    if (selectedPhaseOption) {
-      const option = phaseOptions.find(
-        (option) => option.description === selectedPhaseOption.description,
-      );
+    if (
+      selectedPhaseDescription &&
+      selectedPhaseDatabaseId &&
+      currentWbs &&
+      currentWbs.wbsDatabaseId
+    ) {
+      // Generate the phase name
       if (
-        listOfWbsNamesNoDescription.includes(currentWbs?.name!) ||
-        listOfPhaseNumbersForSetPhaseName.includes(option?.phaseDatabaseId!)
+        currentWbs.name &&
+        listOfWbsNamesNoDescription.includes(currentWbs.name) &&
+        !isDescriptionEdited
       ) {
-        setNewPhaseNumber(option?.phaseDatabaseId!);
+        setNewPhaseDescription(selectedPhaseDescription);
+      }
+
+      // Generate the phase number
+      let maxPhaseNumber = currentWbs.wbsDatabaseId;
+      if (
+        listOfPhaseNumbersForSetPhaseName.includes(selectedPhaseDatabaseId) &&
+        !isPhaseNumberEdited
+      ) {
+        setNewPhaseNumber(selectedPhaseDatabaseId);
       } else if (data.length > 0) {
         data.forEach((phase: Phase) => {
           if (
-            phase?.phaseNumber! > maxPhaseNumber &&
-            !listOfPhaseNumbersForSetPhaseName.includes(phase?.phaseNumber!)
+            phase.phaseNumber &&
+            phase.phaseNumber > maxPhaseNumber &&
+            !listOfPhaseNumbersForSetPhaseName.includes(phase.phaseNumber)
           ) {
-            maxPhaseNumber = phase?.phaseNumber!;
+            maxPhaseNumber = phase.phaseNumber;
           }
         });
-        setNewPhaseNumber(maxPhaseNumber + 1);
-      } else {
+        if (maxPhaseNumber && !isPhaseNumberEdited) {
+          setNewPhaseNumber(maxPhaseNumber + 1);
+        }
+      } else if (maxPhaseNumber && !isPhaseNumberEdited) {
         setNewPhaseNumber(maxPhaseNumber + 1);
       }
     }
-  }, [data, selectedPhaseOption]);
+  }, [
+    data,
+    selectedPhaseDescription,
+    selectedPhaseDatabaseId,
+    currentWbs,
+    listOfPhaseNumbersForSetPhaseName,
+    listOfWbsNamesNoDescription,
+    isDescriptionEdited,
+    isPhaseNumberEdited,
+  ]);
 
-  useEffect(() => {
-    if (listOfWbsNamesNoDescription.includes(currentWbs?.name!)) {
-      setNewPhaseDescription(selectedPhaseOption?.description!);
-    }
-  }, [selectedPhaseOption]);
-
-  const addPhase = estimatorStore((state: StoreState) => state.addPhase);
+  const addPhaseToStore = estimatorStore((state: StoreState) => state.addPhase);
 
   const handlePhaseCreate = async () => {
     const newPhase: FirestorePhase = new FirestorePhase({
-      phaseDatabaseName: selectedPhaseOption.description,
-      phaseDatabaseId: selectedPhaseOption.phaseDatabaseId,
+      phaseDatabaseName: selectedPhaseDescription,
+      phaseDatabaseId: selectedPhaseDatabaseId,
       phaseNumber: newPhaseNumber,
       description:
         newPhaseDescription !== ''
           ? newPhaseDescription
-          : selectedPhaseOption.description,
+          : selectedPhaseDescription,
       wbsId: currentWbs?.id,
       proposalId: currentProposal?.id,
     });
-    await addPhase(newPhase);
+    await addPhaseToStore(newPhase);
     // Clear all states
-    setSelectedPhaseOption({
-      wbsDatabaseId: 0,
-      phaseDatabaseId: 0,
-      description: '',
-    });
+    setSelectedPhaseDescription('');
+    setSelectedPhaseDatabaseId(0);
     setNewPhaseNumber(0);
     setNewPhaseDescription('');
+    setIsDescriptionEdited(false);
+    setIsPhaseNumberEdited(false);
     onClose();
   };
 
@@ -154,16 +182,14 @@ export default function AddPhaseDialog({ open, onClose }: Props) {
               <Select
                 labelId='demo-simple-select-label'
                 id='demo-simple-select'
-                value={selectedPhaseOption?.description}
+                value={selectedPhaseDescription}
                 label='Description'>
-                {phaseOptions.map((option, index) => (
+                {filteredPhasesForWbs.map((option) => (
                   <MenuItem
                     value={option.description}
-                    key={index}
+                    key={option.phaseDatabaseId}
                     sx={{ paddingTop: 2, paddingBottom: 2 }}
-                    onClick={() => {
-                      setSelectedPhaseOption(option);
-                    }}>
+                    onClick={() => handleOptionSelect(option)}>
                     {option?.description}
                   </MenuItem>
                 ))}
@@ -177,6 +203,7 @@ export default function AddPhaseDialog({ open, onClose }: Props) {
                 value={newPhaseDescription}
                 onChange={(event) => {
                   setNewPhaseDescription(event.target.value);
+                  setIsDescriptionEdited(true);
                 }}
                 sx={{ width: '100%' }}
               />
@@ -187,11 +214,12 @@ export default function AddPhaseDialog({ open, onClose }: Props) {
               label='Phase Number'
               disabled={
                 listOfWbsNamesNoDescription.includes(currentWbs?.name!) ||
-                !selectedPhaseOption
+                !selectedPhaseDescription
               }
               value={newPhaseNumber}
               onChange={(event) => {
-                setNewPhaseNumber(parseInt(event.target.value));
+                setNewPhaseNumber(parseInt(event.target.value, 10));
+                setIsPhaseNumberEdited(true);
               }}
               sx={{ width: '100%' }}
             />

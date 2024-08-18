@@ -125,9 +125,6 @@ export default function EstimatorDrawer({ children }: EstimatorDrawerProps) {
   const theme = useTheme();
   const [addProposalDialogOpen, setAddProposalDialogOpen] =
     React.useState(false);
-  const [selectedProposal, setSelectedProposal] =
-    React.useState<Proposal | null>(null);
-  const [selectedWbs, setSelectedWbs] = React.useState<Wbs>();
   const { proposalId, wbsId, phaseId } = useParams();
   const [open, setOpen] = React.useState(proposalId === undefined);
   const [addPhaseDialogOpen, setAddPhaseDialogOpen] = React.useState(false);
@@ -136,7 +133,7 @@ export default function EstimatorDrawer({ children }: EstimatorDrawerProps) {
   const currentPhase: Phase | undefined = useCurrentPhase({
     phaseId: phaseId ?? '',
   });
-  const { data, loading } = useProposals();
+  const { data } = useProposals();
   const [proposalSearchInput, setProposalSearchInput] = useState('');
 
   useEffect(() => {
@@ -434,7 +431,7 @@ export default function EstimatorDrawer({ children }: EstimatorDrawerProps) {
             <Divider />
             <Box sx={{ height: 'calc(100% - 64px)', overflowY: 'auto' }}>
               <ProposalList
-                onClick={(proposal: Proposal) => setSelectedProposal(proposal)}
+                onClick={(proposal: Proposal) => {}}
                 proposals={filteredProposals}
               />
             </Box>

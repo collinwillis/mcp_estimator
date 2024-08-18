@@ -30,6 +30,7 @@ module.exports = {
   },
   plugins: ['react', '@typescript-eslint', 'unused-imports'],
   rules: {
+    "linebreak-style": "off",
     'unused-imports/no-unused-imports': 'error',
     'unused-imports/no-unused-vars': [
       'warn',
@@ -46,7 +47,7 @@ module.exports = {
       'error',
       {
         'newlines-between': 'always',
-        groups: [
+        'groups': [
           'builtin',
           'external',
           'internal',
