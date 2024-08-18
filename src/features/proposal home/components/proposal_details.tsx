@@ -19,7 +19,7 @@ import SaveIcon from '@mui/icons-material/Save';
 import CancelIcon from '@mui/icons-material/Cancel';
 
 import { Proposal, UnitedStatesStates } from '../../../models/proposal';
-import FormattedNumberInput from '../../../components/formatted_number_input'; // Import the FormattedNumberInput component
+import FormattedNumberInput from '../../../components/formatted_number_input';
 
 interface ProposalDetailsProps {
   editData: Partial<Proposal>;
@@ -33,7 +33,6 @@ interface ProposalDetailsProps {
   handleEditClick: () => void;
 }
 
-// Helper function to format rates
 const formatRate = (
   value: string | number | undefined,
   prefix?: string,
@@ -53,7 +52,6 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = ({
   handleCancelClick,
   handleEditClick,
 }) => {
-  // Define the prefixes and suffixes for each rate field
   const rateFields = [
     { label: 'Craft Base Rate', value: 'craftBaseRate', prefix: '$' },
     { label: 'Weld Base Rate', value: 'weldBaseRate', prefix: '$' },
@@ -81,179 +79,245 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = ({
   ];
 
   return (
-    <Card sx={{ mb: 4 }}>
-      <CardContent>
-        <Box display='flex' justifyContent='space-between' alignItems='center'>
-          <Typography variant='h4' sx={{ mb: 2 }}>
-            Proposal Details
-          </Typography>
-          {isEditMode ? (
-            <Box>
-              <IconButton color='primary' onClick={handleSaveClick}>
-                <SaveIcon />
-              </IconButton>
-              <IconButton color='secondary' onClick={handleCancelClick}>
-                <CancelIcon />
-              </IconButton>
-            </Box>
-          ) : (
-            <IconButton color='primary' onClick={handleEditClick}>
-              <EditIcon />
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        height: '100%',
+        width: '100%',
+        padding: 4,
+        paddingBottom: 8,
+        backgroundColor: '',
+      }}>
+      <Box display='flex' justifyContent='space-between' alignItems='center'>
+        <Typography variant='h4' sx={{ mb: 2 }}>
+          Proposal Details
+        </Typography>
+        {isEditMode ? (
+          <Box>
+            <IconButton color='primary' onClick={handleSaveClick}>
+              <SaveIcon />
             </IconButton>
+            <IconButton color='secondary' onClick={handleCancelClick}>
+              <CancelIcon />
+            </IconButton>
+          </Box>
+        ) : (
+          <IconButton color='primary' onClick={handleEditClick}>
+            <EditIcon />
+          </IconButton>
+        )}
+      </Box>
+
+      <Grid container spacing={2}>
+        {[
+          { label: 'Proposal #', value: 'proposalNumber' },
+          { label: 'Job', value: 'job' },
+          { label: 'CO #', value: 'coNumber' },
+          { label: 'Description', value: 'proposalDescription' },
+          { label: 'Owner', value: 'proposalOwner' },
+        ].map(({ label, value }) => (
+          <Grid item xs={12} sm={6} md={4} key={value}>
+            {isEditMode ? (
+              <TextField
+                label={label}
+                variant='standard'
+                size='small'
+                fullWidth
+                name={value}
+                value={editData[value as keyof Proposal] || ''}
+                onChange={handleChange}
+              />
+            ) : (
+              <>
+                <Typography variant='caption' color='textSecondary'>
+                  {label}
+                </Typography>
+                <Typography>{editData[value as keyof Proposal]}</Typography>
+              </>
+            )}
+          </Grid>
+        ))}
+        <Grid item xs={12} sm={6} md={4}>
+          {isEditMode ? (
+            <TextField
+              label='City'
+              variant='standard'
+              size='small'
+              fullWidth
+              name='projectCity'
+              value={editData.projectCity || ''}
+              onChange={handleChange}
+            />
+          ) : (
+            <>
+              <Typography variant='caption' color='textSecondary'>
+                City
+              </Typography>
+              <Typography>{editData.projectCity}</Typography>
+            </>
           )}
-        </Box>
-        <Grid container spacing={2}>
-          {[
-            { label: 'Proposal #', value: 'proposalNumber' },
-            { label: 'Job', value: 'job' },
-            { label: 'CO #', value: 'coNumber' },
-            { label: 'Description', value: 'proposalDescription' },
-            { label: 'Owner', value: 'proposalOwner' },
-            { label: 'City', value: 'projectCity' },
-          ].map(({ label, value }) => (
-            <Grid item xs={12} sm={6} md={4} key={value}>
-              {isEditMode ? (
-                <TextField
-                  label={label}
-                  variant='filled'
-                  size='small'
-                  fullWidth
-                  name={value}
-                  value={editData[value as keyof Proposal] || ''}
-                  onChange={handleChange}
-                />
-              ) : (
-                <>
-                  <Typography variant='caption' color='textSecondary'>
-                    {label}
-                  </Typography>
-                  <Typography>{editData[value as keyof Proposal]}</Typography>
-                </>
-              )}
-            </Grid>
-          ))}
-          <Grid item xs={12} sm={6} md={4}>
+        </Grid>
+        <Grid item xs={12} sm={6} md={4}>
+          {isEditMode ? (
+            <FormControl variant='standard' size='small' fullWidth>
+              <InputLabel>State</InputLabel>
+              <Select
+                name='projectState'
+                value={editData.projectState || ''}
+                onChange={handleSelectChange}>
+                {Object.values(UnitedStatesStates).map((item) => (
+                  <MenuItem key={item} value={item}>
+                    {item}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          ) : (
+            <>
+              <Typography variant='caption' color='textSecondary'>
+                State
+              </Typography>
+              <Typography>{editData.projectState}</Typography>
+            </>
+          )}
+        </Grid>
+      </Grid>
+
+      <Typography variant='h6' sx={{ mt: 4, mb: 2 }}>
+        Contact Information
+      </Typography>
+      <Divider sx={{ mb: 2 }} />
+      <Grid container spacing={2}>
+        {[
+          { label: 'Contact', value: 'contactName' },
+          { label: 'Address', value: 'contactAddress' },
+          { label: 'City', value: 'contactCity' },
+          { label: 'Zip', value: 'contactZip' },
+        ].map(({ label, value }) => (
+          <Grid item xs={12} sm={6} md={4} key={value}>
             {isEditMode ? (
-              <FormControl variant='filled' size='small' fullWidth>
-                <InputLabel>State</InputLabel>
-                <Select
-                  name='contactState'
-                  value={editData.contactState || ''}
-                  onChange={handleSelectChange}>
-                  {Object.values(UnitedStatesStates).map((item) => (
-                    <MenuItem key={item} value={item}>
-                      {item}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
+              <TextField
+                label={label}
+                variant='standard'
+                size='small'
+                fullWidth
+                name={value}
+                value={editData[value as keyof Proposal] || ''}
+                onChange={handleChange}
+              />
             ) : (
               <>
                 <Typography variant='caption' color='textSecondary'>
-                  State
+                  {label}
                 </Typography>
-                <Typography>{editData.contactState}</Typography>
+                <Typography>{editData[value as keyof Proposal]}</Typography>
               </>
             )}
           </Grid>
+        ))}
+        <Grid item xs={12} sm={6} md={4}>
+          {isEditMode ? (
+            <FormControl variant='standard' size='small' fullWidth>
+              <InputLabel>State</InputLabel>
+              <Select
+                name='contactState'
+                value={editData.contactState || ''}
+                onChange={handleSelectChange}>
+                {Object.values(UnitedStatesStates).map((item) => (
+                  <MenuItem key={item} value={item}>
+                    {item}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          ) : (
+            <>
+              <Typography variant='caption' color='textSecondary'>
+                State
+              </Typography>
+              <Typography>{editData.contactState}</Typography>
+            </>
+          )}
         </Grid>
-        <Typography variant='h6' sx={{ mt: 4, mb: 2 }}>
-          Contact Information
-        </Typography>
-        <Divider sx={{ mb: 2 }} />
-        <Grid container spacing={2}>
-          {[
-            { label: 'Contact', value: 'contactName' },
-            { label: 'Address', value: 'contactAddress' },
-            { label: 'City', value: 'contactCity' },
-            { label: 'Zip', value: 'contactZip' },
-            { label: 'Phone', value: 'contactPhone' },
-            { label: 'Email', value: 'contactEmail' },
-          ].map(({ label, value }) => (
-            <Grid item xs={12} sm={6} md={4} key={value}>
-              {isEditMode ? (
-                <TextField
-                  label={label}
-                  variant='filled'
-                  size='small'
-                  fullWidth
-                  name={value}
-                  value={editData[value as keyof Proposal] || ''}
-                  onChange={handleChange}
-                />
-              ) : (
-                <>
-                  <Typography variant='caption' color='textSecondary'>
-                    {label}
-                  </Typography>
-                  <Typography>{editData[value as keyof Proposal]}</Typography>
-                </>
-              )}
-            </Grid>
-          ))}
-          <Grid item xs={12} sm={6} md={4}>
+        <Grid item xs={12} sm={6} md={4}>
+          {isEditMode ? (
+            <TextField
+              label='Phone'
+              variant='standard'
+              size='small'
+              fullWidth
+              name='contactPhone'
+              value={editData.contactPhone || ''}
+              onChange={handleChange}
+            />
+          ) : (
+            <>
+              <Typography variant='caption' color='textSecondary'>
+                Phone
+              </Typography>
+              <Typography>{editData.contactPhone}</Typography>
+            </>
+          )}
+        </Grid>
+        <Grid item xs={12} sm={6} md={4}>
+          {isEditMode ? (
+            <TextField
+              label='Email'
+              variant='standard'
+              size='small'
+              fullWidth
+              name='contactEmail'
+              value={editData.contactEmail || ''}
+              onChange={handleChange}
+            />
+          ) : (
+            <>
+              <Typography variant='caption' color='textSecondary'>
+                Email
+              </Typography>
+              <Typography>{editData.contactEmail}</Typography>
+            </>
+          )}
+        </Grid>
+      </Grid>
+      <Typography variant='h6' sx={{ mt: 4, mb: 2 }}>
+        Rates
+      </Typography>
+      <Divider sx={{ mb: 2 }} />
+      <Grid container spacing={2}>
+        {rateFields.map(({ label, value, prefix, suffix }) => (
+          <Grid item xs={12} sm={6} md={4} key={value}>
             {isEditMode ? (
-              <FormControl variant='filled' size='small' fullWidth>
-                <InputLabel>State</InputLabel>
-                <Select
-                  name='projectState'
-                  value={editData.projectState || ''}
-                  onChange={handleSelectChange}>
-                  {Object.values(UnitedStatesStates).map((item) => (
-                    <MenuItem key={item} value={item}>
-                      {item}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
+              <FormattedNumberInput
+                label={label}
+                value={editData[value as keyof Proposal]?.toString() || ''}
+                setValue={(newValue) =>
+                  handleChange({
+                    target: { name: value, value: newValue },
+                  } as ChangeEvent<HTMLInputElement>)
+                }
+                prefix={prefix}
+                suffix={suffix}
+              />
             ) : (
               <>
                 <Typography variant='caption' color='textSecondary'>
-                  State
+                  {label}
                 </Typography>
-                <Typography>{editData.projectState}</Typography>
+                <Typography>
+                  {formatRate(
+                    editData[value as keyof Proposal],
+                    prefix,
+                    suffix,
+                  )}
+                </Typography>
               </>
             )}
           </Grid>
-        </Grid>
-        <Typography variant='h6' sx={{ mt: 4, mb: 2 }}>
-          Rates
-        </Typography>
-        <Divider sx={{ mb: 2 }} />
-        <Grid container spacing={2}>
-          {rateFields.map(({ label, value, prefix, suffix }) => (
-            <Grid item xs={12} sm={6} md={4} key={value}>
-              {isEditMode ? (
-                <FormattedNumberInput
-                  label={label}
-                  value={editData[value as keyof Proposal]?.toString() || ''}
-                  setValue={(newValue) =>
-                    handleChange({
-                      target: { name: value, value: newValue },
-                    } as ChangeEvent<HTMLInputElement>)
-                  }
-                  prefix={prefix}
-                  suffix={suffix}
-                />
-              ) : (
-                <>
-                  <Typography variant='caption' color='textSecondary'>
-                    {label}
-                  </Typography>
-                  <Typography>
-                    {formatRate(
-                      editData[value as keyof Proposal],
-                      prefix,
-                      suffix,
-                    )}
-                  </Typography>
-                </>
-              )}
-            </Grid>
-          ))}
-        </Grid>
-      </CardContent>
-    </Card>
+        ))}
+      </Grid>
+    </Box>
   );
 };
 

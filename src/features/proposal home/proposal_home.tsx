@@ -1,8 +1,14 @@
 import React, { useEffect, useState, ChangeEvent } from 'react';
 import { useParams } from 'react-router-dom';
-import { Box, Paper, SelectChangeEvent } from '@mui/material';
-import Dialog from '@mui/material/Dialog';
-import Alert from '@mui/material/Alert';
+import {
+  Box,
+  Paper,
+  Tabs,
+  Tab,
+  Dialog,
+  Alert,
+  SelectChangeEvent,
+} from '@mui/material';
 
 import { getCraftLoadedRate } from '../../api/totals';
 import BottomPanel from '../../components/bottom_pannel';
@@ -12,7 +18,7 @@ import WbsDataGrid from './components/wbs_data_grid';
 import SelectWbsDialog from './components/select_wbs_dialog';
 import { Proposal } from '../../models/proposal';
 import ProposalDetails from './components/proposal_details';
-import { updateSingleProposal } from '../../api/proposal'; // Import the update function
+import { updateSingleProposal } from '../../api/proposal';
 import { FirestoreProposal } from '../../models/firestore models/proposal_firestore';
 
 function ProposalHomeScreen() {
@@ -21,6 +27,8 @@ function ProposalHomeScreen() {
   const [isEditMode, setIsEditMode] = useState(false);
   const [editData, setEditData] = useState<Partial<Proposal>>({});
   const [successDialogOpen, setSuccessDialogOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState(0); // State for active tab
+
   const currentProposal = useCurrentProposal({ proposalId: proposalId ?? '' });
   const prefs = estimatorStore(
     (state: StoreState) => state.preferences[proposalId!] || [],
@@ -36,7 +44,6 @@ function ProposalHomeScreen() {
   useEffect(() => {
     if (currentProposal) {
       const craftLoadedRate = getCraftLoadedRate({ proposal: currentProposal });
-      console.log(craftLoadedRate);
       setEditData(currentProposal);
     }
   }, [currentProposal]);
@@ -46,8 +53,6 @@ function ProposalHomeScreen() {
   };
 
   const handleSaveClick = async () => {
-    // Save the edited data
-    console.log('Saving data...', editData);
     try {
       await updateSingleProposal({
         proposalId: proposalId!,
@@ -85,61 +90,62 @@ function ProposalHomeScreen() {
     }));
   };
 
+  const handleTabChange = (event: React.ChangeEvent<{}>, newValue: number) => {
+    setActiveTab(newValue);
+  };
+
   return (
     <Box
       sx={{
         height: '96%',
         display: 'flex',
         flexDirection: 'column',
-        backgroundColor: '#f9f9f9',
+        backgroundColor: '#f4f4f4',
         width: '100%',
+        overflow: 'hidden',
+        position: 'relative', // Ensure content is relative to this box
       }}>
+      <Paper square>
+        <Tabs
+          value={activeTab}
+          onChange={handleTabChange}
+          variant='fullWidth'
+          indicatorColor='primary'
+          textColor='primary'>
+          <Tab label='Proposal Details' />
+          <Tab label='WBS Data Grid' />
+        </Tabs>
+      </Paper>
       <Box
         sx={{
-          flex: 1,
+          height: '100%',
           display: 'flex',
           flexDirection: 'column',
-          overflow: 'hidden',
+          overflowY: 'auto',
         }}>
-        <Box
-          component={Paper}
-          elevation={3}
-          sx={{
-            flex: 1,
-            display: 'flex',
-            flexDirection: 'row',
-            overflow: 'hidden',
-          }}>
-          <Box
-            sx={{
-              p: 4,
-              width: '40%',
-              borderRight: '2px solid #e0e0e0',
-              backgroundColor: '#ffffff',
-              overflowY: 'auto',
-            }}>
-            <ProposalDetails
-              editData={editData}
-              isEditMode={isEditMode}
-              handleChange={handleChange}
-              handleSelectChange={handleSelectChange}
-              handleSaveClick={handleSaveClick}
-              handleCancelClick={handleCancelClick}
-              handleEditClick={handleEditClick}
-            />
-          </Box>
-          <Box sx={{ flex: 1, p: 4, overflowY: 'auto' }}>
-            <WbsDataGrid
-              openSelectWbsDialog={() => setIsSelectWbsDialogOpen(true)}
-            />
-          </Box>
-        </Box>
+        {activeTab === 0 && (
+          <ProposalDetails
+            editData={editData}
+            isEditMode={isEditMode}
+            handleChange={handleChange}
+            handleSelectChange={handleSelectChange}
+            handleSaveClick={handleSaveClick}
+            handleCancelClick={handleCancelClick}
+            handleEditClick={handleEditClick}
+          />
+        )}
+        {activeTab === 1 && (
+          <WbsDataGrid
+            openSelectWbsDialog={() => setIsSelectWbsDialogOpen(true)}
+          />
+        )}
       </Box>
       <SelectWbsDialog
         isOpen={isSelectWbsDialogOpen}
         onClose={() => setIsSelectWbsDialogOpen(false)}
         proposalPreferences={prefs}
       />
+
       <Box
         sx={{
           py: 4,
@@ -151,6 +157,7 @@ function ProposalHomeScreen() {
         }}>
         <BottomPanel />
       </Box>
+
       <Dialog
         open={successDialogOpen}
         onClose={() => setSuccessDialogOpen(false)}>

@@ -13,6 +13,8 @@ import { FirestoreActivity } from '../models/firestore models/activity_firestore
 import { Phase } from '../models/phase';
 import { Wbs } from '../models/wbs';
 import { StoreState, estimatorStore } from '../utils/store';
+import AddPhaseDialog from './add_phase_dialog';
+import * as React from 'react';
 
 const BottomPanel: React.FC = () => {
   const [height, setHeight] = useState<number>(300);
@@ -20,6 +22,7 @@ const BottomPanel: React.FC = () => {
     useState<boolean>(false);
   const [openAddActivityDialog, setOpenAddActivityDialog] =
     useState<boolean>(false);
+  const [addPhaseDialogOpen, setAddPhaseDialogOpen] = useState<boolean>(false);
   const ref = useRef<HTMLDivElement>(null);
   const { proposalId, wbsId, phaseId } = useParams();
 
@@ -440,6 +443,15 @@ const BottomPanel: React.FC = () => {
         {hasWritePermissions && (
           <Box sx={{ width: '30%' }}>
             <Grid container spacing={2}>
+              <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+                <Button
+                  disabled={wbsId == null}
+                  fullWidth
+                  variant='contained'
+                  onClick={() => setAddPhaseDialogOpen(true)}>
+                  Phase
+                </Button>
+              </Grid>
               <Grid item xs={12} sm={12} md={12} lg={6} xl={4}>
                 <Button
                   disabled={phaseId == null}
@@ -503,6 +515,10 @@ const BottomPanel: React.FC = () => {
           </Box>
         )}
       </Box>
+      <AddPhaseDialog
+        open={addPhaseDialogOpen}
+        onClose={() => setAddPhaseDialogOpen(false)}
+      />
       <AddEquipmentDialog
         open={opentEquipmentDialog}
         onClose={() => setOpenEquipmentDialog(false)}

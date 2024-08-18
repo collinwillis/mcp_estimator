@@ -41,6 +41,7 @@ function FormattedNumberInput({
 
   return (
     <NumericFormat
+      style={{ width: '100%' }}
       InputProps={{
         readOnly,
       }}
