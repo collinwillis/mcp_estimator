@@ -3,7 +3,17 @@ import { useParams } from 'react-router-dom';
 import { EditRounded, FileCopy } from '@mui/icons-material';
 import TrashIcon from '@mui/icons-material/DeleteForever';
 import RefreshIcon from '@mui/icons-material/Refresh';
-import { Alert, Button, Snackbar, Switch, Typography } from '@mui/material';
+import {
+  Alert,
+  Button,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
+  Snackbar,
+  Switch,
+  Typography,
+} from '@mui/material';
 import { Box } from '@mui/system';
 import {
   GridCellParams,
@@ -44,6 +54,8 @@ import {
   subcontractorItemAvailableCells,
 } from './columns';
 import { getActivityColumns } from './columns2';
+import localPhaseArray from '../../../data/phases.json';
+import localConstantArray from '../../../data/constants.json';
 
 function ActivityDataGrid() {
   const [snackbarOpen, setSnackbarOpen] = useState(false);
@@ -105,15 +117,98 @@ function ActivityDataGrid() {
     (state: StoreState) => state.changeActivitySortOrder,
   );
 
-  // Determine the current phase from phaseList based on phaseId
-  const phaseList = estimatorStore(
-    (state: StoreState) => state.phases[proposalId!] || [],
+  const updateActivitiesBatch = estimatorStore(
+    (state: StoreState) => state.updateActivitiesBatch,
   );
-  const currentPhase = phaseList.find((phase) => phase.id === phaseId);
 
   const handlePhaseCompletionChange = async (completed: boolean) => {
     if (currentPhase) {
       await updatePhase(currentPhase.id!, 'completed', completed);
+    }
+  };
+
+  // Determine the current phase from phaseList based on phaseId
+  const phaseList = estimatorStore(
+    (state: StoreState) => state.phases[proposalId!] || [],
+  );
+  const wbsList = estimatorStore(
+    (state: StoreState) => state.wbs[proposalId!] || [],
+  );
+  const currentPhase = phaseList.find((phase) => phase.id === phaseId);
+  const currentWbs = wbsList.find((wbs) => wbs.id === wbsId);
+
+  const [phaseDatabaseOptions, setPhaseDatabaseOptions] = useState<
+    { wbsDatabaseId: number; phaseDatabaseId: number; description: string }[]
+  >([]);
+
+  const [selectedPhaseDatabaseOption, setSelectedPhaseDatabaseOption] =
+    useState<{
+      wbsDatabaseId: number;
+      phaseDatabaseId: number | string;
+      description: string;
+    }>({
+      wbsDatabaseId: currentWbs?.wbsDatabaseId || 0,
+      phaseDatabaseId: currentPhase?.phaseDatabaseId || 0,
+      description: currentPhase?.phaseDatabaseName || '',
+    });
+
+  useEffect(() => {
+    setSelectedPhaseDatabaseOption({
+      wbsDatabaseId: currentWbs?.wbsDatabaseId || 0,
+      phaseDatabaseId: currentPhase?.phaseDatabaseId || 0,
+      description: currentPhase?.phaseDatabaseName || '',
+    });
+    const filteredPhasesForWbs = localPhaseArray.filter(
+      (phase) => phase.wbsDatabaseId === currentWbs?.wbsDatabaseId,
+    );
+
+    setPhaseDatabaseOptions(filteredPhasesForWbs);
+  }, [currentWbs, wbsId, currentPhase]);
+
+  const onChangePhaseDatabase = async (newPhaseDatabase: {
+    wbsDatabaseId: number;
+    phaseDatabaseId: number | string;
+    description: string;
+  }) => {
+    setSelectedPhaseDatabaseOption(newPhaseDatabase);
+    console.log('HERE');
+    if (!currentPhase || !currentWbs) {
+      console.error('Current phase or WBS is not defined');
+      return;
+    }
+
+    await updatePhase(
+      phaseId!,
+      'phaseDatabaseName',
+      newPhaseDatabase.description,
+    );
+    await updatePhase(
+      phaseId!,
+      'phaseDatabaseId',
+      newPhaseDatabase.phaseDatabaseId,
+    );
+    const activitiesToUpdate = filtered.map((activity) => {
+      const newConstant = localConstantArray.find(
+        (constant) =>
+          constant.description === activity.constant?.description &&
+          constant.phaseDatabaseId === newPhaseDatabase.phaseDatabaseId,
+      );
+      console.log(newConstant);
+
+      return {
+        activityId: activity.id,
+        updates: {
+          constant: newConstant ? newConstant : activity.constant, // Update constant if a new one is found, otherwise keep the existing one
+        },
+      };
+    });
+    try {
+      // Perform the batch update
+      await updateActivitiesBatch(activitiesToUpdate);
+      console.log(activitiesToUpdate);
+      console.log('Activities successfully updated');
+    } catch (error) {
+      console.error('Error updating activities:', error);
     }
   };
 
@@ -253,6 +348,28 @@ function ActivityDataGrid() {
             width: '100%',
             alignItems: 'center',
           }}>
+          <FormControl variant='standard' size='small'>
+            <InputLabel id='demo-simple-select-filled-label'>
+              Database
+            </InputLabel>
+            <Select
+              labelId='demo-simple-select-label'
+              id='demo-simple-select'
+              value={selectedPhaseDatabaseOption.description}
+              label='Description'>
+              {phaseDatabaseOptions.map((option, index) => (
+                <MenuItem
+                  value={option.description}
+                  key={index}
+                  sx={{ paddingTop: 2, paddingBottom: 2 }}
+                  onClick={async () => {
+                    await onChangePhaseDatabase(option);
+                  }}>
+                  {option?.description}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
           {/* <Typography */}
           {/*  variant='h5' */}
           {/*  sx={{ flexGrow: 1, textAlign: 'center', color: '#333' }}> */}

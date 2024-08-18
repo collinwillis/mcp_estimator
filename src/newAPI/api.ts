@@ -557,3 +557,42 @@ export async function duplicateProposal(proposalId: string): Promise<string> {
 
   return newProposalId;
 }
+
+export async function updateActivitiesBatchInFirestore(
+  activityUpdates: {
+    activityId: string;
+    updates: Partial<FirestoreActivity>;
+  }[],
+  proposal: Proposal, // Pass the proposal object to process activities
+): Promise<Activity[]> {
+  const batch = writeBatch(firestore);
+  const BATCH_SIZE_LIMIT = 500; // Firestore's maximum operations per batch
+
+  for (let i = 0; i < activityUpdates.length; i += BATCH_SIZE_LIMIT) {
+    const currentBatch = writeBatch(firestore);
+    const batchSlice = activityUpdates.slice(i, i + BATCH_SIZE_LIMIT);
+
+    batchSlice.forEach(({ activityId, updates }) => {
+      const activityRef = doc(firestore, 'activities', activityId);
+      currentBatch.update(activityRef, updates);
+    });
+
+    await currentBatch.commit(); // Commit current batch before proceeding
+  }
+
+  await batch.commit();
+
+  // Fetch the updated activities from Firestore
+  const updatedActivityIds = activityUpdates.map((update) => update.activityId);
+  const activitiesQuery = query(
+    collection(firestore, 'activities'),
+    where('__name__', 'in', updatedActivityIds),
+  );
+
+  const snapshot = await getDocs(activitiesQuery);
+
+  // Process and return the updated activities
+  return snapshot.docs.map((doc) =>
+    processRawActivity(doc.id, doc.data() as FirestoreActivity, proposal),
+  );
+}

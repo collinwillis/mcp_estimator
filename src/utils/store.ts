@@ -19,6 +19,7 @@ import {
   insertActivityBatchToFirestore,
   insertPhaseToFirestore,
   resetConstantsBatchInFirestore,
+  updateActivitiesBatchInFirestore,
   updateActivityFieldInFirestore,
   updateActivityRatesInFirestore,
   updateEquipmentOwnershipInFirestore,
@@ -83,6 +84,12 @@ export interface StoreState {
     activityId: string,
     newIndex: number,
     phaseId: string,
+  ) => Promise<void>;
+  updateActivitiesBatch: (
+    activityUpdates: {
+      activityId: string;
+      updates: Partial<FirestoreActivity>;
+    }[],
   ) => Promise<void>;
 }
 
@@ -683,6 +690,38 @@ export const estimatorStore = create<StoreState>()((set, get) => ({
           [proposalId]: updatedActivities,
         },
       };
+    });
+  },
+
+  updateActivitiesBatch: async (
+    activityUpdates: {
+      activityId: string;
+      updates: Partial<FirestoreActivity>;
+    }[],
+  ) => {
+    const { proposal } = get();
+    if (!proposal) return;
+
+    // Get the processed activities directly from Firestore
+    const updatedActivities = await updateActivitiesBatchInFirestore(
+      activityUpdates,
+      proposal,
+    );
+
+    // Update the state with the processed activities
+    set((state) => {
+      const updatedActivitiesState = { ...state.activities };
+
+      updatedActivities.forEach((updatedActivity) => {
+        const proposalId = updatedActivity.proposalId;
+        updatedActivitiesState[proposalId] = updatedActivitiesState[
+          proposalId
+        ].map((activity) =>
+          activity.id === updatedActivity.id ? updatedActivity : activity,
+        );
+      });
+
+      return { ...state, activities: updatedActivitiesState };
     });
   },
 

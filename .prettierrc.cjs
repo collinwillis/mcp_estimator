@@ -13,14 +13,12 @@ module.exports = {
 
   // TSX/JSX specific options
   jsxBracketSameLine: true, // Keep the closing bracket of a JSX element on the same line as the last prop
-  quoteProps: 'consistent', // Quote object properties consistently
-  htmlWhitespaceSensitivity: 'css', // Respect the default value of CSS display property
+  quoteProps: 'consistent',
+  htmlWhitespaceSensitivity: 'css',
 
-  // TypeScript-specific formatting
   tsSpecificConfig: {
-    alwaysStrict: true, // Enforce strict mode
+    alwaysStrict: true,
   },
 
-  // Whitespace handling in templates
-  htmlWhitespaceSensitivity: 'strict', // Handle whitespaces strictly in templates
+  htmlWhitespaceSensitivity: 'strict',
 };
