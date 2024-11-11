@@ -52,110 +52,160 @@ import { createTheme } from '@mui/material/styles';
 export const estimatorTheme = createTheme({
   palette: {
     primary: {
-      main: '#067cc1',
-      light: '#5aa7d4',
-      dark: '#004f7e',
+      main: '#424242', // Changed to a dark gray for a professional look
+      light: '#6d6d6d',
+      dark: '#1b1b1b',
     },
     secondary: {
-      main: '#ff9800',
-      light: '#ffb74d',
-      dark: '#fb8c00',
+      main: '#bdbdbd', // Light gray as a secondary color
+      light: '#efefef',
+      dark: '#8d8d8d',
     },
     error: {
-      main: '#e53935',
-      light: '#ef5350',
+      main: '#d32f2f', // Standard Material-UI error color
+      light: '#e57373',
       dark: '#b71c1c',
     },
     warning: {
-      main: '#ffb300',
-      light: '#ffca28',
+      main: '#ffa000', // Standard Material-UI warning color
+      light: '#ffb300',
       dark: '#ff6f00',
     },
     info: {
-      main: '#29b6f6',
-      light: '#4fc3f7',
-      dark: '#0288d1',
+      main: '#1976d2', // Muted blue for informational elements
+      light: '#2196f3',
+      dark: '#1565c0',
     },
     success: {
-      main: '#43a047',
-      light: '#66bb6a',
+      main: '#388e3c', // Standard Material-UI success color
+      light: '#4caf50',
       dark: '#2e7d32',
     },
     background: {
-      default: '#f5f5f5',
-      paper: '#ffffff',
+      default: '#f9f9f9', // Off-white background
+      paper: '#ffffff', // White paper for cards and surfaces
     },
+    text: {
+      primary: '#333333', // Dark gray text for better readability
+      secondary: '#555555', // Medium gray for secondary text
+    },
+    divider: '#e0e0e0', // Light gray dividers
   },
   typography: {
-    fontFamily: ['Open Sans', 'sans-serif'].join(','),
+    fontFamily: ['Roboto', 'Helvetica', 'Arial', 'sans-serif'].join(','),
     fontWeightRegular: 400,
-    fontWeightMedium: 600,
+    fontWeightMedium: 500,
     fontWeightBold: 700,
     h1: {
       fontWeight: 700,
-      fontSize: '3.5rem',
+      fontSize: '3rem',
       lineHeight: 1.2,
+      color: '#212121', // Dark gray for headings
     },
     h2: {
-      fontWeight: 600,
+      fontWeight: 700,
       fontSize: '2.5rem',
-      lineHeight: 1.2,
+      lineHeight: 1.3,
+      color: '#212121',
     },
     h3: {
       fontWeight: 600,
       fontSize: '2rem',
-      lineHeight: 1.2,
+      lineHeight: 1.4,
+      color: '#212121',
     },
     h4: {
       fontWeight: 600,
-      fontSize: '1.5rem',
-      lineHeight: 1.2,
+      fontSize: '1.75rem',
+      lineHeight: 1.5,
+      color: '#212121',
     },
     h5: {
-      fontWeight: 600,
-      fontSize: '1.25rem',
-      lineHeight: 1.2,
+      fontWeight: 500,
+      fontSize: '1.5rem',
+      lineHeight: 1.6,
+      color: '#212121',
     },
     h6: {
-      fontWeight: 600,
+      fontWeight: 500,
+      fontSize: '1.25rem',
+      lineHeight: 1.6,
+      color: '#212121',
+    },
+    subtitle1: {
       fontSize: '1rem',
-      lineHeight: 1.2,
+      lineHeight: 1.75,
+      color: '#424242',
+    },
+    subtitle2: {
+      fontSize: '0.875rem',
+      lineHeight: 1.57,
+      color: '#424242',
     },
     body1: {
       fontSize: '1rem',
       lineHeight: 1.5,
+      color: '#424242',
     },
     body2: {
       fontSize: '0.875rem',
-      lineHeight: 1.5,
+      lineHeight: 1.43,
+      color: '#424242',
     },
     button: {
-      fontSize: '1rem',
+      fontSize: '0.875rem',
       textTransform: 'none',
+      fontWeight: 500,
     },
     caption: {
       fontSize: '0.75rem',
-      lineHeight: 1.2,
+      lineHeight: 1.66,
+      color: '#757575',
+    },
+    overline: {
+      fontSize: '0.75rem',
+      fontWeight: 500,
+      textTransform: 'uppercase',
+      lineHeight: 2.66,
+      color: '#757575',
     },
   },
   components: {
     MuiButton: {
       styleOverrides: {
         root: {
-          borderRadius: '8px',
+          borderRadius: '4px', // Slightly sharper corners for a modern look
           textTransform: 'none',
-          padding: '8px 16px',
+          padding: '6px 12px',
         },
         containedPrimary: {
-          'backgroundColor': '#067cc1',
+          'backgroundColor': '#424242',
+          'color': '#ffffff',
           '&:hover': {
-            backgroundColor: '#005a8c',
+            backgroundColor: '#1b1b1b',
           },
         },
         containedSecondary: {
-          'backgroundColor': '#ff9800',
+          'backgroundColor': '#bdbdbd',
+          'color': '#000000',
           '&:hover': {
-            backgroundColor: '#fb8c00',
+            backgroundColor: '#8d8d8d',
+          },
+        },
+        outlinedPrimary: {
+          'borderColor': '#424242',
+          'color': '#424242',
+          '&:hover': {
+            borderColor: '#1b1b1b',
+            backgroundColor: '#f0f0f0',
+          },
+        },
+        outlinedSecondary: {
+          'borderColor': '#bdbdbd',
+          'color': '#424242',
+          '&:hover': {
+            borderColor: '#8d8d8d',
+            backgroundColor: '#f0f0f0',
           },
         },
       },
@@ -163,35 +213,132 @@ export const estimatorTheme = createTheme({
     MuiAppBar: {
       styleOverrides: {
         root: {
-          backgroundColor: '#067cc1',
+          backgroundColor: '#424242',
+          color: '#ffffff',
+        },
+      },
+    },
+    MuiPaper: {
+      styleOverrides: {
+        root: {
+          backgroundColor: '#ffffff',
+          color: '#333333',
+        },
+        elevation1: {
+          boxShadow: '0px 1px 3px rgba(0, 0, 0, 0.1)',
+        },
+      },
+    },
+    MuiCard: {
+      styleOverrides: {
+        root: {
+          borderRadius: '8px',
+          backgroundColor: '#ffffff',
+          boxShadow: '0px 1px 3px rgba(0, 0, 0, 0.1)',
         },
       },
     },
     MuiTypography: {
       styleOverrides: {
-        h1: {
-          color: '#333',
+        root: {
+          color: '#333333',
         },
-        h2: {
-          color: '#333',
+      },
+    },
+    MuiTableHead: {
+      styleOverrides: {
+        root: {
+          backgroundColor: '#f0f0f0',
         },
-        h3: {
-          color: '#333',
+      },
+    },
+    MuiTableCell: {
+      styleOverrides: {
+        head: {
+          fontWeight: 600,
+          color: '#424242',
         },
-        h4: {
-          color: '#333',
+        body: {
+          color: '#555555',
         },
-        h5: {
-          color: '#333',
+      },
+    },
+    MuiDivider: {
+      styleOverrides: {
+        root: {
+          backgroundColor: '#e0e0e0',
         },
-        h6: {
-          color: '#333',
+      },
+    },
+    MuiIconButton: {
+      styleOverrides: {
+        root: {
+          'color': '#424242',
+          '&:hover': {
+            backgroundColor: '#e0e0e0',
+          },
         },
-        body1: {
-          color: '#555',
+      },
+    },
+    MuiInputBase: {
+      styleOverrides: {
+        root: {
+          backgroundColor: '#ffffff',
         },
-        body2: {
-          color: '#555',
+        input: {
+          color: '#333333',
+        },
+      },
+    },
+    MuiOutlinedInput: {
+      styleOverrides: {
+        root: {
+          'backgroundColor': '#ffffff',
+          '&:hover .MuiOutlinedInput-notchedOutline': {
+            borderColor: '#424242',
+          },
+          '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+            borderColor: '#424242',
+          },
+        },
+        notchedOutline: {
+          borderColor: '#bdbdbd',
+        },
+      },
+    },
+    MuiSelect: {
+      styleOverrides: {
+        icon: {
+          color: '#424242',
+        },
+      },
+    },
+    MuiCheckbox: {
+      styleOverrides: {
+        root: {
+          color: '#424242',
+        },
+      },
+    },
+    MuiRadio: {
+      styleOverrides: {
+        root: {
+          color: '#424242',
+        },
+      },
+    },
+    MuiSwitch: {
+      styleOverrides: {
+        switchBase: {
+          color: '#bdbdbd',
+        },
+        track: {
+          backgroundColor: '#bdbdbd',
+        },
+        colorPrimary: {
+          '&.Mui-checked': {
+            color: '#424242',
+          },
         },
       },
     },

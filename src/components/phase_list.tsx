@@ -11,6 +11,7 @@ import {
   InputAdornment,
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
+import { styled, useTheme } from '@mui/material/styles';
 
 import { Phase } from '../models/phase';
 import { StoreState, estimatorStore } from '../utils/store';
@@ -18,6 +19,39 @@ import { StoreState, estimatorStore } from '../utils/store';
 interface PhaseListProps {
   onClick: (phase: Phase) => void;
 }
+
+const StyledListItem = styled(ListItem)(({ theme }) => ({
+  'cursor': 'pointer',
+  'transition': 'background-color 0.3s',
+  '&:hover': {
+    backgroundColor: theme.palette.action.hover,
+  },
+  '&.Mui-selected': {
+    'backgroundColor': theme.palette.action.selected,
+    '&:hover': {
+      backgroundColor: theme.palette.action.selected,
+    },
+  },
+}));
+
+const StyledTextField = styled(TextField)(({ theme }) => ({
+  '& .MuiOutlinedInput-root': {
+    'borderRadius': theme.shape.borderRadius,
+    'backgroundColor': theme.palette.background.paper,
+    '& fieldset': {
+      borderColor: theme.palette.divider,
+    },
+    '&:hover fieldset': {
+      borderColor: theme.palette.text.primary,
+    },
+    '&.Mui-focused fieldset': {
+      borderColor: theme.palette.primary.main,
+    },
+  },
+  '& .MuiInputBase-input': {
+    padding: theme.spacing(1.5),
+  },
+}));
 
 export default function PhaseList({ onClick }: PhaseListProps) {
   const { proposalId, wbsId, phaseId } = useParams();
@@ -27,12 +61,12 @@ export default function PhaseList({ onClick }: PhaseListProps) {
   const navigate = useNavigate();
   const [data, setData] = useState<Phase[]>([]);
   const [searchInput, setSearchInput] = useState('');
+  const theme = useTheme();
 
   useEffect(() => {
     const temp = phases.filter((phase) => phase.wbsId === wbsId);
     temp.sort((a, b) => a.phaseNumber! - b.phaseNumber!);
     setData(temp);
-    console.log(temp);
   }, [phases, wbsId]);
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -48,22 +82,21 @@ export default function PhaseList({ onClick }: PhaseListProps) {
   return (
     <Box
       sx={{
-        bgcolor: 'background.paper',
+        backgroundColor: theme.palette.background.default,
         height: '100%',
         overflow: 'auto',
-        borderRadius: '8px',
-        boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
       }}>
+      {/* Search Bar */}
       <Box
         sx={{
           position: 'sticky',
           top: 0,
           zIndex: 1,
-          bgcolor: 'background.paper',
+          backgroundColor: theme.palette.background.default,
           p: 2,
-          boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+          borderBottom: `1px solid ${theme.palette.divider}`,
         }}>
-        <TextField
+        <StyledTextField
           fullWidth
           variant='outlined'
           size='small'
@@ -77,68 +110,43 @@ export default function PhaseList({ onClick }: PhaseListProps) {
               </InputAdornment>
             ),
           }}
-          sx={{
-            '.MuiOutlinedInput-root': {
-              'borderRadius': '20px',
-              'height': '40px',
-              '.MuiInputBase-input': {
-                height: '20px',
-                padding: '10px 14px',
-              },
-            },
-          }}
         />
       </Box>
-      <List sx={{ py: 0 }}>
+      {/* Phase List */}
+      <List sx={{ p: 0 }}>
         {filteredData.length > 0 ? (
           filteredData.map((phase) => (
             <Tooltip
               title={`${phase.phaseNumber} - ${phase.description}`}
               key={phase.id}
               placement='right'>
-              <ListItem
+              <StyledListItem
+                selected={phase.id === phaseId}
                 onClick={() => {
                   onClick(phase);
                   navigate(
                     `/proposal/${proposalId}/wbs/${wbsId}/phase/${phase.id}`,
                   );
-                }}
-                sx={{
-                  'bgcolor':
-                    phase.id == phaseId ? 'primary.main' : 'background.paper',
-                  'cursor': 'pointer',
-                  'transition': 'background-color 0.3s ease-in-out',
-                  '&:hover': {
-                    bgcolor: 'primary.light',
-                    color: 'primary.contrastText',
-                  },
-                  'borderBottom': '1px solid #e0e0e0',
                 }}>
                 <ListItemText
                   primaryTypographyProps={{
                     sx: {
-                      whiteSpace: 'nowrap',
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis',
-                      fontWeight: 'bold',
+                      fontWeight: 500,
                       color:
-                        phase.id == phaseId
-                          ? 'primary.contrastText'
-                          : 'text.primary',
+                        phase.id === phaseId
+                          ? theme.palette.primary.main
+                          : theme.palette.text.primary,
                     },
                   }}
                   secondaryTypographyProps={{
                     sx: {
-                      whiteSpace: 'nowrap',
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis',
-                      color: 'text.secondary',
+                      color: theme.palette.text.secondary,
                     },
                   }}
-                  primary={phase.phaseNumber}
+                  primary={`Phase ${phase.phaseNumber}`}
                   secondary={phase.description}
                 />
-              </ListItem>
+              </StyledListItem>
             </Tooltip>
           ))
         ) : (
