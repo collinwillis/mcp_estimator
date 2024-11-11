@@ -1,8 +1,16 @@
 import React, { useEffect, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { List, ListItem, ListItemText, Typography, Box } from '@mui/material';
+import {
+  Box,
+  List,
+  ListItem,
+  ListItemText,
+  Typography,
+  styled,
+  useTheme,
+  Tooltip,
+} from '@mui/material';
 
-import { useProposals } from '../../../hooks/proposals_hook';
 import { Proposal } from '../../../models/proposal';
 
 interface ProposalListProps {
@@ -10,17 +18,33 @@ interface ProposalListProps {
   proposals: Proposal[];
 }
 
-export default function ProposalList({
-  onClick,
-  proposals,
-}: ProposalListProps) {
+const StyledList = styled(List)(({ theme }) => ({
+  width: '100%',
+  backgroundColor: theme.palette.background.default,
+}));
+
+const StyledListItem = styled(ListItem)(({ theme }) => ({
+  'cursor': 'pointer',
+  'transition': 'background-color 0.3s',
+  '&:hover': {
+    backgroundColor: theme.palette.action.hover,
+  },
+  '&.Mui-selected': {
+    'backgroundColor': theme.palette.action.selected,
+    '&:hover': {
+      backgroundColor: theme.palette.action.selected,
+    },
+  },
+}));
+
+const ProposalList: React.FC<ProposalListProps> = ({ onClick, proposals }) => {
   const navigate = useNavigate();
   const listRef = useRef<HTMLUListElement>(null);
-  const { proposalId, wbsId, phaseId } = useParams();
+  const { proposalId } = useParams();
+  const theme = useTheme();
 
   useEffect(() => {
     const savedProposalId = sessionStorage.getItem('selectedProposalId');
-    console.log('Retrieved from sessionStorage:', savedProposalId);
 
     if (savedProposalId && listRef.current) {
       const selectedElement = listRef.current.querySelector(
@@ -34,60 +58,50 @@ export default function ProposalList({
   }, [proposalId]);
 
   const handleProposalClick = (item: Proposal) => {
-    console.log(item);
     sessionStorage.setItem('selectedProposalId', item.id!);
     onClick(item);
     navigate(`/proposal/${item.id}`);
   };
+
   const savedProposalId = sessionStorage.getItem('selectedProposalId');
+
   return (
-    <List
-      ref={listRef}
-      sx={{
-        width: '100%',
-        bgcolor: 'background.paper',
-        borderRadius: '8px',
-        boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
-      }}>
+    <StyledList ref={listRef}>
       {proposals.length > 0 ? (
         proposals.map((item) => (
-          <ListItem
+          <Tooltip
             key={item.id}
-            data-proposal-id={item.id} // Assign a data attribute for easy selection
-            onClick={() => handleProposalClick(item)}
-            sx={{
-              'cursor': 'pointer',
-              'transition': 'background-color 0.3s, color 0.3s',
-              'padding': '16px',
-              'borderBottom': '1px solid #e0e0e0',
-              'backgroundColor':
-                savedProposalId === item.id ? '#f0f8ff' : 'inherit', // Slight background color if previously selected
-              '&:hover': {
-                backgroundColor: 'primary.main',
-                color: 'white',
-              },
-            }}>
-            <ListItemText
-              primary={
-                <Typography
-                  variant='subtitle1'
-                  sx={{
-                    fontWeight: 'bold',
-                  }}>
-                  {`${item.proposalNumber} - ${item.proposalDescription}`}
-                </Typography>
-              }
-              secondary={
-                <Typography
-                  variant='body2'
-                  sx={{
-                    color: 'text.secondary',
-                  }}>
-                  {item.proposalOwner}
-                </Typography>
-              }
-            />
-          </ListItem>
+            title={`${item.proposalNumber} - ${item.proposalDescription}`}
+            placement='right'>
+            <StyledListItem
+              data-proposal-id={item.id}
+              selected={savedProposalId === item.id}
+              onClick={() => handleProposalClick(item)}>
+              <ListItemText
+                primary={
+                  <Typography
+                    variant='subtitle1'
+                    sx={{
+                      fontWeight: 500,
+                      color:
+                        savedProposalId === item.id
+                          ? theme.palette.primary.main
+                          : theme.palette.text.primary,
+                    }}>
+                    {`${item.proposalNumber} - ${item.proposalDescription}`}
+                  </Typography>
+                }
+                secondary={
+                  <Typography
+                    variant='body2'
+                    color='text.secondary'
+                    sx={{ mt: 0.5 }}>
+                    {item.proposalOwner}
+                  </Typography>
+                }
+              />
+            </StyledListItem>
+          </Tooltip>
         ))
       ) : (
         <Box sx={{ p: 2 }}>
@@ -96,6 +110,8 @@ export default function ProposalList({
           </Typography>
         </Box>
       )}
-    </List>
+    </StyledList>
   );
-}
+};
+
+export default ProposalList;

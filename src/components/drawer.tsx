@@ -93,7 +93,7 @@ interface AppBarProps extends MuiAppBarProps {
 const AppBar = styled(MuiAppBar, {
   shouldForwardProp: (prop) => prop !== 'open',
 })<AppBarProps>(({ theme, open }) => ({
-  backgroundColor: '#067cc1',
+  backgroundColor: 'primary',
   transition: theme.transitions.create(['margin', 'width'], {
     easing: theme.transitions.easing.sharp,
     duration: theme.transitions.duration.leavingScreen,
@@ -462,12 +462,12 @@ export default function EstimatorDrawer({ children }: EstimatorDrawerProps) {
                     'width': '80%',
                     'alignSelf': 'center',
                     'borderRadius': '4px',
-                    'backgroundColor': '#067cc1',
+                    'backgroundColor': 'primary.main',
                     'color': '#fff',
                     'boxShadow': '0 2px 4px rgba(0, 0, 0, 0.1)',
                     'transition': 'background-color 0.3s, box-shadow 0.3s',
                     '&:hover': {
-                      backgroundColor: '#005a8c',
+                      backgroundColor: 'primary.dark',
                       boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
                     },
                     '&:disabled': {
@@ -501,12 +501,12 @@ export default function EstimatorDrawer({ children }: EstimatorDrawerProps) {
                     'width': '80%',
                     'alignSelf': 'center',
                     'borderRadius': '4px',
-                    'backgroundColor': '#067cc1',
+                    'backgroundColor': 'primary.main',
                     'color': '#fff',
                     'boxShadow': '0 2px 4px rgba(0, 0, 0, 0.1)',
                     'transition': 'background-color 0.3s, box-shadow 0.3s',
                     '&:hover': {
-                      backgroundColor: '#005a8c',
+                      backgroundColor: 'primary.dark',
                       boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
                     },
                     '&:disabled': {
