@@ -25,7 +25,9 @@ import {
 } from '../../../models/equipment';
 import { ActivityType } from '../../../models/activity';
 import { useCurrentPhase } from '../../../hooks/current_phase_hook';
-import rawEquipment from '../../../data/equipment_v2.json';
+import { useCurrentProposal } from '../../../hooks/current_proposal_hook';
+import defaultEquipment from '../../../data/equipment_v2.json';
+import equipment2025 from '../../../data/2025/equipment_2025.json';
 
 export default function AddEquipmentDialog({
   open,
@@ -38,6 +40,15 @@ export default function AddEquipmentDialog({
   const currentPhase = useCurrentPhase({
     phaseId: phaseId ?? '',
   });
+  const currentProposal = useCurrentProposal({
+    proposalId: proposalId ?? '',
+  });
+
+  // Determine which equipment array to use based on proposal's constantDataSet
+  const rawEquipment = currentProposal?.constantDataSet === "2025"
+    ? equipment2025
+    : defaultEquipment;
+
   const [search, setSearch] = useState('');
   const [searchResults, setSearchResults] = useState<Equipment[]>([]);
   const [checked, setChecked] = useState<Equipment[]>([]);
@@ -103,13 +114,12 @@ export default function AddEquipmentDialog({
     let temp: Equipment[] = [];
     rawEquipment.forEach((equipment) => {
       const newEquipment: Equipment = equipment as Equipment;
-
       temp = [...temp, newEquipment];
     });
 
     temp = temp.sort((a, b) => a.id - b.id);
     setEquipment(temp);
-  }, [currentPhase]);
+  }, [currentPhase, rawEquipment]);
 
   // Filter the activities based on the search input
   useEffect(() => {
@@ -149,7 +159,7 @@ export default function AddEquipmentDialog({
             const isChecked = checked.indexOf(currentEquipment) !== -1;
             return (
               <ListItem
-                key={equipment.indexOf(currentEquipment)}
+                key={`equipment-${currentEquipment.id}`}
                 disablePadding>
                 <ListItemButton
                   role={undefined}

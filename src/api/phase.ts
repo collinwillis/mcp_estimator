@@ -11,7 +11,8 @@ import {
   writeBatch,
 } from 'firebase/firestore';
 
-import constants from '../data/constants.json';
+import defaultConstants from '../data/constants.json';
+import constants2025 from '../data/2025/constants_2025.json';
 import { Activity, ActivityType } from '../models/activity';
 import { FirestoreActivity } from '../models/firestore models/activity_firestore';
 import { FirestorePhase } from '../models/firestore models/phase_firestore';
@@ -20,6 +21,7 @@ import { Phase } from '../models/phase';
 import { firestore } from '../setup/config/firebase';
 import { getActivitiesForPhase, getQuantityAndUnit } from './activity';
 import { getSingleWbs } from './wbs';
+import { getSingleProposal } from './proposal';
 
 export const insertPhase = async (newPhase: FirestorePhase) => {
   await addDoc(collection(firestore, 'phase'), {
@@ -165,6 +167,10 @@ export const copyActivitiesFromPhase = async (
   );
   const toPhase = await getSinglePhase({ phaseId: toPhaseId });
   const fromPhase = await getSinglePhase({ phaseId: fromPhaseId });
+  const proposal = await getSingleProposal({ proposalId: toPhase?.proposalId || '' });
+  const constants = proposal?.constantDataSet === "2025"
+    ? constants2025
+    : defaultConstants;
   const activitiesQuerySnapshot = await getDocs(activitiesQuery);
   activitiesQuerySnapshot.forEach((activityDocSnap) => {
     // Convert Firestore document to FirestoreActivity object

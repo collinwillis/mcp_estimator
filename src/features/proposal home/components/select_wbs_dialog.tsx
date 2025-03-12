@@ -16,6 +16,8 @@ import ListItemText from '@mui/material/ListItemText';
 
 import { ProposalPreferences } from '../../../models/proposal_preferences';
 import { WbsArray } from '../../../utils/enums';
+import wbs2025Array from '../../../data/2025/wbs_2025.json';
+import { useCurrentProposal } from '../../../hooks/current_proposal_hook';
 import { StoreState, estimatorStore } from '../../../utils/store';
 
 interface Props {
@@ -34,6 +36,16 @@ export default function SelectWbsDialog({
     (state: StoreState) => state.setPreferences,
   );
   const proposal = estimatorStore((state: StoreState) => state.proposal);
+
+  // Determine which WBS array to use based on proposal's constantDataSet
+  const currentProposal = useCurrentProposal({
+    proposalId: proposal?.id ?? '',
+  });
+
+  const wbsArrayToUse = currentProposal?.constantDataSet === "2025"
+    ? wbs2025Array
+    : WbsArray;
+
   useEffect(() => {
     if (proposalPreferences) {
       setChecked(proposalPreferences?.wbsToDisplay!);
@@ -86,12 +98,15 @@ export default function SelectWbsDialog({
         <DialogContent sx={{ height: '400px', width: '400px' }}>
           <List
             sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}>
-            {WbsArray?.sort((a, b) => {
-              return a.wbsDatabaseId! - b.wbsDatabaseId!;
+            {wbsArrayToUse?.sort((a, b) => {
+              // Handle different object structures for sorting
+              const aValue = 'id' in a ? Number(a.id) : Number(a);
+              const bValue = 'id' in b ? Number(b.id) : Number(b);
+              return aValue - bValue;
             }).map((wbs) => {
-              const labelId = `checkbox-list-label-${wbs}`;
+              const labelId = `checkbox-list-label-${wbs.name}`;
               return (
-                <ListItem key={wbs.toString()} disablePadding>
+                <ListItem key={wbs.name} disablePadding>
                   <ListItemButton
                     role={undefined}
                     onClick={handleToggle(wbs.name)}

@@ -99,6 +99,8 @@ export class Proposal {
 
   rigProfitRate?: number;
 
+  constantDataSet?: string;
+
   constructor(data: Partial<Proposal>) {
     Object.assign(this, data);
   }
