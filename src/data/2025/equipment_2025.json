@@ -1,0 +1,1026 @@
+[
+  {
+    "id": 1,
+    "description": "AIR TOOLS - AIR COMPRESSOR 0-185 CFM",
+    "hourRate": 8,
+    "dayRate": 64,
+    "weekRate": 256,
+    "monthRate": 768
+  },
+  {
+    "id": 2,
+    "description": "AIR TOOLS - AIR TUGGER",
+    "hourRate": 10,
+    "dayRate": 80,
+    "weekRate": 320,
+    "monthRate": 960
+  },
+  {
+    "id": 3,
+    "description": "BASKETS - MANBASKET",
+    "hourRate": 10,
+    "dayRate": 80,
+    "weekRate": 320,
+    "monthRate": 960
+  },
+  {
+    "id": 4,
+    "description": "BASKETS - TOTE BASKET",
+    "hourRate": 10,
+    "dayRate": 80,
+    "weekRate": 320,
+    "monthRate": 960
+  },
+  {
+    "id": 5,
+    "description": "BREAKERS - AIR BREAKER 30 LBS",
+    "hourRate": 7,
+    "dayRate": 56,
+    "weekRate": 224,
+    "monthRate": 672
+  },
+  {
+    "id": 6,
+    "description": "BREAKERS - AIR BREAKER 60 LBS",
+    "hourRate": 8,
+    "dayRate": 64,
+    "weekRate": 256,
+    "monthRate": 768
+  },
+  {
+    "id": 7,
+    "description": "BREAKERS - AIR BREAKER 90 LBS",
+    "hourRate": 9,
+    "dayRate": 72,
+    "weekRate": 288,
+    "monthRate": 864
+  },
+  {
+    "id": 8,
+    "description": "BREAKERS - ELECTRIC BREAKER 30-50 LBS",
+    "hourRate": 10,
+    "dayRate": 80,
+    "weekRate": 320,
+    "monthRate": 960
+  },
+  {
+    "id": 9,
+    "description": "BREAKERS - ELECTRIC CHIPPING 10-30 LBS",
+    "hourRate": 8,
+    "dayRate": 64,
+    "weekRate": 256,
+    "monthRate": 768
+  },
+  {
+    "id": 10,
+    "description": "BREAKERS - ELECTRIC ROTARY HAMMER DRILL",
+    "hourRate": 8,
+    "dayRate": 64,
+    "weekRate": 256,
+    "monthRate": 768
+  },
+  {
+    "id": 11,
+    "description": "BUS - 10 TO 50 PASSENGER",
+    "hourRate": 26,
+    "dayRate": 208,
+    "weekRate": 832,
+    "monthRate": 2496
+  },
+  {
+    "id": 12,
+    "description": "COMPACTOR - VIBRATORY JUMPING JACK",
+    "hourRate": 10,
+    "dayRate": 80,
+    "weekRate": 320,
+    "monthRate": 960
+  },
+  {
+    "id": 13,
+    "description": "COMPACTOR - VIBRATORY PLATE",
+    "hourRate": 15,
+    "dayRate": 120,
+    "weekRate": 480,
+    "monthRate": 1440
+  },
+  {
+    "id": 14,
+    "description": "COMPACTOR - VIBRATORY SHEEPSFOOT WALK BEHIND",
+    "hourRate": 25,
+    "dayRate": 200,
+    "weekRate": 800,
+    "monthRate": 2400
+  },
+  {
+    "id": 15,
+    "description": "CONCRETE - BUCKET 3/4 CY",
+    "hourRate": 10,
+    "dayRate": 80,
+    "weekRate": 320,
+    "monthRate": 960
+  },
+  {
+    "id": 16,
+    "description": "CONCRETE - REBAR BENDER",
+    "hourRate": 5,
+    "dayRate": 40,
+    "weekRate": 160,
+    "monthRate": 480
+  },
+  {
+    "id": 17,
+    "description": "CONCRETE - GROUT MIXER",
+    "hourRate": 7,
+    "dayRate": 56,
+    "weekRate": 224,
+    "monthRate": 672
+  },
+  {
+    "id": 18,
+    "description": "CONCRETE - HAMMER DRILL",
+    "hourRate": 9,
+    "dayRate": 72,
+    "weekRate": 288,
+    "monthRate": 864
+  },
+  {
+    "id": 19,
+    "description": "CONCRETE - VIBRATOR",
+    "hourRate": 7,
+    "dayRate": 56,
+    "weekRate": 224,
+    "monthRate": 672
+  },
+  {
+    "id": 20,
+    "description": "CONFINED SPACE - LANYARD 25' RETRACTABLE",
+    "hourRate": 3,
+    "dayRate": 24,
+    "weekRate": 96,
+    "monthRate": 288
+  },
+  {
+    "id": 21,
+    "description": "CONFINED SPACE - LANYARD 50' RETRACTABLE",
+    "hourRate": 4,
+    "dayRate": 32,
+    "weekRate": 128,
+    "monthRate": 384
+  },
+  {
+    "id": 22,
+    "description": "CONFINED SPACE - LANYARD 75' RETRACTABLE",
+    "hourRate": 5,
+    "dayRate": 40,
+    "weekRate": 160,
+    "monthRate": 480
+  },
+  {
+    "id": 23,
+    "description": "CONFINED SPACE - LANYARD 100' RETRACTABLE",
+    "hourRate": 6,
+    "dayRate": 48,
+    "weekRate": 192,
+    "monthRate": 576
+  },
+  {
+    "id": 24,
+    "description": "CONFINED SPACE - RETRIEVER",
+    "hourRate": 7,
+    "dayRate": 56,
+    "weekRate": 224,
+    "monthRate": 672
+  },
+  {
+    "id": 25,
+    "description": "CRANES - CARRY DECK 8.5 TON",
+    "hourRate": 40,
+    "dayRate": 320,
+    "weekRate": 1280,
+    "monthRate": 3840
+  },
+  {
+    "id": 26,
+    "description": "CRANES - CARRY DECK 15 TON",
+    "hourRate": 55,
+    "dayRate": 440,
+    "weekRate": 1760,
+    "monthRate": 5280
+  },
+  {
+    "id": 27,
+    "description": "CRANES - ROUGH TERRAIN 16 TO 30 TON",
+    "hourRate": 74,
+    "dayRate": 592,
+    "weekRate": 2368,
+    "monthRate": 7104
+  },
+  {
+    "id": 28,
+    "description": "CRANES - ROUGH TERRAIN 35 TO 50 TON",
+    "hourRate": 95,
+    "dayRate": 760,
+    "weekRate": 3040,
+    "monthRate": 9120
+  },
+  {
+    "id": 29,
+    "description": "CRANES - ROUGH TERRAIN 55 TO 75 TON",
+    "hourRate": 100,
+    "dayRate": 800,
+    "weekRate": 3200,
+    "monthRate": 9600
+  },
+  {
+    "id": 30,
+    "description": "CRANES - ROUGH TERRAIN 80 TO 90 TON",
+    "hourRate": 190,
+    "dayRate": 1520,
+    "weekRate": 6080,
+    "monthRate": 18240
+  },
+  {
+    "id": 31,
+    "description": "CRANES - ROUGH TERRAIN 100 TO 120 TON",
+    "hourRate": 210,
+    "dayRate": 1680,
+    "weekRate": 6720,
+    "monthRate": 20160
+  },
+  {
+    "id": 32,
+    "description": "CRANES - ROUGH TERRAIN 130 TO 150 TON",
+    "hourRate": 230,
+    "dayRate": 1840,
+    "weekRate": 7360,
+    "monthRate": 22080
+  },
+  {
+    "id": 33,
+    "description": "CRANES - CRAWLER 75 TON",
+    "hourRate": 190,
+    "dayRate": 1520,
+    "weekRate": 6080,
+    "monthRate": 18240
+  },
+  {
+    "id": 34,
+    "description": "CRANES - CRAWLER 100 TON",
+    "hourRate": 230,
+    "dayRate": 1840,
+    "weekRate": 7360,
+    "monthRate": 22080
+  },
+  {
+    "id": 35,
+    "description": "CRANES - CRANE MATS",
+    "hourRate": 6,
+    "dayRate": 48,
+    "weekRate": 192,
+    "monthRate": 576
+  },
+  {
+    "id": 36,
+    "description": "EXCAVATION - EXCAVATOR 40,000#",
+    "hourRate": 65,
+    "dayRate": 520,
+    "weekRate": 2080,
+    "monthRate": 6240
+  },
+  {
+    "id": 37,
+    "description": "EXCAVATION - EXCAVATOR 60,000#",
+    "hourRate": 85,
+    "dayRate": 680,
+    "weekRate": 2720,
+    "monthRate": 8160
+  },
+  {
+    "id": 38,
+    "description": "GAUGES - CRYSTAL GAUGE",
+    "hourRate": 50,
+    "dayRate": 400,
+    "weekRate": 1600,
+    "monthRate": 4800
+  },
+  {
+    "id": 39,
+    "description": "GAUGES - BARTON METER",
+    "hourRate": 10,
+    "dayRate": 80,
+    "weekRate": 320,
+    "monthRate": 960
+  },
+  {
+    "id": 40,
+    "description": "GENERATORS - 5000W",
+    "hourRate": 8,
+    "dayRate": 64,
+    "weekRate": 256,
+    "monthRate": 768
+  },
+  {
+    "id": 41,
+    "description": "GENERATORS - 7500W",
+    "hourRate": 10,
+    "dayRate": 80,
+    "weekRate": 320,
+    "monthRate": 960
+  },
+  {
+    "id": 42,
+    "description": "GENERATORS - POWER DIST. BOX 125/250 V SINGLE",
+    "hourRate": 9,
+    "dayRate": 72,
+    "weekRate": 288,
+    "monthRate": 864
+  },
+  {
+    "id": 43,
+    "description": "HEATERS - AIR 500,000 BTU",
+    "hourRate": 10,
+    "dayRate": 80,
+    "weekRate": 320,
+    "monthRate": 960
+  },
+  {
+    "id": 44,
+    "description": "HEATERS - AIR 1,000,000 BTU",
+    "hourRate": 20,
+    "dayRate": 160,
+    "weekRate": 640,
+    "monthRate": 1920
+  },
+  {
+    "id": 45,
+    "description": "HEATERS - AIR 2,000,000 BTU",
+    "hourRate": 25,
+    "dayRate": 200,
+    "weekRate": 800,
+    "monthRate": 2400
+  },
+  {
+    "id": 46,
+    "description": "HYDRAULICS - PORT-A-POWER",
+    "hourRate": 6,
+    "dayRate": 48,
+    "weekRate": 192,
+    "monthRate": 576
+  },
+  {
+    "id": 47,
+    "description": "HYDRAULICS - TORQUE TOOL",
+    "hourRate": 50,
+    "dayRate": 400,
+    "weekRate": 1600,
+    "monthRate": 4800
+  },
+  {
+    "id": 48,
+    "description": "IMPACTS - DRIVE IMPACT 3/4\" HD",
+    "hourRate": 6,
+    "dayRate": 48,
+    "weekRate": 192,
+    "monthRate": 576
+  },
+  {
+    "id": 49,
+    "description": "IMPACTS - DRIVE IMPACT 1\" HD",
+    "hourRate": 7,
+    "dayRate": 56,
+    "weekRate": 224,
+    "monthRate": 672
+  },
+  {
+    "id": 50,
+    "description": "IMPACTS - DRIVE IMPACT 1-1/2\" HD",
+    "hourRate": 8,
+    "dayRate": 64,
+    "weekRate": 256,
+    "monthRate": 768
+  },
+  {
+    "id": 51,
+    "description": "LOADERS - RUBBER TIRED BACKHOE",
+    "hourRate": 35,
+    "dayRate": 280,
+    "weekRate": 1120,
+    "monthRate": 3360
+  },
+  {
+    "id": 52,
+    "description": "LOADERS - FRONTEND 3 CY",
+    "hourRate": 55,
+    "dayRate": 440,
+    "weekRate": 1760,
+    "monthRate": 5280
+  },
+  {
+    "id": 53,
+    "description": "LOADERS - FRONTEND 4 CY",
+    "hourRate": 75,
+    "dayRate": 600,
+    "weekRate": 2400,
+    "monthRate": 7200
+  },
+  {
+    "id": 54,
+    "description": "LOADERS - SKID STEER WHEELED",
+    "hourRate": 32,
+    "dayRate": 256,
+    "weekRate": 1024,
+    "monthRate": 3072
+  },
+  {
+    "id": 55,
+    "description": "LOADERS - SKID STEER TRACKED",
+    "hourRate": 34,
+    "dayRate": 272,
+    "weekRate": 1088,
+    "monthRate": 3264
+  },
+  {
+    "id": 56,
+    "description": "LIFTS - SCISSORLIFT 19'",
+    "hourRate": 6,
+    "dayRate": 48,
+    "weekRate": 192,
+    "monthRate": 576
+  },
+  {
+    "id": 57,
+    "description": "LIFTS - SCISSORLIFT 25'",
+    "hourRate": 8,
+    "dayRate": 64,
+    "weekRate": 256,
+    "monthRate": 768
+  },
+  {
+    "id": 58,
+    "description": "LIFTS - SCISSORLIFT 30'",
+    "hourRate": 11,
+    "dayRate": 88,
+    "weekRate": 352,
+    "monthRate": 1056
+  },
+  {
+    "id": 59,
+    "description": "LIFTS - SCISSORLIFT 40'",
+    "hourRate": 20,
+    "dayRate": 160,
+    "weekRate": 640,
+    "monthRate": 1920
+  },
+  {
+    "id": 60,
+    "description": "LIFTS - MANLIFT 45'",
+    "hourRate": 30,
+    "dayRate": 240,
+    "weekRate": 960,
+    "monthRate": 2880
+  },
+  {
+    "id": 61,
+    "description": "LIFTS - MANLIFT 60'",
+    "hourRate": 40,
+    "dayRate": 320,
+    "weekRate": 1280,
+    "monthRate": 3840
+  },
+  {
+    "id": 62,
+    "description": "LIFTS - MANLIFT 80'",
+    "hourRate": 55,
+    "dayRate": 440,
+    "weekRate": 1760,
+    "monthRate": 5280
+  },
+  {
+    "id": 63,
+    "description": "LIFTS - MANLIFT 120'",
+    "hourRate": 100,
+    "dayRate": 800,
+    "weekRate": 3200,
+    "monthRate": 9600
+  },
+  {
+    "id": 64,
+    "description": "LIFTS - MANLIFT 135'",
+    "hourRate": 110,
+    "dayRate": 880,
+    "weekRate": 3520,
+    "monthRate": 10560
+  },
+  {
+    "id": 65,
+    "description": "LIFTS - MANLIFT 150'",
+    "hourRate": 130,
+    "dayRate": 1040,
+    "weekRate": 4160,
+    "monthRate": 12480
+  },
+  {
+    "id": 66,
+    "description": "LIFTS - FORKLIFT STRAIGHTMAST 0-6000#",
+    "hourRate": 30,
+    "dayRate": 240,
+    "weekRate": 960,
+    "monthRate": 2880
+  },
+  {
+    "id": 67,
+    "description": "LIFTS - FORKLIFT EXTENDA BOOM 8000#",
+    "hourRate": 40,
+    "dayRate": 320,
+    "weekRate": 1280,
+    "monthRate": 3840
+  },
+  {
+    "id": 68,
+    "description": "LIFTS - FORKLIFT EXTENDA BOOM 10000#",
+    "hourRate": 45,
+    "dayRate": 360,
+    "weekRate": 1440,
+    "monthRate": 4320
+  },
+  {
+    "id": 69,
+    "description": "LIFTS - FORKLIFT EXTENDA BOOM 12000#",
+    "hourRate": 50,
+    "dayRate": 400,
+    "weekRate": 1600,
+    "monthRate": 4800
+  },
+  {
+    "id": 70,
+    "description": "LIFTS - FORKLIFT EXTENDA BOOM 15000#",
+    "hourRate": 60,
+    "dayRate": 480,
+    "weekRate": 1920,
+    "monthRate": 5760
+  },
+  {
+    "id": 71,
+    "description": "MONITORS - H2S PERSONAL",
+    "hourRate": 2,
+    "dayRate": 16,
+    "weekRate": 64,
+    "monthRate": 192
+  },
+  {
+    "id": 72,
+    "description": "MONITORS - 4 GAS PERSONAL",
+    "hourRate": 3,
+    "dayRate": 24,
+    "weekRate": 96,
+    "monthRate": 288
+  },
+  {
+    "id": 73,
+    "description": "MONITORS - 6 GAS PERSONAL",
+    "hourRate": 5,
+    "dayRate": 40,
+    "weekRate": 160,
+    "monthRate": 480
+  },
+  {
+    "id": 74,
+    "description": "MONITORS - 4 GAS AREA",
+    "hourRate": 11,
+    "dayRate": 88,
+    "weekRate": 352,
+    "monthRate": 1056
+  },
+  {
+    "id": 75,
+    "description": "OFFICE EQUIPMENT - COPY MACHINE",
+    "hourRate": 0,
+    "dayRate": 0,
+    "weekRate": 600,
+    "monthRate": 1800
+  },
+  {
+    "id": 76,
+    "description": "OFFICE EQUIPMENT - COMPUTER",
+    "hourRate": 0,
+    "dayRate": 35,
+    "weekRate": 140,
+    "monthRate": 420
+  },
+  {
+    "id": 77,
+    "description": "PIPE MACHINE - CUTTING PLASMA",
+    "hourRate": 9,
+    "dayRate": 72,
+    "weekRate": 288,
+    "monthRate": 864
+  },
+  {
+    "id": 78,
+    "description": "PIPE MACHINE - MANUAL BEVELING",
+    "hourRate": 6,
+    "dayRate": 48,
+    "weekRate": 192,
+    "monthRate": 576
+  },
+  {
+    "id": 79,
+    "description": "PIPE MACHINE - AUTO BEVELING",
+    "hourRate": 7,
+    "dayRate": 56,
+    "weekRate": 224,
+    "monthRate": 672
+  },
+  {
+    "id": 80,
+    "description": "PIPE MACHINE - HANDHELD THREADER",
+    "hourRate": 2,
+    "dayRate": 16,
+    "weekRate": 64,
+    "monthRate": 192
+  },
+  {
+    "id": 81,
+    "description": "PIPE MACHINE - THREADING 1/2\" TO 4\"",
+    "hourRate": 9,
+    "dayRate": 72,
+    "weekRate": 288,
+    "monthRate": 864
+  },
+  {
+    "id": 82,
+    "description": "PIPE MACHINE - VICTAULIC 2\" TO 12\"",
+    "hourRate": 9,
+    "dayRate": 72,
+    "weekRate": 288,
+    "monthRate": 864
+  },
+  {
+    "id": 83,
+    "description": "PIPE MACHINE - GRASSHOPPER",
+    "hourRate": 6,
+    "dayRate": 48,
+    "weekRate": 192,
+    "monthRate": 576
+  },
+  {
+    "id": 84,
+    "description": "PIPE MACHINE - COLLAR PRESS 28MM TO 54MM",
+    "hourRate": 20,
+    "dayRate": 160,
+    "weekRate": 640,
+    "monthRate": 1920
+  },
+  {
+    "id": 85,
+    "description": "PUMPS - H.P. HYDRO PUMP MANUAL",
+    "hourRate": 5,
+    "dayRate": 40,
+    "weekRate": 160,
+    "monthRate": 480
+  },
+  {
+    "id": 86,
+    "description": "PUMPS - H.P. HYDRO PUMP ELECTRIC",
+    "hourRate": 7.5,
+    "dayRate": 60,
+    "weekRate": 240,
+    "monthRate": 720
+  },
+  {
+    "id": 87,
+    "description": "PUMPS - H.P. HYDRO PUMP TRUCK",
+    "hourRate": 190,
+    "dayRate": 1520,
+    "weekRate": 6080,
+    "monthRate": 18240
+  },
+  {
+    "id": 88,
+    "description": "PUMPS - TRASH PUMP 2\" TO 3\"",
+    "hourRate": 7,
+    "dayRate": 56,
+    "weekRate": 224,
+    "monthRate": 672
+  },
+  {
+    "id": 89,
+    "description": "SAWS - RECIPROCATING AIR DRIVEN",
+    "hourRate": 9,
+    "dayRate": 72,
+    "weekRate": 288,
+    "monthRate": 864
+  },
+  {
+    "id": 90,
+    "description": "SAWS - CHOP",
+    "hourRate": 8,
+    "dayRate": 64,
+    "weekRate": 256,
+    "monthRate": 768
+  },
+  {
+    "id": 91,
+    "description": "SAWS - 3/4\" SHEER WRENCH",
+    "hourRate": 5,
+    "dayRate": 40,
+    "weekRate": 160,
+    "monthRate": 480
+  },
+  {
+    "id": 92,
+    "description": "SAWS - 1\" SHEER WRENCH",
+    "hourRate": 6.25,
+    "dayRate": 50,
+    "weekRate": 200,
+    "monthRate": 600
+  },
+  {
+    "id": 93,
+    "description": "SAWS - GEORGE FISCHER SAW",
+    "hourRate": 11,
+    "dayRate": 88,
+    "weekRate": 352,
+    "monthRate": 1056
+  },
+  {
+    "id": 94,
+    "description": "TRAILER - CHANGE SINGLE UNIT",
+    "hourRate": 0,
+    "dayRate": 0,
+    "weekRate": 500,
+    "monthRate": 1500
+  },
+  {
+    "id": 95,
+    "description": "TRAILER - OFFICE SINGLE UNIT",
+    "hourRate": 0,
+    "dayRate": 0,
+    "weekRate": 500,
+    "monthRate": 1500
+  },
+  {
+    "id": 96,
+    "description": "TRAILER - MATERIAL",
+    "hourRate": 0,
+    "dayRate": 0,
+    "weekRate": 500,
+    "monthRate": 1500
+  },
+  {
+    "id": 97,
+    "description": "TRAILER - TOOL",
+    "hourRate": 0,
+    "dayRate": 145,
+    "weekRate": 580,
+    "monthRate": 1740
+  },
+  {
+    "id": 98,
+    "description": "TRAILER - TANDEM AXLE UTILITY",
+    "hourRate": 9,
+    "dayRate": 72,
+    "weekRate": 288,
+    "monthRate": 864
+  },
+  {
+    "id": 99,
+    "description": "TRAILER - TANDEM AXLE FLAT BED 5TH WHEEL",
+    "hourRate": 11,
+    "dayRate": 88,
+    "weekRate": 352,
+    "monthRate": 1056
+  },
+  {
+    "id": 100,
+    "description": "TRAILER - 14' DUMP TRAILOR",
+    "hourRate": 0,
+    "dayRate": 125,
+    "weekRate": 500,
+    "monthRate": 1500
+  },
+  {
+    "id": 101,
+    "description": "TRAILER - FLOAT 40' TO 53'",
+    "hourRate": 12,
+    "dayRate": 96,
+    "weekRate": 384,
+    "monthRate": 1152
+  },
+  {
+    "id": 102,
+    "description": "TRAILER - EQUIPMENT",
+    "hourRate": 15,
+    "dayRate": 120,
+    "weekRate": 480,
+    "monthRate": 1440
+  },
+  {
+    "id": 103,
+    "description": "TRAILER - TURNSTILE-ENCLOSED",
+    "hourRate": 0,
+    "dayRate": 0,
+    "weekRate": 0,
+    "monthRate": 1750
+  },
+  {
+    "id": 104,
+    "description": "TRAILER - LOW BOY 50 TON",
+    "hourRate": 0,
+    "dayRate": 136,
+    "weekRate": 544,
+    "monthRate": 1632
+  },
+  {
+    "id": 105,
+    "description": "TRUCK - PICKUP",
+    "hourRate": 12,
+    "dayRate": 96,
+    "weekRate": 384,
+    "monthRate": 1152
+  },
+  {
+    "id": 106,
+    "description": "TRUCK - FLAT BED",
+    "hourRate": 38,
+    "dayRate": 304,
+    "weekRate": 1216,
+    "monthRate": 3648
+  },
+  {
+    "id": 107,
+    "description": "TRUCK - TRACTOR STANDARD",
+    "hourRate": 38,
+    "dayRate": 304,
+    "weekRate": 1216,
+    "monthRate": 3648
+  },
+  {
+    "id": 108,
+    "description": "TRUCK - HYDRO HP",
+    "hourRate": 190,
+    "dayRate": 1520,
+    "weekRate": 6080,
+    "monthRate": 18240
+  },
+  {
+    "id": 109,
+    "description": "TRUCK - WATER",
+    "hourRate": 38,
+    "dayRate": 304,
+    "weekRate": 1216,
+    "monthRate": 3648
+  },
+  {
+    "id": 110,
+    "description": "TRUCK - YARD DOGG SPOTTER",
+    "hourRate": 38,
+    "dayRate": 304,
+    "weekRate": 1216,
+    "monthRate": 3648
+  },
+  {
+    "id": 111,
+    "description": "TRUCK - TRACTOR WET",
+    "hourRate": 45,
+    "dayRate": 360,
+    "weekRate": 1440,
+    "monthRate": 4320
+  },
+  {
+    "id": 112,
+    "description": "TRUCK - UTV",
+    "hourRate": 11,
+    "dayRate": 88,
+    "weekRate": 352,
+    "monthRate": 1056
+  },
+  {
+    "id": 113,
+    "description": "TRUCK - DUMP 5 CY",
+    "hourRate": 38,
+    "dayRate": 304,
+    "weekRate": 1216,
+    "monthRate": 3648
+  },
+  {
+    "id": 114,
+    "description": "WELDERS - WELDING MACHINE RIG",
+    "hourRate": 17,
+    "dayRate": 0,
+    "weekRate": 0,
+    "monthRate": 0
+  },
+  {
+    "id": 115,
+    "description": "WELDERS - WELDING MACHINE PORTABLE",
+    "hourRate": 10,
+    "dayRate": 80,
+    "weekRate": 320,
+    "monthRate": 960
+  },
+  {
+    "id": 116,
+    "description": "WELDERS - WELDING MACHINE ORBITAL",
+    "hourRate": 30,
+    "dayRate": 240,
+    "weekRate": 960,
+    "monthRate": 2880
+  },
+  {
+    "id": 117,
+    "description": "MISC - BORE SCOPE",
+    "hourRate": 11,
+    "dayRate": 88,
+    "weekRate": 352,
+    "monthRate": 1056
+  },
+  {
+    "id": 118,
+    "description": "MISC - DATAVAULT-ON-SITE MOBILE",
+    "hourRate": 0,
+    "dayRate": 0,
+    "weekRate": 224,
+    "monthRate": 672
+  },
+  {
+    "id": 119,
+    "description": "MISC - ROLLERS EQIUPMENT EA.",
+    "hourRate": 4,
+    "dayRate": 32,
+    "weekRate": 128,
+    "monthRate": 384
+  },
+  {
+    "id": 120,
+    "description": "MISC - TOTAL STATION",
+    "hourRate": 0,
+    "dayRate": 0,
+    "weekRate": 400,
+    "monthRate": 1200
+  },
+  {
+    "id": 121,
+    "description": "MISC - LASER ALIGNMENT MACHINE",
+    "hourRate": 15,
+    "dayRate": 120,
+    "weekRate": 480,
+    "monthRate": 1440
+  },
+  {
+    "id": 122,
+    "description": "MISC - MAGNETIC BASE DRILL",
+    "hourRate": 6,
+    "dayRate": 48,
+    "weekRate": 192,
+    "monthRate": 576
+  },
+  {
+    "id": 123,
+    "description": "MISC - RADIOS",
+    "hourRate": 3,
+    "dayRate": 24,
+    "weekRate": 96,
+    "monthRate": 288
+  },
+  {
+    "id": 124,
+    "description": "MISC - TRANSIT/LEVEL WITH ROD",
+    "hourRate": 8,
+    "dayRate": 64,
+    "weekRate": 256,
+    "monthRate": 768
+  },
+  {
+    "id": 125,
+    "description": "MISC - **TUBE TESTING / REPAIR TOOLS",
+    "hourRate": 0,
+    "dayRate": 1200,
+    "weekRate": 0,
+    "monthRate": 0
+  },
+  {
+    "id": 126,
+    "description": "MISC - PORT-A-JOHN",
+    "hourRate": 6,
+    "dayRate": 48,
+    "weekRate": 192,
+    "monthRate": 576
+  },
+  {
+    "id": 127,
+    "description": "MISC - HANDWASH STATION",
+    "hourRate": 6,
+    "dayRate": 48,
+    "weekRate": 192,
+    "monthRate": 576
+  },
+  {
+    "id": 128,
+    "description": "MISC - DUMPSTER SERVICE",
+    "hourRate": 10,
+    "dayRate": 80,
+    "weekRate": 320,
+    "monthRate": 960
+  }
+]

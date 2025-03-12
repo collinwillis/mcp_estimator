@@ -1,6 +1,8 @@
 export class FirestoreProposal {
   proposalNumber: number | null;
 
+  constantDataSet: string | null;
+
   job: string | null;
 
   coNumber: number | null;
@@ -77,6 +79,7 @@ export class FirestoreProposal {
 
   constructor({
     proposalNumber,
+    constantDataSet,
     job,
     coNumber,
     proposalDescription,
@@ -116,6 +119,7 @@ export class FirestoreProposal {
     rigProfitRate,
   }: {
     proposalNumber?: number | null;
+    constantDataSet?: string | null;
     job?: string | null;
     coNumber?: number | null;
     proposalDescription?: string | null;
@@ -155,6 +159,7 @@ export class FirestoreProposal {
     rigProfitRate?: number;
   }) {
     this.proposalNumber = proposalNumber ?? null;
+    this.constantDataSet = constantDataSet ?? null;
     this.job = job ?? null;
     this.coNumber = coNumber ?? null;
     this.proposalDescription = proposalDescription ?? null;

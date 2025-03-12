@@ -16,12 +16,14 @@ import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 
-import rawConstantData from '../../../data/constants.json';
+import defaultConstantData from '../../../data/constants.json';
+import constants2025Data from '../../../data/2025/constants_2025.json';
 import { useCurrentPhase } from '../../../hooks/current_phase_hook';
 import { ActivityType } from '../../../models/activity';
 import { Constant } from '../../../models/constant';
 import { FirestoreActivity } from '../../../models/firestore models/activity_firestore';
 import { StoreState, estimatorStore } from '../../../utils/store';
+import { useCurrentProposal } from '../../../hooks/current_proposal_hook';
 
 export default function AddActivityDialog({
   open,
@@ -34,6 +36,9 @@ export default function AddActivityDialog({
   const currentPhase = useCurrentPhase({
     phaseId: phaseId ?? '',
   });
+  const currentProposal = useCurrentProposal({
+    proposalId: proposalId ?? '',
+  });
   const [search, setSearch] = useState('');
   const [searchResults, setSearchResults] = useState<Constant[]>([]);
   const [checked, setChecked] = useState<Constant[]>([]);
@@ -44,6 +49,11 @@ export default function AddActivityDialog({
   const recalculatePhase = estimatorStore(
     (state: StoreState) => state.recalculatePhase,
   );
+
+  const rawConstantData = currentProposal?.constantDataSet === "2025"
+    ? constants2025Data
+    : defaultConstantData;
+
   // batch add new activities to db
   async function addToDb() {
     const temp: FirestoreActivity[] = [];
@@ -147,7 +157,10 @@ export default function AddActivityDialog({
             const labelId = `checkbox-list-label-${constant.id}`;
             const isChecked = checked.indexOf(constant) !== -1;
             return (
-              <ListItem key={constants.indexOf(constant)} disablePadding>
+              <ListItem
+                key={`${constant.phaseDatabaseId}-${constant.description}`}
+                disablePadding
+              >
                 <ListItemButton
                   role={undefined}
                   onClick={handleToggle(constant)}

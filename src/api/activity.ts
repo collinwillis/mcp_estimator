@@ -11,7 +11,8 @@ import {
 } from 'firebase/firestore';
 
 import agPiping from '../data/agPiping.json';
-import rawPhases from '../data/phases.json';
+import defaultPhases from '../data/phases.json';
+import phases2025 from '../data/2025/phases_2025.json';
 import { Activity, ActivityType } from '../models/activity';
 import { EquipmentOwnership, EquipmentUnit } from '../models/equipment';
 import { FirestoreActivity } from '../models/firestore models/activity_firestore';
@@ -496,9 +497,9 @@ export const calculateActivityData = async (
     rawActivity.equipment ?? null,
     rawActivity.quantity ?? 0,
     rawActivity.sortOrder ??
-      rawActivity.constant?.sortOrder ??
-      rawActivity.dateAdded ??
-      0,
+    rawActivity.constant?.sortOrder ??
+    rawActivity.dateAdded ??
+    0,
     rawActivity.activityType ?? ActivityType.laborItem,
     rawActivity.unit ?? rawActivity.constant?.craftUnits ?? '',
     craftConstant,
@@ -642,39 +643,39 @@ export function getQuantityAndUnit(
 //   await batch.commit();
 // }
 
-export async function insertActivitiesFromFile() {
-  const phasesToAdd: FirestorePhase[] = [];
-  agPiping.forEach((phase) => {
-    const localPhase = rawPhases.find((item) => {
-      return item.phaseDatabaseId == phase.phaseDatabaseId;
-    });
-    const newPhase = new FirestorePhase({
-      description: phase.description,
-      phaseDatabaseId: phase.phaseDatabaseId,
-      phaseDatabaseName: localPhase?.description,
-      phaseNumber: phase.phaseNumber,
-      wbsId: '0Qy1yBkK3wa2fjycSSp5',
-      proposalId: 'tms3XRwF8R3SXaqkjbqd',
-      area: phase.area,
-    });
-    phasesToAdd.push(newPhase);
-  });
+// export async function insertActivitiesFromFile() {
+//   const phasesToAdd: FirestorePhase[] = [];
+//   agPiping.forEach((phase) => {
+//     const localPhase = rawPhases.find((item) => {
+//       return item.phaseDatabaseId == phase.phaseDatabaseId;
+//     });
+//     const newPhase = new FirestorePhase({
+//       description: phase.description,
+//       phaseDatabaseId: phase.phaseDatabaseId,
+//       phaseDatabaseName: localPhase?.description,
+//       phaseNumber: phase.phaseNumber,
+//       wbsId: '0Qy1yBkK3wa2fjycSSp5',
+//       proposalId: 'tms3XRwF8R3SXaqkjbqd',
+//       area: phase.area,
+//     });
+//     phasesToAdd.push(newPhase);
+//   });
 
-  const batchSize = 500;
-  const numBatches = Math.ceil(phasesToAdd.length / batchSize);
+//   const batchSize = 500;
+//   const numBatches = Math.ceil(phasesToAdd.length / batchSize);
 
-  for (let i = 0; i < numBatches; i++) {
-    const batch = writeBatch(firestore);
+//   for (let i = 0; i < numBatches; i++) {
+//     const batch = writeBatch(firestore);
 
-    const batchStart = i * batchSize;
-    const batchEnd = Math.min(batchStart + batchSize, phasesToAdd.length);
-    const batchPhases = phasesToAdd.slice(batchStart, batchEnd);
+//     const batchStart = i * batchSize;
+//     const batchEnd = Math.min(batchStart + batchSize, phasesToAdd.length);
+//     const batchPhases = phasesToAdd.slice(batchStart, batchEnd);
 
-    batchPhases.forEach((phase) => {
-      const docRef = doc(collection(firestore, 'phase'));
-      batch.set(docRef, { ...phase });
-    });
+//     batchPhases.forEach((phase) => {
+//       const docRef = doc(collection(firestore, 'phase'));
+//       batch.set(docRef, { ...phase });
+//     });
 
-    await batch.commit();
-  }
-}
+//     await batch.commit();
+//   }
+// }

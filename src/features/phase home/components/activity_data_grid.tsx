@@ -54,10 +54,21 @@ import {
   subcontractorItemAvailableCells,
 } from './columns';
 import { getActivityColumns } from './columns2';
-import localPhaseArray from '../../../data/phases.json';
-import localConstantArray from '../../../data/constants.json';
+import defaultConstantArray from '../../../data/constants.json';
+import constants2025Array from '../../../data/2025/constants_2025.json';
+import defaultPhaseArray from '../../../data/phases.json';
+import phase2025Array from '../../../data/2025/phases_2025.json';
+import { useCurrentProposal } from '../../../hooks/current_proposal_hook';
+import FormattedNumberInput from '../../../components/formatted_number_input';
 
 function ActivityDataGrid() {
+  // Add these states for the base rate editing
+  const [baseRate, setBaseRate] = useState<number>();
+  const [subsistence, setSubsistence] = useState<number>();
+  const [rateEditingDisabled, setRateEditingDisabled] = useState(true);
+  const updateActivityRates = estimatorStore(
+    (state: StoreState) => state.updateActivityRates,
+  );
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
   const updatePhase = estimatorStore((state: StoreState) => state.updatePhase);
@@ -72,6 +83,21 @@ function ActivityDataGrid() {
   };
 
   const { proposalId, wbsId, phaseId } = useParams();
+
+  const currentProposal = useCurrentProposal({
+    proposalId: proposalId ?? '',
+  });
+
+  const localConstantArray = currentProposal?.constantDataSet === "2025"
+    ? constants2025Array
+    : defaultConstantArray;
+
+  const localPhaseArray = currentProposal?.constantDataSet === "2025"
+    ? phase2025Array
+    : defaultPhaseArray;
+
+
+
   const { hasWritePermissions } = useUserProfile();
   const [selectedRows, setSelectedRows] = React.useState<GridRowId[]>([]);
   const [columns, setColumns] = React.useState<GridColumns>([]);
@@ -151,6 +177,86 @@ function ActivityDataGrid() {
       phaseDatabaseId: currentPhase?.phaseDatabaseId || 0,
       description: currentPhase?.phaseDatabaseName || '',
     });
+
+  useEffect(() => {
+    const fetchActivitiesForRates = async () => {
+      if (selectedRows.length === 0) {
+        setRateEditingDisabled(true);
+        return;
+      }
+
+      const ids: string[] = [];
+      selectedRows.map((row) => {
+        ids.push(row.toString());
+      });
+
+      const selectedActivities = filtered.filter(activity =>
+        ids.includes(activity.id)
+      );
+
+      if (selectedActivities.length === 0) {
+        setRateEditingDisabled(true);
+        return;
+      }
+
+      let disabled = false;
+      const phaseDatabasesAllowed = ['180002', '180003', '180004'];
+
+      selectedActivities.forEach((activity) => {
+        if (activity && currentWbs)
+          if (
+            activity.activityType != ActivityType.customLaborItem &&
+            currentWbs.wbsDatabaseId != 200000 &&
+            !phaseDatabasesAllowed.includes(
+              currentPhase!.phaseDatabaseId!.toString(),
+            )
+          ) {
+            disabled = true;
+          }
+      });
+
+      if (selectedActivities.length > 1 && !disabled) {
+        const sameBaseRates = checkSameValue(
+          selectedActivities,
+          'craftBaseRate',
+        );
+        const sameSubsistenceRate = checkSameValue(
+          selectedActivities,
+          'subsistenceRate',
+        );
+        if (!sameBaseRates || !sameSubsistenceRate) {
+          disabled = true;
+        }
+      }
+
+      setSubsistence(
+        selectedActivities[0]?.subsistenceRate ?? currentProposal?.subsistenceRate,
+      );
+      setBaseRate(
+        selectedActivities[0]?.craftBaseRate ?? currentProposal?.craftBaseRate,
+      );
+      setRateEditingDisabled(disabled);
+    };
+
+    fetchActivitiesForRates();
+  }, [selectedRows, filtered, currentWbs, currentPhase, currentProposal]);
+
+  const checkSameValue = (
+    array: Activity[],
+    propName: keyof Activity,
+  ): boolean => {
+    if (array.length <= 1) return true;
+    const firstValue = array[0][propName];
+    return array.every((obj) => obj[propName] === firstValue);
+  };
+
+  const handleSaveRates = async () => {
+    if (selectedRows.length === 0 || rateEditingDisabled) return;
+
+    const activityIds = selectedRows.map(row => row.toString());
+    await updateActivityRates(activityIds, baseRate ?? 0, subsistence ?? 0);
+    recalculatePhase(phaseId!);
+  };
 
   useEffect(() => {
     setSelectedPhaseDatabaseOption({
@@ -448,9 +554,8 @@ function ActivityDataGrid() {
                   display: 'flex',
                   alignItems: 'center',
                   padding: '1px 12px',
-                  border: `1px solid ${
-                    currentPhase?.completed ? '#4caf50' : '#424242'
-                  }`,
+                  border: `1px solid ${currentPhase?.completed ? '#4caf50' : '#424242'
+                    }`,
                   borderRadius: '4px',
                   backgroundColor: currentPhase?.completed
                     ? 'rgba(76, 175, 80, 0.1)'
@@ -490,7 +595,7 @@ function ActivityDataGrid() {
   return (
     <Box
       sx={{
-        'height': '100%',
+        'height': '93%',
         '& .under': {
           backgroundColor: '#ff525240',
           color: 'primary.dark',
@@ -676,6 +781,77 @@ function ActivityDataGrid() {
           return 'used';
         }}
       />
+      <Box
+        sx={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'end',
+          padding: '15px 20px',
+          backgroundColor: 'white',
+          borderTop: '1px solid #e0e0e0',
+          height: '60px',
+
+        }}
+      >
+        <Box sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          mr: 4,
+        }}>
+          <Typography variant="subtitle1" sx={{ fontWeight: 'bold', color: '#424242' }}>
+            Quick Edit Rates:
+          </Typography>
+          <Typography variant="caption" sx={{ color: '#757575' }}>
+            {selectedRows.length} {selectedRows.length === 1 ? 'row' : 'rows'} selected
+          </Typography>
+        </Box>
+
+        <Box sx={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'end',
+          gap: 3,
+
+          backgroundColor: 'transparent',
+          padding: '10px 15px',
+        }}>
+          <Box sx={{ display: 'flex', flexDirection: 'column', width: '180px' }}>
+            <FormattedNumberInput
+              label='Base Rate'
+              disabled={rateEditingDisabled}
+              value={baseRate?.toString()}
+              prefix='$'
+              setValue={(_) => setBaseRate(parseFloat(_))}
+            />
+          </Box>
+
+          <Box sx={{ display: 'flex', flexDirection: 'column', width: '180px' }}>
+            <FormattedNumberInput
+              disabled={rateEditingDisabled}
+              value={subsistence?.toString()}
+              prefix='$'
+              setValue={(_) => setSubsistence(parseFloat(_))}
+              label='Subsistence'
+            />
+          </Box>
+
+          <Button
+            variant='contained'
+            disabled={rateEditingDisabled}
+            onClick={handleSaveRates}
+            sx={{
+              height: '36px',
+              ml: 2,
+              backgroundColor: rateEditingDisabled ? '#e0e0e0' : '#1976d2',
+              '&:hover': {
+                backgroundColor: rateEditingDisabled ? '#e0e0e0' : '#1565c0',
+              }
+            }}
+          >
+            Save Rates
+          </Button>
+        </Box>
+      </Box>
       <EditBaseRateDialog
         open={openBaseRateDialog}
         onClose={() => setOpenBaseRateDialog(false)}

@@ -5,32 +5,15 @@ import { Phase } from '../models/phase';
 import { Wbs } from '../models/wbs';
 import { firestore } from '../setup/config/firebase';
 import { WbsEnum } from '../utils/enums';
+// Import the WBS 2025 data
+import wbsData2025 from '../data/2025/wbs_2025.json';
 
 export const insertAllBaseWbs = async (proposalId: string) => {
-  const wbsArray: WbsEnum[] = [
-    WbsEnum.AG_PIPING,
-    WbsEnum.BG_PIPING,
-    WbsEnum.BUILDINGS,
-    WbsEnum.CONCRETE,
-    WbsEnum.DEMOBILIZE,
-    WbsEnum.DISMANTLING,
-    WbsEnum.ELECTRICAL,
-    WbsEnum.INSULATION,
-    WbsEnum.INSTRUMENTS,
-    WbsEnum.MOBILIZE,
-    WbsEnum.PAINTING,
-    WbsEnum.PUMPS_AND_DRIVERS,
-    WbsEnum.REFRATORY,
-    WbsEnum.SITE_PREPARATION,
-    WbsEnum.SPECIALTY_SERVICES,
-    WbsEnum.STRUCTURAL,
-    WbsEnum.SUPPORT,
-    WbsEnum.TOWERS_VESSELS_EQUIPMENT,
-  ];
-  wbsArray.forEach(async (wbs) => {
+  // Use the imported JSON data instead of the enum array
+  wbsData2025.forEach(async (wbs) => {
     const wbsToInsert = new FirestoreWbs({
       name: wbs.name,
-      wbsDatabaseId: wbs.wbsDatabaseId,
+      wbsDatabaseId: wbs.id,
       proposalId,
     });
     await insertBaseWbs(proposalId, wbsToInsert);
