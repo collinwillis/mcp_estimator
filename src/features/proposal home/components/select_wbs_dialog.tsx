@@ -42,9 +42,7 @@ export default function SelectWbsDialog({
     proposalId: proposal?.id ?? '',
   });
 
-  const wbsArrayToUse = currentProposal?.constantDataSet === "2025"
-    ? wbs2025Array
-    : WbsArray;
+  const wbsArrayToUse = WbsArray;
 
   useEffect(() => {
     if (proposalPreferences) {
@@ -99,10 +97,8 @@ export default function SelectWbsDialog({
           <List
             sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}>
             {wbsArrayToUse?.sort((a, b) => {
-              // Handle different object structures for sorting
-              const aValue = 'id' in a ? Number(a.id) : Number(a);
-              const bValue = 'id' in b ? Number(b.id) : Number(b);
-              return aValue - bValue;
+              // Sort by wbsDatabaseId which is defined in WbsEnum
+              return a.wbsDatabaseId - b.wbsDatabaseId;
             }).map((wbs) => {
               const labelId = `checkbox-list-label-${wbs.name}`;
               return (

@@ -1,4 +1,14 @@
-import { addDoc, collection, doc, getDoc, updateDoc } from 'firebase/firestore';
+import {
+  addDoc,
+  collection,
+  deleteDoc,
+  doc,
+  getDoc,
+  getDocs,
+  query,
+  updateDoc,
+  where,
+} from 'firebase/firestore';
 
 import { FirestoreWbs } from '../models/firestore models/wbs_firestore';
 import { Phase } from '../models/phase';
@@ -6,7 +16,7 @@ import { Wbs } from '../models/wbs';
 import { firestore } from '../setup/config/firebase';
 import { WbsEnum } from '../utils/enums';
 // Import the WBS 2025 data
-import wbsData2025 from '../data/2025/wbs_2025.json';
+import wbsData2025 from '../data/wbs.json';
 
 export const insertAllBaseWbs = async (proposalId: string) => {
   // Use the imported JSON data instead of the enum array

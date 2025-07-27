@@ -65,10 +65,31 @@ const ProposalList: React.FC<ProposalListProps> = ({ onClick, proposals }) => {
 
   const savedProposalId = sessionStorage.getItem('selectedProposalId');
 
+  const sortedProposals = proposals.slice().sort((a, b) => {
+    // Handle cases where proposalNumber might be undefined or empty
+    if (!a.proposalNumber && !b.proposalNumber) return 0;
+    if (!a.proposalNumber) return 1;
+    if (!b.proposalNumber) return -1;
+    
+    // Extract numeric parts (including decimals) for comparison
+    const numA = parseFloat(a.proposalNumber.toString());
+    const numB = parseFloat(b.proposalNumber.toString());
+    
+    // If both are valid numbers, compare them
+    if (!isNaN(numA) && !isNaN(numB)) {
+      return numB - numA; // Sort descending
+    }
+    
+    // Fallback to string comparison if numbers are invalid
+    return b.proposalNumber.toString().localeCompare(a.proposalNumber.toString());
+  });
+
+  console.log(sortedProposals);
+
   return (
     <StyledList ref={listRef}>
-      {proposals.length > 0 ? (
-        proposals.map((item) => (
+      {sortedProposals.length > 0 ? (
+        sortedProposals.map((item) => (
           <Tooltip
             key={item.id}
             title={`${item.proposalNumber} - ${item.proposalDescription}`}

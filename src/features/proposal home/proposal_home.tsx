@@ -8,6 +8,7 @@ import {
   Dialog,
   Alert,
   SelectChangeEvent,
+  Button,
 } from '@mui/material';
 
 import { getCraftLoadedRate } from '../../api/totals';
@@ -20,6 +21,7 @@ import { Proposal } from '../../models/proposal';
 import ProposalDetails from './components/proposal_details';
 import { updateSingleProposal } from '../../api/proposal';
 import { FirestoreProposal } from '../../models/firestore models/proposal_firestore';
+import { insertAllBaseWbs } from '../../api/wbs';
 
 function ProposalHomeScreen() {
   const { proposalId } = useParams();
@@ -89,12 +91,14 @@ function ProposalHomeScreen() {
     }));
   };
 
-  const handleSelectChange = (e: SelectChangeEvent<string>) => {
-    const name = e.target.name as keyof Proposal;
-    const { value } = e.target;
+  const handleSelectChange = (
+    event: SelectChangeEvent<unknown>,
+    child: React.ReactNode,
+  ) => {
+    const value = event.target.value as string; // safely cast to string
     setEditData((prevData) => ({
       ...prevData,
-      [name]: value,
+      [event.target.name]: value,
     }));
   };
 

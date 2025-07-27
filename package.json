@@ -1,7 +1,7 @@
 {
   "name": "mcp_estimator",
   "private": true,
-  "version": "1.1.5",
+  "version": "1.2.3",
   "type": "module",
   "scripts": {
     "dev": "vite",

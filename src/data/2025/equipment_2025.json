@@ -1,5 +1,13 @@
 [
   {
+    "id": 0,
+    "description": "UNIQUE EQUIPMENT",
+    "hourRate": 0,
+    "dayRate": 0,
+    "weekRate": 0,
+    "monthRate": 0
+  },
+  {
     "id": 1,
     "description": "AIR TOOLS - AIR COMPRESSOR 0-185 CFM",
     "hourRate": 8,
@@ -945,7 +953,7 @@
   },
   {
     "id": 119,
-    "description": "MISC - ROLLERS EQIUPMENT EA.",
+    "description": "MISC - ROLLERS EQUIPMENT EA.",
     "hourRate": 4,
     "dayRate": 32,
     "weekRate": 128,

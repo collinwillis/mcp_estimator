@@ -72,8 +72,8 @@ const ProposalOverviewDashboard: React.FC = () => {
     if (proposals) {
       // Recent Activities
       const sortedProposals = proposals.slice().sort((a, b) => {
-        const numA = parseInt(a.proposalNumber || '0', 10);
-        const numB = parseInt(b.proposalNumber || '0', 10);
+        const numA = a.proposalNumber ? a.proposalNumber : 0;
+        const numB = b.proposalNumber ? b.proposalNumber : 0;
         return numB - numA; // Sort in descending order
       });
       setRecentProposals(sortedProposals.slice(0, 3)); // Latest 5 proposals

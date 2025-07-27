@@ -45,9 +45,12 @@ export default function AddEquipmentDialog({
   });
 
   // Determine which equipment array to use based on proposal's constantDataSet
-  const rawEquipment = currentProposal?.constantDataSet === "2025"
-    ? equipment2025
-    : defaultEquipment;
+  // const rawEquipment = currentProposal?.constantDataSet === "2025"
+  //   ? equipment2025
+  //   : defaultEquipment;
+
+    const rawEquipment  = equipment2025;
+
 
   const [search, setSearch] = useState('');
   const [searchResults, setSearchResults] = useState<Equipment[]>([]);

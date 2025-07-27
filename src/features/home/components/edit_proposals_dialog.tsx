@@ -132,15 +132,18 @@ const EditProposalsDialog: React.FC<EditProposalsDialogProps> = ({
 
   const handleDuplicate = async (proposal: Proposal) => {
     setIsDuplicating(true);
+    setShowOverlay(true);
     try {
       const functions = getFunctions();
       const duplicateProposal = httpsCallable(functions, 'duplicateProposal');
       await duplicateProposal({ proposalId: proposal.id });
+      // Optionally add success feedback here
     } catch (error) {
       console.error('Error duplicating proposal: ', error);
-      // Optionally add some user feedback here
+      // Add user feedback here
     } finally {
       setIsDuplicating(false);
+      setShowOverlay(false);
     }
   };
 

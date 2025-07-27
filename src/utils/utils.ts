@@ -216,16 +216,6 @@ export function getQuantityAndUnit(
   const keywords = keywordMap.get(wbsDatabaseId) || [];
 
   activities.forEach((activity) => {
-    const hasKeyword = keywords.some((keyword) =>
-      activity.description.toUpperCase().includes(keyword),
-    );
-    if (hasKeyword) {
-      quantity += activity.quantity;
-      unit = activity.unit;
-    }
-  });
-
-  activities.forEach((activity) => {
     if (wbsDatabaseId === 30000) {
       if (
         activity.constant &&
@@ -235,9 +225,23 @@ export function getQuantityAndUnit(
       } else {
         unit = 'CY';
       }
+      const cleanupRegex = /clean\s*up/i;
+      if (activity.description && cleanupRegex.test(activity.description)) {
+        quantity += activity.quantity || 0;
+      }
     }
-  });
+    else{
+      const hasKeyword = keywords.some((keyword) =>
+        activity.description.toUpperCase().includes(keyword),
+      );
+      if (hasKeyword) {
+        quantity += activity.quantity;
+        unit = activity.unit;
+      }
+    }
 
+  });
+  console.log(quantity, unit); // Log the result
   return { quantity, unit };
 }
 
@@ -285,11 +289,11 @@ export const calculateTotals = (activities: Activity[]) => {
           : acc.materialCost + (activity.materialCost || 0),
       equipmentCost:
         activity.activityType === ActivityType.subContractorItem
-          ? acc.materialCost
+          ? acc.equipmentCost
           : acc.equipmentCost + (activity.equipmentCost || 0),
       craftCost:
         activity.activityType === ActivityType.subContractorItem
-          ? acc.materialCost
+          ? acc.craftCost
           : acc.craftCost + (activity.craftCost || 0),
       welderCost: acc.welderCost + (activity.welderCost || 0),
       craftManHours: acc.craftManHours + (activity.craftManHours || 0),

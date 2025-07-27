@@ -25,10 +25,13 @@ export default function AddProposalDialog({
 
   useEffect(() => {
     if (data.length > 0) {
-      const highestProposalNumber = data.reduce((prev, current) =>
-        prev.proposalNumber! > current.proposalNumber! ? prev : current,
+      // Convert all proposal numbers to numbers and find the max
+      const maxNumber = Math.max(
+        ...data
+          .map((p) => parseFloat(p.proposalNumber?.toString() || '0'))
+          .filter((n) => !isNaN(n))
       );
-      setProposalNumber((highestProposalNumber.proposalNumber! + 1).toString());
+      setProposalNumber((maxNumber + 1).toString());
     } else {
       setProposalNumber('1300');
     }

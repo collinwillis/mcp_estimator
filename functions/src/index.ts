@@ -1,5 +1,5 @@
-import * as admin from 'firebase-admin';
-import * as functions from 'firebase-functions';
+import * as admin from "firebase-admin";
+import * as functions from "firebase-functions";
 
 admin.initializeApp();
 
@@ -13,7 +13,7 @@ async function commitBatch(batch: FirebaseFirestore.WriteBatch) {
   try {
     await batch.commit();
   } catch (error) {
-    console.error('Error committing batch: ', error);
+    console.error("Error committing batch: ", error);
     throw error;
   }
 }
@@ -21,34 +21,58 @@ async function commitBatch(batch: FirebaseFirestore.WriteBatch) {
 exports.duplicateProposal = functions
   .runWith({
     timeoutSeconds: 540, // Increase timeout to 9 minutes
-    memory: '8GB', // Increase memory to 8GB
+    memory: "8GB", // Increase memory to 8GB
   })
   .https.onCall(async (data, context) => {
     const proposalId = data.proposalId;
 
     if (!proposalId) {
       throw new functions.https.HttpsError(
-        'invalid-argument',
-        'The function must be called with a valid proposalId.',
+        "invalid-argument",
+        "The function must be called with a valid proposalId.",
       );
     }
 
     let batch = firestore.batch();
     let operationsCount = 0;
 
-    // Get the highest proposal number
-    const allProposalsSnapshot = await firestore.collection('proposals').get();
-    const highestProposalNumber = Math.max(
-      ...allProposalsSnapshot.docs
-        .map((doc) => Number(doc.data().proposalNumber || 0))
-        .filter(Number.isFinite),
-    );
-    const newProposalNumber = highestProposalNumber + 1;
-
-    // Duplicate proposal
-    const proposalDocRef = firestore.collection('proposals').doc(proposalId);
+    // Get the proposal being duplicated
+    const proposalDocRef = firestore.collection("proposals").doc(proposalId);
     const proposalDoc = await proposalDocRef.get();
-    const newProposalRef = firestore.collection('proposals').doc();
+
+    if (!proposalDoc.exists) {
+      throw new functions.https.HttpsError(
+        "not-found",
+        "Proposal not found",
+      );
+    }
+
+    const proposalData = proposalDoc.data()!;
+    const baseProposalNumber = parseFloat(proposalData.proposalNumber);
+
+    // Find all proposals with the same base number (e.g., 9, 9.1, 9.2)
+    const proposalsSnapshot = await firestore
+      .collection("proposals")
+      .where("proposalNumber", ">=", baseProposalNumber)
+      .where("proposalNumber", "<", baseProposalNumber + 1)
+      .get();
+
+    // Extract all decimal parts (0 for base number, 0.1 for 9.1, etc.)
+    const decimalParts = proposalsSnapshot.docs
+      .map((doc) => {
+        const num = parseFloat(doc.data().proposalNumber);
+        return num - baseProposalNumber;
+      })
+      .filter((part) => part >= 0);
+
+    // Find the next available decimal (0.1, 0.2, etc.)
+    let nextDecimal = 0.1;
+    while (decimalParts.includes(nextDecimal)) {
+      nextDecimal = parseFloat((nextDecimal + 0.1).toFixed(1));
+    }
+
+    const newProposalNumber = (baseProposalNumber + nextDecimal);
+    const newProposalRef = firestore.collection("proposals").doc();
     const newProposalId = newProposalRef.id;
 
     if (proposalDoc.exists) {
@@ -57,7 +81,7 @@ exports.duplicateProposal = functions
         const newProposalData = {
           ...proposalData,
           createdAt: new Date(),
-          proposalDescription: `${proposalData.proposalDescription} Copy`,
+          proposalDescription: `${proposalData.proposalDescription}`,
           proposalNumber: newProposalNumber,
         };
         batch.set(newProposalRef, newProposalData);
@@ -73,7 +97,7 @@ exports.duplicateProposal = functions
 
     // Duplicate proposal preferences
     const preferencesDocRef = firestore
-      .collection('proposal-preferences')
+      .collection("proposal-preferences")
       .doc(proposalId);
     const preferencesDoc = await preferencesDocRef.get();
 
@@ -81,9 +105,9 @@ exports.duplicateProposal = functions
       const preferencesData = preferencesDoc.data();
       if (preferencesData) {
         const newPreferencesRef = firestore
-          .collection('proposal-preferences')
+          .collection("proposal-preferences")
           .doc(newProposalId);
-        const newPreferencesData = { ...preferencesData, id: newProposalId };
+        const newPreferencesData = {...preferencesData, id: newProposalId};
         batch.set(newPreferencesRef, newPreferencesData);
         operationsCount++;
 
@@ -97,13 +121,13 @@ exports.duplicateProposal = functions
 
     // Map old WBS IDs to new WBS IDs
     const wbsQuerySnapshot = await firestore
-      .collection('wbs')
-      .where('proposalId', '==', proposalId)
+      .collection("wbs")
+      .where("proposalId", "==", proposalId)
       .get();
     const wbsIdMap: { [key: string]: string } = {};
 
     for (const wbsDoc of wbsQuerySnapshot.docs) {
-      const newWbsRef = firestore.collection('wbs').doc();
+      const newWbsRef = firestore.collection("wbs").doc();
       const newWbsId = newWbsRef.id;
       wbsIdMap[wbsDoc.id] = newWbsId;
       const newWbsData = {
@@ -123,13 +147,13 @@ exports.duplicateProposal = functions
 
     // Map old Phase IDs to new Phase IDs and duplicate phases
     const phaseQuerySnapshot = await firestore
-      .collection('phase')
-      .where('proposalId', '==', proposalId)
+      .collection("phase")
+      .where("proposalId", "==", proposalId)
       .get();
     const phaseIdMap: { [key: string]: string } = {};
 
     for (const phaseDoc of phaseQuerySnapshot.docs) {
-      const newPhaseRef = firestore.collection('phase').doc();
+      const newPhaseRef = firestore.collection("phase").doc();
       const newPhaseId = newPhaseRef.id;
       phaseIdMap[phaseDoc.id] = newPhaseId;
 
@@ -150,11 +174,11 @@ exports.duplicateProposal = functions
 
       // Duplicate activities for each phase
       const activityQuerySnapshot = await firestore
-        .collection('activities')
-        .where('phaseId', '==', phaseDoc.id)
+        .collection("activities")
+        .where("phaseId", "==", phaseDoc.id)
         .get();
       for (const activityDoc of activityQuerySnapshot.docs) {
-        const newActivityRef = firestore.collection('activities').doc();
+        const newActivityRef = firestore.collection("activities").doc();
         const newActivityId = newActivityRef.id;
         const newActivityData = {
           ...activityDoc.data(),
@@ -178,5 +202,5 @@ exports.duplicateProposal = functions
       await commitBatch(batch);
     }
 
-    return { newProposalId };
+    return {newProposalId};
   });

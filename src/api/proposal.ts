@@ -25,7 +25,6 @@ export const insertProposal = async (
   const proposal: FirestoreProposal = new FirestoreProposal({
     proposalDescription,
     proposalNumber: parseInt(proposalNumber),
-    constantDataSet: "2025"
   });
   await addDoc(collection(firestore, 'proposals'), {
     ...proposal,
