@@ -15,6 +15,8 @@ export class FirestoreProposal {
 
   projectState: string | null;
 
+  jobSiteAddress: string | null;
+
   proposalEstimators: string | null;
 
   proposalDateReceived: string | null;
@@ -86,6 +88,7 @@ export class FirestoreProposal {
     proposalOwner,
     projectCity,
     projectState,
+    jobSiteAddress,
     proposalEstimators,
     proposalDateReceived,
     proposalDateDue,
@@ -126,6 +129,7 @@ export class FirestoreProposal {
     proposalOwner?: string | null;
     projectCity?: string | null;
     projectState?: string | null;
+    jobSiteAddress?: string | null;
     proposalEstimators?: string | null;
     proposalDateReceived?: string | null;
     proposalDateDue?: string | null;
@@ -166,6 +170,7 @@ export class FirestoreProposal {
     this.proposalOwner = proposalOwner ?? null;
     this.projectCity = projectCity ?? null;
     this.projectState = projectState ?? null;
+    this.jobSiteAddress = jobSiteAddress ?? null;
     this.proposalEstimators = proposalEstimators ?? null;
     this.proposalDateReceived = proposalDateReceived ?? null;
     this.proposalDateDue = proposalDateDue ?? null;

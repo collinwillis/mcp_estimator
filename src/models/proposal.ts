@@ -15,6 +15,8 @@ export class Proposal {
 
   projectState?: string;
 
+  jobSiteAddress?: string;
+
   proposalEstimators?: string;
 
   proposalDateReceived?: string;

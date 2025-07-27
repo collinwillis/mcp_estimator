@@ -19,6 +19,7 @@ import WbsDataGrid from './components/wbs_data_grid';
 import SelectWbsDialog from './components/select_wbs_dialog';
 import { Proposal } from '../../models/proposal';
 import ProposalDetails from './components/proposal_details';
+import ProposalRates from './components/proposal_rates';
 import { updateSingleProposal } from '../../api/proposal';
 import { FirestoreProposal } from '../../models/firestore models/proposal_firestore';
 import { insertAllBaseWbs } from '../../api/wbs';
@@ -126,6 +127,7 @@ function ProposalHomeScreen() {
           indicatorColor='primary'
           textColor='primary'>
           <Tab label='Proposal Details' />
+          <Tab label='Rates' />
           <Tab label='WBS Data Grid' />
         </Tabs>
       </Paper>
@@ -148,6 +150,16 @@ function ProposalHomeScreen() {
           />
         )}
         {activeTab === 1 && (
+          <ProposalRates
+            editData={editData}
+            isEditMode={isEditMode}
+            handleChange={handleChange}
+            handleSaveClick={handleSaveClick}
+            handleCancelClick={handleCancelClick}
+            handleEditClick={handleEditClick}
+          />
+        )}
+        {activeTab === 2 && (
           <WbsDataGrid
             openSelectWbsDialog={() => setIsSelectWbsDialogOpen(true)}
           />

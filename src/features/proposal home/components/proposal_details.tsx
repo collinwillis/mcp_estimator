@@ -51,48 +51,25 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = ({
   handleCancelClick,
   handleEditClick,
 }) => {
-  const rateFields = [
-    { label: 'Craft Base Rate', field: 'craftBaseRate', prefix: '$' },
-    { label: 'Weld Base Rate', field: 'weldBaseRate', prefix: '$' },
-    { label: 'Subsistence Rate', field: 'subsistenceRate', prefix: '$' },
-    { label: 'Equip Tax Rate', field: 'useTaxRate', suffix: '%' },
-    { label: 'Sales Tax Rate', field: 'salesTaxRate', suffix: '%' },
-    { label: 'Overhead Rate', field: 'overheadRate', suffix: '%' },
-    { label: 'Consumables Rate', field: 'consumablesRate', suffix: '%' },
-    { label: 'Burden Rate', field: 'burdenRate', suffix: '%' },
-    { label: 'Fuel Rate', field: 'fuelRate', suffix: '%' },
-    { label: 'Rig Rate', field: 'rigRate', prefix: '$' },
-    { label: 'Labor Profit Rate', field: 'laborProfitRate', suffix: '%' },
-    { label: 'Material Profit Rate', field: 'materialProfitRate', suffix: '%' },
-    {
-      label: 'Equipment Profit Rate',
-      field: 'equipmentProfitRate',
-      suffix: '%',
-    },
-    {
-      label: 'Sub Contractor Profit Rate',
-      field: 'subContractorProfitRate',
-      suffix: '%',
-    },
-    { label: 'Rig Profit Rate', field: 'rigProfitRate', suffix: '%' },
-  ];
+
 
   const proposalFields = [
     { label: 'Proposal #', field: 'proposalNumber' },
+    { label: 'Description', field: 'proposalDescription' },
     { label: 'Job', field: 'job' },
     { label: 'CO #', field: 'coNumber' },
-    { label: 'Description', field: 'proposalDescription' },
     { label: 'Owner', field: 'proposalOwner' },
+    { label: 'Job-Site Address', field: 'jobSiteAddress' },
     { label: 'City', field: 'projectCity' },
   ];
 
   const contactFields = [
-    { label: 'Contact', field: 'contactName' },
+    { label: 'Contact Name', field: 'contactName' },
+    { label: 'Phone', field: 'contactPhone' },
+    { label: 'Email', field: 'contactEmail' },
     { label: 'Address', field: 'contactAddress' },
     { label: 'City', field: 'contactCity' },
     { label: 'Zip', field: 'contactZip' },
-    { label: 'Phone', field: 'contactPhone' },
-    { label: 'Email', field: 'contactEmail' },
   ];
 
   // New fields to be added
@@ -368,55 +345,7 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = ({
         </CardContent>
       </Card>
 
-      {/* Rates */}
-      <Card sx={{ mb: 2 }}>
-        <CardContent>
-          <Typography variant='h6' gutterBottom>
-            Rates
-          </Typography>
-          <Grid container spacing={2}>
-            {rateFields.map(({ label, field, prefix, suffix }) => (
-              <Grid item xs={12} sm={6} md={4} key={field}>
-                {isEditMode ? (
-                  <TextField
-                    label={label}
-                    variant='outlined'
-                    size='small'
-                    fullWidth
-                    name={field}
-                    value={editData[field as keyof Proposal]?.toString() || ''}
-                    onChange={handleChange}
-                    InputProps={{
-                      startAdornment: prefix ? (
-                        <InputAdornment position='start'>
-                          {prefix}
-                        </InputAdornment>
-                      ) : undefined,
-                      endAdornment: suffix ? (
-                        <InputAdornment position='end'>{suffix}</InputAdornment>
-                      ) : undefined,
-                    }}
-                  />
-                ) : (
-                  <>
-                    <Typography variant='subtitle2' color='textSecondary'>
-                      {label}
-                    </Typography>
-                    <Typography variant='body1'>
-                      {editData[field as keyof Proposal] !== undefined
-                        ? `${prefix || ''}${parseFloat(
-                            editData[field as keyof Proposal]?.toString() ||
-                              '0',
-                          ).toFixed(2)}${suffix || ''}`
-                        : '-'}
-                    </Typography>
-                  </>
-                )}
-              </Grid>
-            ))}
-          </Grid>
-        </CardContent>
-      </Card>
+
     </Box>
   );
 };

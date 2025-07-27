@@ -26,6 +26,10 @@ const StyledList = styled(List)(({ theme }) => ({
 const StyledListItem = styled(ListItem)(({ theme }) => ({
   'cursor': 'pointer',
   'transition': 'background-color 0.3s',
+  'paddingTop': theme.spacing(0.75),
+  'paddingBottom': theme.spacing(0.75),
+  'paddingLeft': theme.spacing(2),
+  'paddingRight': theme.spacing(2),
   '&:hover': {
     backgroundColor: theme.palette.action.hover,
   },
@@ -92,7 +96,19 @@ const ProposalList: React.FC<ProposalListProps> = ({ onClick, proposals }) => {
         sortedProposals.map((item) => (
           <Tooltip
             key={item.id}
-            title={`${item.proposalNumber} - ${item.proposalDescription}`}
+            title={
+              <Box>
+                <Typography variant='body2' sx={{ fontWeight: 600 }}>
+                  {item.proposalNumber}
+                </Typography>
+                <Typography variant='body2'>
+                  {item.proposalDescription}
+                </Typography>
+                <Typography variant='caption' color='text.secondary'>
+                  Owner: {item.proposalOwner}
+                </Typography>
+              </Box>
+            }
             placement='right'>
             <StyledListItem
               data-proposal-id={item.id}
@@ -101,23 +117,36 @@ const ProposalList: React.FC<ProposalListProps> = ({ onClick, proposals }) => {
               <ListItemText
                 primary={
                   <Typography
-                    variant='subtitle1'
+                    variant='subtitle2'
                     sx={{
-                      fontWeight: 500,
+                      fontWeight: 600,
+                      fontSize: '0.875rem',
                       color:
                         savedProposalId === item.id
                           ? theme.palette.primary.main
                           : theme.palette.text.primary,
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      whiteSpace: 'nowrap',
                     }}>
-                    {`${item.proposalNumber} - ${item.proposalDescription}`}
+                    {item.proposalNumber}
                   </Typography>
                 }
                 secondary={
                   <Typography
-                    variant='body2'
+                    variant='caption'
                     color='text.secondary'
-                    sx={{ mt: 0.5 }}>
-                    {item.proposalOwner}
+                    sx={{ 
+                      mt: 0.25,
+                      fontSize: '0.75rem',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      whiteSpace: 'nowrap',
+                      display: 'block'
+                    }}>
+                    {item.proposalDescription && item.proposalDescription.length > 25 
+                      ? `${item.proposalDescription.substring(0, 25)}...` 
+                      : item.proposalDescription}
                   </Typography>
                 }
               />

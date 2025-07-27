@@ -153,6 +153,7 @@ export default function EstimatorDrawer({ children }: EstimatorDrawerProps) {
         proposal.proposalOwner?.toLowerCase(),
         proposal.projectCity?.toLowerCase(),
         proposal.projectState?.toLowerCase(),
+        proposal.jobSiteAddress?.toLowerCase(),
         proposal.proposalEstimators?.toLowerCase(),
         proposal.proposalDateReceived?.toString().toLowerCase(),
         proposal.proposalDateDue?.toLowerCase(),
@@ -215,11 +216,23 @@ export default function EstimatorDrawer({ children }: EstimatorDrawerProps) {
             sx={{ mr: 2, ...(open && { display: 'none' }) }}>
             <DrawerIcon color='white' />
           </IconButton>
-          <Breadcrumbs aria-label='breadcrumb' aria-activedescendant=''>
+          <Breadcrumbs 
+            aria-label='breadcrumb' 
+            aria-activedescendant=''
+            sx={{
+              '& .MuiBreadcrumbs-separator': {
+                color: 'white'
+              }
+            }}>
             {currentProposal && (
               <Link
                 underline='hover'
-                color={currentWbs ? 'inherit' : 'white'}
+                color='white'
+                sx={{
+                  '&:hover': {
+                    color: 'rgba(255, 255, 255, 0.8)'
+                  }
+                }}
                 onClick={() => navigate(`/proposal/${currentProposal?.id}`)}>
                 {`${currentProposal?.proposalNumber} - ${currentProposal?.proposalDescription}`}
               </Link>
@@ -227,7 +240,12 @@ export default function EstimatorDrawer({ children }: EstimatorDrawerProps) {
             {currentWbs && (
               <Link
                 underline='hover'
-                color={currentPhase ? 'inherit' : 'white'}
+                color='white'
+                sx={{
+                  '&:hover': {
+                    color: 'rgba(255, 255, 255, 0.8)'
+                  }
+                }}
                 onClick={() =>
                   navigate(
                     `/proposal/${currentProposal?.id}/wbs/${currentWbs?.id}`,
@@ -240,6 +258,11 @@ export default function EstimatorDrawer({ children }: EstimatorDrawerProps) {
               <Link
                 underline='hover'
                 color='white'
+                sx={{
+                  '&:hover': {
+                    color: 'rgba(255, 255, 255, 0.8)'
+                  }
+                }}
                 onClick={() =>
                   navigate(
                     `/proposal/${currentProposal?.id}/wbs/${currentWbs?.id}phase/${currentPhase?.id}`,
@@ -251,21 +274,31 @@ export default function EstimatorDrawer({ children }: EstimatorDrawerProps) {
           </Breadcrumbs>
           <HStack gap={3}>
             <IconButton
-              color='inherit'
               aria-label='menu'
               onClick={handleMenuOpen}
               edge='end'
-              sx={{ ml: 'auto' }} // Adjust the margin to position the button on the right
+              sx={{ 
+                ml: 'auto',
+                color: 'white',
+                '&:hover': {
+                  backgroundColor: 'rgba(255, 255, 255, 0.1)'
+                }
+              }}
             >
               <MenuRounded />
             </IconButton>
 
             {proposalId && (
               <IconButton
-                color='inherit'
-                aria-label='menu'
+                aria-label='download'
                 onClick={() => loadFullProposalData(proposalId)}
-                edge='end'>
+                edge='end'
+                sx={{
+                  color: 'white',
+                  '&:hover': {
+                    backgroundColor: 'rgba(255, 255, 255, 0.1)'
+                  }
+                }}>
                 <DownloadForOffline />
               </IconButton>
             )}
