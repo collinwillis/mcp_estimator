@@ -40,7 +40,7 @@ import EditBaseRateDialog from '../../../components/edit_base_rate_dialog';
 import { useUserProfile } from '../../../hooks/user_profile_hook';
 import { Activity, ActivityType } from '../../../models/activity';
 import { StoreState, estimatorStore } from '../../../utils/store';
-import { numberToLetters, sortActivitiesWithEquipmentLogic } from '../../../utils/utils';
+import { numberToLetters, sortActivitiesWithEquipmentLogic, numberFields } from '../../../utils/utils';
 import {
   costOnlyItemAvailableCells,
   customLaborItemAvailableCells,
@@ -672,7 +672,11 @@ function ActivityDataGrid() {
           if (field == 'rowId') {
             await handleRowOrderChangeByRowId(id.toString(), value);
           } else {
-            await updateActivity(id.toString(), field, value);
+            // Transform text fields to uppercase before saving
+            const shouldUppercase = typeof value === 'string' && !numberFields.includes(field);
+            
+            const finalValue = shouldUppercase ? value.toUpperCase() : value;
+            await updateActivity(id.toString(), field, finalValue);
             recalculatePhase(phaseId!);
           }
         }}

@@ -15,6 +15,7 @@ import { Phase } from '../models/phase';
 import { Wbs } from '../models/wbs';
 import { firestore } from '../setup/config/firebase';
 import { WbsEnum } from '../utils/enums';
+import { numberFields, isNumber } from '../utils/utils';
 // Import the WBS 2025 data
 import wbsData2025 from '../data/wbs.json';
 
@@ -53,7 +54,9 @@ export const updateWbs = async (id: string, field: string, value: string) => {
   if (isNumber(value) == true) {
     newValue = parseFloat(value);
   } else {
-    newValue = value;
+    // Transform text fields to uppercase
+    const shouldUppercase = typeof value === 'string' && !numberFields.includes(field);
+    newValue = shouldUppercase ? value.toUpperCase() : value;
   }
   const data = {
     [field]: newValue,

@@ -14,6 +14,34 @@
   -webkit-text-size-adjust: 100%;
 }
 
+/* Global uppercase styling for all text inputs - ULTRA AGGRESSIVE */
+* input:not([type="password"]):not([type="email"]):not([type="url"]):not([type="number"]):not([type="tel"]):not([type="date"]):not([type="time"]):not([type="datetime-local"]):not([type="search"]),
+* textarea,
+* [contenteditable="true"],
+/* Standard selectors with high specificity */
+html body input:not([type="password"]):not([type="email"]):not([type="url"]):not([type="number"]):not([type="tel"]):not([type="date"]):not([type="time"]):not([type="datetime-local"]):not([type="search"]),
+html body textarea,
+/* MUI specific selectors with maximum specificity */
+html body .MuiInputBase-root .MuiInputBase-input:not([type="password"]):not([type="email"]):not([type="url"]):not([type="number"]):not([type="tel"]):not([type="date"]):not([type="time"]):not([type="datetime-local"]):not([type="search"]),
+html body .MuiOutlinedInput-root .MuiOutlinedInput-input:not([type="password"]):not([type="email"]):not([type="url"]):not([type="number"]):not([type="tel"]):not([type="date"]):not([type="time"]):not([type="datetime-local"]):not([type="search"]),
+html body .MuiFilledInput-root .MuiFilledInput-input:not([type="password"]):not([type="email"]):not([type="url"]):not([type="number"]):not([type="tel"]):not([type="date"]):not([type="time"]):not([type="datetime-local"]):not([type="search"]),
+html body .MuiInputBase-input:not([type="password"]):not([type="email"]):not([type="url"]):not([type="number"]):not([type="tel"]):not([type="date"]):not([type="time"]):not([type="datetime-local"]):not([type="search"]),
+/* MUI DataGrid specific with ultra high specificity */
+html body .MuiDataGrid-root .MuiDataGrid-cell input:not([type="password"]):not([type="email"]):not([type="url"]):not([type="number"]):not([type="tel"]):not([type="date"]):not([type="time"]):not([type="datetime-local"]):not([type="search"]),
+html body .MuiDataGrid-root .MuiDataGrid-editInputCell input:not([type="password"]):not([type="email"]):not([type="url"]):not([type="number"]):not([type="tel"]):not([type="date"]):not([type="time"]):not([type="datetime-local"]):not([type="search"]),
+html body .MuiDataGrid-root .MuiDataGrid-cell--editing input:not([type="password"]):not([type="email"]):not([type="url"]):not([type="number"]):not([type="tel"]):not([type="date"]):not([type="time"]):not([type="datetime-local"]):not([type="search"]),
+html body .MuiDataGrid-root .MuiInputBase-input:not([type="password"]):not([type="email"]):not([type="url"]):not([type="number"]):not([type="tel"]):not([type="date"]):not([type="time"]):not([type="datetime-local"]):not([type="search"]),
+html body .MuiDataGrid-cell .MuiInputBase-input:not([type="password"]):not([type="email"]):not([type="url"]):not([type="number"]):not([type="tel"]):not([type="date"]):not([type="time"]):not([type="datetime-local"]):not([type="search"]),
+/* Autocomplete specific */
+html body .MuiAutocomplete-root .MuiInputBase-input:not([type="password"]):not([type="email"]):not([type="url"]):not([type="number"]):not([type="tel"]):not([type="date"]):not([type="time"]):not([type="datetime-local"]):not([type="search"]),
+/* Chakra UI selectors with high specificity */
+html body .chakra-input:not([type="password"]):not([type="email"]):not([type="url"]):not([type="number"]):not([type="tel"]):not([type="date"]):not([type="time"]):not([type="datetime-local"]):not([type="search"]),
+html body .chakra-textarea {
+  text-transform: uppercase !important;
+  -webkit-text-transform: uppercase !important;
+  -moz-text-transform: uppercase !important;
+}
+
 .container {
   margin: 0;
   padding-top: 10vh;

@@ -97,7 +97,7 @@ export default function AddEquipmentDialog({
         craftConstant: 0,
         welderConstant: 0,
         activityType: ActivityType.equipmentItem,
-        description: equipment.description,
+        description: equipment.description.toUpperCase(),
         quantity: 0,
         time: 0,
         unit: EquipmentUnit.months,

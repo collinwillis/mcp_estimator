@@ -23,6 +23,7 @@ import { StyledDataGrid } from '../../../components/custom_data_grid';
 import { useUserProfile } from '../../../hooks/user_profile_hook';
 import { Phase } from '../../../models/phase';
 import { StoreState, estimatorStore } from '../../../utils/store';
+import { numberFields } from '../../../utils/utils';
 
 function PhaseDataGrid({
   phaseList,
@@ -550,7 +551,10 @@ function PhaseDataGrid({
         components={{ Toolbar: CustomToolbar }}
         onCellEditCommit={(params: GridCellEditCommitParams, event) => {
           const { id, field, value } = params;
-          updatePhase(id.toString(), field, value);
+          // Transform text fields to uppercase before saving
+          const shouldUppercase = typeof value === 'string' && !numberFields.includes(field);
+          const finalValue = shouldUppercase ? value.toUpperCase() : value;
+          updatePhase(id.toString(), field, finalValue);
         }}
         isCellEditable={(params: GridCellParams<number>) => {
           if (!hasWritePermissions) {

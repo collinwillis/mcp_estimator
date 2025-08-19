@@ -287,6 +287,9 @@ export const estimatorTheme = createTheme({
         },
         input: {
           color: '#333333',
+          '&:not([type="password"]):not([type="email"]):not([type="url"]):not([type="number"]):not([type="tel"]):not([type="date"]):not([type="time"]):not([type="datetime-local"])': {
+            textTransform: 'uppercase',
+          },
         },
       },
     },
@@ -301,8 +304,31 @@ export const estimatorTheme = createTheme({
             borderColor: '#424242',
           },
         },
+        input: {
+          '&:not([type="password"]):not([type="email"]):not([type="url"]):not([type="number"]):not([type="tel"]):not([type="date"]):not([type="time"]):not([type="datetime-local"])': {
+            textTransform: 'uppercase',
+          },
+        },
         notchedOutline: {
           borderColor: '#bdbdbd',
+        },
+      },
+    },
+    MuiFilledInput: {
+      styleOverrides: {
+        input: {
+          '&:not([type="password"]):not([type="email"]):not([type="url"]):not([type="number"]):not([type="tel"]):not([type="date"]):not([type="time"]):not([type="datetime-local"])': {
+            textTransform: 'uppercase',
+          },
+        },
+      },
+    },
+    MuiTextField: {
+      styleOverrides: {
+        root: {
+          '& .MuiInputBase-input:not([type="password"]):not([type="email"]):not([type="url"]):not([type="number"]):not([type="tel"]):not([type="date"]):not([type="time"]):not([type="datetime-local"])': {
+            textTransform: 'uppercase',
+          },
         },
       },
     },

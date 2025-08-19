@@ -155,8 +155,8 @@ export default function AddPhaseDialog({ open, onClose }: Props) {
       phaseNumber: newPhaseNumber,
       description:
         newPhaseDescription !== ''
-          ? newPhaseDescription
-          : selectedPhaseDescription,
+          ? newPhaseDescription.toUpperCase()
+          : selectedPhaseDescription.toUpperCase(),
       wbsId: currentWbs?.id,
       proposalId: currentProposal?.id,
     });

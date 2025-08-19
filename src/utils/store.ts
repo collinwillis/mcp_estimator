@@ -292,14 +292,18 @@ export const estimatorStore = create<StoreState>()((set, get) => ({
     });
   },
   updatePhase: async (phaseId: string, field: string, value: any) => {
-    await updatePhaseFieldInFirestore(phaseId, field, value);
+    // Transform text fields to uppercase before saving to Firestore
+    const shouldUppercase = typeof value === 'string' && !numberFields.includes(field);
+    const finalValue = shouldUppercase ? value.toUpperCase() : value;
+    
+    await updatePhaseFieldInFirestore(phaseId, field, finalValue);
     set((state) => {
       const updatedPhases = { ...state.phases };
       Object.keys(updatedPhases).forEach((proposalId) => {
         const phases = updatedPhases[proposalId];
         const index = phases.findIndex((phase) => phase.id === phaseId);
         if (index !== -1) {
-          const updatedPhase = { ...phases[index], [field]: value };
+          const updatedPhase = { ...phases[index], [field]: finalValue };
           updatedPhases[proposalId] = [
             ...phases.slice(0, index),
             updatedPhase,
@@ -442,10 +446,15 @@ export const estimatorStore = create<StoreState>()((set, get) => ({
   },
   updateActivity: async (activityId: string, field: string, value: any) => {
     console.log(activityId, field, value);
+    
+    // Transform text fields to uppercase before saving to Firestore
+    const shouldUppercase = typeof value === 'string' && !numberFields.includes(field);
+    const finalValue = shouldUppercase ? value.toUpperCase() : value;
+    
     const result = await updateActivityFieldInFirestore(
       activityId,
       field,
-      value,
+      finalValue,
     );
     if (result.success) {
       set((state) => {
@@ -456,9 +465,9 @@ export const estimatorStore = create<StoreState>()((set, get) => ({
             (activity) => activity.id === activityId,
           );
           if (index !== -1) {
-            let newValue = value;
+            let newValue = finalValue; // Use the already processed finalValue instead of original value
             if (numberFields.includes(field)) {
-              newValue = parseFloat(value);
+              newValue = parseFloat(finalValue);
             }
             const updatedActivity = {
               ...activities[index],

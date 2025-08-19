@@ -19,6 +19,7 @@ import { useProposalPreferences } from '../../../hooks/proposal_preferences_hook
 import { useUserProfile } from '../../../hooks/user_profile_hook';
 import { Wbs } from '../../../models/wbs';
 import { StoreState, estimatorStore } from '../../../utils/store';
+import { numberFields } from '../../../utils/utils';
 import ExportMenu from './export_menu';
 
 function WbsDataGrid({
@@ -146,7 +147,10 @@ function WbsDataGrid({
         components={{ Toolbar: CustomToolbar }}
         onCellEditCommit={(params: GridCellEditCommitParams, event) => {
           const { id, field, value } = params;
-          updateWbs(id.toString(), field, value);
+          // Transform text fields to uppercase before saving
+          const shouldUppercase = typeof value === 'string' && !numberFields.includes(field);
+          const finalValue = shouldUppercase ? value.toUpperCase() : value;
+          updateWbs(id.toString(), field, finalValue);
         }}
         isCellEditable={(params: GridCellParams<number>) => {
           if (!hasWritePermissions) {
