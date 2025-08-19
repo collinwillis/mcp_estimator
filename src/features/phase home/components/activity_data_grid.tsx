@@ -34,12 +34,13 @@ import {
 } from '../../../api/helpers';
 import DeleteConfirmationDialog from '../../../components/alert_dialog';
 import CopyFromPhaseDialog from '../../../components/copy_from_phase_dialog';
+import CopyActivitiesFromProposalDialog from '../../../components/copy_activities_from_proposal_dialog';
 import { StyledDataGrid } from '../../../components/custom_data_grid';
 import EditBaseRateDialog from '../../../components/edit_base_rate_dialog';
 import { useUserProfile } from '../../../hooks/user_profile_hook';
 import { Activity, ActivityType } from '../../../models/activity';
 import { StoreState, estimatorStore } from '../../../utils/store';
-import { numberToLetters } from '../../../utils/utils';
+import { numberToLetters, sortActivitiesWithEquipmentLogic } from '../../../utils/utils';
 import {
   costOnlyItemAvailableCells,
   customLaborItemAvailableCells,
@@ -104,6 +105,7 @@ function ActivityDataGrid() {
   const [openBaseRateDialog, setOpenBaseRateDialog] =
     React.useState<boolean>(false);
   const [openCopyDialog, setOpenCopyDialog] = React.useState<boolean>(false);
+  const [openCopyFromProposalDialog, setOpenCopyFromProposalDialog] = React.useState<boolean>(false);
 
   const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false); // New state to control delete dialog visibility
 
@@ -324,9 +326,9 @@ function ActivityDataGrid() {
       (activity) => activity.phaseId === phaseId,
     );
     console.log(temp);
-    const sortedActivities = [...temp].sort(
-      (a, b) => a!.sortOrder - b!.sortOrder,
-    );
+    
+    // Use the new equipment sorting logic
+    const sortedActivities = sortActivitiesWithEquipmentLogic(temp);
     console.log(sortedActivities);
 
     // Process the sorted activities
@@ -540,13 +542,21 @@ function ActivityDataGrid() {
                 startIcon={<EditRounded />}>
                 Edit Rates
               </Button>
-              <Button
+              {/* <Button
                 sx={{ color: '#424242', fontSize: '14px' }}
                 onClick={() => {
                   setOpenCopyDialog(true);
                 }}
                 startIcon={<FileCopy />}>
-                Copy from Phase
+                Copy from WBS Phase
+              </Button> */}
+              <Button
+                sx={{ color: '#424242', fontSize: '14px' }}
+                onClick={() => {
+                  setOpenCopyFromProposalDialog(true);
+                }}
+                startIcon={<FileCopy />}>
+                Copy From Phase
               </Button>
               <Box
                 sx={{
@@ -867,6 +877,10 @@ function ActivityDataGrid() {
       <CopyFromPhaseDialog
         open={openCopyDialog}
         onClose={() => setOpenCopyDialog(false)}
+      />
+      <CopyActivitiesFromProposalDialog
+        open={openCopyFromProposalDialog}
+        onClose={() => setOpenCopyFromProposalDialog(false)}
       />
       <Snackbar
         open={snackbarOpen}

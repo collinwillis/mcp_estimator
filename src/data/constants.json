@@ -58848,5 +58848,125 @@
     "craftUnits": "WEEK",
     "weldConstant": 0,
     "weldUnits": ""
+  },
+  {
+    "id": 5886,
+    "phaseDatabaseId": 130002,
+    "description": "HE - 24",
+    "sortOrder": 150,
+    "craftConstant": 1.15,
+    "craftUnits": "LF",
+    "weldConstant": 0,
+    "weldUnits": ""
+  },
+  {
+    "id": 5887,
+    "phaseDatabaseId": 130002,
+    "description": "HE - 20",
+    "sortOrder": 160,
+    "craftConstant": 1.03,
+    "craftUnits": "LF",
+    "weldConstant": 0,
+    "weldUnits": ""
+  },
+  {
+    "id": 5888,
+    "phaseDatabaseId": 130002,
+    "description": "HE - 18",
+    "sortOrder": 170,
+    "craftConstant": 0.88,
+    "craftUnits": "LF",
+    "weldConstant": 0,
+    "weldUnits": ""
+  },
+  {
+    "id": 5889,
+    "phaseDatabaseId": 130002,
+    "description": "HE - 16",
+    "sortOrder": 180,
+    "craftConstant": 0.75,
+    "craftUnits": "LF",
+    "weldConstant": 0,
+    "weldUnits": ""
+  },
+  {
+    "id": 5890,
+    "phaseDatabaseId": 130002,
+    "description": "HE - 14",
+    "sortOrder": 190,
+    "craftConstant": 0.64,
+    "craftUnits": "LF",
+    "weldConstant": 0,
+    "weldUnits": ""
+  },
+  {
+    "id": 5891,
+    "phaseDatabaseId": 130002,
+    "description": "HE - 12",
+    "sortOrder": 200,
+    "craftConstant": 0.52,
+    "craftUnits": "LF",
+    "weldConstant": 0,
+    "weldUnits": ""
+  },
+  {
+    "id": 5892,
+    "phaseDatabaseId": 130002,
+    "description": "HE - 10",
+    "sortOrder": 210,
+    "craftConstant": 0.43,
+    "craftUnits": "LF",
+    "weldConstant": 0,
+    "weldUnits": ""
+  },
+  {
+    "id": 5893,
+    "phaseDatabaseId": 130002,
+    "description": "HE - 8",
+    "sortOrder": 220,
+    "craftConstant": 0.34,
+    "craftUnits": "LF",
+    "weldConstant": 0,
+    "weldUnits": ""
+  },
+  {
+    "id": 5894,
+    "phaseDatabaseId": 130002,
+    "description": "HE - 6",
+    "sortOrder": 230,
+    "craftConstant": 0.28,
+    "craftUnits": "LF",
+    "weldConstant": 0,
+    "weldUnits": ""
+  },
+  {
+    "id": 5895,
+    "phaseDatabaseId": 130002,
+    "description": "HE - 4",
+    "sortOrder": 240,
+    "craftConstant": 0.25,
+    "craftUnits": "LF",
+    "weldConstant": 0,
+    "weldUnits": ""
+  },
+  {
+    "id": 5896,
+    "phaseDatabaseId": 130002,
+    "description": "HE - 3",
+    "sortOrder": 250,
+    "craftConstant": 0.23,
+    "craftUnits": "LF",
+    "weldConstant": 0,
+    "weldUnits": ""
+  },
+  {
+    "id": 5897,
+    "phaseDatabaseId": 130002,
+    "description": "HE - ≤2",
+    "sortOrder": 260,
+    "craftConstant": 0.2,
+    "craftUnits": "LF",
+    "weldConstant": 0,
+    "weldUnits": ""
   }
 ]

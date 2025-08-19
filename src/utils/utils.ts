@@ -403,3 +403,123 @@ export const numberFields = [
   'time',
   'subContractorCost',
 ];
+
+// Equipment sorting utility
+export const sortActivitiesWithEquipmentLogic = (activities: Activity[]): Activity[] => {
+  // First, check if activities have custom sort orders (non-zero/null sortOrder values)
+  const hasCustomSortOrders = activities.some(activity => 
+    activity.sortOrder && activity.sortOrder > 0
+  );
+
+  // If custom sort orders exist, use them as primary sort
+  if (hasCustomSortOrders) {
+    return [...activities].sort((a, b) => {
+      // Primary sort by sortOrder (custom sort takes precedence)
+      const sortOrderA = a.sortOrder || 0;
+      const sortOrderB = b.sortOrder || 0;
+      
+      if (sortOrderA !== sortOrderB) {
+        return sortOrderA - sortOrderB;
+      }
+      
+      // Secondary sort: Equipment items alphabetically within same sortOrder
+      if (a.activityType === ActivityType.equipmentItem && 
+          b.activityType === ActivityType.equipmentItem) {
+        return (a.description || '').localeCompare(b.description || '');
+      }
+      
+      return 0;
+    });
+  }
+
+  // No custom sort orders - apply equipment sorting logic
+  const equipmentItems = activities.filter(activity => 
+    activity.activityType === ActivityType.equipmentItem
+  );
+  const nonEquipmentItems = activities.filter(activity => 
+    activity.activityType !== ActivityType.equipmentItem
+  );
+
+  // Sort equipment items alphabetically by description
+  const sortedEquipment = [...equipmentItems].sort((a, b) => 
+    (a.description || '').localeCompare(b.description || '')
+  );
+
+  // Sort non-equipment items by their original sortOrder or dateAdded
+  const sortedNonEquipment = [...nonEquipmentItems].sort((a, b) => {
+    const sortOrderA = a.sortOrder || a.dateAdded || 0;
+    const sortOrderB = b.sortOrder || b.dateAdded || 0;
+    return sortOrderA - sortOrderB;
+  });
+
+  // If only equipment items exist, return sorted equipment
+  if (nonEquipmentItems.length === 0) {
+    return sortedEquipment;
+  }
+
+  // If mixed types, put non-equipment first, then equipment alphabetically
+  return [...sortedNonEquipment, ...sortedEquipment];
+};
+
+// Calculate appropriate sortOrder for new equipment items
+export const calculateEquipmentSortOrder = (
+  newEquipmentDescription: string,
+  existingActivities: Activity[]
+): number => {
+  const equipmentItems = existingActivities.filter(activity => 
+    activity.activityType === ActivityType.equipmentItem
+  );
+  const nonEquipmentItems = existingActivities.filter(activity => 
+    activity.activityType !== ActivityType.equipmentItem
+  );
+
+  // If no existing activities, use default
+  if (existingActivities.length === 0) {
+    return Date.now();
+  }
+
+  // If no existing equipment, place after all non-equipment items
+  if (equipmentItems.length === 0) {
+    const maxNonEquipmentSort = Math.max(...nonEquipmentItems.map(a => a.sortOrder || a.dateAdded || 0));
+    return maxNonEquipmentSort + 1000; // Leave space for insertions
+  }
+
+  // Sort existing equipment alphabetically to find insertion point
+  const sortedEquipment = [...equipmentItems].sort((a, b) => 
+    (a.description || '').localeCompare(b.description || '')
+  );
+
+  // Find where the new item should be inserted alphabetically
+  let insertIndex = 0;
+  for (let i = 0; i < sortedEquipment.length; i++) {
+    if (newEquipmentDescription.localeCompare(sortedEquipment[i].description || '') < 0) {
+      insertIndex = i;
+      break;
+    }
+    insertIndex = i + 1;
+  }
+
+  // Calculate sortOrder based on insertion position
+  if (insertIndex === 0) {
+    // Insert at the beginning of equipment list
+    const firstEquipmentSort = sortedEquipment[0].sortOrder || sortedEquipment[0].dateAdded || 0;
+    const maxNonEquipmentSort = nonEquipmentItems.length > 0 
+      ? Math.max(...nonEquipmentItems.map(a => a.sortOrder || a.dateAdded || 0))
+      : 0;
+    
+    // Place between last non-equipment and first equipment
+    return Math.max(maxNonEquipmentSort + 100, firstEquipmentSort - 100);
+  } else if (insertIndex === sortedEquipment.length) {
+    // Insert at the end of equipment list
+    const lastEquipmentSort = sortedEquipment[sortedEquipment.length - 1].sortOrder || 
+                              sortedEquipment[sortedEquipment.length - 1].dateAdded || 0;
+    return lastEquipmentSort + 100;
+  } else {
+    // Insert between two equipment items
+    const prevSort = sortedEquipment[insertIndex - 1].sortOrder || 
+                     sortedEquipment[insertIndex - 1].dateAdded || 0;
+    const nextSort = sortedEquipment[insertIndex].sortOrder || 
+                     sortedEquipment[insertIndex].dateAdded || 0;
+    return (prevSort + nextSort) / 2;
+  }
+};

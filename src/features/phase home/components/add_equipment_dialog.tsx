@@ -24,6 +24,7 @@ import {
   EquipmentUnit,
 } from '../../../models/equipment';
 import { ActivityType } from '../../../models/activity';
+import { calculateEquipmentSortOrder } from '../../../utils/utils';
 import { useCurrentPhase } from '../../../hooks/current_phase_hook';
 import { useCurrentProposal } from '../../../hooks/current_proposal_hook';
 import defaultEquipment from '../../../data/equipment_v2.json';
@@ -62,11 +63,31 @@ export default function AddEquipmentDialog({
   const recalculatePhase = estimatorStore(
     (state: StoreState) => state.recalculatePhase,
   );
+  
+  // Get existing activities in the phase to calculate proper sort order
+  const existingActivities = estimatorStore(
+    (state: StoreState) => state.activities[proposalId!] || [],
+  ).filter(activity => activity.phaseId === phaseId);
 
   // batch add new activities to db
   async function addToDb() {
     const temp: FirestoreActivity[] = [];
-    checked.forEach((equipment) => {
+    
+    // Sort the checked equipment alphabetically first
+    const sortedChecked = [...checked].sort((a, b) => 
+      a.description.localeCompare(b.description)
+    );
+    
+    // Keep track of activities we're creating in this batch
+    let currentActivities = [...existingActivities];
+    
+    sortedChecked.forEach((equipment) => {
+      // Calculate the correct sortOrder based on alphabetical position
+      const sortOrder = calculateEquipmentSortOrder(
+        equipment.description,
+        currentActivities
+      );
+      
       const newActivity = new FirestoreActivity({
         proposalId,
         wbsId,
@@ -88,9 +109,17 @@ export default function AddEquipmentDialog({
         materialCost: null,
         equipmentOwnership: EquipmentOwnership.rental,
         dateAdded: Date.now(),
-        sortOrder: new Date().getTime(),
+        sortOrder: sortOrder,
       });
+      
       temp.push(newActivity);
+      
+      // Add this new activity to our tracking list so subsequent items consider it
+      currentActivities.push({
+        ...newActivity,
+        id: `temp-${temp.length}`, // Temporary ID for calculation purposes
+        activityType: ActivityType.equipmentItem,
+      } as any);
     });
     await addActivities(temp);
     recalculatePhase(phaseId!);

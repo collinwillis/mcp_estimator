@@ -42,24 +42,24 @@ import Typography from '@mui/material/Typography';
 import { styled, useTheme } from '@mui/material/styles';
 import { HStack } from '@chakra-ui/react';
 
-import WbsDropdown from './wbs_drop_down';
-import PhaseList from './phase_list';
-import DrawerIcon from './drawer_icon';
-import AddPhaseDialog from './add_phase_dialog';
-import AddPhaseButton from './add_phase_button';
-import { StoreState, estimatorStore } from '../utils/store';
-import { auth } from '../setup/config/firebase';
-import { Wbs } from '../models/wbs';
-import { Proposal } from '../models/proposal';
-import { Phase } from '../models/phase';
-import { useUserProfile } from '../hooks/user_profile_hook';
-import { useProposals } from '../hooks/proposals_hook';
-import { useCurrentWbs } from '../hooks/current_wbs_hook';
-import { useCurrentProposal } from '../hooks/current_proposal_hook';
-import { useCurrentPhase } from '../hooks/current_phase_hook';
+
 import ProposalList from '../features/home/components/proposal_list';
 import EditProposalsDialog from '../features/home/components/edit_proposals_dialog';
 import AddProposalDialog from '../features/home/components/add_proposal_dialog';
+import { auth } from '../setup/config/firebase';
+import { useCurrentPhase } from '../hooks/current_phase_hook';
+import { useCurrentProposal } from '../hooks/current_proposal_hook';
+import { useCurrentWbs } from '../hooks/current_wbs_hook';
+import { useProposals } from '../hooks/proposals_hook';
+import { useUserProfile } from '../hooks/user_profile_hook';
+import { Phase } from '../models/phase';
+import { Proposal } from '../models/proposal';
+import { Wbs } from '../models/wbs';
+import { estimatorStore, StoreState } from '../utils/store';
+import AddPhaseDialog from './add_phase_dialog';
+import DrawerIcon from './drawer_icon';
+import PhaseList from './phase_list';
+import WbsDropdown from './wbs_drop_down';
 
 const drawerWidth = 300;
 
