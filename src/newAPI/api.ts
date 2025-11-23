@@ -596,3 +596,20 @@ export async function updateActivitiesBatchInFirestore(
     processRawActivity(doc.id, doc.data() as FirestoreActivity, proposal),
   );
 }
+
+export async function fetchCollectionCountsClient(): Promise<{
+  proposals: number;
+  activities: number;
+}> {
+  try {
+    const proposalsSnap = await getDocs(collection(firestore, 'proposals'));
+    const activitiesSnap = await getDocs(collection(firestore, 'activities'));
+    return {
+      proposals: proposalsSnap.size,
+      activities: activitiesSnap.size,
+    };
+  } catch (e) {
+    console.warn('Failed to count collections client-side', e);
+    return { proposals: 0, activities: 0 };
+  }
+}

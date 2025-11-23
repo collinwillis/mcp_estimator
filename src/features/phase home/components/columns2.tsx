@@ -1,16 +1,23 @@
+import React from 'react';
 import { MenuItem, Select } from '@mui/material';
 import { GridColumns, GridValueFormatterParams } from '@mui/x-data-grid-pro';
 
 import { Activity, ActivityType } from '../../../models/activity';
 import { EquipmentOwnership, EquipmentUnit } from '../../../models/equipment';
 
+const comparator = (v1: string, v2: string) => {
+  const lengthDifference = v1.length - v2.length;
+  if (lengthDifference !== 0) return lengthDifference;
+  if (v1 < v2) return -1;
+  if (v1 > v2) return 1;
+  return 0;
+};
+
 export const getActivityColumns = ({
-  activities,
   hasWritePermissions,
   updateEquipmentOwnership,
   updateEquipmentUnit,
 }: {
-  activities: Activity[];
   hasWritePermissions: boolean;
   updateEquipmentUnit: (activity: Activity, unit: string) => Promise<void>;
   updateEquipmentOwnership: (
@@ -48,10 +55,8 @@ export const getActivityColumns = ({
       flex: 1,
       field: 'unit',
       renderCell: (params) => {
-        const fullActivity = activities.find(
-          (activity) => activity.id === params.id,
-        );
-        if (fullActivity?.activityType == ActivityType.equipmentItem) {
+        const activity = params.row as Activity;
+        if (activity?.activityType === ActivityType.equipmentItem) {
           return (
             <Select
               disabled={!hasWritePermissions}
@@ -72,12 +77,11 @@ export const getActivityColumns = ({
               }}
               labelId='demo-simple-select-label'
               id='demo-simple-select'
-              value={fullActivity.unit}
+              value={activity.unit}
               onChange={(event) =>
-                updateEquipmentUnit(fullActivity, event.target.value)
+                updateEquipmentUnit(activity, event.target.value)
               }>
-              {fullActivity.equipmentOwnership ===
-              EquipmentOwnership.purchase ? (
+              {activity.equipmentOwnership === EquipmentOwnership.purchase ? (
                 <MenuItem value={EquipmentUnit.each}>
                   {EquipmentUnit.each}
                 </MenuItem>
@@ -94,6 +98,7 @@ export const getActivityColumns = ({
             </Select>
           );
         }
+        return null;
       },
       headerName: 'Unit',
       editable: true,
@@ -133,10 +138,8 @@ export const getActivityColumns = ({
       flex: 1,
       field: 'equipmentOwnership',
       renderCell: (params) => {
-        const fullActivity = activities.find(
-          (activity) => activity.id === params.id,
-        );
-        if (fullActivity?.activityType == ActivityType.equipmentItem) {
+        const activity = params.row as Activity;
+        if (activity?.activityType === ActivityType.equipmentItem) {
           return (
             <Select
               disabled={!hasWritePermissions}
@@ -157,11 +160,9 @@ export const getActivityColumns = ({
               }}
               labelId='demo-simple-select-label'
               id='demo-simple-select'
-              value={
-                fullActivity.equipmentOwnership ?? EquipmentOwnership.rental
-              }
+              value={activity.equipmentOwnership ?? EquipmentOwnership.rental}
               onChange={(event) =>
-                updateEquipmentOwnership(fullActivity, event.target.value)
+                updateEquipmentOwnership(activity, event.target.value)
               }>
               <MenuItem value={EquipmentOwnership.rental}>
                 {EquipmentOwnership.rental}
@@ -175,6 +176,7 @@ export const getActivityColumns = ({
             </Select>
           );
         }
+        return null;
       },
       headerName: 'Ownership',
       editable: true,
@@ -411,11 +413,4 @@ export const getActivityColumns = ({
   ];
   // Return the static baseColumns array. Visibility of specific columns to be managed via columnVisibilityModel in the component.
   return baseColumns;
-};
-const comparator = (v1: String, v2: String) => {
-  const lengthDifference = v1.length - v2.length;
-  if (lengthDifference !== 0) return lengthDifference;
-  if (v1 < v2) return -1;
-  if (v1 > v2) return 1;
-  return 0;
 };

@@ -8,15 +8,13 @@ import {
   GridCellParams,
   GridColumnVisibilityModel,
   GridColumns,
-  GridFilterModel,
   GridRowId,
   GridSelectionModel,
-  GridSortModel,
   GridToolbarColumnsButton,
   GridToolbarContainer,
   GridToolbarDensitySelector,
   GridValueFormatterParams,
-} from '@mui/x-data-grid';
+} from '@mui/x-data-grid-pro';
 
 import DeleteConfirmationDialog from '../../../components/alert_dialog';
 import { StyledDataGrid } from '../../../components/custom_data_grid';
@@ -24,6 +22,84 @@ import { useUserProfile } from '../../../hooks/user_profile_hook';
 import { Phase } from '../../../models/phase';
 import { StoreState, estimatorStore } from '../../../utils/store';
 import { numberFields } from '../../../utils/utils';
+
+// Custom Toolbar Component - Defined outside to avoid recreation on each render
+interface CustomToolbarProps {
+  hasWritePermissions: boolean;
+  selectedRows: GridRowId[];
+  duplicatePhases: (ids: string[]) => Promise<void>;
+  setDeleteDialogOpen: (open: boolean) => void;
+}
+
+function CustomToolbar({
+  hasWritePermissions,
+  selectedRows,
+  duplicatePhases,
+  setDeleteDialogOpen,
+}: CustomToolbarProps) {
+  return (
+    <GridToolbarContainer
+      sx={{
+        marginBottom: '0px',
+        borderBottom: '1px solid lightgray',
+        padding: '10px 20px',
+        backgroundColor: '#ffffff',
+        boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+        borderRadius: '4px',
+      }}>
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'row',
+          justifyContent: !hasWritePermissions ? 'start' : 'space-evenly',
+          width: '100%',
+          alignItems: 'center',
+        }}>
+        <GridToolbarColumnsButton
+          sx={{ color: '#424242' }}
+          onResize={undefined}
+          nonce={undefined}
+          onResizeCapture={undefined}
+        />
+        <GridToolbarDensitySelector
+          sx={{ color: '#424242' }}
+          onResize={undefined}
+          nonce={undefined}
+          onResizeCapture={undefined}
+        />
+        {hasWritePermissions && (
+          <>
+            <Button
+              disabled={selectedRows == null || selectedRows.length <= 0}
+              color='error'
+              sx={{
+                color: '#424242',
+                fontSize: '14px',
+              }}
+              onClick={async () => {
+                const ids: string[] = [];
+                selectedRows.forEach((row) => {
+                  ids.push(row.toString());
+                });
+                await duplicatePhases(ids);
+              }}
+              startIcon={<ControlPointDuplicate />}>
+              Duplicate
+            </Button>
+            <Button
+              disabled={selectedRows == null || selectedRows.length <= 0}
+              color='error'
+              sx={{ color: '#424242', fontSize: '14px' }}
+              onClick={() => setDeleteDialogOpen(true)}
+              startIcon={<TrashIcon />}>
+              Delete
+            </Button>
+          </>
+        )}
+      </Box>
+    </GridToolbarContainer>
+  );
+}
 
 function PhaseDataGrid({
   phaseList,
@@ -57,428 +133,411 @@ function PhaseDataGrid({
   const [columnVisibilityModel, setColumnVisibilityModel] =
     React.useState<GridColumnVisibilityModel>(visibilityModel);
 
-  const filterJSON = localStorage.getItem('phases_filter');
-  const initialFilterModel = filterJSON
-    ? JSON.parse(filterJSON)
-    : { items: [] };
-  const [filterModel, setFilterModel] =
-    React.useState<GridFilterModel>(initialFilterModel);
+  // Memoized checkbox change handler
+  const handleCheckboxChange = React.useCallback(
+    async (id: string, completed: boolean) => {
+      await updatePhase(id, 'completed', completed);
+    },
+    [updatePhase],
+  );
 
-  const sortJSON = localStorage.getItem('phases_sort');
-  const initialSortModel = sortJSON
-    ? (JSON.parse(sortJSON) as GridSortModel)
-    : [];
-  const [sortModel, setSortModel] =
-    React.useState<GridSortModel>(initialSortModel);
+  // Memoized columns - following MUI best practices
+  const columns: GridColumns = React.useMemo(
+    () => [
+      {
+        field: 'completed',
+        headerName: 'Completed',
+        width: 100,
+        renderCell: (params: GridCellParams) => (
+          // render checkbox in center of cell
+          <div
+            style={{
+              width: '100%',
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}>
+            <Checkbox
+              size='medium'
+              checked={params.value as boolean}
+              onChange={(event) => {
+                handleCheckboxChange(
+                  params.id.toString(),
+                  event.target.checked,
+                ).then((r) => r);
+              }}
+              inputProps={{ 'aria-label': 'controlled' }}
+            />
+          </div>
+        ),
+      },
+      {
+        field: 'phaseNumber',
+        headerName: 'Phase',
+        minWidth: 100,
+        editable: true,
+        flex: 1,
+        headerAlign: 'center',
+      },
+      {
+        field: 'size',
+        headerName: 'Size',
+        editable: true,
+        align: 'right',
+        flex: 1,
+        minWidth: 80,
+        headerAlign: 'center',
+      },
+      {
+        field: 'flc',
+        headerName: 'FLC',
+        editable: true,
+        align: 'right',
+        flex: 1,
+        minWidth: 80,
+        headerAlign: 'center',
+      },
+      {
+        field: 'description',
+        headerName: 'Line / Description',
+        editable: true,
+        minWidth: 250,
+        align: 'left',
+        flex: 1,
+        headerAlign: 'center',
+      },
+      {
+        field: 'spec',
+        headerName: 'Spec',
+        editable: true,
+        minWidth: 80,
+        align: 'right',
+        flex: 1,
+        headerAlign: 'center',
+      },
+      {
+        field: 'insulation',
+        headerName: 'Insul',
+        editable: true,
+        minWidth: 80,
+        align: 'right',
+        flex: 1,
+        headerAlign: 'center',
+      },
+      {
+        field: 'insulationSize',
+        headerName: 'Insl. Size',
+        editable: true,
+        minWidth: 80,
+        align: 'right',
+        flex: 1,
+        headerAlign: 'center',
+      },
+      {
+        field: 'sheet',
+        headerName: 'Sht',
+        minWidth: 80,
+        editable: true,
+        align: 'right',
+        flex: 1,
+        headerAlign: 'center',
+      },
+      {
+        field: 'area',
+        headerName: 'Area',
+        minWidth: 80,
+        editable: true,
+        align: 'right',
+        flex: 1,
+        headerAlign: 'center',
+      },
+      {
+        field: 'status',
+        headerName: 'Status',
+        minWidth: 80,
+        align: 'right',
+        editable: true,
+        flex: 1,
+        headerAlign: 'center',
+      },
+      {
+        field: 'sys',
+        headerName: 'Sys',
+        editable: true,
+        align: 'right',
+        flex: 1,
+        minWidth: 80,
+        headerAlign: 'center',
+      },
+      {
+        field: 'quantity',
+        headerName: 'Quantity',
+        minWidth: 100,
+        align: 'right',
+        editable: true,
+        flex: 1,
+        headerAlign: 'center',
+        valueFormatter: (params: GridValueFormatterParams<number>) => {
+          if (params.value == null) {
+            return '';
+          }
+          const valueFormatted = params.value.toLocaleString(undefined, {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          });
+          return `${valueFormatted}`;
+        },
+      },
+      {
+        field: 'unit',
+        headerName: 'Units',
+        minWidth: 80,
+        align: 'right',
+        editable: true,
+        flex: 1,
+        headerAlign: 'center',
+      },
+      {
+        field: 'craftManHours',
+        headerName: 'Craft MH',
+        editable: true,
+        align: 'right',
+        flex: 1,
+        minWidth: 100,
+        headerAlign: 'center',
+        valueFormatter: (params: GridValueFormatterParams<number>) => {
+          if (params.value == null) {
+            return '';
+          }
+          const valueFormatted = params.value.toLocaleString(undefined, {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          });
+          return `${valueFormatted}`;
+        },
+      },
+      {
+        field: 'craftCost',
+        headerName: 'Craft Total',
+        editable: true,
+        minWidth: 120,
+        align: 'right',
+        flex: 1,
+        headerAlign: 'center',
+        valueFormatter: (params: GridValueFormatterParams<number>) => {
+          if (params.value == null) {
+            return '';
+          }
+          const valueFormatted = params.value.toLocaleString(undefined, {
+            maximumFractionDigits: 2,
+            minimumFractionDigits: 2,
+          });
+          return `$${valueFormatted}`;
+        },
+      },
+      {
+        field: 'welderManHours',
+        headerName: 'Welder MH',
+        editable: true,
+        minWidth: 120,
+        align: 'right',
+        flex: 1,
+        headerAlign: 'center',
+        valueFormatter: (params: GridValueFormatterParams<number>) => {
+          if (params.value == null) {
+            return '';
+          }
+          const valueFormatted = params.value.toLocaleString(undefined, {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          });
+          return `${valueFormatted}`;
+        },
+      },
+      {
+        field: 'welderCost',
+        headerName: 'Welder Total',
+        editable: true,
+        minWidth: 120,
+        align: 'right',
+        flex: 1,
+        headerAlign: 'center',
+        valueFormatter: (params: GridValueFormatterParams<number>) => {
+          if (params.value == null) {
+            return '';
+          }
+          const valueFormatted = params.value.toLocaleString(undefined, {
+            maximumFractionDigits: 2,
+            minimumFractionDigits: 2,
+          });
+          return `$${valueFormatted}`;
+        },
+      },
+      {
+        field: 'materialCost',
+        headerName: 'Material Total',
+        minWidth: 120,
+        hide: true,
+        editable: true,
+        flex: 1,
+        align: 'right',
+        headerAlign: 'center',
+        valueFormatter: (params: GridValueFormatterParams<number>) => {
+          if (params.value == null) {
+            return '';
+          }
+          const valueFormatted = params.value.toLocaleString(undefined, {
+            maximumFractionDigits: 2,
+            minimumFractionDigits: 2,
+          });
+          return `$${valueFormatted}`;
+        },
+      },
+      {
+        field: 'equipmentCost',
+        headerName: 'Equip Total',
+        minWidth: 120,
+        hide: true,
+        editable: true,
+        flex: 1,
+        align: 'right',
+        headerAlign: 'center',
+        valueFormatter: (params: GridValueFormatterParams<number>) => {
+          if (params.value == null) {
+            return '';
+          }
+          const valueFormatted = params.value.toLocaleString(undefined, {
+            maximumFractionDigits: 2,
+            minimumFractionDigits: 2,
+          });
+          return `$${valueFormatted}`;
+        },
+      },
+      {
+        field: 'subContractorCost',
+        headerName: 'Sub Total',
+        minWidth: 120,
+        hide: true,
+        editable: true,
+        flex: 1,
+        align: 'right',
+        headerAlign: 'center',
+        valueFormatter: (params: GridValueFormatterParams<number>) => {
+          if (params.value == null) {
+            return '';
+          }
+          const valueFormatted = params.value.toLocaleString(undefined, {
+            maximumFractionDigits: 2,
+            minimumFractionDigits: 2,
+          });
+          return `$${valueFormatted}`;
+        },
+      },
+      {
+        field: 'costOnlyCost',
+        headerName: 'Cost Only Total',
+        editable: true,
+        minWidth: 120,
+        hide: true,
+        align: 'right',
+        flex: 1,
+        headerAlign: 'center',
+        valueFormatter: (params: GridValueFormatterParams<number>) => {
+          if (params.value == null) {
+            return '';
+          }
+          const valueFormatted = params.value.toLocaleString(undefined, {
+            maximumFractionDigits: 2,
+            minimumFractionDigits: 2,
+          });
+          return `$${valueFormatted}`;
+        },
+      },
+      {
+        field: 'totalCost',
+        headerName: 'Total',
+        minWidth: 120,
+        editable: true,
+        flex: 1,
+        align: 'right',
+        headerAlign: 'center',
+        valueFormatter: (params: GridValueFormatterParams<number>) => {
+          if (params.value == null) {
+            return '';
+          }
+          const valueFormatted = params.value.toLocaleString(undefined, {
+            maximumFractionDigits: 2,
+            minimumFractionDigits: 2,
+          });
+          return `$${valueFormatted}`;
+        },
+      },
+    ],
+    [handleCheckboxChange],
+  );
 
-  const handleCheckboxChange = async (id: string, completed: boolean) => {
-    await updatePhase(id, 'completed', completed);
-  };
+  const notEditableCells = React.useMemo(
+    () => [
+      'craftCost',
+      'welderCost',
+      'materialCost',
+      'equipmentCost',
+      'subContractorCost',
+      'costOnlyCost',
+      'totalCost',
+    ],
+    [],
+  );
 
-  const columns: GridColumns = [
-    {
-      field: 'completed',
-      headerName: 'Completed',
-      width: 100,
-      renderCell: (params: GridCellParams) => (
-        // render checkbox in center of cell
-        <div
-          style={{
-            width: '100%',
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-          }}>
-          <Checkbox
-            size='medium'
-            checked={params.value as boolean}
-            onChange={(event) => {
-              handleCheckboxChange(
-                params.id.toString(),
-                event.target.checked,
-              ).then((r) => r);
-            }}
-            inputProps={{ 'aria-label': 'controlled' }}
-          />
-        </div>
-      ),
+  // Memoized cell editable checker
+  const isCellEditable = React.useCallback(
+    (params: GridCellParams<number>) => {
+      if (!hasWritePermissions) {
+        return false;
+      }
+      if (notEditableCells.includes(params.field)) {
+        return false;
+      }
+      return true;
     },
-    {
-      field: 'phaseNumber',
-      headerName: 'Phase',
-      minWidth: 100,
-      editable: true,
-      flex: 1,
-      headerAlign: 'center',
-    },
-    {
-      field: 'size',
-      headerName: 'Size',
-      editable: true,
-      align: 'right',
-      flex: 1,
-      minWidth: 80,
-      headerAlign: 'center',
-    },
-    {
-      field: 'flc',
-      headerName: 'FLC',
-      editable: true,
-      align: 'right',
-      flex: 1,
-      minWidth: 80,
-      headerAlign: 'center',
-    },
-    {
-      field: 'description',
-      headerName: 'Line / Description',
-      editable: true,
-      minWidth: 250,
-      align: 'left',
-      flex: 1,
-      headerAlign: 'center',
-    },
-    {
-      field: 'spec',
-      headerName: 'Spec',
-      editable: true,
-      minWidth: 80,
-      align: 'right',
-      flex: 1,
-      headerAlign: 'center',
-    },
-    {
-      field: 'insulation',
-      headerName: 'Insul',
-      editable: true,
-      minWidth: 80,
-      align: 'right',
-      flex: 1,
-      headerAlign: 'center',
-    },
-    {
-      field: 'insulationSize',
-      headerName: 'Insl. Size',
-      editable: true,
-      minWidth: 80,
-      align: 'right',
-      flex: 1,
-      headerAlign: 'center',
-    },
-    {
-      field: 'sheet',
-      headerName: 'Sht',
-      minWidth: 80,
-      editable: true,
-      align: 'right',
-      flex: 1,
-      headerAlign: 'center',
-    },
-    {
-      field: 'area',
-      headerName: 'Area',
-      minWidth: 80,
-      editable: true,
-      align: 'right',
-      flex: 1,
-      headerAlign: 'center',
-    },
-    {
-      field: 'status',
-      headerName: 'Status',
-      minWidth: 80,
-      align: 'right',
-      editable: true,
-      flex: 1,
-      headerAlign: 'center',
-    },
-    {
-      field: 'sys',
-      headerName: 'Sys',
-      editable: true,
-      align: 'right',
-      flex: 1,
-      minWidth: 80,
-      headerAlign: 'center',
-    },
-    {
-      field: 'quantity',
-      headerName: 'Quantity',
-      minWidth: 100,
-      align: 'right',
-      editable: true,
-      flex: 1,
-      headerAlign: 'center',
-      valueFormatter: (params: GridValueFormatterParams<number>) => {
-        if (params.value == null) {
-          return '';
-        }
-        const valueFormatted = params.value.toLocaleString(undefined, {
-          minimumFractionDigits: 2,
-          maximumFractionDigits: 2,
-        });
-        return `${valueFormatted}`;
-      },
-    },
-    {
-      field: 'unit',
-      headerName: 'Units',
-      minWidth: 80,
-      align: 'right',
-      editable: true,
-      flex: 1,
-      headerAlign: 'center',
-    },
-    {
-      field: 'craftManHours',
-      headerName: 'Craft MH',
-      editable: true,
-      align: 'right',
-      flex: 1,
-      minWidth: 100,
-      headerAlign: 'center',
-      valueFormatter: (params: GridValueFormatterParams<number>) => {
-        if (params.value == null) {
-          return '';
-        }
-        const valueFormatted = params.value.toLocaleString(undefined, {
-          minimumFractionDigits: 2,
-          maximumFractionDigits: 2,
-        });
-        return `${valueFormatted}`;
-      },
-    },
-    {
-      field: 'craftCost',
-      headerName: 'Craft Total',
-      editable: true,
-      minWidth: 120,
-      align: 'right',
-      flex: 1,
-      headerAlign: 'center',
-      valueFormatter: (params: GridValueFormatterParams<number>) => {
-        if (params.value == null) {
-          return '';
-        }
-        const valueFormatted = params.value.toLocaleString(undefined, {
-          maximumFractionDigits: 2,
-          minimumFractionDigits: 2,
-        });
-        return `$${valueFormatted}`;
-      },
-    },
-    {
-      field: 'welderManHours',
-      headerName: 'Welder MH',
-      editable: true,
-      minWidth: 120,
-      align: 'right',
-      flex: 1,
-      headerAlign: 'center',
-      valueFormatter: (params: GridValueFormatterParams<number>) => {
-        if (params.value == null) {
-          return '';
-        }
-        const valueFormatted = params.value.toLocaleString(undefined, {
-          minimumFractionDigits: 2,
-          maximumFractionDigits: 2,
-        });
-        return `${valueFormatted}`;
-      },
-    },
-    {
-      field: 'welderCost',
-      headerName: 'Welder Total',
-      editable: true,
-      minWidth: 120,
-      align: 'right',
-      flex: 1,
-      headerAlign: 'center',
-      valueFormatter: (params: GridValueFormatterParams<number>) => {
-        if (params.value == null) {
-          return '';
-        }
-        const valueFormatted = params.value.toLocaleString(undefined, {
-          maximumFractionDigits: 2,
-          minimumFractionDigits: 2,
-        });
-        return `$${valueFormatted}`;
-      },
-    },
-    {
-      field: 'materialCost',
-      headerName: 'Material Total',
-      minWidth: 120,
-      hide: true,
-      editable: true,
-      flex: 1,
-      align: 'right',
-      headerAlign: 'center',
-      valueFormatter: (params: GridValueFormatterParams<number>) => {
-        if (params.value == null) {
-          return '';
-        }
-        const valueFormatted = params.value.toLocaleString(undefined, {
-          maximumFractionDigits: 2,
-          minimumFractionDigits: 2,
-        });
-        return `$${valueFormatted}`;
-      },
-    },
-    {
-      field: 'equipmentCost',
-      headerName: 'Equip Total',
-      minWidth: 120,
-      hide: true,
-      editable: true,
-      flex: 1,
-      align: 'right',
-      headerAlign: 'center',
-      valueFormatter: (params: GridValueFormatterParams<number>) => {
-        if (params.value == null) {
-          return '';
-        }
-        const valueFormatted = params.value.toLocaleString(undefined, {
-          maximumFractionDigits: 2,
-          minimumFractionDigits: 2,
-        });
-        return `$${valueFormatted}`;
-      },
-    },
-    {
-      field: 'subContractorCost',
-      headerName: 'Sub Total',
-      minWidth: 120,
-      hide: true,
-      editable: true,
-      flex: 1,
-      align: 'right',
-      headerAlign: 'center',
-      valueFormatter: (params: GridValueFormatterParams<number>) => {
-        if (params.value == null) {
-          return '';
-        }
-        const valueFormatted = params.value.toLocaleString(undefined, {
-          maximumFractionDigits: 2,
-          minimumFractionDigits: 2,
-        });
-        return `$${valueFormatted}`;
-      },
-    },
-    {
-      field: 'costOnlyCost',
-      headerName: 'Cost Only Total',
-      editable: true,
-      minWidth: 120,
-      hide: true,
-      align: 'right',
-      flex: 1,
-      headerAlign: 'center',
-      valueFormatter: (params: GridValueFormatterParams<number>) => {
-        if (params.value == null) {
-          return '';
-        }
-        const valueFormatted = params.value.toLocaleString(undefined, {
-          maximumFractionDigits: 2,
-          minimumFractionDigits: 2,
-        });
-        return `$${valueFormatted}`;
-      },
-    },
-    {
-      field: 'totalCost',
-      headerName: 'Total',
-      minWidth: 120,
-      editable: true,
-      flex: 1,
-      align: 'right',
-      headerAlign: 'center',
-      valueFormatter: (params: GridValueFormatterParams<number>) => {
-        if (params.value == null) {
-          return '';
-        }
-        const valueFormatted = params.value.toLocaleString(undefined, {
-          maximumFractionDigits: 2,
-          minimumFractionDigits: 2,
-        });
-        return `$${valueFormatted}`;
-      },
-    },
-  ];
-  const notEditableCells = [
-    'craftCost',
-    'welderCost',
-    'materialCost',
-    'equipmentCost',
-    'subContractorCost',
-    'costOnlyCost',
-    'totalCost',
-  ];
+    [hasWritePermissions, notEditableCells],
+  );
 
-  function CustomToolbar() {
-    return (
-      <GridToolbarContainer
-        sx={{
-          marginBottom: '0px',
-          borderBottom: '1px solid lightgray',
-          padding: '10px 20px',
-          backgroundColor: '#ffffff', // White background for a clean look
-          boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)', // Subtle shadow for the toolbar
-          borderRadius: '4px',
-        }}>
-        <Box
-          sx={{
-            display: 'flex',
-            flexDirection: 'row',
-            justifyContent: !hasWritePermissions ? 'start' : 'space-evenly',
-            width: '100%',
-            alignItems: 'center',
-          }}>
-          <GridToolbarColumnsButton
-            sx={{ color: '#424242' }}
-            onResize={undefined}
-            nonce={undefined}
-            onResizeCapture={undefined}
-          />
-          <GridToolbarDensitySelector
-            sx={{ color: '#424242' }}
-            onResize={undefined}
-            nonce={undefined}
-            onResizeCapture={undefined}
-          />
-          {hasWritePermissions && (
-            <>
-              <Button
-                disabled={selectedRows == null || selectedRows.length <= 0}
-                color='error'
-                sx={{
-                  color: '#424242',
-                  fontSize: '14px',
-                }}
-                onClick={async () => {
-                  const ids: string[] = [];
-                  selectedRows.map((row) => {
-                    ids.push(row.toString());
-                  });
-                  await duplicatePhases(ids);
-                }}
-                startIcon={<ControlPointDuplicate />}>
-                Duplicate
-              </Button>
-              <Button
-                disabled={selectedRows == null || selectedRows.length <= 0}
-                color='error'
-                sx={{ color: '#424242', fontSize: '14px' }}
-                onClick={() => setDeleteDialogOpen(true)}
-                startIcon={<TrashIcon />}>
-                Delete
-              </Button>
-            </>
-          )}
-        </Box>
-      </GridToolbarContainer>
-    );
-  }
+  // Memoized cell className getter
+  const getCellClassName = React.useCallback(
+    (params: GridCellParams<number>) => {
+      let className = '';
+      if (params.row.completed) {
+        className += 'completed-row ';
+      }
+      if (!notEditableCells.includes(params.field)) {
+        className += 'editable-cell';
+      }
+      return className;
+    },
+    [notEditableCells],
+  );
+
+  // Memoized toolbar component with props
+  const renderToolbar = React.useCallback(
+    () => (
+      <CustomToolbar
+        hasWritePermissions={hasWritePermissions}
+        selectedRows={selectedRows}
+        duplicatePhases={duplicatePhases}
+        setDeleteDialogOpen={setDeleteDialogOpen}
+      />
+    ),
+    [hasWritePermissions, selectedRows, duplicatePhases, setDeleteDialogOpen],
+  );
+
+  // Memoized components object for DataGrid
+  const components = React.useMemo(
+    () => ({
+      Toolbar: renderToolbar,
+    }),
+    [renderToolbar],
+  );
 
   return (
     <Box
@@ -525,20 +584,16 @@ function PhaseDataGrid({
         },
       }}>
       <StyledDataGrid
-        // sortModel={sortModel}
         onSortModelChange={(newModel) => {
           localStorage.setItem('phases_sort', JSON.stringify(newModel));
-          setSortModel(newModel);
         }}
         columnVisibilityModel={columnVisibilityModel}
         onColumnVisibilityModelChange={(newModel) => {
           localStorage.setItem('phases_visibility', JSON.stringify(newModel));
           setColumnVisibilityModel(newModel);
         }}
-        // filterModel={filterModel}
         onFilterModelChange={(newModel) => {
           localStorage.setItem('phases_filter', JSON.stringify(newModel));
-          setFilterModel(newModel);
         }}
         density='compact'
         loading={isLoading}
@@ -548,33 +603,17 @@ function PhaseDataGrid({
         onSelectionModelChange={(newSelectionModel: GridSelectionModel) => {
           setSelectedRows(newSelectionModel);
         }}
-        components={{ Toolbar: CustomToolbar }}
-        onCellEditCommit={(params: GridCellEditCommitParams, event) => {
+        components={components}
+        onCellEditCommit={(params: GridCellEditCommitParams) => {
           const { id, field, value } = params;
           // Transform text fields to uppercase before saving
-          const shouldUppercase = typeof value === 'string' && !numberFields.includes(field);
+          const shouldUppercase =
+            typeof value === 'string' && !numberFields.includes(field);
           const finalValue = shouldUppercase ? value.toUpperCase() : value;
           updatePhase(id.toString(), field, finalValue);
         }}
-        isCellEditable={(params: GridCellParams<number>) => {
-          if (!hasWritePermissions) {
-            return false;
-          }
-          if (notEditableCells.includes(params.field)) {
-            return false;
-          }
-          return true;
-        }}
-        getCellClassName={(params: GridCellParams<number>) => {
-          let className = '';
-          if (params.row.completed) {
-            className += 'completed-row ';
-          }
-          if (!notEditableCells.includes(params.field)) {
-            className += 'editable-cell';
-          }
-          return className;
-        }}
+        isCellEditable={isCellEditable}
+        getCellClassName={getCellClassName}
         getRowClassName={(params) => {
           if (params.row.completed) {
             return params.indexRelativeToCurrentPage % 2 === 0
