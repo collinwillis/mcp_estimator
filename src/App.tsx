@@ -45,61 +45,61 @@ export default function App() {
     <ThemeProvider theme={estimatorTheme}>
       <Router>
         <Routes>
-          <Route path='/login' element={<AuthScreen />} />
-          <Route
-            path='/verify-email'
-            element={<EmailVerificationScreen user={currentUser} />}
-          />
-          <Route
-            path='/'
-            element={
-              <AuthRoute>
-                <EstimatorDrawer>
-                  <ProposalSelectScreen />
-                </EstimatorDrawer>
-              </AuthRoute>
-            }
-          />
-          <Route
-            path='/proposal/:proposalId'
-            element={
-              <AuthRoute>
-                <EstimatorDrawer>
-                  <ProposalHomeScreen />
-                </EstimatorDrawer>
-              </AuthRoute>
-            }
-          />
-          <Route
-            path='/proposal/:proposalId/wbs/:wbsId'
-            element={
-              <AuthRoute>
-                <EstimatorDrawer>
-                  <WbsHomeScreen />
-                </EstimatorDrawer>
-              </AuthRoute>
-            }
-          />
-          <Route
-            path='/proposal/:proposalId/wbs/:wbsId/phase/:phaseId'
-            element={
-              <AuthRoute>
-                <EstimatorDrawer>
-                  <PhaseHomeScreen />
-                </EstimatorDrawer>
-              </AuthRoute>
-            }
-          />
-          <Route
-            path='/admin'
-            element={
-              <AuthRoute>
-                <AdminDashboard />
-              </AuthRoute>
-            }
-          />
-        </Routes>
-      </Router>
-    </ThemeProvider>
+            <Route path='/login' element={<AuthScreen />} />
+            <Route
+              path='/verify-email'
+              element={<EmailVerificationScreen user={currentUser} />}
+            />
+            <Route
+              path='/'
+              element={
+                <AuthRoute>
+                  <EstimatorDrawer>
+                    <ProposalSelectScreen />
+                  </EstimatorDrawer>
+                </AuthRoute>
+              }
+            />
+            <Route
+              path='/proposal/:proposalId'
+              element={
+                <AuthRoute>
+                  <EstimatorDrawer>
+                    <ProposalHomeScreen />
+                  </EstimatorDrawer>
+                </AuthRoute>
+              }
+            />
+            <Route
+              path='/proposal/:proposalId/wbs/:wbsId'
+              element={
+                <AuthRoute>
+                  <EstimatorDrawer>
+                    <WbsHomeScreen />
+                  </EstimatorDrawer>
+                </AuthRoute>
+              }
+            />
+            <Route
+              path='/proposal/:proposalId/wbs/:wbsId/phase/:phaseId'
+              element={
+                <AuthRoute>
+                  <EstimatorDrawer>
+                    <PhaseHomeScreen />
+                  </EstimatorDrawer>
+                </AuthRoute>
+              }
+            />
+            <Route
+              path='/admin'
+              element={
+                <AuthRoute>
+                  <AdminDashboard />
+                </AuthRoute>
+              }
+            />
+          </Routes>
+        </Router>
+      </ThemeProvider>
   );
 }

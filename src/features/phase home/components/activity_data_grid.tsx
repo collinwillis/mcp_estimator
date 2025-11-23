@@ -32,7 +32,7 @@ import {
 import DeleteConfirmationDialog from '../../../components/alert_dialog';
 import CopyFromPhaseDialog from '../../../components/copy_from_phase_dialog';
 import CopyActivitiesFromProposalDialog from '../../../components/copy_activities_from_proposal_dialog';
-import { StyledDataGrid } from '../../../components/custom_data_grid';
+import { ExcelNavigationDataGrid } from '../../../components/excel_navigation_data_grid';
 import EditBaseRateDialog from '../../../components/edit_base_rate_dialog';
 import { useUserProfile } from '../../../hooks/user_profile_hook';
 import { Activity, ActivityType } from '../../../models/activity';
@@ -692,27 +692,35 @@ function ActivityDataGrid() {
           return '';
         }
         if (activity.activityType === ActivityType.laborItem) {
+          const classes: string[] = [];
+
+          // Check for over/under conditions
           if (params.field === 'craftConstant') {
             if (activity.craftConstant > activity.constant?.craftConstant!) {
-              return 'over';
-            }
-            if (activity.craftConstant < activity.constant?.craftConstant!) {
-              return 'under';
+              classes.push('over');
+            } else if (
+              activity.craftConstant < activity.constant?.craftConstant!
+            ) {
+              classes.push('under');
             }
           } else if (params.field === 'welderConstant') {
             if (activity.welderConstant > activity.constant?.weldConstant!) {
-              return 'over';
-            }
-            if (activity.welderConstant < activity.constant?.weldConstant!) {
-              return 'under';
+              classes.push('over');
+            } else if (
+              activity.welderConstant < activity.constant?.weldConstant!
+            ) {
+              classes.push('under');
             }
           }
+
+          // Check if editable (important for navigation)
           if (editableLaborItemCells.includes(params.field)) {
-            return 'editable-cell';
+            classes.push('editable-cell');
+          } else if (!laborItemAvailableCells.includes(params.field)) {
+            classes.push('not-used');
           }
-          if (!laborItemAvailableCells.includes(params.field)) {
-            return 'not-used';
-          }
+
+          return classes.join(' ');
         }
         if (activity.activityType === ActivityType.equipmentItem) {
           if (editableEquipmentItemCells.includes(params.field)) {
@@ -739,12 +747,35 @@ function ActivityDataGrid() {
           }
         }
         if (activity.activityType === ActivityType.customLaborItem) {
+          const classes: string[] = [];
+
+          // Check for over/under conditions (custom labor can have constants too)
+          if (params.field === 'craftConstant') {
+            if (activity.craftConstant > activity.constant?.craftConstant!) {
+              classes.push('over');
+            } else if (
+              activity.craftConstant < activity.constant?.craftConstant!
+            ) {
+              classes.push('under');
+            }
+          } else if (params.field === 'welderConstant') {
+            if (activity.welderConstant > activity.constant?.weldConstant!) {
+              classes.push('over');
+            } else if (
+              activity.welderConstant < activity.constant?.weldConstant!
+            ) {
+              classes.push('under');
+            }
+          }
+
+          // Check if editable
           if (editableLaborItemCells.includes(params.field)) {
-            return 'editable-cell';
+            classes.push('editable-cell');
+          } else if (!customLaborItemAvailableCells.includes(params.field)) {
+            classes.push('not-used');
           }
-          if (!customLaborItemAvailableCells.includes(params.field)) {
-            return 'not-used';
-          }
+
+          return classes.length > 0 ? classes.join(' ') : '';
         }
         if (activity.activityType === ActivityType.subContractorItem) {
           if (editableSubcontractorItemCells.includes(params.field)) {
@@ -836,7 +867,7 @@ function ActivityDataGrid() {
           },
         },
       }}>
-      <StyledDataGrid
+      <ExcelNavigationDataGrid
         columnVisibilityModel={columnVisibilityModel}
         onColumnVisibilityModelChange={async (newModel) => {
           setColumnVisibilityModel(newModel); // Update state
@@ -866,19 +897,37 @@ function ActivityDataGrid() {
         onRowOrderChange={handleRowOrderChange}
         density='compact'
         columns={columns}
-        onCellEditCommit={async (params) => {
-          const { id, field, value } = params;
-          if (field === 'rowId') {
+        // Use the new editing API with processRowUpdate (MUI best practice)
+        onProcessRowUpdate={async (newRow, oldRow) => {
+          const { id } = newRow;
+
+          // Check which field changed
+          const changedField = Object.keys(newRow).find(
+            (key) => newRow[key] !== oldRow[key],
+          );
+
+          if (!changedField) return newRow;
+
+          const value = newRow[changedField];
+
+          if (changedField === 'rowId') {
             await handleRowOrderChangeByRowId(id.toString(), value);
           } else {
             // Transform text fields to uppercase before saving
             const shouldUppercase =
-              typeof value === 'string' && !numberFields.includes(field);
+              typeof value === 'string' && !numberFields.includes(changedField);
 
             const finalValue = shouldUppercase ? value.toUpperCase() : value;
-            await updateActivity(id.toString(), field, finalValue);
+            await updateActivity(id.toString(), changedField, finalValue);
             recalculatePhase(phaseId!);
+
+            // Return the updated row with uppercase value if needed
+            if (shouldUppercase) {
+              return { ...newRow, [changedField]: finalValue };
+            }
           }
+
+          return newRow;
         }}
         rows={filtered}
         pageSize={100}
@@ -888,6 +937,14 @@ function ActivityDataGrid() {
         components={components}
         isCellEditable={isCellEditable}
         getCellClassName={getCellClassName}
+        // Enable Excel-like navigation with enhanced settings
+        enableExcelNavigation={true}
+        autoCommitOnNavigation={true}
+        enterBehavior='next-row'
+        tabBehavior='next-cell'
+        skipNonEditableCells={true}
+        wrapNavigation={true}
+        debugMode={false}
       />
       <Box
         sx={{

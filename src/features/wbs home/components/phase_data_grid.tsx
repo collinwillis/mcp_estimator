@@ -4,7 +4,6 @@ import TrashIcon from '@mui/icons-material/DeleteForever';
 import { Button, Checkbox } from '@mui/material';
 import { Box } from '@mui/system';
 import {
-  GridCellEditCommitParams,
   GridCellParams,
   GridColumnVisibilityModel,
   GridColumns,
@@ -17,7 +16,7 @@ import {
 } from '@mui/x-data-grid-pro';
 
 import DeleteConfirmationDialog from '../../../components/alert_dialog';
-import { StyledDataGrid } from '../../../components/custom_data_grid';
+import { ExcelNavigationDataGrid } from '../../../components/excel_navigation_data_grid';
 import { useUserProfile } from '../../../hooks/user_profile_hook';
 import { Phase } from '../../../models/phase';
 import { StoreState, estimatorStore } from '../../../utils/store';
@@ -583,7 +582,7 @@ function PhaseDataGrid({
           },
         },
       }}>
-      <StyledDataGrid
+      <ExcelNavigationDataGrid
         onSortModelChange={(newModel) => {
           localStorage.setItem('phases_sort', JSON.stringify(newModel));
         }}
@@ -604,13 +603,32 @@ function PhaseDataGrid({
           setSelectedRows(newSelectionModel);
         }}
         components={components}
-        onCellEditCommit={(params: GridCellEditCommitParams) => {
-          const { id, field, value } = params;
+        // Use the new editing API with processRowUpdate (MUI best practice)
+        onProcessRowUpdate={async (newRow, oldRow) => {
+          const { id } = newRow;
+
+          // Check which field changed
+          const changedField = Object.keys(newRow).find(
+            (key) => newRow[key] !== oldRow[key],
+          );
+
+          if (!changedField) return newRow;
+
+          const value = newRow[changedField];
+
           // Transform text fields to uppercase before saving
           const shouldUppercase =
-            typeof value === 'string' && !numberFields.includes(field);
+            typeof value === 'string' && !numberFields.includes(changedField);
           const finalValue = shouldUppercase ? value.toUpperCase() : value;
-          updatePhase(id.toString(), field, finalValue);
+
+          await updatePhase(id.toString(), changedField, finalValue);
+
+          // Return the updated row with uppercase value if needed
+          if (shouldUppercase) {
+            return { ...newRow, [changedField]: finalValue };
+          }
+
+          return newRow;
         }}
         isCellEditable={isCellEditable}
         getCellClassName={getCellClassName}
@@ -622,6 +640,14 @@ function PhaseDataGrid({
           }
           return '';
         }}
+        // Enable Excel-like navigation with enhanced settings
+        enableExcelNavigation={true}
+        autoCommitOnNavigation={true}
+        enterBehavior='next-row'
+        tabBehavior='next-cell'
+        skipNonEditableCells={true}
+        wrapNavigation={true}
+        debugMode={false}
       />
       <DeleteConfirmationDialog
         title='Are you sure you want to delete the selected phase?'
