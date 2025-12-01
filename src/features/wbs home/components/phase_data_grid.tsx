@@ -583,6 +583,7 @@ function PhaseDataGrid({
         },
       }}>
       <ExcelNavigationDataGrid
+        checkboxSelection
         onSortModelChange={(newModel) => {
           localStorage.setItem('phases_sort', JSON.stringify(newModel));
         }}

@@ -840,19 +840,13 @@ export const ExcelNavigationDataGrid = forwardRef<
       onCellDoubleClick={handleCellDoubleClick}
       processRowUpdate={processRowUpdate}
       onProcessRowUpdateError={handleProcessRowUpdateError}
-      // Keep focus visible
-      hideFooterSelectedRowCount
-      disableSelectionOnClick
-      // Experimental features for better keyboard control
+      // Note: We do NOT disable row selection as it's needed for toolbar actions (delete, duplicate, etc.)
+      // Merge experimental features with any provided ones
       experimentalFeatures={{
+        ...(otherProps.experimentalFeatures || {}),
         // Enable new editing API if available
         newEditingApi: true,
       }}
-      // Enhanced column configuration
-      // @ts-ignore - columnHeaderHeight might not be in types yet
-      columnHeaderHeight={56}
-      // Ensure cells are focusable
-      tabIndex={0}
       // Additional props for better keyboard navigation
       sx={{
         ...otherProps.sx,
