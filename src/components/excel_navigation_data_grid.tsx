@@ -12,7 +12,7 @@ import {
   GridRowModesModel,
   GridRowId,
   gridClasses,
-  GridApiPro,
+  GridApi,
   GridColumnHeaderParams,
 } from '@mui/x-data-grid-pro';
 import { styled, alpha } from '@mui/material';
@@ -100,7 +100,7 @@ const isNavigableColumn = (col: GridColDef): boolean => {
 const isCellRuntimeEditable = (
   rowId: GridRowId,
   field: string,
-  apiRef: React.MutableRefObject<GridApiPro>,
+  apiRef: React.MutableRefObject<GridApi>,
   isCellEditableProp?: (params: GridCellParams) => boolean,
 ): boolean => {
   try {
@@ -114,27 +114,36 @@ const isCellRuntimeEditable = (
 
     // If there's a custom isCellEditable function, use it
     if (isCellEditableProp) {
-      const params: GridCellParams = {
+      const params = {
         id: rowId,
         field,
         row,
         value: row[field],
         colDef: column,
-        cellMode: 'view',
+        cellMode: 'view' as const,
         tabIndex: -1,
         hasFocus: false,
         isEditable: true,
-        // @ts-ignore - GridCellParams might have more properties
-      };
+        getValue: (id: GridRowId, field: string) =>
+          apiRef.current.getCellValue(id, field),
+        rowNode: {
+          id: rowId,
+          depth: 0,
+          type: 'leaf' as const,
+          parent: null,
+          groupingKey: null,
+          groupingField: null,
+        },
+      } as GridCellParams;
       return isCellEditableProp(params);
     }
 
     // Default to column's editable setting
-    return column.editable !== false;
+    return column?.editable === true;
   } catch (error) {
     // If we can't determine, assume it's editable if the column allows it
     const column = apiRef.current.getColumn(field);
-    return column?.editable !== false;
+    return column?.editable === true;
   }
 };
 
@@ -147,7 +156,7 @@ const nextTick = () => new Promise((resolve) => setTimeout(resolve, 0));
  * Version 2.0 with improved polish and bug fixes
  */
 export const ExcelNavigationDataGrid = forwardRef<
-  GridApiPro,
+  GridApi,
   ExcelNavigationDataGridProps
 >((props, ref) => {
   const {
@@ -380,13 +389,13 @@ export const ExcelNavigationDataGrid = forwardRef<
           const column = apiRef.current.getColumn(cellPosition.field);
           if (column?.editable !== false) {
             // Start edit mode
-            const result = apiRef.current.startCellEditMode({
+            apiRef.current.startCellEditMode({
               id: cellPosition.id,
               field: cellPosition.field,
             });
 
-            if (debugMode && !result) {
-              console.warn('Failed to start edit mode for cell', cellPosition);
+            if (debugMode) {
+              console.log('Started edit mode for cell', cellPosition);
             }
           }
         }
@@ -411,7 +420,7 @@ export const ExcelNavigationDataGrid = forwardRef<
   const handleCellKeyDown: GridEventListener<'cellKeyDown'> = useCallback(
     async (
       params: GridCellParams,
-      event: React.KeyboardEvent,
+      event: any,
       details: GridCallbackDetails,
     ) => {
       // Only handle navigation if Excel navigation is enabled
@@ -475,9 +484,10 @@ export const ExcelNavigationDataGrid = forwardRef<
             const direction = shiftKey ? 'up' : 'down';
 
             // Handle based on enterBehavior setting
-            let navigationDirection = direction;
+            let navigationDirection: 'up' | 'down' | 'left' | 'right' =
+              direction;
             if (!shiftKey && enterBehavior === 'next-cell') {
-              navigationDirection = 'right' as any;
+              navigationDirection = 'right';
             } else if (!shiftKey && enterBehavior === 'stay') {
               // Stay in current cell
               if (isInEditMode) {
@@ -756,11 +766,7 @@ export const ExcelNavigationDataGrid = forwardRef<
    */
   const handleCellDoubleClick: GridEventListener<'cellDoubleClick'> =
     useCallback(
-      (
-        params: GridCellParams,
-        event: React.MouseEvent,
-        details: GridCallbackDetails,
-      ) => {
+      (params: GridCellParams, event: any, details: GridCallbackDetails) => {
         // Check if cell is editable
         const column = apiRef.current.getColumn(params.field);
         if (column?.editable !== false) {
@@ -834,11 +840,9 @@ export const ExcelNavigationDataGrid = forwardRef<
       onCellDoubleClick={handleCellDoubleClick}
       processRowUpdate={processRowUpdate}
       onProcessRowUpdateError={handleProcessRowUpdateError}
-      // Disable cell selection on single click (use double-click for edit like Excel)
-      disableCellSelectionOnClick
       // Keep focus visible
       hideFooterSelectedRowCount
-      disableRowSelectionOnClick
+      disableSelectionOnClick
       // Experimental features for better keyboard control
       experimentalFeatures={{
         // Enable new editing API if available
@@ -867,9 +871,7 @@ export const ExcelNavigationDataGrid = forwardRef<
 ExcelNavigationDataGrid.displayName = 'ExcelNavigationDataGrid';
 
 // Export helper hook for advanced usage
-export const useExcelNavigation = (
-  apiRef: React.MutableRefObject<GridApiPro>,
-) => {
+export const useExcelNavigation = (apiRef: React.MutableRefObject<GridApi>) => {
   const navigateToCell = useCallback(
     (rowId: GridRowId, field: string) => {
       apiRef.current.setCellFocus(rowId, field);
