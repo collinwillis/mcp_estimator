@@ -55,7 +55,8 @@ export const updateWbs = async (id: string, field: string, value: string) => {
     newValue = parseFloat(value);
   } else {
     // Transform text fields to uppercase
-    const shouldUppercase = typeof value === 'string' && !numberFields.includes(field);
+    const shouldUppercase =
+      typeof value === 'string' && !numberFields.includes(field);
     newValue = shouldUppercase ? value.toUpperCase() : value;
   }
   const data = {
@@ -69,10 +70,6 @@ export const updateWbs = async (id: string, field: string, value: string) => {
       console.log(error);
     });
 };
-
-function isNumber(value: string | number): boolean {
-  return value != null && value !== '' && !isNaN(Number(value.toString()));
-}
 
 export function getQuantityAndUnitForWbs(
   phases: Phase[],

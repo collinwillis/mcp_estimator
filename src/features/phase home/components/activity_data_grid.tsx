@@ -868,7 +868,6 @@ function ActivityDataGrid() {
         },
       }}>
       <ExcelNavigationDataGrid
-        checkboxSelection
         columnVisibilityModel={columnVisibilityModel}
         onColumnVisibilityModelChange={async (newModel) => {
           setColumnVisibilityModel(newModel); // Update state
