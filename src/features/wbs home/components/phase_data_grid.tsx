@@ -641,12 +641,12 @@ function PhaseDataGrid({
           return '';
         }}
         // Enable Excel-like navigation with enhanced settings
-        enableExcelNavigation={true}
-        autoCommitOnNavigation={true}
+        enableExcelNavigation
+        autoCommitOnNavigation
         enterBehavior='next-row'
         tabBehavior='next-cell'
-        skipNonEditableCells={true}
-        wrapNavigation={true}
+        skipNonEditableCells
+        wrapNavigation
         debugMode={false}
       />
       <DeleteConfirmationDialog

@@ -1,4 +1,4 @@
-import React, { SyntheticEvent, useEffect, useState } from 'react';
+import React, { SyntheticEvent, useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { EditRounded, FileCopy } from '@mui/icons-material';
 import TrashIcon from '@mui/icons-material/DeleteForever';
@@ -62,6 +62,22 @@ import defaultPhaseArray from '../../../data/phases.json';
 import phase2025Array from '../../../data/2025/phases_2025.json';
 import { useCurrentProposal } from '../../../hooks/current_proposal_hook';
 import FormattedNumberInput from '../../../components/formatted_number_input';
+
+const AUTO_VISIBILITY_FIELDS = [
+  'equipmentOwnership',
+  'equipmentCost',
+  'materialCost',
+  'costOnlyCost',
+  'subContractorCost',
+  'price',
+  'time',
+  'craftConstant',
+  'welderConstant',
+  'craftManHours',
+  'welderManHours',
+  'craftCost',
+  'welderCost',
+] as const;
 
 // Custom Toolbar Component - Defined outside to avoid recreation on each render
 interface CustomActivityToolbarProps {
@@ -308,6 +324,18 @@ function ActivityDataGrid() {
 
   const [columnVisibilityModel, setColumnVisibilityModel] =
     React.useState<GridColumnVisibilityModel>({});
+  const sanitizeVisibilityModel = React.useCallback(
+    (model: GridColumnVisibilityModel) => {
+      const sanitized: GridColumnVisibilityModel = { ...model };
+      AUTO_VISIBILITY_FIELDS.forEach((field) => {
+        if (field in sanitized) {
+          delete sanitized[field];
+        }
+      });
+      return sanitized;
+    },
+    [],
+  );
   const user = useUserProfile();
   const userId = user?.userProfile?.uid;
 
@@ -612,6 +640,102 @@ function ActivityDataGrid() {
     [updateEquipmentUnit, recalculatePhase, phaseId],
   );
 
+  const {
+    hasEquipmentItems,
+    hasMaterialItems,
+    hasCostOnlyItems,
+    hasSubcontractorItems,
+    hasLaborItems,
+  } = useMemo(() => {
+    const flags = {
+      hasEquipmentItems: false,
+      hasMaterialItems: false,
+      hasCostOnlyItems: false,
+      hasSubcontractorItems: false,
+      hasLaborItems: false,
+    };
+
+    filtered.forEach((activity) => {
+      switch (activity?.activityType) {
+        case ActivityType.equipmentItem:
+          flags.hasEquipmentItems = true;
+          break;
+        case ActivityType.materialItem:
+          flags.hasMaterialItems = true;
+          break;
+        case ActivityType.costOnlyItem:
+          flags.hasCostOnlyItems = true;
+          break;
+        case ActivityType.subContractorItem:
+          flags.hasSubcontractorItems = true;
+          break;
+        case ActivityType.laborItem:
+        case ActivityType.customLaborItem:
+          flags.hasLaborItems = true;
+          break;
+        default:
+          break;
+      }
+    });
+
+    return flags;
+  }, [filtered]);
+
+  const showEquipmentColumns = hasEquipmentItems || hasSubcontractorItems;
+  const showMaterialColumn = hasMaterialItems || hasSubcontractorItems;
+  const showCostOnlyColumn = hasCostOnlyItems;
+  const showSubcontractorColumn = hasSubcontractorItems;
+  const showPriceColumn =
+    hasEquipmentItems || hasMaterialItems || hasCostOnlyItems;
+  const showTimeColumn = hasEquipmentItems || hasSubcontractorItems;
+  const showLaborColumns = hasLaborItems;
+
+  const autoVisibilityModel = useMemo(() => {
+    const model: GridColumnVisibilityModel = {};
+    AUTO_VISIBILITY_FIELDS.forEach((field) => {
+      switch (field) {
+        case 'equipmentOwnership':
+        case 'equipmentCost':
+          model[field] = showEquipmentColumns;
+          break;
+        case 'materialCost':
+          model[field] = showMaterialColumn;
+          break;
+        case 'costOnlyCost':
+          model[field] = showCostOnlyColumn;
+          break;
+        case 'subContractorCost':
+          model[field] = showSubcontractorColumn;
+          break;
+        case 'price':
+          model[field] = showPriceColumn;
+          break;
+        case 'time':
+          model[field] = showTimeColumn;
+          break;
+        case 'craftConstant':
+        case 'welderConstant':
+        case 'craftManHours':
+        case 'welderManHours':
+        case 'craftCost':
+        case 'welderCost':
+          model[field] = showLaborColumns;
+          break;
+        default:
+          break;
+      }
+    });
+    return model;
+  }, [
+    showCostOnlyColumn,
+    showEquipmentColumns,
+    showMaterialColumn,
+    showPriceColumn,
+    showSubcontractorColumn,
+    showTimeColumn,
+    showLaborColumns,
+  ]);
+
   // Load models and filter/sort settings on mount
   useEffect(() => {
     const loadModels = async () => {
@@ -622,7 +746,10 @@ function ActivityDataGrid() {
             phaseId,
             filtered,
           );
-          setColumnVisibilityModel(loadedColumnVisibilityModel);
+          const sanitizedModel = sanitizeVisibilityModel(
+            loadedColumnVisibilityModel,
+          );
+          setColumnVisibilityModel(sanitizedModel);
         } catch (error) {
           console.error('Error loading models from Firestore:', error);
           setColumnVisibilityModel({});
@@ -836,6 +963,11 @@ function ActivityDataGrid() {
     [renderToolbar],
   );
 
+  const mergedColumnVisibilityModel = useMemo(
+    () => ({ ...columnVisibilityModel, ...autoVisibilityModel }),
+    [columnVisibilityModel, autoVisibilityModel],
+  );
+
   return (
     <Box
       sx={{
@@ -868,14 +1000,19 @@ function ActivityDataGrid() {
         },
       }}>
       <ExcelNavigationDataGrid
-        columnVisibilityModel={columnVisibilityModel}
+        columnVisibilityModel={mergedColumnVisibilityModel}
         onColumnVisibilityModelChange={async (newModel) => {
-          setColumnVisibilityModel(newModel); // Update state
+          const sanitizedModel = sanitizeVisibilityModel(newModel);
+          setColumnVisibilityModel(sanitizedModel); // Update state
 
           if (userId && phaseId) {
             try {
               // Save the new column visibility model to Firestore
-              await saveColumnVisibilityModel(userId, phaseId, newModel);
+              await saveColumnVisibilityModel(
+                userId,
+                phaseId,
+                sanitizedModel,
+              );
               console.log(
                 'Column visibility model updated successfully in Firestore.',
               );
