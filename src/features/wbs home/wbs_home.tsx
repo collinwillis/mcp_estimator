@@ -12,7 +12,14 @@ function WbsHomeScreen() {
   const data = estimatorStore(
     (state: StoreState) => state.phases[proposalId!] || [],
   );
+  const wbsList = estimatorStore(
+    (state: StoreState) => state.wbs[proposalId!] || [],
+  );
   const [filtered, setFiltered] = useState<Phase[]>([]);
+  const currentWbs = React.useMemo(
+    () => wbsList.find((wbs) => wbs.id === wbsId),
+    [wbsList, wbsId],
+  );
 
   useEffect(() => {
     const temp = data
@@ -31,7 +38,11 @@ function WbsHomeScreen() {
         flexDirection: 'column',
         justifyContent: 'space-between',
       }}>
-      <PhaseDataGrid phaseList={filtered} isLoading={false} />
+      <PhaseDataGrid
+        phaseList={filtered}
+        isLoading={false}
+        wbsDatabaseId={currentWbs?.wbsDatabaseId}
+      />
 
       <BottomPanel />
     </Box>

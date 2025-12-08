@@ -73,14 +73,19 @@ const StyledExcelGrid = styled(DataGridPro)(({ theme }) => {
       },
     },
     '& .MuiDataGrid-columnSeparator': {
-      'width': 6,
-      'maxWidth': 6,
-      'right': -3,
-      'color': alpha('#0f172a', 0.32),
+      'width': 12,
+      'maxWidth': 12,
+      'right': -6,
+      'transform': 'translateX(6px)',
+      'cursor': 'col-resize',
+      'color': alpha('#0f172a', 0.4),
       'opacity': 1,
       '& svg': {
         display: 'block',
-        color: alpha('#0f172a', 0.32),
+        color: alpha('#0f172a', 0.4),
+      },
+      '&:hover svg': {
+        color: theme.palette.primary.main,
       },
     },
     '& .MuiDataGrid-cell': {

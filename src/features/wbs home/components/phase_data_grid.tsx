@@ -22,6 +22,54 @@ import { Phase } from '../../../models/phase';
 import { StoreState, estimatorStore } from '../../../utils/store';
 import { numberFields } from '../../../utils/utils';
 
+const COMMON_PHASE_COLUMN_RULE: GridColumnVisibilityModel = {
+  size: false,
+  flc: false,
+  spec: false,
+  insulation: false,
+  insulationSize: false,
+  sheet: false,
+};
+
+const PHASE_AUTO_COLUMN_RULES: Record<number, GridColumnVisibilityModel> = {
+  10000: COMMON_PHASE_COLUMN_RULE,
+  20000: COMMON_PHASE_COLUMN_RULE,
+  30000: COMMON_PHASE_COLUMN_RULE,
+  40000: COMMON_PHASE_COLUMN_RULE,
+  50000: COMMON_PHASE_COLUMN_RULE,
+  60000: COMMON_PHASE_COLUMN_RULE,
+  80000: COMMON_PHASE_COLUMN_RULE,
+  110000: COMMON_PHASE_COLUMN_RULE,
+  150000: COMMON_PHASE_COLUMN_RULE,
+  180000: COMMON_PHASE_COLUMN_RULE,
+  190000: COMMON_PHASE_COLUMN_RULE,
+  200000: COMMON_PHASE_COLUMN_RULE,
+};
+
+const getAutoManagedPhaseColumns = (wbsDatabaseId?: number) => {
+  if (!wbsDatabaseId) {
+    return [] as string[];
+  }
+  const model = PHASE_AUTO_COLUMN_RULES[wbsDatabaseId];
+  return model ? Object.keys(model) : [];
+};
+
+const sanitizePhaseColumnVisibilityModel = (
+  model: GridColumnVisibilityModel,
+  wbsDatabaseId?: number,
+): GridColumnVisibilityModel => {
+  if (!wbsDatabaseId) {
+    return model;
+  }
+  const sanitized: GridColumnVisibilityModel = { ...model };
+  getAutoManagedPhaseColumns(wbsDatabaseId).forEach((field) => {
+    if (field in sanitized) {
+      delete sanitized[field];
+    }
+  });
+  return sanitized;
+};
+
 // Custom Toolbar Component - Defined outside to avoid recreation on each render
 interface CustomToolbarProps {
   hasWritePermissions: boolean;
@@ -136,9 +184,11 @@ function CustomToolbar({
 function PhaseDataGrid({
   phaseList,
   isLoading,
+  wbsDatabaseId,
 }: {
   phaseList: Phase[];
   isLoading: boolean;
+  wbsDatabaseId?: number;
 }) {
   const { hasWritePermissions } = useUserProfile();
   const [selectedRows, setSelectedRows] = React.useState<GridRowId[]>([]);
@@ -160,10 +210,33 @@ function PhaseDataGrid({
     setDeleteDialogOpen(false); // Close dialog after deletion
   };
 
-  const visibilityJSON = localStorage.getItem('phases_visibility');
-  const visibilityModel = visibilityJSON ? JSON.parse(visibilityJSON) : {};
   const [columnVisibilityModel, setColumnVisibilityModel] =
-    React.useState<GridColumnVisibilityModel>(visibilityModel);
+    React.useState<GridColumnVisibilityModel>(() => {
+      try {
+        const visibilityJSON = localStorage.getItem('phases_visibility');
+        const parsedModel = visibilityJSON ? JSON.parse(visibilityJSON) : {};
+        return sanitizePhaseColumnVisibilityModel(
+          parsedModel,
+          wbsDatabaseId,
+        );
+      } catch (error) {
+        console.error('Failed to parse stored phase column visibility', error);
+        return {};
+      }
+    });
+
+  React.useEffect(() => {
+    setColumnVisibilityModel((prev) =>
+      sanitizePhaseColumnVisibilityModel(prev, wbsDatabaseId),
+    );
+  }, [wbsDatabaseId]);
+
+  const autoVisibilityModel = React.useMemo(() => {
+    if (!wbsDatabaseId) {
+      return {};
+    }
+    return PHASE_AUTO_COLUMN_RULES[wbsDatabaseId] || {};
+  }, [wbsDatabaseId]);
 
   // Memoized checkbox change handler
   const handleCheckboxChange = React.useCallback(
@@ -571,6 +644,11 @@ function PhaseDataGrid({
     [renderToolbar],
   );
 
+  const mergedColumnVisibilityModel = React.useMemo(
+    () => ({ ...columnVisibilityModel, ...autoVisibilityModel }),
+    [columnVisibilityModel, autoVisibilityModel],
+  );
+
   return (
     <Box
       sx={{
@@ -619,10 +697,17 @@ function PhaseDataGrid({
         onSortModelChange={(newModel) => {
           localStorage.setItem('phases_sort', JSON.stringify(newModel));
         }}
-        columnVisibilityModel={columnVisibilityModel}
+        columnVisibilityModel={mergedColumnVisibilityModel}
         onColumnVisibilityModelChange={(newModel) => {
-          localStorage.setItem('phases_visibility', JSON.stringify(newModel));
-          setColumnVisibilityModel(newModel);
+          const sanitizedModel = sanitizePhaseColumnVisibilityModel(
+            newModel,
+            wbsDatabaseId,
+          );
+          localStorage.setItem(
+            'phases_visibility',
+            JSON.stringify(sanitizedModel),
+          );
+          setColumnVisibilityModel(sanitizedModel);
         }}
         onFilterModelChange={(newModel) => {
           localStorage.setItem('phases_filter', JSON.stringify(newModel));

@@ -80,6 +80,33 @@ const AUTO_VISIBILITY_FIELDS = [
   'welderCost',
 ] as const;
 
+const ACTIVITY_BASELINE_VISIBILITY: Record<number, GridColumnVisibilityModel> = {
+  10000: { time: false, price: false, equipmentOwnership: false },
+  30000: { time: false, price: false, equipmentOwnership: false },
+  40000: { time: false, price: false, equipmentOwnership: false },
+  50000: { time: false, price: false, equipmentOwnership: false },
+  60000: { time: false, price: false, equipmentOwnership: false },
+  70000: { time: false, price: false, equipmentOwnership: false },
+  80000: { time: false, price: false, equipmentOwnership: false },
+  100000: { time: false, price: false, equipmentOwnership: false },
+  110000: { time: false, price: false, equipmentOwnership: false },
+  130000: { time: false, price: false, equipmentOwnership: false },
+  150000: { time: false, price: false, equipmentOwnership: false },
+  180000: { time: false, price: false, equipmentOwnership: false },
+  190000: { time: false, price: false, equipmentOwnership: false },
+  20000: { welderConstant: false, welderManHours: false, welderCost: false },
+};
+
+const getActivityBaselineVisibility = (
+  wbsDatabaseId?: number,
+): GridColumnVisibilityModel => {
+  if (!wbsDatabaseId) {
+    return {};
+  }
+
+  return ACTIVITY_BASELINE_VISIBILITY[wbsDatabaseId] || {};
+};
+
 // Custom Toolbar Component - Defined outside to avoid recreation on each render
 interface CustomActivityToolbarProps {
   hasWritePermissions: boolean;
@@ -762,28 +789,42 @@ function ActivityDataGrid() {
   const showTimeColumn = hasEquipmentItems || hasSubcontractorItems;
   const showLaborColumns = hasLaborItems;
 
+  const baselineVisibility = React.useMemo(
+    () => getActivityBaselineVisibility(currentWbs?.wbsDatabaseId),
+    [currentWbs?.wbsDatabaseId],
+  );
+
   const autoVisibilityModel = useMemo(() => {
-    const model: GridColumnVisibilityModel = {};
+    const model: GridColumnVisibilityModel = { ...baselineVisibility };
+    const applyVisibility = (field: string, condition: boolean) => {
+      const baseValue = baselineVisibility[field];
+      if (baseValue === undefined) {
+        model[field] = condition;
+      } else {
+        model[field] = baseValue || condition;
+      }
+    };
+
     AUTO_VISIBILITY_FIELDS.forEach((field) => {
       switch (field) {
         case 'equipmentOwnership':
         case 'equipmentCost':
-          model[field] = showEquipmentColumns;
+          applyVisibility(field, showEquipmentColumns);
           break;
         case 'materialCost':
-          model[field] = showMaterialColumn;
+          applyVisibility(field, showMaterialColumn);
           break;
         case 'costOnlyCost':
-          model[field] = showCostOnlyColumn;
+          applyVisibility(field, showCostOnlyColumn);
           break;
         case 'subContractorCost':
-          model[field] = showSubcontractorColumn;
+          applyVisibility(field, showSubcontractorColumn);
           break;
         case 'price':
-          model[field] = showPriceColumn;
+          applyVisibility(field, showPriceColumn);
           break;
         case 'time':
-          model[field] = showTimeColumn;
+          applyVisibility(field, showTimeColumn);
           break;
         case 'craftConstant':
         case 'welderConstant':
@@ -791,7 +832,7 @@ function ActivityDataGrid() {
         case 'welderManHours':
         case 'craftCost':
         case 'welderCost':
-          model[field] = showLaborColumns;
+          applyVisibility(field, showLaborColumns);
           break;
         default:
           break;
@@ -806,6 +847,7 @@ function ActivityDataGrid() {
     showSubcontractorColumn,
     showTimeColumn,
     showLaborColumns,
+    baselineVisibility,
   ]);
 
   // Load models and filter/sort settings on mount
