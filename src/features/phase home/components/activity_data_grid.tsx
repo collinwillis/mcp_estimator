@@ -260,8 +260,18 @@ function CustomActivityToolbar({
               flexWrap: 'wrap',
               alignItems: 'center',
             }}>
-            <GridToolbarColumnsButton sx={toolbarIconButtonSx} />
-            <GridToolbarDensitySelector sx={toolbarIconButtonSx} />
+            <GridToolbarColumnsButton
+              sx={toolbarIconButtonSx}
+              onResize={undefined}
+              onResizeCapture={undefined}
+              nonce={undefined}
+            />
+            <GridToolbarDensitySelector
+              sx={toolbarIconButtonSx}
+              onResize={undefined}
+              onResizeCapture={undefined}
+              nonce={undefined}
+            />
             <Box
               sx={{
                 display: 'flex',

@@ -41,7 +41,7 @@ const metricCardStyles = {
   px: 1.5,
 } as const;
 
-const BottomPanel: React.FC = () => {
+function BottomPanel() {
   const { proposalId, wbsId, phaseId } = useParams();
   const theme = useTheme();
   const isCompact = useMediaQuery(theme.breakpoints.down('lg'));
@@ -66,7 +66,9 @@ const BottomPanel: React.FC = () => {
   const phases = estimatorStore(
     (state: StoreState) => state.phases[proposalId!] || [],
   );
-  const wbs = estimatorStore((state: StoreState) => state.wbs[proposalId!] || []);
+  const wbs = estimatorStore(
+    (state: StoreState) => state.wbs[proposalId!] || [],
+  );
 
   useEffect(() => {
     if (phaseId) {
@@ -101,7 +103,11 @@ const BottomPanel: React.FC = () => {
       tempHours += (base.craftManHours || 0) + (base.welderManHours || 0);
       tempCraftHours += base.craftManHours || 0;
       tempWelderHours += base.welderManHours || 0;
-      tempSubHours += base.subContractorHours || 0;
+      if (base.activityType === ActivityType.subContractorItem) {
+        const qty = Number(base.quantity) || 0;
+        const duration = Number(base.time) || 0;
+        tempSubHours += qty * duration;
+      }
       tempCraftCost += base.craftCost || 0;
       tempWelderCost += base.welderCost || 0;
       tempSubCost += base.subContractorCost || 0;
@@ -138,6 +144,7 @@ const BottomPanel: React.FC = () => {
   const createActivity = useCallback(
     async (payload: Partial<FirestoreActivity>) => {
       if (!phaseId) return;
+      const { activityType, ...restPayload } = payload;
       const activity = new FirestoreActivity({
         proposalId,
         wbsId,
@@ -157,7 +164,8 @@ const BottomPanel: React.FC = () => {
         equipmentOwnership: null,
         dateAdded: Date.now(),
         sortOrder: null,
-        ...payload,
+        ...restPayload,
+        activityType: activityType ?? null,
       });
       await addActivities([activity]);
       recalculatePhase(phaseId);
@@ -178,17 +186,26 @@ const BottomPanel: React.FC = () => {
       {
         label: 'Add Material',
         handler: () =>
-          createActivity({ description: 'NEW MATERIAL ITEM', activityType: ActivityType.materialItem }),
+          createActivity({
+            description: 'NEW MATERIAL ITEM',
+            activityType: ActivityType.materialItem,
+          }),
       },
       {
         label: 'Add Cost Only',
         handler: () =>
-          createActivity({ description: 'NEW COST ONLY ITEM', activityType: ActivityType.costOnlyItem }),
+          createActivity({
+            description: 'NEW COST ONLY ITEM',
+            activityType: ActivityType.costOnlyItem,
+          }),
       },
       {
         label: 'Add Custom Labor',
         handler: () =>
-          createActivity({ description: 'NEW CUSTOM LABOR ITEM', activityType: ActivityType.customLaborItem }),
+          createActivity({
+            description: 'NEW CUSTOM LABOR ITEM',
+            activityType: ActivityType.customLaborItem,
+          }),
       },
       {
         label: 'Add Subcontractor',
@@ -199,7 +216,8 @@ const BottomPanel: React.FC = () => {
             unit: 'HOURS',
           }),
       },
-    ], [createActivity],
+    ],
+    [createActivity],
   );
 
   return (
@@ -212,16 +230,29 @@ const BottomPanel: React.FC = () => {
         left: 0,
         right: 0,
         borderTop: '1px solid rgba(15,23,42,0.08)',
-        backgroundColor: 'rgba(255,255,255,0.95)',
-        backdropFilter: 'blur(12px)',
-        px: { xs: 2, md: 4 },
-        py: { xs: 1.5, md: 2.5 },
+        backgroundColor:
+          theme.palette.mode === 'dark'
+            ? 'rgba(20,20,20,0.9)'
+            : 'rgba(255,255,255,0.96)',
+        backdropFilter: 'blur(18px)',
+        px: { xs: 1.5, md: 4 },
+        py: { xs: 1, md: 2.5 },
         zIndex: 5,
       }}>
-      <Stack direction={{ xs: 'column', lg: 'row' }} spacing={3} alignItems='stretch'>
+      <Stack
+        direction={{ xs: 'column', lg: 'row' }}
+        spacing={3}
+        alignItems='stretch'>
         <Box flex={1} minWidth={0}>
           <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
-            <Card elevation={1} sx={{ flex: 1 }}>
+            <Card
+              elevation={0}
+              sx={{
+                flex: 1,
+                borderRadius: 3,
+                boxShadow: '0px 1px 3px rgba(15,23,42,0.08)',
+                border: '1px solid rgba(15,23,42,0.05)',
+              }}>
               <CardContent sx={metricCardStyles}>
                 <Avatar sx={{ backgroundColor: green[500] }}>
                   <AttachMoneyIcon />
@@ -231,7 +262,8 @@ const BottomPanel: React.FC = () => {
                     Total Cost
                   </Typography>
                   <Typography variant='h6'>
-                    ${totalCost.toLocaleString(undefined, {
+                    $
+                    {totalCost.toLocaleString(undefined, {
                       minimumFractionDigits: 2,
                       maximumFractionDigits: 2,
                     })}
@@ -239,7 +271,14 @@ const BottomPanel: React.FC = () => {
                 </Box>
               </CardContent>
             </Card>
-            <Card elevation={1} sx={{ flex: 1 }}>
+            <Card
+              elevation={0}
+              sx={{
+                flex: 1,
+                borderRadius: 3,
+                boxShadow: '0px 1px 3px rgba(15,23,42,0.08)',
+                border: '1px solid rgba(15,23,42,0.05)',
+              }}>
               <CardContent sx={metricCardStyles}>
                 <Avatar sx={{ backgroundColor: blue[500] }}>
                   <AccessTimeIcon />
@@ -259,8 +298,8 @@ const BottomPanel: React.FC = () => {
             </Card>
           </Stack>
 
-          <Box mt={2}>
-            <Divider sx={{ mb: 1 }} />
+          <Box mt={isCompact ? 1 : 2}>
+            <Divider sx={{ mb: 1, borderColor: 'rgba(15,23,42,0.08)' }} />
             <Box
               sx={{
                 display: 'flex',
@@ -268,13 +307,18 @@ const BottomPanel: React.FC = () => {
                 justifyContent: 'space-between',
                 mb: 1,
               }}>
-              <Typography variant='subtitle1'>Breakdown</Typography>
+              <Typography variant='subtitle1' fontWeight={600}>
+                Breakdown
+              </Typography>
               <Button
                 size='small'
+                sx={{ textTransform: 'none', fontWeight: 500 }}
                 startIcon={
                   <ExpandMoreIcon
                     sx={{
-                      transform: detailsExpanded ? 'rotate(180deg)' : 'rotate(0deg)',
+                      transform: detailsExpanded
+                        ? 'rotate(180deg)'
+                        : 'rotate(0deg)',
                       transition: 'transform 0.2s ease',
                     }}
                   />
@@ -286,7 +330,7 @@ const BottomPanel: React.FC = () => {
             <Collapse in={detailsExpanded} timeout='auto' unmountOnExit>
               <Grid container spacing={2}>
                 <Grid item xs={12} md={4}>
-                  <Typography variant='subtitle2' gutterBottom>
+                  <Typography variant='subtitle2' gutterBottom fontWeight={600}>
                     Hours Details
                   </Typography>
                   <Box sx={{ display: 'flex', mb: 1 }}>
@@ -309,7 +353,7 @@ const BottomPanel: React.FC = () => {
                   </Box>
                 </Grid>
                 <Grid item xs={12} md={4}>
-                  <Typography variant='subtitle2' gutterBottom>
+                  <Typography variant='subtitle2' gutterBottom fontWeight={600}>
                     Cost Details
                   </Typography>
                   <Box sx={{ display: 'flex', mb: 1 }}>
@@ -332,7 +376,7 @@ const BottomPanel: React.FC = () => {
                   </Box>
                 </Grid>
                 <Grid item xs={12} md={4}>
-                  <Typography variant='subtitle2' gutterBottom>
+                  <Typography variant='subtitle2' gutterBottom fontWeight={600}>
                     Additional Costs
                   </Typography>
                   <Box sx={{ display: 'flex', mb: 1 }}>
@@ -360,37 +404,53 @@ const BottomPanel: React.FC = () => {
         </Box>
 
         {hasWritePermissions && (
-          <Box
-            width={{ xs: '100%', lg: 320 }}
-            sx={{
-              flexShrink: 0,
-            }}>
-            <Card elevation={1} sx={{ height: '100%' }}>
+          <Box width={{ xs: '100%', lg: 320 }} flexShrink={0}>
+            <Card
+              elevation={0}
+              sx={{
+                height: '100%',
+                borderRadius: 3,
+                border: '1px solid rgba(15,23,42,0.08)',
+                boxShadow: '0px 1px 3px rgba(15,23,42,0.08)',
+              }}>
               <CardContent>
-                <Typography variant='subtitle1' gutterBottom>
+                <Typography variant='subtitle1' gutterBottom fontWeight={600}>
                   Quick Actions
                 </Typography>
-                <Stack spacing={1}>
-                  <Button
-                    disabled={!wbsId}
-                    variant='contained'
-                    onClick={() => setAddPhaseDialogOpen(true)}>
-                    Add Phase
-                  </Button>
-                  <Grid container spacing={1}>
-                    {quickActions.map((action) => (
-                      <Grid item xs={6} key={action.label}>
-                        <Button
-                          disabled={!phaseId}
-                          variant='outlined'
-                          fullWidth
-                          onClick={action.handler}>
-                          {action.label.replace('Add ', '')}
-                        </Button>
-                      </Grid>
-                    ))}
+                <Grid container spacing={1.2} columns={12}>
+                  <Grid item xs={12}>
+                    <Button
+                      disabled={!wbsId}
+                      variant='contained'
+                      fullWidth
+                      disableElevation
+                      sx={{
+                        borderRadius: 2,
+                        fontWeight: 600,
+                        py: 1.2,
+                      }}
+                      onClick={() => setAddPhaseDialogOpen(true)}>
+                      Add Phase
+                    </Button>
                   </Grid>
-                </Stack>
+                  {quickActions.map((action) => (
+                    <Grid item xs={6} key={action.label}>
+                      <Button
+                        disabled={!phaseId}
+                        variant='outlined'
+                        fullWidth
+                        sx={{
+                          borderRadius: 2,
+                          py: 1,
+                          textTransform: 'none',
+                          fontWeight: 500,
+                        }}
+                        onClick={action.handler}>
+                        {action.label.replace('Add ', '')}
+                      </Button>
+                    </Grid>
+                  ))}
+                </Grid>
               </CardContent>
             </Card>
           </Box>
@@ -411,6 +471,6 @@ const BottomPanel: React.FC = () => {
       />
     </Paper>
   );
-};
+}
 
 export default BottomPanel;

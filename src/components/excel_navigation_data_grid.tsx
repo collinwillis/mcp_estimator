@@ -256,8 +256,13 @@ export const ExcelNavigationDataGrid = forwardRef<
   React.useImperativeHandle(ref, () => apiRef.current, [apiRef]);
 
   const getNavigableColumns = useCallback(() => {
-    const allColumns = apiRef.current.getAllColumns();
-    return allColumns.filter(isNavigableColumn);
+    const visibilityModel = apiRef.current.state?.columnVisibilityModel || {};
+    const visibleColumns = apiRef.current.getVisibleColumns
+      ? apiRef.current.getVisibleColumns()
+      : apiRef.current
+          .getAllColumns()
+          .filter((col) => visibilityModel[col.field] !== false);
+    return visibleColumns.filter(isNavigableColumn);
   }, [apiRef]);
 
   const findNextEditableCell = useCallback(
@@ -414,7 +419,8 @@ export const ExcelNavigationDataGrid = forwardRef<
 
   const commitActiveCell = useCallback(
     async (params: GridCellParams) => {
-      if (params.cellMode !== 'edit') return true;
+      const currentMode = apiRef.current.getCellMode(params.id, params.field);
+      if (currentMode !== 'edit') return true;
       try {
         apiRef.current.stopCellEditMode({
           id: params.id,
@@ -564,10 +570,10 @@ export const ExcelNavigationDataGrid = forwardRef<
 
         if (onCellKeyDown) {
           onCellKeyDown(params, event, details);
-        }
-        return;
       }
-      if (key === 'Tab') {
+      return;
+    }
+    if (key === 'Tab') {
         if (tabBehavior === 'default') {
           if (onCellKeyDown) onCellKeyDown(params, event, details);
           return;
@@ -592,6 +598,44 @@ export const ExcelNavigationDataGrid = forwardRef<
 
         const nextCell = getNextCellPosition(params, direction);
         await navigateToCell(nextCell, isInEditMode);
+        return;
+      }
+
+      if (key === 'Delete' || key === 'Backspace') {
+        const column = apiRef.current.getColumn(params.field);
+        if (!column || column.editable === false) {
+          if (onCellKeyDown) {
+            onCellKeyDown(params, event, details);
+          }
+          return;
+        }
+
+        event.preventDefault();
+        event.stopPropagation();
+
+        apiRef.current.startCellEditMode({
+          id: params.id,
+          field: params.field,
+        });
+
+        const clearedValue =
+          column.type === 'number' || typeof params.value === 'number'
+            ? null
+            : column.type === 'boolean' || typeof params.value === 'boolean'
+              ? false
+              : '';
+
+        await apiRef.current.setEditCellValue(
+          {
+            id: params.id,
+            field: params.field,
+            value: clearedValue,
+          },
+          event,
+        );
+
+        const editParams = apiRef.current.getCellParams(params.id, params.field);
+        await commitActiveCell(editParams);
         return;
       }
 
