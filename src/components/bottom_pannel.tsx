@@ -11,6 +11,7 @@ import {
   Button,
   Card,
   CardContent,
+  Collapse,
   Divider,
   Grid,
   Typography,
@@ -20,6 +21,7 @@ import {
 } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import { blue, green, orange, purple, red } from '@mui/material/colors';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
 import AddActivityDialog from '../features/phase home/components/add_activity_dialog';
 import AddEquipmentDialog from '../features/phase home/components/add_equipment_dialog';
@@ -247,26 +249,37 @@ const BottomPanel: React.FC = () => {
   }
 
   const theme = useTheme();
-  const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down('md'));
+  const [detailsExpanded, setDetailsExpanded] = useState(!isSmallScreen);
+
+  useEffect(() => {
+    setDetailsExpanded(!isSmallScreen);
+  }, [isSmallScreen]);
 
   return (
     <Paper
       elevation={3}
       sx={{
         width: '100%',
-        padding: theme.spacing(4),
+        padding: isSmallScreen ? theme.spacing(2) : theme.spacing(4),
         borderTop: '1px solid #e0e0e0',
         backgroundColor: theme.palette.background.paper,
       }}>
       <Grid container spacing={2}>
         {/* Totals Section */}
         <Grid item xs={12} md={8}>
-          <Grid container spacing={2}>
-            {/* Total Cost Card */}
+          <Grid container spacing={2} alignItems='stretch'>
             <Grid item xs={12} sm={6}>
-              <Card elevation={1}>
-                <CardContent sx={{ display: 'flex', alignItems: 'center' }}>
-                  <Avatar sx={{ backgroundColor: green[500], mr: 2 }}>
+              <Card elevation={1}
+                sx={{ height: '100%', display: 'flex', alignItems: 'center' }}>
+                <CardContent
+                  sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 1.5,
+                    py: 1.5,
+                  }}>
+                  <Avatar sx={{ backgroundColor: green[500] }}>
                     <AttachMoneyIcon />
                   </Avatar>
                   <Box>
@@ -284,11 +297,17 @@ const BottomPanel: React.FC = () => {
                 </CardContent>
               </Card>
             </Grid>
-            {/* Total Hours Card */}
             <Grid item xs={12} sm={6}>
-              <Card elevation={1}>
-                <CardContent sx={{ display: 'flex', alignItems: 'center' }}>
-                  <Avatar sx={{ backgroundColor: blue[500], mr: 2 }}>
+              <Card elevation={1}
+                sx={{ height: '100%', display: 'flex', alignItems: 'center' }}>
+                <CardContent
+                  sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 1.5,
+                    py: 1.5,
+                  }}>
+                  <Avatar sx={{ backgroundColor: blue[500] }}>
                     <AccessTimeIcon />
                   </Avatar>
                   <Box>
@@ -308,116 +327,138 @@ const BottomPanel: React.FC = () => {
             {/* Detailed Totals */}
             <Grid item xs={12}>
               <Divider sx={{ my: 1 }} />
-              <Grid container spacing={2}>
-                {/* Hours Details */}
-                <Grid item xs={12} md={4}>
-                  <Typography variant='subtitle2' gutterBottom>
-                    Hours Details
-                  </Typography>
-                  <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                    <GroupIcon sx={{ color: blue[500], mr: 1 }} />
-                    <Typography variant='body2'>
-                      Craft Hours:{' '}
-                      {totalCraftHours.toLocaleString(undefined, {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
-                      })}
+              <Box
+                sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  mb: 1,
+                }}>
+                <Typography variant='subtitle1'>Breakdown</Typography>
+                <Button
+                  size='small'
+                  startIcon={<ExpandMoreIcon
+                    sx={{
+                      transform: detailsExpanded ? 'rotate(180deg)' : 'rotate(0deg)',
+                      transition: 'transform 0.2s ease',
+                    }}
+                  />}
+                  onClick={() => setDetailsExpanded((prev) => !prev)}>
+                  {detailsExpanded ? 'Hide Details' : 'Show Details'}
+                </Button>
+              </Box>
+              <Collapse in={detailsExpanded} timeout='auto' unmountOnExit>
+                <Grid container spacing={2}>
+                  {/* Hours Details */}
+                  <Grid item xs={12} sm={6} md={4}>
+                    <Typography variant='subtitle2' gutterBottom>
+                      Hours Details
                     </Typography>
-                  </Box>
-                  <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                    <BuildIcon sx={{ color: orange[500], mr: 1 }} />
-                    <Typography variant='body2'>
-                      Welder Hours:{' '}
-                      {totalWelderHours.toLocaleString(undefined, {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
-                      })}
+                    <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+                      <GroupIcon sx={{ color: blue[500], mr: 1 }} />
+                      <Typography variant='body2'>
+                        Craft Hours:{' '}
+                        {totalCraftHours.toLocaleString(undefined, {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                        })}
+                      </Typography>
+                    </Box>
+                    <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+                      <BuildIcon sx={{ color: orange[500], mr: 1 }} />
+                      <Typography variant='body2'>
+                        Welder Hours:{' '}
+                        {totalWelderHours.toLocaleString(undefined, {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                        })}
+                      </Typography>
+                    </Box>
+                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                      <LocalShippingIcon sx={{ color: red[500], mr: 1 }} />
+                      <Typography variant='body2'>
+                        Subcontractor Hours:{' '}
+                        {totalSubcontractorHours.toLocaleString(undefined, {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                        })}
+                      </Typography>
+                    </Box>
+                  </Grid>
+                  {/* Cost Details */}
+                  <Grid item xs={12} sm={6} md={4}>
+                    <Typography variant='subtitle2' gutterBottom>
+                      Cost Details
                     </Typography>
-                  </Box>
-                  <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                    <LocalShippingIcon sx={{ color: red[500], mr: 1 }} />
-                    <Typography variant='body2'>
-                      Subcontractor Hours:{' '}
-                      {totalSubcontractorHours.toLocaleString(undefined, {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
-                      })}
+                    <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+                      <AttachMoneyIcon sx={{ color: green[500], mr: 1 }} />
+                      <Typography variant='body2'>
+                        Craft Total: $
+                        {craftCost.toLocaleString(undefined, {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                        })}
+                      </Typography>
+                    </Box>
+                    <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+                      <AttachMoneyIcon sx={{ color: purple[500], mr: 1 }} />
+                      <Typography variant='body2'>
+                        Weld & Rig Total: $
+                        {welderCost.toLocaleString(undefined, {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                        })}
+                      </Typography>
+                    </Box>
+                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                      <AttachMoneyIcon sx={{ color: red[500], mr: 1 }} />
+                      <Typography variant='body2'>
+                        Subcontractor Total: $
+                        {subcontractorCost.toLocaleString(undefined, {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                        })}
+                      </Typography>
+                    </Box>
+                  </Grid>
+                  {/* Additional Costs */}
+                  <Grid item xs={12} sm={6} md={4}>
+                    <Typography variant='subtitle2' gutterBottom>
+                      Additional Costs
                     </Typography>
-                  </Box>
+                    <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+                      <AttachMoneyIcon sx={{ color: blue[500], mr: 1 }} />
+                      <Typography variant='body2'>
+                        Equipment Total: $
+                        {equipmentCost.toLocaleString(undefined, {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                        })}
+                      </Typography>
+                    </Box>
+                    <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+                      <AttachMoneyIcon sx={{ color: orange[500], mr: 1 }} />
+                      <Typography variant='body2'>
+                        Material Total: $
+                        {materialCost.toLocaleString(undefined, {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                        })}
+                      </Typography>
+                    </Box>
+                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                      <AttachMoneyIcon sx={{ color: green[500], mr: 1 }} />
+                      <Typography variant='body2'>
+                        Cost Only Total: $
+                        {costOnlyCost.toLocaleString(undefined, {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                        })}
+                      </Typography>
+                    </Box>
+                  </Grid>
                 </Grid>
-                {/* Cost Details */}
-                <Grid item xs={12} md={4}>
-                  <Typography variant='subtitle2' gutterBottom>
-                    Cost Details
-                  </Typography>
-                  <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                    <AttachMoneyIcon sx={{ color: green[500], mr: 1 }} />
-                    <Typography variant='body2'>
-                      Craft Total: $
-                      {craftCost.toLocaleString(undefined, {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
-                      })}
-                    </Typography>
-                  </Box>
-                  <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                    <AttachMoneyIcon sx={{ color: purple[500], mr: 1 }} />
-                    <Typography variant='body2'>
-                      Weld & Rig Total: $
-                      {welderCost.toLocaleString(undefined, {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
-                      })}
-                    </Typography>
-                  </Box>
-                  <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                    <AttachMoneyIcon sx={{ color: red[500], mr: 1 }} />
-                    <Typography variant='body2'>
-                      Subcontractor Total: $
-                      {subcontractorCost.toLocaleString(undefined, {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
-                      })}
-                    </Typography>
-                  </Box>
-                </Grid>
-                {/* Additional Costs */}
-                <Grid item xs={12} md={4}>
-                  <Typography variant='subtitle2' gutterBottom>
-                    Additional Costs
-                  </Typography>
-                  <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                    <AttachMoneyIcon sx={{ color: blue[500], mr: 1 }} />
-                    <Typography variant='body2'>
-                      Equipment Total: $
-                      {equipmentCost.toLocaleString(undefined, {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
-                      })}
-                    </Typography>
-                  </Box>
-                  <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                    <AttachMoneyIcon sx={{ color: orange[500], mr: 1 }} />
-                    <Typography variant='body2'>
-                      Material Total: $
-                      {materialCost.toLocaleString(undefined, {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
-                      })}
-                    </Typography>
-                  </Box>
-                  <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                    <AttachMoneyIcon sx={{ color: green[500], mr: 1 }} />
-                    <Typography variant='body2'>
-                      Cost Only Total: $
-                      {costOnlyCost.toLocaleString(undefined, {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
-                      })}
-                    </Typography>
-                  </Box>
-                </Grid>
-              </Grid>
+              </Collapse>
             </Grid>
           </Grid>
         </Grid>
@@ -429,7 +470,7 @@ const BottomPanel: React.FC = () => {
                 <Typography variant='subtitle1' gutterBottom>
                   Actions
                 </Typography>
-                <Grid container spacing={1}>
+                <Grid container spacing={isSmallScreen ? 0.5 : 1}>
                   <Grid item xs={12}>
                     <Button
                       disabled={!wbsId}
