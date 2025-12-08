@@ -19,6 +19,7 @@ import {
   GridCellParams,
   GridColumnVisibilityModel,
   GridRowId,
+  GridRowClassNameParams,
   GridRowOrderChangeParams,
   GridToolbarColumnsButton,
   GridToolbarContainer,
@@ -119,41 +120,94 @@ function CustomActivityToolbar({
   currentPhase,
   handlePhaseCompletionChange,
 }: CustomActivityToolbarProps) {
-  const buttonWidth = '180px';
+  const toolbarButtonSx = {
+    textTransform: 'none',
+    fontWeight: 600,
+    letterSpacing: '0.02em',
+    borderRadius: 8,
+    px: 1.5,
+    py: 0.5,
+    minWidth: 140,
+    justifyContent: 'center',
+  };
+  const toolbarIconButtonSx = {
+    borderRadius: 8,
+    border: '1px solid rgba(15,23,42,0.12)',
+    px: 1,
+    height: 34,
+    color: '#0f172a',
+    fontWeight: 600,
+    letterSpacing: '0.02em',
+  };
+  const toolbarSelectSx = {
+    'minWidth': 220,
+    'flex': '1 1 240px',
+    '& .MuiInputLabel-root': {
+      letterSpacing: '0.05em',
+      fontWeight: 600,
+      textTransform: 'uppercase',
+      color: '#475467',
+    },
+    '& .MuiOutlinedInput-root': {
+      'borderRadius': 12,
+      'backgroundColor': '#f4f5f7',
+      'textTransform': 'uppercase',
+      'fontWeight': 600,
+      'letterSpacing': '0.04em',
+      '& fieldset': {
+        borderColor: 'rgba(15,23,42,0.08)',
+      },
+      '&:hover fieldset': {
+        borderColor: 'rgba(15,23,42,0.25)',
+      },
+      '&.Mui-focused fieldset': {
+        borderColor: '#2563eb',
+        boxShadow: '0 0 0 2px rgba(37,99,235,0.25)',
+      },
+    },
+  };
+
   return (
     <GridToolbarContainer
       sx={{
-        marginBottom: '0px',
-        borderBottom: '1px solid lightgray',
-        padding: '10px 20px',
-        backgroundColor: '#ffffff',
-        boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
-        borderRadius: '4px',
+        'mb': 1,
+        'borderRadius': 0,
+        'borderBottom': '1px solid rgba(15,23,42,0.12)',
+        'backgroundColor': '#fff',
+        'boxShadow': 'none',
+        'px': 1.5,
+        'py': 1,
+        '& .MuiButton-startIcon': {
+          mr: 1,
+        },
       }}>
       <Box
         sx={{
-          display: 'flex',
-          flexDirection: 'row',
-          justifyContent: !hasWritePermissions ? 'start' : 'space-evenly',
+          display: 'grid',
           width: '100%',
+          gridTemplateColumns: {
+            xs: '1fr',
+            lg: 'minmax(260px, 0.5fr) auto 1fr',
+          },
+          gap: 1,
           alignItems: 'center',
         }}>
-        <FormControl
-          sx={{ display: 'flex', width: '25%' }}
-          variant='standard'
-          size='small'>
-          <InputLabel id='demo-simple-select-filled-label'>Database</InputLabel>
+        <FormControl sx={toolbarSelectSx} variant='outlined' size='small'>
+          <InputLabel id='activity-database-select'>Database</InputLabel>
           <Select
-            sx={{ width: '100%' }}
-            labelId='demo-simple-select-label'
-            id='demo-simple-select'
+            labelId='activity-database-select'
+            id='activity-database'
             value={selectedPhaseDatabaseOption.description}
-            label='Description'>
+            label='Database'>
             {phaseDatabaseOptions.map((option) => (
               <MenuItem
                 value={option.description}
                 key={`${option.wbsDatabaseId}-${option.phaseDatabaseId}`}
-                sx={{ paddingTop: 2, paddingBottom: 2 }}
+                sx={{
+                  py: 1,
+                  fontWeight: 500,
+                  letterSpacing: '0.04em',
+                }}
                 onClick={async () => {
                   await onChangePhaseDatabase(option);
                 }}>
@@ -163,41 +217,53 @@ function CustomActivityToolbar({
           </Select>
         </FormControl>
 
-        <GridToolbarColumnsButton
+        <Box
           sx={{
-            'color': 'black',
-            '&:hover': {
-              backgroundColor: 'rgba(6, 124, 193, 0.1)',
-            },
-          }}
-          onResize={undefined}
-          nonce={undefined}
-          onResizeCapture={undefined}
-        />
-        <GridToolbarDensitySelector
-          sx={{
-            'color': 'black',
-            '&:hover': {
-              backgroundColor: 'rgba(6, 124, 193, 0.1)',
-            },
-          }}
-          onResize={undefined}
-          nonce={undefined}
-          onResizeCapture={undefined}
-        />
+            display: 'flex',
+            gap: 0.75,
+            flexWrap: 'wrap',
+            justifyContent: 'flex-start',
+          }}>
+          <GridToolbarColumnsButton
+            sx={toolbarIconButtonSx}
+            onResize={undefined}
+            nonce={undefined}
+            onResizeCapture={undefined}
+          />
+          <GridToolbarDensitySelector
+            sx={toolbarIconButtonSx}
+            onResize={undefined}
+            nonce={undefined}
+            onResizeCapture={undefined}
+          />
+        </Box>
 
         {hasWritePermissions && (
-          <>
+          <Box
+            sx={{
+              display: 'grid',
+              gridTemplateColumns: {
+                xs: 'repeat(auto-fit, minmax(150px, 1fr))',
+                md: 'repeat(auto-fit, minmax(160px, 1fr))',
+              },
+              gap: 0.75,
+              justifyItems: 'stretch',
+            }}>
             <Button
               disabled={selectedRows == null || selectedRows.length <= 0}
-              sx={{ color: '#424242', fontSize: '14px' }}
+              variant='outlined'
+              size='small'
+              color='error'
+              sx={toolbarButtonSx}
               onClick={() => setDeleteDialogOpen(true)}
               startIcon={<TrashIcon />}>
               Delete
             </Button>
             <Button
               disabled={selectedRows == null || selectedRows.length <= 0}
-              sx={{ color: '#424242', fontSize: '14px' }}
+              variant='outlined'
+              size='small'
+              sx={toolbarButtonSx}
               onClick={async () => {
                 const ids: string[] = [];
                 selectedRows.forEach((row) => {
@@ -211,7 +277,9 @@ function CustomActivityToolbar({
             </Button>
             <Button
               disabled={selectedRows.length === 0}
-              sx={{ color: '#424242', fontSize: '14px' }}
+              variant='outlined'
+              size='small'
+              sx={toolbarButtonSx}
               onClick={() => {
                 setOpenBaseRateDialog(true);
               }}
@@ -219,7 +287,16 @@ function CustomActivityToolbar({
               Edit Rates
             </Button>
             <Button
-              sx={{ color: '#424242', fontSize: '14px' }}
+              variant='contained'
+              size='small'
+              sx={{
+                ...toolbarButtonSx,
+                'backgroundColor': '#0f172a',
+                'color': '#fff',
+                '&:hover': {
+                  backgroundColor: '#111827',
+                },
+              }}
               onClick={() => {
                 setOpenCopyFromProposalDialog(true);
               }}
@@ -228,43 +305,38 @@ function CustomActivityToolbar({
             </Button>
             <Box
               sx={{
-                width: buttonWidth,
                 display: 'flex',
                 alignItems: 'center',
-                padding: '1px 12px',
+                gap: 1,
+                px: 1.5,
+                py: 0.5,
+                borderRadius: 8,
                 border: `1px solid ${
-                  currentPhase?.completed ? '#4caf50' : '#424242'
+                  currentPhase?.completed
+                    ? 'rgba(34,197,94,0.8)'
+                    : 'rgba(15,23,42,0.15)'
                 }`,
-                borderRadius: '4px',
                 backgroundColor: currentPhase?.completed
-                  ? 'rgba(76, 175, 80, 0.1)'
-                  : 'rgba(66, 66, 66, 0.1)',
+                  ? 'rgba(34,197,94,0.05)'
+                  : 'rgba(15,23,42,0.02)',
               }}>
               <Switch
                 checked={currentPhase?.completed || false}
                 onChange={() =>
                   handlePhaseCompletionChange(!currentPhase?.completed)
                 }
-                sx={{
-                  'color': currentPhase?.completed ? '#4caf50' : '#424242',
-                  '& .MuiSwitch-switchBase.Mui-checked': {
-                    color: '#4caf50',
-                  },
-                  '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
-                    backgroundColor: '#4caf50',
-                  },
-                }}
+                size='small'
               />
               <Typography
                 sx={{
-                  marginLeft: 1,
-                  color: currentPhase?.completed ? '#4caf50' : '#424242',
-                  fontSize: '14px',
+                  fontWeight: 600,
+                  letterSpacing: '0.04em',
+                  color: currentPhase?.completed ? '#15803d' : '#475467',
                 }}>
                 {currentPhase?.completed ? 'Complete' : 'Incomplete'}
               </Typography>
             </Box>
-          </>
+          </Box>
         )}
       </Box>
     </GridToolbarContainer>
@@ -968,26 +1040,35 @@ function ActivityDataGrid() {
     [columnVisibilityModel, autoVisibilityModel],
   );
 
+  const zebraRowClassName = React.useCallback(
+    (params: GridRowClassNameParams) =>
+      params.indexRelativeToCurrentPage % 2 === 0 ? 'row-even' : 'row-odd',
+    [],
+  );
+
   return (
     <Box
       sx={{
         'height': '93%',
         '& .under': {
-          backgroundColor: '#ff525240',
-          color: 'primary.dark',
+          backgroundColor: 'rgba(251, 191, 36, 0.45)',
+          color: '#7a4a00',
+          fontWeight: 600,
         },
         '& .over': {
-          backgroundColor: '#ffeb3b40',
-          color: 'primary.dark',
+          backgroundColor: 'rgba(239, 68, 68, 0.3)',
+          color: '#7f1d1d',
+          fontWeight: 600,
         },
         '& .not-used': {
           textDecoration: 'line-through',
-          backgroundColor: '#f0f0f0', // or use 'transparent'
-          color: '#d0d0d0', // Light grey to indicate it's disabled, or use 'transparent' to hide the text
-          fontStyle: 'italic', // Optional, to make it distinct that it's not active or in use
+          backgroundColor: '#f4f4f5',
+          color: '#a0a0a5',
+          fontStyle: 'italic',
         },
         '& .editable-cell': {
-          color: 'primary.main',
+          color: '#0f172a',
+          fontWeight: 600,
         },
         '& .completed-row': {
           'backgroundColor': 'rgba(0, 255, 0, 0.1)', // Subtle green background
@@ -1008,11 +1089,7 @@ function ActivityDataGrid() {
           if (userId && phaseId) {
             try {
               // Save the new column visibility model to Firestore
-              await saveColumnVisibilityModel(
-                userId,
-                phaseId,
-                sanitizedModel,
-              );
+              await saveColumnVisibilityModel(userId, phaseId, sanitizedModel);
               console.log(
                 'Column visibility model updated successfully in Firestore.',
               );
@@ -1074,6 +1151,7 @@ function ActivityDataGrid() {
         components={components}
         isCellEditable={isCellEditable}
         getCellClassName={getCellClassName}
+        getRowClassName={zebraRowClassName}
         // Enable Excel-like navigation with enhanced settings
         enableExcelNavigation={true}
         autoCommitOnNavigation={true}

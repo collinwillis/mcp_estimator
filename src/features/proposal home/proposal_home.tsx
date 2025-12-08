@@ -92,6 +92,13 @@ function ProposalHomeScreen() {
     }));
   };
 
+  const handleValueChange = (fieldName: keyof Proposal, value: string) => {
+    setEditData((prevData) => ({
+      ...prevData,
+      [fieldName]: value,
+    }));
+  };
+
   const handleSelectChange = (
     event: SelectChangeEvent<unknown>,
     child: React.ReactNode,
@@ -144,6 +151,7 @@ function ProposalHomeScreen() {
             isEditMode={isEditMode}
             handleChange={handleChange}
             handleSelectChange={handleSelectChange}
+            handleValueChange={handleValueChange}
             handleSaveClick={handleSaveClick}
             handleCancelClick={handleCancelClick}
             handleEditClick={handleEditClick}

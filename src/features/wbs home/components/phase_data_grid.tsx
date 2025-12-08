@@ -36,44 +36,74 @@ function CustomToolbar({
   duplicatePhases,
   setDeleteDialogOpen,
 }: CustomToolbarProps) {
+  const toolbarButtonSx = {
+    textTransform: 'none',
+    fontWeight: 600,
+    letterSpacing: '0.02em',
+    borderRadius: 8,
+    px: 1.8,
+    py: 0.75,
+    minWidth: 140,
+  };
+  const toolbarIconButtonSx = {
+    borderRadius: 8,
+    border: '1px solid rgba(15,23,42,0.12)',
+    px: 1.25,
+    height: 34,
+    color: '#0f172a',
+    fontWeight: 600,
+    letterSpacing: '0.02em',
+  };
   return (
     <GridToolbarContainer
       sx={{
-        marginBottom: '0px',
-        borderBottom: '1px solid lightgray',
-        padding: '10px 20px',
-        backgroundColor: '#ffffff',
-        boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
-        borderRadius: '4px',
+        'mb': 1,
+        'borderRadius': 0,
+        'borderBottom': '1px solid rgba(15,23,42,0.12)',
+        'backgroundColor': '#f9fafc',
+        'boxShadow': 'none',
+        'px': 1.5,
+        'py': 1,
+        '& .MuiButton-startIcon': {
+          mr: 1,
+        },
       }}>
       <Box
         sx={{
           display: 'flex',
-          flexDirection: 'row',
-          justifyContent: !hasWritePermissions ? 'start' : 'space-evenly',
+          flexWrap: 'wrap',
+          gap: 1.5,
           width: '100%',
           alignItems: 'center',
+          justifyContent: 'space-between',
         }}>
-        <GridToolbarColumnsButton
-          sx={{ color: '#424242' }}
-          onResize={undefined}
-          nonce={undefined}
-          onResizeCapture={undefined}
-        />
-        <GridToolbarDensitySelector
-          sx={{ color: '#424242' }}
-          onResize={undefined}
-          nonce={undefined}
-          onResizeCapture={undefined}
-        />
+        <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+          <GridToolbarColumnsButton
+            sx={toolbarIconButtonSx}
+            onResize={undefined}
+            nonce={undefined}
+            onResizeCapture={undefined}
+          />
+          <GridToolbarDensitySelector
+            sx={toolbarIconButtonSx}
+            onResize={undefined}
+            nonce={undefined}
+            onResizeCapture={undefined}
+          />
+        </Box>
         {hasWritePermissions && (
-          <>
+          <Box
+            sx={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))',
+              gap: 1,
+            }}>
             <Button
               disabled={selectedRows == null || selectedRows.length <= 0}
-              color='error'
               sx={{
-                color: '#424242',
-                fontSize: '14px',
+                ...toolbarButtonSx,
+                color: '#0f172a',
+                border: '1px solid rgba(15,23,42,0.15)',
               }}
               onClick={async () => {
                 const ids: string[] = [];
@@ -87,13 +117,16 @@ function CustomToolbar({
             </Button>
             <Button
               disabled={selectedRows == null || selectedRows.length <= 0}
-              color='error'
-              sx={{ color: '#424242', fontSize: '14px' }}
+              sx={{
+                ...toolbarButtonSx,
+                border: '1px solid rgba(239,68,68,0.4)',
+                color: '#b91c1c',
+              }}
               onClick={() => setDeleteDialogOpen(true)}
               startIcon={<TrashIcon />}>
               Delete
             </Button>
-          </>
+          </Box>
         )}
       </Box>
     </GridToolbarContainer>
@@ -633,12 +666,11 @@ function PhaseDataGrid({
         isCellEditable={isCellEditable}
         getCellClassName={getCellClassName}
         getRowClassName={(params) => {
+          const isEven = params.indexRelativeToCurrentPage % 2 === 0;
           if (params.row.completed) {
-            return params.indexRelativeToCurrentPage % 2 === 0
-              ? 'completed-row-light'
-              : 'completed-row-dark';
+            return isEven ? 'completed-row-light' : 'completed-row-dark';
           }
-          return '';
+          return isEven ? 'row-even' : 'row-odd';
         }}
         // Enable Excel-like navigation with enhanced settings
         enableExcelNavigation

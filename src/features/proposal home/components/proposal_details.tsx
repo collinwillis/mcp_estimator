@@ -19,6 +19,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import SaveIcon from '@mui/icons-material/Save';
 import CancelIcon from '@mui/icons-material/Cancel';
 import { parseISO, format, isValid } from 'date-fns';
+import { PatternFormat } from 'react-number-format';
 
 import {
   Proposal,
@@ -37,6 +38,7 @@ interface ProposalDetailsProps {
     event: SelectChangeEvent<unknown>,
     child: React.ReactNode,
   ) => void;
+  handleValueChange: (field: keyof Proposal, value: string) => void;
   handleSaveClick: () => void;
   handleCancelClick: () => void;
   handleEditClick: () => void;
@@ -47,11 +49,43 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = ({
   isEditMode,
   handleChange,
   handleSelectChange,
+  handleValueChange,
   handleSaveClick,
   handleCancelClick,
   handleEditClick,
 }) => {
 
+  const sanitizePhoneDigits = (value?: string) => {
+    if (!value) {
+      return '';
+    }
+    const digits = value.replace(/\D/g, '');
+    if (digits.length === 11 && digits.startsWith('1')) {
+      return digits.slice(1, 11);
+    }
+    return digits.slice(0, 10);
+  };
+
+  const formatPhoneNumberForDisplay = (value?: string) => {
+    if (!value) {
+      return '-';
+    }
+    const digits = sanitizePhoneDigits(value);
+    if (digits.length === 10) {
+      return `(${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6)}`;
+    }
+    return value || '-';
+  };
+
+
+  const formatDisplayValue = (
+    value?: Proposal[keyof Proposal] | string | number | null,
+  ) => {
+    if (value === undefined || value === null || value === '') {
+      return '-';
+    }
+    return value.toString().toUpperCase();
+  };
 
   const proposalFields = [
     { label: 'Proposal #', field: 'proposalNumber' },
@@ -130,7 +164,7 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = ({
                       {label}
                     </Typography>
                     <Typography variant='body1'>
-                      {editData[field as keyof Proposal] || '-'}
+                      {formatDisplayValue(editData[field as keyof Proposal])}
                     </Typography>
                   </>
                 )}
@@ -159,9 +193,9 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = ({
                   <Typography variant='subtitle2' color='textSecondary'>
                     State
                   </Typography>
-                  <Typography variant='body1'>
-                    {editData.projectState || '-'}
-                  </Typography>
+                    <Typography variant='body1'>
+                      {formatDisplayValue(editData.projectState)}
+                    </Typography>
                 </>
               )}
             </Grid>
@@ -200,19 +234,21 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = ({
                     <Typography variant='body1'>
                       {editData[field as keyof Proposal]
                         ? type === 'date'
-                          ? isValid(
-                              parseISO(
-                                editData[field as keyof Proposal] as string,
-                              ),
-                            )
-                            ? format(
+                          ? formatDisplayValue(
+                              isValid(
                                 parseISO(
                                   editData[field as keyof Proposal] as string,
                                 ),
-                                'MM/dd/yyyy',
                               )
-                            : 'Invalid Date'
-                          : editData[field as keyof Proposal]
+                                ? format(
+                                    parseISO(
+                                      editData[field as keyof Proposal] as string,
+                                    ),
+                                    'MM/dd/yyyy',
+                                  )
+                                : 'Invalid Date',
+                            )
+                          : formatDisplayValue(editData[field as keyof Proposal])
                         : '-'}
                     </Typography>
                   </>
@@ -243,7 +279,7 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = ({
                     Bid Type
                   </Typography>
                   <Typography variant='body1'>
-                    {editData.bidType || '-'}
+                    {formatDisplayValue(editData.bidType)}
                   </Typography>
                 </>
               )}
@@ -272,7 +308,7 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = ({
                     Status
                   </Typography>
                   <Typography variant='body1'>
-                    {editData.proposalStatus || '-'}
+                    {formatDisplayValue(editData.proposalStatus)}
                   </Typography>
                 </>
               )}
@@ -291,22 +327,50 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = ({
             {contactFields.map(({ label, field }) => (
               <Grid item xs={12} sm={6} md={4} key={field}>
                 {isEditMode ? (
-                  <TextField
-                    label={label}
-                    variant='outlined'
-                    size='small'
-                    fullWidth
-                    name={field}
-                    value={editData[field as keyof Proposal] || ''}
-                    onChange={handleChange}
-                  />
+                  field === 'contactPhone' ? (
+                    <PatternFormat
+                      format='(###) ###-####'
+                      mask='_'
+                      allowEmptyFormatting
+                      valueIsNumericString
+                      isAllowed={({ value }) => value.length <= 10}
+                      value={sanitizePhoneDigits(
+                        (editData.contactPhone as string) || '',
+                      )}
+                      onValueChange={({ value }) =>
+                        handleValueChange('contactPhone', sanitizePhoneDigits(value))
+                      }
+                      customInput={TextField}
+                      label={label}
+                      variant='outlined'
+                      size='small'
+                      fullWidth
+                      name={field}
+                      placeholder='(555) 123-4567'
+                      InputProps={{ inputMode: 'tel' }}
+                    />
+                  ) : (
+                    <TextField
+                      label={label}
+                      variant='outlined'
+                      size='small'
+                      fullWidth
+                      name={field}
+                      value={editData[field as keyof Proposal] || ''}
+                      onChange={handleChange}
+                    />
+                  )
                 ) : (
                   <>
                     <Typography variant='subtitle2' color='textSecondary'>
                       {label}
                     </Typography>
                     <Typography variant='body1'>
-                      {editData[field as keyof Proposal] || '-'}
+                      {field === 'contactPhone'
+                        ? formatPhoneNumberForDisplay(
+                            editData[field as keyof Proposal] as string,
+                          )
+                        : formatDisplayValue(editData[field as keyof Proposal])}
                     </Typography>
                   </>
                 )}
@@ -336,7 +400,7 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = ({
                     State
                   </Typography>
                   <Typography variant='body1'>
-                    {editData.contactState || '-'}
+                    {formatDisplayValue(editData.contactState)}
                   </Typography>
                 </>
               )}

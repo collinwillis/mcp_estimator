@@ -23,66 +23,159 @@ import { styled, alpha } from '@mui/material';
  * stays inside the grid while editing.
  */
 
-const StyledExcelGrid = styled(DataGridPro)(({ theme }) => ({
-  'border': 0,
-  'transition': 'none !important',
-  '& *, & *::before, & *::after': {
-    transition: 'none !important',
-  },
-  '& .MuiDataGrid-cell': {
-    padding: '0 6px',
-    lineHeight: 1.2,
-    display: 'flex',
-    alignItems: 'center',
-    transition: 'none !important',
-    '&:focus': {
+const StyledExcelGrid = styled(DataGridPro)(({ theme }) => {
+  const surface =
+    theme.palette.mode === 'dark'
+      ? alpha(theme.palette.background.paper, 0.8)
+      : theme.palette.common.white;
+  const borderColor = alpha('#0f172a', 0.12);
+  const headerColor = '#f6f7fa';
+  const zebraEven = alpha('#0f172a', 0.015);
+  const zebraOdd = alpha('#0f172a', 0.035);
+  const focusRing = alpha(theme.palette.primary.main, 0.45);
+
+  return {
+    'border': `1px solid ${borderColor}`,
+    'borderRadius': 0,
+    'backgroundColor': surface,
+    'boxShadow': '0 12px 24px rgba(15, 23, 42, 0.08)',
+    'overflow': 'hidden',
+    'fontFamily': '"Barlow","Inter","Roboto","Helvetica",sans-serif',
+    'color': '#0f172a',
+    'WebkitFontSmoothing': 'antialiased',
+    'MozOsxFontSmoothing': 'grayscale',
+    'transition': 'none !important',
+    '& *, & *::before, & *::after': {
       transition: 'none !important',
-      outline: `2px solid ${theme.palette.primary.main}`,
-      outlineOffset: '-1px',
-      backgroundColor: alpha(theme.palette.primary.main, 0.04),
     },
-    '&:focus-within': {
-      transition: 'none !important',
-      outline: `2px solid ${theme.palette.primary.main}`,
-      outlineOffset: '-1px',
-      backgroundColor: alpha(theme.palette.primary.main, 0.04),
+    '& .MuiDataGrid-main': {
+      backgroundColor: surface,
     },
-  },
-  '& .MuiDataGrid-cell--editing': {
-    transition: 'none !important',
-    padding: '0 !important',
-    'backgroundColor': 'inherit !important',
-    'border': 'none !important',
-    'boxShadow': `inset 0 0 0 2px ${alpha(theme.palette.primary.main, 0.8)}`,
-    '& .MuiInputBase-root': {
-      backgroundColor: 'transparent !important',
-      padding: 0,
-      height: '100%',
-      width: '100%',
+    '& .MuiDataGrid-columnHeaders': {
+      backgroundColor: headerColor,
+      borderBottom: `1px solid ${borderColor}`,
+      textTransform: 'uppercase',
+      letterSpacing: '0.08em',
+      color: '#475467',
+      fontSize: '0.75rem',
+      fontWeight: 600,
+      minHeight: 52,
     },
-    '& .MuiInputBase-input': {
-      padding: '0 8px',
-      height: '100%',
-      backgroundColor: 'transparent',
+    '& .MuiDataGrid-columnHeader, & .MuiDataGrid-cell': {
+      padding: '0 12px',
     },
-  },
-  '& .MuiDataGrid-cell.Mui-selected': {
-    backgroundColor: `${alpha(theme.palette.primary.main, 0.08)} !important`,
-  },
-  '& .MuiDataGrid-row': {
-    position: 'relative',
-  },
-  '& .MuiDataGrid-row.Mui-hovered': {
-    boxShadow: `inset 0 0 0 1px ${alpha(theme.palette.primary.main, 0.2)}`,
-  },
-  '& .MuiDataGrid-row.Mui-selected': {
-    boxShadow: `inset 0 0 0 1px ${alpha(theme.palette.primary.main, 0.4)}`,
-  },
-  '& .MuiDataGrid-cell[data-editable="false"]': {
-    backgroundColor: alpha(theme.palette.action.disabled, 0.04),
-    cursor: 'default',
-  },
-}));
+    '& .MuiDataGrid-columnHeaderTitleContainer': {
+      paddingLeft: 4,
+    },
+    '& .MuiDataGrid-virtualScrollerRenderZone': {
+      '& .MuiDataGrid-row': {
+        transition: 'transform 80ms ease-out',
+      },
+    },
+    '& .MuiDataGrid-columnSeparator': {
+      'width': 6,
+      'maxWidth': 6,
+      'right': -3,
+      'color': alpha('#0f172a', 0.32),
+      'opacity': 1,
+      '& svg': {
+        display: 'block',
+        color: alpha('#0f172a', 0.32),
+      },
+    },
+    '& .MuiDataGrid-cell': {
+      'display': 'flex',
+      'alignItems': 'center',
+      'padding': '0 12px',
+      'lineHeight': 1.4,
+      'fontSize': '0.95rem',
+      'fontVariantNumeric': 'tabular-nums',
+      'color': '#0f172a',
+      'borderBottom': `1px solid ${alpha('#0f172a', 0.05)}`,
+      'backgroundColor': 'transparent',
+      'transition':
+        'background-color 80ms ease-out, color 80ms ease-out, box-shadow 120ms ease-out',
+      '&:focus': {
+        transition: 'none !important',
+        outline: `2px solid ${theme.palette.primary.main}`,
+        outlineOffset: '-1px',
+        backgroundColor: alpha(theme.palette.primary.main, 0.04),
+      },
+      '&:focus-within': {
+        transition: 'none !important',
+        outline: `2px solid ${theme.palette.primary.main}`,
+        outlineOffset: '-1px',
+        backgroundColor: alpha(theme.palette.primary.main, 0.04),
+      },
+    },
+    '& .MuiDataGrid-row': {
+      'position': 'relative',
+      'borderRadius': 0,
+      '&.row-even .MuiDataGrid-cell:not(.over):not(.under):not(.not-used)': {
+        backgroundColor: zebraEven,
+      },
+      '&.row-odd .MuiDataGrid-cell:not(.over):not(.under):not(.not-used)': {
+        backgroundColor: zebraOdd,
+      },
+      '&:hover .MuiDataGrid-cell:not(.over):not(.under):not(.not-used)': {
+        backgroundColor: alpha(theme.palette.primary.main, 0.08),
+      },
+    },
+    '& .MuiDataGrid-row.Mui-hovered': {
+      boxShadow: `inset 0 0 0 1px ${alpha(theme.palette.primary.main, 0.2)}`,
+    },
+    '& .MuiDataGrid-row.Mui-selected': {
+      'boxShadow': `inset 0 0 0 1px ${alpha(theme.palette.primary.main, 0.25)}`,
+      '& .MuiDataGrid-cell': {
+        backgroundColor: `${alpha(theme.palette.primary.main, 0.05)} !important`,
+      },
+    },
+    '& .MuiDataGrid-cell--editing': {
+      'transition': 'none !important',
+      'padding': '0 !important',
+      'backgroundColor': '#ffffff !important',
+      'borderRadius': 2,
+      'outline': `2px solid ${focusRing}`,
+      'outlineOffset': '-1px',
+      'border': 'none !important',
+      'boxShadow': '0 8px 20px rgba(15, 23, 42, 0.12)',
+      '& .MuiInputBase-root': {
+        backgroundColor: 'transparent !important',
+        padding: 0,
+        height: '100%',
+        width: '100%',
+      },
+      '& .MuiInputBase-input': {
+        padding: '0 8px',
+        height: '100%',
+        backgroundColor: 'transparent',
+        fontWeight: 600,
+        letterSpacing: '0.04em',
+      },
+    },
+    '& .MuiDataGrid-cell.Mui-selected': {
+      backgroundColor: `${alpha(theme.palette.primary.main, 0.08)} !important`,
+    },
+    '& .MuiDataGrid-cell[data-editable="false"]': {
+      backgroundColor: alpha(theme.palette.action.disabled, 0.04),
+      cursor: 'default',
+    },
+    '& .MuiDataGrid-footerContainer': {
+      borderTop: `1px solid ${borderColor}`,
+      backgroundColor: headerColor,
+      minHeight: 52,
+    },
+    '& .MuiTablePagination-displayedRows, & .MuiTablePagination-selectLabel': {
+      fontSize: '0.8rem',
+      letterSpacing: '0.08em',
+      textTransform: 'uppercase',
+      color: '#475467',
+    },
+    '& .MuiTablePagination-actions button': {
+      color: '#475467',
+    },
+  };
+});
 
 interface ExcelNavigationDataGridProps
   extends Omit<DataGridProProps, 'apiRef'> {

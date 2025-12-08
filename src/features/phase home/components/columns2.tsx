@@ -1,5 +1,7 @@
 import React from 'react';
 import { MenuItem, Select } from '@mui/material';
+import { alpha } from '@mui/material/styles';
+import KeyboardArrowDownRoundedIcon from '@mui/icons-material/KeyboardArrowDownRounded';
 import { GridColumns, GridValueFormatterParams } from '@mui/x-data-grid-pro';
 
 import { Activity, ActivityType } from '../../../models/activity';
@@ -12,6 +14,56 @@ const comparator = (v1: string, v2: string) => {
   if (v1 > v2) return 1;
   return 0;
 };
+
+const INLINE_SELECT_SX = {
+  'width': '100%',
+  'fontSize': '0.8rem',
+  'letterSpacing': '0.05em',
+  'textTransform': 'uppercase',
+  'color': '#0f172a',
+  'fontWeight': 600,
+  '.MuiSelect-select': {
+    padding: '6px 28px 6px 12px',
+    display: 'flex',
+    alignItems: 'center',
+  },
+  '& .MuiOutlinedInput-root': {
+    borderRadius: 999,
+    backgroundColor: 'rgba(15,23,42,0.03)',
+  },
+  '& .MuiOutlinedInput-notchedOutline': {
+    borderColor: 'transparent',
+  },
+  '&:hover .MuiOutlinedInput-notchedOutline': {
+    borderColor: alpha('#0f172a', 0.35),
+  },
+  '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+    borderColor: '#2563eb',
+    boxShadow: '0 0 0 2px rgba(37, 99, 235, 0.25)',
+  },
+  '& .MuiSelect-icon': {
+    transform: 'none',
+  },
+};
+
+const INLINE_SELECT_MENU_PROPS = {
+  PaperProps: {
+    elevation: 0,
+    sx: {
+      borderRadius: 2,
+      border: '1px solid rgba(15,23,42,0.08)',
+      boxShadow: '0 20px 45px rgba(15,23,42,0.12)',
+      mt: 1,
+    },
+  },
+  MenuListProps: {
+    dense: true,
+  },
+};
+
+const InlineSelectIcon = (props: any) => (
+  <KeyboardArrowDownRoundedIcon {...props} sx={{ fontSize: 18 }} />
+);
 
 export const getActivityColumns = ({
   hasWritePermissions,
@@ -60,23 +112,10 @@ export const getActivityColumns = ({
           return (
             <Select
               disabled={!hasWritePermissions}
-              sx={{
-                'width': '100%',
-
-                'color': 'primary.dark',
-                'boxShadow': 'none',
-                '.MuiOutlinedInput-notchedOutline': { border: 0 },
-                '&.MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline':
-                  {
-                    border: 0,
-                  },
-                '&.MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline':
-                  {
-                    border: 0,
-                  },
-              }}
-              labelId='demo-simple-select-label'
-              id='demo-simple-select'
+              size='small'
+              IconComponent={InlineSelectIcon}
+              MenuProps={INLINE_SELECT_MENU_PROPS}
+              sx={INLINE_SELECT_SX}
               value={activity.unit}
               onChange={(event) =>
                 updateEquipmentUnit(activity, event.target.value)
@@ -143,23 +182,10 @@ export const getActivityColumns = ({
           return (
             <Select
               disabled={!hasWritePermissions}
-              sx={{
-                'width': '100%',
-
-                'color': 'primary.dark',
-                'boxShadow': 'none',
-                '.MuiOutlinedInput-notchedOutline': { border: 0 },
-                '&.MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline':
-                  {
-                    border: 0,
-                  },
-                '&.MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline':
-                  {
-                    border: 0,
-                  },
-              }}
-              labelId='demo-simple-select-label'
-              id='demo-simple-select'
+              size='small'
+              IconComponent={InlineSelectIcon}
+              MenuProps={INLINE_SELECT_MENU_PROPS}
+              sx={INLINE_SELECT_SX}
               value={activity.equipmentOwnership ?? EquipmentOwnership.rental}
               onChange={(event) =>
                 updateEquipmentOwnership(activity, event.target.value)
