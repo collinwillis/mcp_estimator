@@ -210,71 +210,104 @@ function CustomActivityToolbar({
       }}>
       <Box
         sx={{
-          display: 'grid',
+          display: 'flex',
+          flexDirection: { xs: 'column', md: 'row' },
           width: '100%',
-          gridTemplateColumns: {
-            xs: '1fr',
-            lg: 'minmax(260px, 0.5fr) auto 1fr',
-          },
-          gap: 1,
-          alignItems: 'center',
+          gap: { xs: 1, md: 1.5 },
+          alignItems: { xs: 'stretch', md: 'center' },
+          justifyContent: 'space-between',
         }}>
-        <FormControl sx={toolbarSelectSx} variant='outlined' size='small'>
-          <InputLabel id='activity-database-select'>Database</InputLabel>
-          <Select
-            labelId='activity-database-select'
-            id='activity-database'
-            value={selectedPhaseDatabaseOption.description}
-            label='Database'>
-            {phaseDatabaseOptions.map((option) => (
-              <MenuItem
-                value={option.description}
-                key={`${option.wbsDatabaseId}-${option.phaseDatabaseId}`}
-                sx={{
-                  py: 1,
-                  fontWeight: 500,
-                  letterSpacing: '0.04em',
-                }}
-                onClick={async () => {
-                  await onChangePhaseDatabase(option);
-                }}>
-                {option?.description}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-
         <Box
           sx={{
             display: 'flex',
+            flex: '1 1 35%',
+            minWidth: 260,
             gap: 0.75,
             flexWrap: 'wrap',
-            justifyContent: 'flex-start',
+            alignItems: 'center',
           }}>
-          <GridToolbarColumnsButton
-            sx={toolbarIconButtonSx}
-            onResize={undefined}
-            nonce={undefined}
-            onResizeCapture={undefined}
-          />
-          <GridToolbarDensitySelector
-            sx={toolbarIconButtonSx}
-            onResize={undefined}
-            nonce={undefined}
-            onResizeCapture={undefined}
-          />
+          <FormControl
+            sx={{ ...toolbarSelectSx, flex: '1 1 240px' }}
+            variant='outlined'
+            size='small'>
+            <InputLabel id='activity-database-select'>Database</InputLabel>
+            <Select
+              labelId='activity-database-select'
+              id='activity-database'
+              value={selectedPhaseDatabaseOption.description}
+              label='Database'>
+              {phaseDatabaseOptions.map((option) => (
+                <MenuItem
+                  value={option.description}
+                  key={`${option.wbsDatabaseId}-${option.phaseDatabaseId}`}
+                  sx={{
+                    py: 1,
+                    fontWeight: 500,
+                    letterSpacing: '0.04em',
+                  }}
+                  onClick={async () => {
+                    await onChangePhaseDatabase(option);
+                  }}>
+                  {option?.description}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+          <Box
+            sx={{
+              display: 'flex',
+              gap: 0.5,
+              flexWrap: 'wrap',
+              alignItems: 'center',
+            }}>
+            <GridToolbarColumnsButton sx={toolbarIconButtonSx} />
+            <GridToolbarDensitySelector sx={toolbarIconButtonSx} />
+            <Box
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 1,
+                px: 1.5,
+                py: 0.45,
+                borderRadius: 999,
+                border: `1px solid ${
+                  currentPhase?.completed
+                    ? 'rgba(34,197,94,0.65)'
+                    : 'rgba(15,23,42,0.12)'
+                }`,
+                backgroundColor: currentPhase?.completed
+                  ? 'rgba(34,197,94,0.1)'
+                  : 'rgba(15,23,42,0.03)',
+              }}>
+              <Switch
+                checked={currentPhase?.completed || false}
+                onChange={() =>
+                  handlePhaseCompletionChange(!currentPhase?.completed)
+                }
+                size='small'
+              />
+              <Typography
+                sx={{
+                  fontWeight: 600,
+                  letterSpacing: '0.04em',
+                  color: currentPhase?.completed ? '#15803d' : '#475467',
+                  whiteSpace: 'nowrap',
+                }}>
+                {currentPhase?.completed ? 'Complete' : 'Incomplete'}
+              </Typography>
+            </Box>
+          </Box>
         </Box>
 
         {hasWritePermissions && (
           <Box
             sx={{
-              display: 'grid',
-              gridTemplateColumns: {
-                xs: 'repeat(auto-fit, minmax(150px, 1fr))',
-                md: 'repeat(auto-fit, minmax(160px, 1fr))',
-              },
+              display: 'flex',
+              flex: '1 1 40%',
+              minWidth: 260,
+              flexWrap: 'wrap',
               gap: 0.75,
-              justifyItems: 'stretch',
+              justifyContent: { xs: 'flex-start', md: 'flex-end' },
             }}>
             <Button
               disabled={selectedRows == null || selectedRows.length <= 0}
@@ -318,6 +351,7 @@ function CustomActivityToolbar({
               size='small'
               sx={{
                 ...toolbarButtonSx,
+                minWidth: 170,
                 'backgroundColor': '#0f172a',
                 'color': '#fff',
                 '&:hover': {
@@ -330,39 +364,6 @@ function CustomActivityToolbar({
               startIcon={<FileCopy />}>
               Copy From Phase
             </Button>
-            <Box
-              sx={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 1,
-                px: 1.5,
-                py: 0.5,
-                borderRadius: 8,
-                border: `1px solid ${
-                  currentPhase?.completed
-                    ? 'rgba(34,197,94,0.8)'
-                    : 'rgba(15,23,42,0.15)'
-                }`,
-                backgroundColor: currentPhase?.completed
-                  ? 'rgba(34,197,94,0.05)'
-                  : 'rgba(15,23,42,0.02)',
-              }}>
-              <Switch
-                checked={currentPhase?.completed || false}
-                onChange={() =>
-                  handlePhaseCompletionChange(!currentPhase?.completed)
-                }
-                size='small'
-              />
-              <Typography
-                sx={{
-                  fontWeight: 600,
-                  letterSpacing: '0.04em',
-                  color: currentPhase?.completed ? '#15803d' : '#475467',
-                }}>
-                {currentPhase?.completed ? 'Complete' : 'Incomplete'}
-              </Typography>
-            </Box>
           </Box>
         )}
       </Box>
