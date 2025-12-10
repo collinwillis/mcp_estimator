@@ -1,4 +1,5 @@
 import React from 'react';
+import { useRef } from 'react';
 import { ControlPointDuplicate } from '@mui/icons-material';
 import TrashIcon from '@mui/icons-material/DeleteForever';
 import { Button, Checkbox } from '@mui/material';
@@ -46,28 +47,11 @@ const PHASE_AUTO_COLUMN_RULES: Record<number, GridColumnVisibilityModel> = {
   200000: COMMON_PHASE_COLUMN_RULE,
 };
 
-const getAutoManagedPhaseColumns = (wbsDatabaseId?: number) => {
-  if (!wbsDatabaseId) {
-    return [] as string[];
-  }
-  const model = PHASE_AUTO_COLUMN_RULES[wbsDatabaseId];
-  return model ? Object.keys(model) : [];
-};
-
 const sanitizePhaseColumnVisibilityModel = (
   model: GridColumnVisibilityModel,
-  wbsDatabaseId?: number,
+  _wbsDatabaseId?: number,
 ): GridColumnVisibilityModel => {
-  if (!wbsDatabaseId) {
-    return model;
-  }
-  const sanitized: GridColumnVisibilityModel = { ...model };
-  getAutoManagedPhaseColumns(wbsDatabaseId).forEach((field) => {
-    if (field in sanitized) {
-      delete sanitized[field];
-    }
-  });
-  return sanitized;
+  return { ...model };
 };
 
 // Custom Toolbar Component - Defined outside to avoid recreation on each render
@@ -200,7 +184,7 @@ function PhaseDataGrid({
   const duplicatePhases = estimatorStore(
     (state: StoreState) => state.duplicatePhases,
   );
-
+  const hasLoadedVisibility = useRef(false);
   const handleDelete = async () => {
     const ids: string[] = [];
     selectedRows.forEach((row) => {
@@ -211,25 +195,21 @@ function PhaseDataGrid({
   };
 
   const [columnVisibilityModel, setColumnVisibilityModel] =
-    React.useState<GridColumnVisibilityModel>(() => {
-      try {
-        const visibilityJSON = localStorage.getItem('phases_visibility');
-        const parsedModel = visibilityJSON ? JSON.parse(visibilityJSON) : {};
-        return sanitizePhaseColumnVisibilityModel(
-          parsedModel,
-          wbsDatabaseId,
-        );
-      } catch (error) {
-        console.error('Failed to parse stored phase column visibility', error);
-        return {};
-      }
-    });
+    React.useState<GridColumnVisibilityModel>({});
 
   React.useEffect(() => {
-    setColumnVisibilityModel((prev) =>
-      sanitizePhaseColumnVisibilityModel(prev, wbsDatabaseId),
-    );
+    hasLoadedVisibility.current = false;
+    setColumnVisibilityModel({});
   }, [wbsDatabaseId]);
+
+  const autoManagedPhaseFields = React.useMemo(
+    () => Object.keys(PHASE_AUTO_COLUMN_RULES[wbsDatabaseId ?? -1] || {}),
+    [wbsDatabaseId],
+  );
+  const autoManagedPhaseSet = React.useMemo(
+    () => new Set(autoManagedPhaseFields),
+    [autoManagedPhaseFields],
+  );
 
   const autoVisibilityModel = React.useMemo(() => {
     if (!wbsDatabaseId) {
@@ -237,6 +217,32 @@ function PhaseDataGrid({
     }
     return PHASE_AUTO_COLUMN_RULES[wbsDatabaseId] || {};
   }, [wbsDatabaseId]);
+
+  React.useEffect(() => {
+    if (hasLoadedVisibility.current) return;
+    try {
+      const visibilityJSON = localStorage.getItem('phases_visibility');
+      const parsedModel = visibilityJSON ? JSON.parse(visibilityJSON) : {};
+      const sanitizedModel = sanitizePhaseColumnVisibilityModel(
+        parsedModel,
+        wbsDatabaseId,
+      );
+      const overrides: GridColumnVisibilityModel = {};
+      Object.entries(sanitizedModel).forEach(([field, value]) => {
+        const autoValue = autoVisibilityModel[field];
+        if (autoManagedPhaseSet.has(field) && autoValue === value) {
+          return;
+        }
+        overrides[field] = value;
+      });
+      setColumnVisibilityModel(overrides);
+    } catch (error) {
+      console.error('Failed to parse stored phase column visibility', error);
+      setColumnVisibilityModel({});
+    } finally {
+      hasLoadedVisibility.current = true;
+    }
+  }, [autoManagedPhaseSet, autoVisibilityModel, wbsDatabaseId]);
 
   // Memoized checkbox change handler
   const handleCheckboxChange = React.useCallback(
@@ -644,10 +650,31 @@ function PhaseDataGrid({
     [renderToolbar],
   );
 
-  const mergedColumnVisibilityModel = React.useMemo(
-    () => ({ ...columnVisibilityModel, ...autoVisibilityModel }),
-    [columnVisibilityModel, autoVisibilityModel],
-  );
+  const mergedColumnVisibilityModel = React.useMemo(() => {
+    const merged: GridColumnVisibilityModel = { ...autoVisibilityModel };
+    Object.entries(columnVisibilityModel).forEach(([field, value]) => {
+      const autoValue = merged[field];
+      if (autoManagedPhaseSet.has(field) && autoValue === value) {
+        return;
+      }
+      merged[field] = value;
+    });
+    return merged;
+  }, [columnVisibilityModel, autoVisibilityModel, autoManagedPhaseSet]);
+
+  // When auto rules change, drop overrides that now match the auto defaults
+  React.useEffect(() => {
+    setColumnVisibilityModel((prev) => {
+      const updated = { ...prev };
+      autoManagedPhaseSet.forEach((field) => {
+        const autoValue = autoVisibilityModel[field];
+        if (field in updated && updated[field] === autoValue) {
+          delete updated[field];
+        }
+      });
+      return updated;
+    });
+  }, [autoManagedPhaseSet, autoVisibilityModel]);
 
   return (
     <Box
@@ -699,8 +726,17 @@ function PhaseDataGrid({
         }}
         columnVisibilityModel={mergedColumnVisibilityModel}
         onColumnVisibilityModelChange={(newModel) => {
+          const overrides: GridColumnVisibilityModel = {};
+          Object.entries(newModel).forEach(([field, value]) => {
+            const autoValue = autoVisibilityModel[field];
+            const isAutoManaged = autoManagedPhaseSet.has(field);
+            if (isAutoManaged && autoValue === value) {
+              return;
+            }
+            overrides[field] = value;
+          });
           const sanitizedModel = sanitizePhaseColumnVisibilityModel(
-            newModel,
+            overrides,
             wbsDatabaseId,
           );
           localStorage.setItem(

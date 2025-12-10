@@ -1,4 +1,10 @@
-import React, { SyntheticEvent, useEffect, useMemo, useState } from 'react';
+import React, {
+  SyntheticEvent,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { useParams } from 'react-router-dom';
 import { EditRounded, FileCopy } from '@mui/icons-material';
 import TrashIcon from '@mui/icons-material/DeleteForever';
@@ -80,22 +86,23 @@ const AUTO_VISIBILITY_FIELDS = [
   'welderCost',
 ] as const;
 
-const ACTIVITY_BASELINE_VISIBILITY: Record<number, GridColumnVisibilityModel> = {
-  10000: { time: false, price: false, equipmentOwnership: false },
-  30000: { time: false, price: false, equipmentOwnership: false },
-  40000: { time: false, price: false, equipmentOwnership: false },
-  50000: { time: false, price: false, equipmentOwnership: false },
-  60000: { time: false, price: false, equipmentOwnership: false },
-  70000: { time: false, price: false, equipmentOwnership: false },
-  80000: { time: false, price: false, equipmentOwnership: false },
-  100000: { time: false, price: false, equipmentOwnership: false },
-  110000: { time: false, price: false, equipmentOwnership: false },
-  130000: { time: false, price: false, equipmentOwnership: false },
-  150000: { time: false, price: false, equipmentOwnership: false },
-  180000: { time: false, price: false, equipmentOwnership: false },
-  190000: { time: false, price: false, equipmentOwnership: false },
-  20000: { welderConstant: false, welderManHours: false, welderCost: false },
-};
+const ACTIVITY_BASELINE_VISIBILITY: Record<number, GridColumnVisibilityModel> =
+  {
+    10000: { time: false, price: false, equipmentOwnership: false },
+    30000: { time: false, price: false, equipmentOwnership: false },
+    40000: { time: false, price: false, equipmentOwnership: false },
+    50000: { time: false, price: false, equipmentOwnership: false },
+    60000: { time: false, price: false, equipmentOwnership: false },
+    70000: { time: false, price: false, equipmentOwnership: false },
+    80000: { time: false, price: false, equipmentOwnership: false },
+    100000: { time: false, price: false, equipmentOwnership: false },
+    110000: { time: false, price: false, equipmentOwnership: false },
+    130000: { time: false, price: false, equipmentOwnership: false },
+    150000: { time: false, price: false, equipmentOwnership: false },
+    180000: { time: false, price: false, equipmentOwnership: false },
+    190000: { time: false, price: false, equipmentOwnership: false },
+    20000: { welderConstant: false, welderManHours: false, welderCost: false },
+  };
 
 const getActivityBaselineVisibility = (
   wbsDatabaseId?: number,
@@ -361,7 +368,7 @@ function CustomActivityToolbar({
               size='small'
               sx={{
                 ...toolbarButtonSx,
-                minWidth: 170,
+                'minWidth': 170,
                 'backgroundColor': '#0f172a',
                 'color': '#fff',
                 '&:hover': {
@@ -436,18 +443,20 @@ function ActivityDataGrid() {
     React.useState<GridColumnVisibilityModel>({});
   const sanitizeVisibilityModel = React.useCallback(
     (model: GridColumnVisibilityModel) => {
-      const sanitized: GridColumnVisibilityModel = { ...model };
-      AUTO_VISIBILITY_FIELDS.forEach((field) => {
-        if (field in sanitized) {
-          delete sanitized[field];
-        }
-      });
-      return sanitized;
+      return { ...model };
     },
     [],
   );
+  const hasLoadedVisibility = useRef(false);
+
   const user = useUserProfile();
   const userId = user?.userProfile?.uid;
+
+  useEffect(() => {
+    // Reset visibility overrides when navigating to a different phase/user context
+    hasLoadedVisibility.current = false;
+    setColumnVisibilityModel({});
+  }, [phaseId, userId]);
 
   const myactivities = estimatorStore(
     (state: StoreState) => state.activities[proposalId!] || [],
@@ -864,6 +873,7 @@ function ActivityDataGrid() {
   // Load models and filter/sort settings on mount
   useEffect(() => {
     const loadModels = async () => {
+      if (hasLoadedVisibility.current) return;
       if (userId && phaseId) {
         try {
           const loadedColumnVisibilityModel = await loadColumnVisibilityModel(
@@ -874,17 +884,30 @@ function ActivityDataGrid() {
           const sanitizedModel = sanitizeVisibilityModel(
             loadedColumnVisibilityModel,
           );
-          setColumnVisibilityModel(sanitizedModel);
+          const overrides: GridColumnVisibilityModel = {};
+          Object.entries(sanitizedModel).forEach(([field, value]) => {
+            const isAutoManaged = AUTO_VISIBILITY_FIELDS.includes(
+              field as (typeof AUTO_VISIBILITY_FIELDS)[number],
+            );
+            const autoValue = autoVisibilityModel[field];
+            if (isAutoManaged && autoValue === value) {
+              return;
+            }
+            overrides[field] = value;
+          });
+          setColumnVisibilityModel(overrides);
+          hasLoadedVisibility.current = true;
         } catch (error) {
           console.error('Error loading models from Firestore:', error);
           setColumnVisibilityModel({});
+          hasLoadedVisibility.current = true;
         }
       }
     };
 
     loadModels();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [userId, phaseId]);
+  }, [userId, phaseId, autoVisibilityModel, filtered]);
 
   // Memoized columns using useMemo - this is the proper MUI pattern
   // Memoized columns - IMPORTANT: Should NOT depend on row data (filtered)
@@ -1088,10 +1111,35 @@ function ActivityDataGrid() {
     [renderToolbar],
   );
 
-  const mergedColumnVisibilityModel = useMemo(
-    () => ({ ...columnVisibilityModel, ...autoVisibilityModel }),
-    [columnVisibilityModel, autoVisibilityModel],
-  );
+  const mergedColumnVisibilityModel = useMemo(() => {
+    const merged: GridColumnVisibilityModel = { ...autoVisibilityModel };
+    Object.entries(columnVisibilityModel).forEach(([field, value]) => {
+      const autoValue = merged[field];
+      const isAutoManaged = AUTO_VISIBILITY_FIELDS.includes(
+        field as (typeof AUTO_VISIBILITY_FIELDS)[number],
+      );
+      if (isAutoManaged && autoValue === value) {
+        // If user selection matches auto default, let auto handle it
+        return;
+      }
+      merged[field] = value;
+    });
+    return merged;
+  }, [columnVisibilityModel, autoVisibilityModel]);
+
+  // When auto rules change (e.g., items added/removed), drop overrides that now match auto defaults
+  useEffect(() => {
+    setColumnVisibilityModel((prev) => {
+      const updated = { ...prev };
+      AUTO_VISIBILITY_FIELDS.forEach((field) => {
+        const autoValue = autoVisibilityModel[field];
+        if (field in updated && updated[field] === autoValue) {
+          delete updated[field];
+        }
+      });
+      return updated;
+    });
+  }, [autoVisibilityModel]);
 
   const zebraRowClassName = React.useCallback(
     (params: GridRowClassNameParams) =>
@@ -1136,7 +1184,19 @@ function ActivityDataGrid() {
       <ExcelNavigationDataGrid
         columnVisibilityModel={mergedColumnVisibilityModel}
         onColumnVisibilityModelChange={async (newModel) => {
-          const sanitizedModel = sanitizeVisibilityModel(newModel);
+          const overrides: GridColumnVisibilityModel = {};
+          Object.entries(newModel).forEach(([field, value]) => {
+            const isAutoManaged = AUTO_VISIBILITY_FIELDS.includes(
+              field as (typeof AUTO_VISIBILITY_FIELDS)[number],
+            );
+            const autoValue = autoVisibilityModel[field];
+            // Only persist an override if it differs from the current auto value (for auto-managed fields)
+            if (isAutoManaged && autoValue === value) {
+              return;
+            }
+            overrides[field] = value;
+          });
+          const sanitizedModel = sanitizeVisibilityModel(overrides);
           setColumnVisibilityModel(sanitizedModel); // Update state
 
           if (userId && phaseId) {
