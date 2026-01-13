@@ -419,15 +419,14 @@ function ActivityDataGrid() {
     proposalId: proposalId ?? '',
   });
 
-  const localConstantArray =
-    currentProposal?.constantDataSet === '2025'
-      ? constants2025Array
-      : defaultConstantArray;
+  const useLegacyDataSet =
+    currentProposal?.constantDataSet == null ||
+    currentProposal?.constantDataSet === '2025';
+  const localConstantArray = useLegacyDataSet
+    ? constants2025Array
+    : defaultConstantArray;
 
-  const localPhaseArray =
-    currentProposal?.constantDataSet === '2025'
-      ? phase2025Array
-      : defaultPhaseArray;
+  const localPhaseArray = useLegacyDataSet ? phase2025Array : defaultPhaseArray;
 
   const { hasWritePermissions } = useUserProfile();
   const [selectedRows, setSelectedRows] = React.useState<GridRowId[]>([]);

@@ -50,7 +50,10 @@ export default function AddActivityDialog({
     (state: StoreState) => state.recalculatePhase,
   );
 
-  const rawConstantData = currentProposal?.constantDataSet === "2025"
+  const useLegacyConstantData =
+    currentProposal?.constantDataSet == null ||
+    currentProposal?.constantDataSet === '2025';
+  const rawConstantData = useLegacyConstantData
     ? constants2025Data
     : defaultConstantData;
 
@@ -159,8 +162,7 @@ export default function AddActivityDialog({
             return (
               <ListItem
                 key={`${constant.phaseDatabaseId}-${constant.description}`}
-                disablePadding
-              >
+                disablePadding>
                 <ListItemButton
                   role={undefined}
                   onClick={handleToggle(constant)}

@@ -167,10 +167,12 @@ export const copyActivitiesFromPhase = async (
   );
   const toPhase = await getSinglePhase({ phaseId: toPhaseId });
   const fromPhase = await getSinglePhase({ phaseId: fromPhaseId });
-  const proposal = await getSingleProposal({ proposalId: toPhase?.proposalId || '' });
-  const constants = proposal?.constantDataSet === "2025"
-    ? constants2025
-    : defaultConstants;
+  const proposal = await getSingleProposal({
+    proposalId: toPhase?.proposalId || '',
+  });
+  const useLegacyConstants =
+    proposal?.constantDataSet == null || proposal?.constantDataSet === '2025';
+  const constants = useLegacyConstants ? constants2025 : defaultConstants;
   const activitiesQuerySnapshot = await getDocs(activitiesQuery);
   activitiesQuerySnapshot.forEach((activityDocSnap) => {
     // Convert Firestore document to FirestoreActivity object

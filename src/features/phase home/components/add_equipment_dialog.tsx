@@ -27,8 +27,8 @@ import { ActivityType } from '../../../models/activity';
 import { calculateEquipmentSortOrder } from '../../../utils/utils';
 import { useCurrentPhase } from '../../../hooks/current_phase_hook';
 import { useCurrentProposal } from '../../../hooks/current_proposal_hook';
-import defaultEquipment from '../../../data/equipment_v2.json';
 import equipment2025 from '../../../data/2025/equipment_2025.json';
+import equipment2026 from '../../../data/2026/equipment_2026.json';
 
 export default function AddEquipmentDialog({
   open,
@@ -45,13 +45,11 @@ export default function AddEquipmentDialog({
     proposalId: proposalId ?? '',
   });
 
-  // Determine which equipment array to use based on proposal's constantDataSet
-  // const rawEquipment = currentProposal?.constantDataSet === "2025"
-  //   ? equipment2025
-  //   : defaultEquipment;
+  const useLegacyEquipmentData =
+    currentProposal?.constantDataSet == null ||
+    currentProposal?.constantDataSet === '2025';
 
-    const rawEquipment  = equipment2025;
-
+  const rawEquipment = useLegacyEquipmentData ? equipment2025 : equipment2026;
 
   const [search, setSearch] = useState('');
   const [searchResults, setSearchResults] = useState<Equipment[]>([]);
@@ -63,31 +61,31 @@ export default function AddEquipmentDialog({
   const recalculatePhase = estimatorStore(
     (state: StoreState) => state.recalculatePhase,
   );
-  
+
   // Get existing activities in the phase to calculate proper sort order
   const existingActivities = estimatorStore(
     (state: StoreState) => state.activities[proposalId!] || [],
-  ).filter(activity => activity.phaseId === phaseId);
+  ).filter((activity) => activity.phaseId === phaseId);
 
   // batch add new activities to db
   async function addToDb() {
     const temp: FirestoreActivity[] = [];
-    
+
     // Sort the checked equipment alphabetically first
-    const sortedChecked = [...checked].sort((a, b) => 
-      a.description.localeCompare(b.description)
+    const sortedChecked = [...checked].sort((a, b) =>
+      a.description.localeCompare(b.description),
     );
-    
+
     // Keep track of activities we're creating in this batch
     let currentActivities = [...existingActivities];
-    
+
     sortedChecked.forEach((equipment) => {
       // Calculate the correct sortOrder based on alphabetical position
       const sortOrder = calculateEquipmentSortOrder(
         equipment.description,
-        currentActivities
+        currentActivities,
       );
-      
+
       const newActivity = new FirestoreActivity({
         proposalId,
         wbsId,
@@ -111,9 +109,9 @@ export default function AddEquipmentDialog({
         dateAdded: Date.now(),
         sortOrder: sortOrder,
       });
-      
+
       temp.push(newActivity);
-      
+
       // Add this new activity to our tracking list so subsequent items consider it
       currentActivities.push({
         ...newActivity,
@@ -190,9 +188,7 @@ export default function AddEquipmentDialog({
             const labelId = `checkbox-list-label-${currentEquipment.id}`;
             const isChecked = checked.indexOf(currentEquipment) !== -1;
             return (
-              <ListItem
-                key={`equipment-${currentEquipment.id}`}
-                disablePadding>
+              <ListItem key={`equipment-${currentEquipment.id}`} disablePadding>
                 <ListItemButton
                   role={undefined}
                   onClick={handleToggle(currentEquipment)}

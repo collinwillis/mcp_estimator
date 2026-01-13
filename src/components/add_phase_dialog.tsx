@@ -43,9 +43,10 @@ export default function AddPhaseDialog({ open, onClose }: Props) {
     proposalId: proposalId ?? '',
   });
 
-  const localPhaseArray = currentProposal?.constantDataSet === "2025"
-    ? phases2025
-    : defaultPhaseArray;
+  const useLegacyPhaseData =
+    currentProposal?.constantDataSet == null ||
+    currentProposal?.constantDataSet === '2025';
+  const localPhaseArray = useLegacyPhaseData ? phases2025 : defaultPhaseArray;
 
   const [phaseOptions, setPhaseOptions] = useState<
     { wbsDatabaseId: number; phaseDatabaseId: number; description: string }[]
