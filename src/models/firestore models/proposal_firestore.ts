@@ -1,7 +1,9 @@
+import type { DatasetVersions } from '../../data/dataset_types';
+
 export class FirestoreProposal {
   proposalNumber: number | null;
 
-  constantDataSet: string | null;
+  datasetVersions: DatasetVersions | null;
 
   job: string | null;
 
@@ -81,7 +83,7 @@ export class FirestoreProposal {
 
   constructor({
     proposalNumber,
-    constantDataSet,
+    datasetVersions,
     job,
     coNumber,
     proposalDescription,
@@ -122,7 +124,7 @@ export class FirestoreProposal {
     rigProfitRate,
   }: {
     proposalNumber?: number | null;
-    constantDataSet?: string | null;
+    datasetVersions?: DatasetVersions | null;
     job?: string | null;
     coNumber?: number | null;
     proposalDescription?: string | null;
@@ -163,7 +165,7 @@ export class FirestoreProposal {
     rigProfitRate?: number;
   }) {
     this.proposalNumber = proposalNumber ?? null;
-    this.constantDataSet = constantDataSet ?? null;
+    this.datasetVersions = datasetVersions ?? null;
     this.job = job ?? null;
     this.coNumber = coNumber ?? null;
     this.proposalDescription = proposalDescription ?? null;

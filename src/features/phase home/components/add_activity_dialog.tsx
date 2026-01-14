@@ -16,8 +16,8 @@ import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 
-import defaultConstantData from '../../../data/constants.json';
-import constants2025Data from '../../../data/2025/constants_2025.json';
+import { resolveDataset } from '../../../data/datasets';
+import { getProposalDatasetVersions } from '../../../data/proposal_datasets';
 import { useCurrentPhase } from '../../../hooks/current_phase_hook';
 import { ActivityType } from '../../../models/activity';
 import { Constant } from '../../../models/constant';
@@ -50,12 +50,11 @@ export default function AddActivityDialog({
     (state: StoreState) => state.recalculatePhase,
   );
 
-  const useLegacyConstantData =
-    currentProposal?.constantDataSet == null ||
-    currentProposal?.constantDataSet === '2025';
-  const rawConstantData = useLegacyConstantData
-    ? constants2025Data
-    : defaultConstantData;
+  const datasetVersions = getProposalDatasetVersions(currentProposal);
+  const rawConstantData = resolveDataset<Constant[]>(
+    'labor',
+    datasetVersions.labor,
+  );
 
   // batch add new activities to db
   async function addToDb() {
@@ -116,7 +115,7 @@ export default function AddActivityDialog({
     });
     temp = temp.sort((a, b) => a.sortOrder - b.sortOrder);
     setConstants(temp);
-  }, [currentPhase, open]);
+  }, [currentPhase, open, rawConstantData]);
 
   // Filter the activities based on the search input
   useEffect(() => {

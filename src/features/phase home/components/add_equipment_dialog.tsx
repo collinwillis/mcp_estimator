@@ -27,8 +27,8 @@ import { ActivityType } from '../../../models/activity';
 import { calculateEquipmentSortOrder } from '../../../utils/utils';
 import { useCurrentPhase } from '../../../hooks/current_phase_hook';
 import { useCurrentProposal } from '../../../hooks/current_proposal_hook';
-import equipment2025 from '../../../data/2025/equipment_2025.json';
-import equipment2026 from '../../../data/2026/equipment_2026.json';
+import { resolveDataset } from '../../../data/datasets';
+import { getProposalDatasetVersions } from '../../../data/proposal_datasets';
 
 export default function AddEquipmentDialog({
   open,
@@ -45,11 +45,11 @@ export default function AddEquipmentDialog({
     proposalId: proposalId ?? '',
   });
 
-  const useLegacyEquipmentData =
-    currentProposal?.constantDataSet == null ||
-    currentProposal?.constantDataSet === '2025';
-
-  const rawEquipment = useLegacyEquipmentData ? equipment2025 : equipment2026;
+  const datasetVersions = getProposalDatasetVersions(currentProposal);
+  const rawEquipment = resolveDataset<Equipment[]>(
+    'equipment',
+    datasetVersions.equipment,
+  );
 
   const [search, setSearch] = useState('');
   const [searchResults, setSearchResults] = useState<Equipment[]>([]);

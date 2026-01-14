@@ -43,6 +43,8 @@ import { ExcelNavigationDataGrid } from '../../../components/excel_navigation_da
 import EditBaseRateDialog from '../../../components/edit_base_rate_dialog';
 import { useUserProfile } from '../../../hooks/user_profile_hook';
 import { Activity, ActivityType } from '../../../models/activity';
+import { Constant } from '../../../models/constant';
+import { Phase } from '../../../models/phase';
 import { StoreState, estimatorStore } from '../../../utils/store';
 import {
   numberToLetters,
@@ -63,10 +65,8 @@ import {
   subcontractorItemAvailableCells,
 } from './columns';
 import { getActivityColumns } from './columns2';
-import defaultConstantArray from '../../../data/constants.json';
-import constants2025Array from '../../../data/2025/constants_2025.json';
-import defaultPhaseArray from '../../../data/phases.json';
-import phase2025Array from '../../../data/2025/phases_2025.json';
+import { resolveDataset } from '../../../data/datasets';
+import { getProposalDatasetVersions } from '../../../data/proposal_datasets';
 import { useCurrentProposal } from '../../../hooks/current_proposal_hook';
 import FormattedNumberInput from '../../../components/formatted_number_input';
 
@@ -419,14 +419,15 @@ function ActivityDataGrid() {
     proposalId: proposalId ?? '',
   });
 
-  const useLegacyDataSet =
-    currentProposal?.constantDataSet == null ||
-    currentProposal?.constantDataSet === '2025';
-  const localConstantArray = useLegacyDataSet
-    ? constants2025Array
-    : defaultConstantArray;
-
-  const localPhaseArray = useLegacyDataSet ? phase2025Array : defaultPhaseArray;
+  const datasetVersions = getProposalDatasetVersions(currentProposal);
+  const localConstantArray = resolveDataset<Constant[]>(
+    'labor',
+    datasetVersions.labor,
+  );
+  const localPhaseArray = resolveDataset<Phase[]>(
+    'phases',
+    datasetVersions.phases,
+  );
 
   const { hasWritePermissions } = useUserProfile();
   const [selectedRows, setSelectedRows] = React.useState<GridRowId[]>([]);

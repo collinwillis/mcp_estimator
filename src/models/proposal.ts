@@ -1,3 +1,5 @@
+import type { DatasetVersions } from '../data/dataset_types';
+
 export class Proposal {
   id?: string;
 
@@ -101,7 +103,7 @@ export class Proposal {
 
   rigProfitRate?: number;
 
-  constantDataSet?: string;
+  datasetVersions?: Partial<DatasetVersions>;
 
   constructor(data: Partial<Proposal>) {
     Object.assign(this, data);

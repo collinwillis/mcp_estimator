@@ -16,21 +16,24 @@ import {
 import { FirestoreProposal } from '../models/firestore models/proposal_firestore';
 import { Proposal } from '../models/proposal';
 import { firestore } from '../setup/config/firebase';
+import { buildDatasetVersions } from '../data/datasets';
+import { CURRENT_DATA_VERSION } from '../data/dataset_types';
 import { insertAllBaseWbs } from './wbs';
 
 export const insertProposal = async (
   proposalDescription: string,
   proposalNumber: string,
 ) => {
+  const datasetVersions = buildDatasetVersions(CURRENT_DATA_VERSION);
   const proposal: FirestoreProposal = new FirestoreProposal({
     proposalDescription,
     proposalNumber: parseInt(proposalNumber),
-    constantDataSet: '2026',
+    datasetVersions,
   });
   await addDoc(collection(firestore, 'proposals'), {
     ...proposal,
   }).then(async (docRef) => {
-    await insertAllBaseWbs(docRef.id);
+    await insertAllBaseWbs(docRef.id, datasetVersions);
   });
 };
 

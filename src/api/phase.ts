@@ -11,9 +11,10 @@ import {
   writeBatch,
 } from 'firebase/firestore';
 
-import defaultConstants from '../data/constants.json';
-import constants2025 from '../data/2025/constants_2025.json';
+import { resolveDataset } from '../data/datasets';
+import { getProposalDatasetVersions } from '../data/proposal_datasets';
 import { Activity, ActivityType } from '../models/activity';
+import { Constant } from '../models/constant';
 import { FirestoreActivity } from '../models/firestore models/activity_firestore';
 import { FirestorePhase } from '../models/firestore models/phase_firestore';
 import { FirestoreProposal } from '../models/firestore models/proposal_firestore';
@@ -170,9 +171,8 @@ export const copyActivitiesFromPhase = async (
   const proposal = await getSingleProposal({
     proposalId: toPhase?.proposalId || '',
   });
-  const useLegacyConstants =
-    proposal?.constantDataSet == null || proposal?.constantDataSet === '2025';
-  const constants = useLegacyConstants ? constants2025 : defaultConstants;
+  const datasetVersions = getProposalDatasetVersions(proposal);
+  const constants = resolveDataset<Constant[]>('labor', datasetVersions.labor);
   const activitiesQuerySnapshot = await getDocs(activitiesQuery);
   activitiesQuerySnapshot.forEach((activityDocSnap) => {
     // Convert Firestore document to FirestoreActivity object

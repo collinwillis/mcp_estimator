@@ -12,8 +12,8 @@ import {
   TextField,
 } from '@mui/material';
 
-import defaultPhaseArray from '../data/phases.json';
-import phases2025 from '../data/2025/phases_2025.json';
+import { resolveDataset } from '../data/datasets';
+import { getProposalDatasetVersions } from '../data/proposal_datasets';
 import { useCurrentProposal } from '../hooks/current_proposal_hook';
 import { useCurrentWbs } from '../hooks/current_wbs_hook';
 import { FirestorePhase } from '../models/firestore models/phase_firestore';
@@ -43,10 +43,11 @@ export default function AddPhaseDialog({ open, onClose }: Props) {
     proposalId: proposalId ?? '',
   });
 
-  const useLegacyPhaseData =
-    currentProposal?.constantDataSet == null ||
-    currentProposal?.constantDataSet === '2025';
-  const localPhaseArray = useLegacyPhaseData ? phases2025 : defaultPhaseArray;
+  const datasetVersions = getProposalDatasetVersions(currentProposal);
+  const localPhaseArray = resolveDataset<Phase[]>(
+    'phases',
+    datasetVersions.phases,
+  );
 
   const [phaseOptions, setPhaseOptions] = useState<
     { wbsDatabaseId: number; phaseDatabaseId: number; description: string }[]
@@ -87,7 +88,7 @@ export default function AddPhaseDialog({ open, onClose }: Props) {
     return localPhaseArray.filter(
       (phase) => phase.wbsDatabaseId === currentWbs?.wbsDatabaseId,
     );
-  }, [currentWbs]);
+  }, [currentWbs, localPhaseArray]);
 
   const handleOptionSelect = (option: PhaseOption) => {
     setSelectedPhaseDescription(option.description);

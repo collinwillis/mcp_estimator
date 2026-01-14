@@ -10,13 +10,9 @@ import {
   writeBatch,
 } from 'firebase/firestore';
 
-import agPiping from '../data/agPiping.json';
-import defaultPhases from '../data/phases.json';
-import phases2025 from '../data/2025/phases_2025.json';
 import { Activity, ActivityType } from '../models/activity';
 import { EquipmentOwnership, EquipmentUnit } from '../models/equipment';
 import { FirestoreActivity } from '../models/firestore models/activity_firestore';
-import { FirestorePhase } from '../models/firestore models/phase_firestore';
 import { Proposal } from '../models/proposal';
 import { firestore } from '../setup/config/firebase';
 import { getSingleProposal } from './proposal';
@@ -497,9 +493,9 @@ export const calculateActivityData = async (
     rawActivity.equipment ?? null,
     rawActivity.quantity ?? 0,
     rawActivity.sortOrder ??
-    rawActivity.constant?.sortOrder ??
-    rawActivity.dateAdded ??
-    0,
+      rawActivity.constant?.sortOrder ??
+      rawActivity.dateAdded ??
+      0,
     rawActivity.activityType ?? ActivityType.laborItem,
     rawActivity.unit ?? rawActivity.constant?.craftUnits ?? '',
     craftConstant,

@@ -16,12 +16,21 @@ import { Wbs } from '../models/wbs';
 import { firestore } from '../setup/config/firebase';
 import { WbsEnum } from '../utils/enums';
 import { numberFields, isNumber } from '../utils/utils';
-// Import the WBS 2025 data
-import wbsData2025 from '../data/wbs.json';
+import { resolveDataset } from '../data/datasets';
+import { DEFAULT_DATA_VERSION } from '../data/dataset_types';
+import type { DatasetVersions } from '../data/dataset_types';
 
-export const insertAllBaseWbs = async (proposalId: string) => {
-  // Use the imported JSON data instead of the enum array
-  wbsData2025.forEach(async (wbs) => {
+export const insertAllBaseWbs = async (
+  proposalId: string,
+  datasetVersions?: DatasetVersions,
+) => {
+  const preferredVersion = datasetVersions?.wbs ?? DEFAULT_DATA_VERSION;
+  const wbsData = resolveDataset<{ id: number; name: string }[]>(
+    'wbs',
+    preferredVersion,
+  );
+
+  wbsData.forEach(async (wbs) => {
     const wbsToInsert = new FirestoreWbs({
       name: wbs.name,
       wbsDatabaseId: wbs.id,

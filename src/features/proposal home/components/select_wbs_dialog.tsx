@@ -16,8 +16,6 @@ import ListItemText from '@mui/material/ListItemText';
 
 import { ProposalPreferences } from '../../../models/proposal_preferences';
 import { WbsArray } from '../../../utils/enums';
-import wbs2025Array from '../../../data/2025/wbs_2025.json';
-import { useCurrentProposal } from '../../../hooks/current_proposal_hook';
 import { StoreState, estimatorStore } from '../../../utils/store';
 
 interface Props {
@@ -36,11 +34,6 @@ export default function SelectWbsDialog({
     (state: StoreState) => state.setPreferences,
   );
   const proposal = estimatorStore((state: StoreState) => state.proposal);
-
-  // Determine which WBS array to use based on proposal's constantDataSet
-  const currentProposal = useCurrentProposal({
-    proposalId: proposal?.id ?? '',
-  });
 
   const wbsArrayToUse = WbsArray;
 
@@ -96,31 +89,33 @@ export default function SelectWbsDialog({
         <DialogContent sx={{ height: '400px', width: '400px' }}>
           <List
             sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}>
-            {wbsArrayToUse?.sort((a, b) => {
-              // Sort by wbsDatabaseId which is defined in WbsEnum
-              return a.wbsDatabaseId - b.wbsDatabaseId;
-            }).map((wbs) => {
-              const labelId = `checkbox-list-label-${wbs.name}`;
-              return (
-                <ListItem key={wbs.name} disablePadding>
-                  <ListItemButton
-                    role={undefined}
-                    onClick={handleToggle(wbs.name)}
-                    dense>
-                    <ListItemIcon>
-                      <Checkbox
-                        edge='start'
-                        checked={checked?.includes(wbs.name)}
-                        tabIndex={-1}
-                        disableRipple
-                        inputProps={{ 'aria-labelledby': labelId }}
-                      />
-                    </ListItemIcon>
-                    <ListItemText id={labelId} primary={wbs.name} />
-                  </ListItemButton>
-                </ListItem>
-              );
-            })}
+            {wbsArrayToUse
+              ?.sort((a, b) => {
+                // Sort by wbsDatabaseId which is defined in WbsEnum
+                return a.wbsDatabaseId - b.wbsDatabaseId;
+              })
+              .map((wbs) => {
+                const labelId = `checkbox-list-label-${wbs.name}`;
+                return (
+                  <ListItem key={wbs.name} disablePadding>
+                    <ListItemButton
+                      role={undefined}
+                      onClick={handleToggle(wbs.name)}
+                      dense>
+                      <ListItemIcon>
+                        <Checkbox
+                          edge='start'
+                          checked={checked?.includes(wbs.name)}
+                          tabIndex={-1}
+                          disableRipple
+                          inputProps={{ 'aria-labelledby': labelId }}
+                        />
+                      </ListItemIcon>
+                      <ListItemText id={labelId} primary={wbs.name} />
+                    </ListItemButton>
+                  </ListItem>
+                );
+              })}
           </List>
         </DialogContent>
         <DialogActions>

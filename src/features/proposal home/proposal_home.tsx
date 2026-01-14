@@ -22,7 +22,6 @@ import ProposalDetails from './components/proposal_details';
 import ProposalRates from './components/proposal_rates';
 import { updateSingleProposal } from '../../api/proposal';
 import { FirestoreProposal } from '../../models/firestore models/proposal_firestore';
-import { insertAllBaseWbs } from '../../api/wbs';
 
 function ProposalHomeScreen() {
   const { proposalId } = useParams();
