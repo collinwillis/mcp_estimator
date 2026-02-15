@@ -1,4 +1,4 @@
-import React, { useCallback, forwardRef, useRef, useEffect } from 'react';
+import React, { useCallback, forwardRef, useRef } from 'react';
 import {
   DataGridPro,
   DataGridProProps,
@@ -11,16 +11,31 @@ import {
   GridApi,
   GridCellEditStopParams,
   GridCellEditStopReasons,
+  GridCellEditStartReasons,
 } from '@mui/x-data-grid-pro';
 import { styled, alpha } from '@mui/material';
 
 /**
- * Excel-like Keyboard Navigation for MUI DataGrid Pro
+ * Excel-like Keyboard Navigation for MUI DataGrid Pro v5 (new editing API)
  *
- * This component embraces the MUI v5 “new editing API” so that navigation
- * and editing follow the documented behaviors. The custom logic below simply
- * ensures that Tab/Enter commit edits before moving focus and that focus
- * stays inside the grid while editing.
+ * Works WITH MUI's built-in editing system rather than fighting it:
+ *
+ *   - onCellEditStop  (high-priority prop handler, fires BEFORE MUI internals)
+ *     Prevents MUI's default stop handling via `event.defaultMuiPrevented`,
+ *     then commits + navigates to the next editable cell.
+ *
+ *   - onCellEditStart (high-priority prop handler, fires BEFORE MUI internals)
+ *     Intercepts Enter in view mode to navigate instead of edit.
+ *     Adds select-all on double-click edit.
+ *
+ *   - onCellKeyDown
+ *     Only handles keys MUI doesn't: F2 (toggle edit) and Tab in view mode.
+ *
+ * MUI handles natively (untouched):
+ *   - Printable key in view mode → type-to-replace (initialValue)
+ *   - Arrow keys → grid navigation
+ *   - Double-click → enter edit mode
+ *   - Focus out → commit cell
  */
 
 const StyledExcelGrid = styled(DataGridPro)(({ theme }) => {
@@ -225,8 +240,6 @@ const isCellRuntimeEditable = (
   }
 };
 
-const nextTick = () => new Promise((resolve) => setTimeout(resolve, 0));
-
 export const ExcelNavigationDataGrid = forwardRef<
   GridApi,
   ExcelNavigationDataGridProps
@@ -242,23 +255,26 @@ export const ExcelNavigationDataGrid = forwardRef<
     debugMode = false,
     columns,
     rows,
-    onCellKeyDown,
-    onCellDoubleClick,
-    onCellEditStop,
+    onCellKeyDown: onCellKeyDownProp,
+    onCellDoubleClick: onCellDoubleClickProp,
+    onCellEditStop: onCellEditStopProp,
+    onCellEditStart: onCellEditStartProp,
     ...otherProps
   } = props;
 
   const apiRef = useGridApiRef();
-  const isNavigating = useRef(false);
-  const lastFocusedCell = useRef<{ id: GridRowId; field: string } | null>(null);
-  const skipEditStopNavigation = useRef(false);
+  const lastFocusedCell = useRef<{ id: GridRowId; field: string } | null>(
+    null,
+  );
   const suppressSelectOnEdit = useRef(false);
 
-  /**
-   * Selects all text in the currently-editing cell's input, giving Excel-like
-   * "type to replace" behaviour.  Uses requestAnimationFrame so MUI has time
-   * to mount the <input> element after startCellEditMode().
-   */
+  React.useImperativeHandle(ref, () => apiRef.current, [apiRef]);
+
+  // ---------------------------------------------------------------------------
+  //  Helpers
+  // ---------------------------------------------------------------------------
+
+  /** Select all text in the currently-editing cell's input (Excel-like). */
   const selectEditingCellInput = useCallback(() => {
     if (suppressSelectOnEdit.current) {
       suppressSelectOnEdit.current = false;
@@ -274,10 +290,9 @@ export const ExcelNavigationDataGrid = forwardRef<
     });
   }, []);
 
-  React.useImperativeHandle(ref, () => apiRef.current, [apiRef]);
-
   const getNavigableColumns = useCallback(() => {
-    const visibilityModel = apiRef.current.state?.columnVisibilityModel || {};
+    const visibilityModel =
+      (apiRef.current.state as any)?.columnVisibilityModel || {};
     const visibleColumns = apiRef.current.getVisibleColumns
       ? apiRef.current.getVisibleColumns()
       : apiRef.current
@@ -396,7 +411,7 @@ export const ExcelNavigationDataGrid = forwardRef<
 
   const getNextCellPosition = useCallback(
     (
-      currentCell: GridCellParams,
+      currentCell: { id: GridRowId; field: string },
       direction: 'up' | 'down' | 'left' | 'right',
     ) => {
       const navigableColumns = getNavigableColumns();
@@ -438,258 +453,231 @@ export const ExcelNavigationDataGrid = forwardRef<
     [apiRef, getNavigableColumns, findNextEditableCell, debugMode],
   );
 
-  const commitActiveCell = useCallback(
-    async (params: GridCellParams) => {
-      const currentMode = apiRef.current.getCellMode(params.id, params.field);
-      if (currentMode !== 'edit') return true;
-      try {
-        apiRef.current.stopCellEditMode({
-          id: params.id,
-          field: params.field,
-        });
-        await nextTick();
-        return true;
-      } catch (error) {
-        if (debugMode) {
-          console.error('Failed to commit cell', error);
-        }
-        return false;
-      }
-    },
-    [apiRef, debugMode],
-  );
-
-  const navigateToCell = useCallback(
-    async (
+  /**
+   * Navigate to a cell and optionally enter edit mode with text selected.
+   * Uses requestAnimationFrame to let MUI finish processing the previous
+   * stopCellEditMode before starting a new edit session.
+   */
+  const navigateAndEdit = useCallback(
+    (
       cellPosition: { id: GridRowId; field: string } | null,
-      startEdit: boolean = false,
+      startEdit: boolean,
     ) => {
-      if (!cellPosition || isNavigating.current) return;
-      try {
-        isNavigating.current = true;
+      if (!cellPosition) return;
+
+      lastFocusedCell.current = cellPosition;
+
+      // Use rAF so MUI fully processes the stop before we start a new edit
+      requestAnimationFrame(() => {
         apiRef.current.setCellFocus(cellPosition.id, cellPosition.field);
-        lastFocusedCell.current = cellPosition;
 
         if (startEdit) {
-          await nextTick();
           const column = apiRef.current.getColumn(cellPosition.field);
           if (column?.editable !== false) {
-            apiRef.current.startCellEditMode({
-              id: cellPosition.id,
-              field: cellPosition.field,
-            });
-            selectEditingCellInput();
+            try {
+              apiRef.current.startCellEditMode({
+                id: cellPosition.id,
+                field: cellPosition.field,
+              });
+              selectEditingCellInput();
+            } catch (e) {
+              if (debugMode) console.warn('Could not start edit mode:', e);
+            }
           }
         }
-      } finally {
-        setTimeout(() => {
-          isNavigating.current = false;
-        }, 30);
-      }
+      });
     },
-    [apiRef, selectEditingCellInput],
+    [apiRef, selectEditingCellInput, debugMode],
   );
 
-  const handleCellKeyDown: GridEventListener<'cellKeyDown'> = useCallback(
-    async (params: GridCellParams, event, details: GridCallbackDetails) => {
-      if (!enableExcelNavigation) {
-        if (onCellKeyDown) {
-          onCellKeyDown(params, event, details);
+  // ---------------------------------------------------------------------------
+  //  Direction helpers
+  // ---------------------------------------------------------------------------
+
+  const getTabDirection = useCallback(
+    (shiftKey: boolean): 'up' | 'down' | 'left' | 'right' =>
+      tabBehavior === 'next-row'
+        ? shiftKey
+          ? 'up'
+          : 'down'
+        : shiftKey
+          ? 'left'
+          : 'right',
+    [tabBehavior],
+  );
+
+  const getEnterDirection = useCallback(
+    (shiftKey: boolean): 'up' | 'down' | 'left' | 'right' =>
+      enterBehavior === 'next-cell'
+        ? shiftKey
+          ? 'left'
+          : 'right'
+        : shiftKey
+          ? 'up'
+          : 'down',
+    [enterBehavior],
+  );
+
+  // ---------------------------------------------------------------------------
+  //  onCellEditStop — fires BEFORE MUI's internal handler (high priority).
+  //  We set event.defaultMuiPrevented = true so MUI never double-handles.
+  // ---------------------------------------------------------------------------
+
+  const handleCellEditStop = useCallback(
+    (params: GridCellEditStopParams, event: any, details: any) => {
+      // Forward to consumer's callback first
+      if (onCellEditStopProp) {
+        (onCellEditStopProp as any)(params, event, details);
+      }
+
+      if (!enableExcelNavigation) return;
+
+      // Prevent MUI's internal handleCellEditStop from running
+      event.defaultMuiPrevented = true;
+
+      const { id, field, reason } = params;
+
+      // Escape → discard modifications, stay on cell
+      if (reason === GridCellEditStopReasons.escapeKeyDown) {
+        apiRef.current.stopCellEditMode({
+          id,
+          field,
+          ignoreModifications: true,
+        });
+        return;
+      }
+
+      // Focus out (click away) → commit, no navigation
+      if (reason === ('cellFocusOut' as GridCellEditStopReasons)) {
+        apiRef.current.stopCellEditMode({ id, field });
+        return;
+      }
+
+      // Tab / Enter → commit + navigate to next editable cell + enter edit
+
+      // Commit the current cell
+      apiRef.current.stopCellEditMode({ id, field });
+
+      const shiftKey = (event as React.KeyboardEvent)?.shiftKey ?? false;
+
+      // Enter
+      if (reason === GridCellEditStopReasons.enterKeyDown) {
+        if (enterBehavior === 'stay') {
+          // Re-enter edit on the same cell
+          navigateAndEdit({ id, field }, true);
+          return;
         }
+        const direction = getEnterDirection(shiftKey);
+        const nextCell = getNextCellPosition({ id, field }, direction);
+        navigateAndEdit(nextCell, false);
+        return;
+      }
+
+      // Tab / Shift+Tab
+      if (
+        reason === GridCellEditStopReasons.tabKeyDown ||
+        reason === ('shiftTabKeyDown' as GridCellEditStopReasons)
+      ) {
+        if (tabBehavior === 'default') return;
+        const direction =
+          reason === ('shiftTabKeyDown' as GridCellEditStopReasons)
+            ? getTabDirection(true)
+            : getTabDirection(false);
+        const nextCell = getNextCellPosition({ id, field }, direction);
+        navigateAndEdit(nextCell, false);
+        return;
+      }
+    },
+    [
+      onCellEditStopProp,
+      enableExcelNavigation,
+      apiRef,
+      enterBehavior,
+      tabBehavior,
+      getEnterDirection,
+      getTabDirection,
+      getNextCellPosition,
+      navigateAndEdit,
+    ],
+  );
+
+  // ---------------------------------------------------------------------------
+  //  onCellEditStart — fires BEFORE MUI's internal handler (high priority).
+  //  Intercepts Enter in view mode to navigate instead of editing.
+  //  Adds select-all text on double-click edit.
+  // ---------------------------------------------------------------------------
+
+  const handleCellEditStart = useCallback(
+    (params: any, event: any) => {
+      // Forward to consumer's callback
+      if (onCellEditStartProp) {
+        (onCellEditStartProp as any)(params, event);
+      }
+
+      if (!enableExcelNavigation) return;
+
+      const reason = params.reason as GridCellEditStartReasons | undefined;
+
+      // Enter in view mode → navigate instead of entering edit mode
+      if (reason === GridCellEditStartReasons.enterKeyDown) {
+        event.defaultMuiPrevented = true;
+
+        if (enterBehavior === 'stay') return;
+
+        const shiftKey = (event as React.KeyboardEvent)?.shiftKey ?? false;
+        const direction = getEnterDirection(shiftKey);
+        const nextCell = getNextCellPosition(
+          { id: params.id, field: params.field },
+          direction,
+        );
+
+        if (nextCell) {
+          apiRef.current.setCellFocus(nextCell.id, nextCell.field);
+          lastFocusedCell.current = nextCell;
+        }
+        return;
+      }
+
+      // Double-click → MUI enters edit mode; we just add text selection
+      if (reason === GridCellEditStartReasons.cellDoubleClick) {
+        selectEditingCellInput();
+        return;
+      }
+
+      // Printable key → MUI handles with initialValue (type-to-replace). Perfect.
+      // Delete/Backspace → MUI handles with deleteValue (clears cell, enters edit).
+    },
+    [
+      onCellEditStartProp,
+      enableExcelNavigation,
+      enterBehavior,
+      getEnterDirection,
+      getNextCellPosition,
+      apiRef,
+      selectEditingCellInput,
+    ],
+  );
+
+  // ---------------------------------------------------------------------------
+  //  onCellKeyDown — only for keys MUI doesn't handle:
+  //    F2:  toggle edit mode
+  //    Tab in view mode:  navigate to next editable cell
+  //    Delete/Backspace in view mode:  clear + immediate commit
+  // ---------------------------------------------------------------------------
+
+  const handleCellKeyDown: GridEventListener<'cellKeyDown'> = useCallback(
+    (params: GridCellParams, event, details: GridCallbackDetails) => {
+      if (!enableExcelNavigation) {
+        if (onCellKeyDownProp) onCellKeyDownProp(params, event, details);
         return;
       }
 
       const key = event.key;
-      const shiftKey = event.shiftKey;
       const isInEditMode = params.cellMode === 'edit';
 
-      const commitIfNeeded = async (force: boolean = false) => {
-        if (!force && !autoCommitOnNavigation) return true;
-        return commitActiveCell(params);
-      };
-
-      if (isInEditMode) {
-        if (key === 'Tab') {
-          if (tabBehavior === 'default') {
-            if (onCellKeyDown) onCellKeyDown(params, event, details);
-            return;
-          }
-
-          event.preventDefault();
-          event.stopPropagation();
-
-          if (isNavigating.current) return;
-
-          skipEditStopNavigation.current = true;
-
-          const direction =
-            tabBehavior === 'next-row'
-              ? shiftKey
-                ? 'up'
-                : 'down'
-              : shiftKey
-                ? 'left'
-                : 'right';
-
-          const committed = await commitIfNeeded(true);
-          if (!committed) {
-            skipEditStopNavigation.current = false;
-            return;
-          }
-
-          const nextCell = getNextCellPosition(params, direction);
-          await navigateToCell(nextCell, true);
-          return;
-        }
-
-        if (key === 'Enter') {
-          event.preventDefault();
-          event.stopPropagation();
-
-          skipEditStopNavigation.current = true;
-
-          if (enterBehavior === 'stay') {
-            const committed = await commitIfNeeded(true);
-            if (!committed) {
-              skipEditStopNavigation.current = false;
-              return;
-            }
-            await navigateToCell({ id: params.id, field: params.field }, true);
-            return;
-          }
-
-          const direction =
-            enterBehavior === 'next-cell'
-              ? shiftKey
-                ? 'left'
-                : 'right'
-              : shiftKey
-                ? 'up'
-                : 'down';
-
-          const committed = await commitIfNeeded(true);
-          if (!committed) {
-            skipEditStopNavigation.current = false;
-            return;
-          }
-
-          const nextCell = getNextCellPosition(params, direction);
-          await navigateToCell(nextCell, true);
-          return;
-        }
-
-        if (key === 'Escape') {
-          event.preventDefault();
-          event.stopPropagation();
-          skipEditStopNavigation.current = false;
-          apiRef.current.stopCellEditMode({
-            id: params.id,
-            field: params.field,
-            ignoreModifications: true,
-          });
-          return;
-        }
-
-        if (onCellKeyDown) {
-          onCellKeyDown(params, event, details);
-      }
-      return;
-    }
-    if (key === 'Tab') {
-        if (tabBehavior === 'default') {
-          if (onCellKeyDown) onCellKeyDown(params, event, details);
-          return;
-        }
-
-        event.preventDefault();
-        event.stopPropagation();
-
-        if (isNavigating.current) return;
-
-        const direction =
-          tabBehavior === 'next-row'
-            ? shiftKey
-              ? 'up'
-              : 'down'
-            : shiftKey
-              ? 'left'
-              : 'right';
-
-        const committed = await commitIfNeeded();
-        if (!committed) return;
-
-        const nextCell = getNextCellPosition(params, direction);
-        await navigateToCell(nextCell, isInEditMode);
-        return;
-      }
-
-      if (key === 'Delete' || key === 'Backspace') {
-        const column = apiRef.current.getColumn(params.field);
-        if (!column || column.editable === false) {
-          if (onCellKeyDown) {
-            onCellKeyDown(params, event, details);
-          }
-          return;
-        }
-
-        event.preventDefault();
-        event.stopPropagation();
-
-        apiRef.current.startCellEditMode({
-          id: params.id,
-          field: params.field,
-        });
-
-        const clearedValue =
-          column.type === 'number' || typeof params.value === 'number'
-            ? null
-            : column.type === 'boolean' || typeof params.value === 'boolean'
-              ? false
-              : '';
-
-        await apiRef.current.setEditCellValue(
-          {
-            id: params.id,
-            field: params.field,
-            value: clearedValue,
-          },
-          event,
-        );
-
-        const editParams = apiRef.current.getCellParams(params.id, params.field);
-        await commitActiveCell(editParams);
-        return;
-      }
-
-      if (key === 'Enter') {
-        event.preventDefault();
-        event.stopPropagation();
-
-        if (enterBehavior === 'stay') {
-          await commitIfNeeded();
-          return;
-        }
-
-        const direction =
-          enterBehavior === 'next-cell'
-            ? shiftKey
-              ? 'left'
-              : 'right'
-            : shiftKey
-              ? 'up'
-              : 'down';
-
-        const committed = await commitIfNeeded();
-        if (!committed) return;
-
-        const nextCell = getNextCellPosition(params, direction);
-        await navigateToCell(nextCell, isInEditMode);
-        return;
-      }
-
+      // F2: toggle edit mode (MUI has no default F2 handling)
       if (key === 'F2') {
         event.preventDefault();
-        event.stopPropagation();
         if (!isInEditMode) {
           const column = apiRef.current.getColumn(params.field);
           if (column?.editable !== false) {
@@ -700,45 +688,72 @@ export const ExcelNavigationDataGrid = forwardRef<
             });
           }
         } else {
-          await commitActiveCell(params);
+          apiRef.current.stopCellEditMode({
+            id: params.id,
+            field: params.field,
+          });
         }
         return;
       }
 
-      if (onCellKeyDown) {
-        onCellKeyDown(params, event, details);
+      // Tab in view mode (MUI only handles Tab in edit mode)
+      if (key === 'Tab' && !isInEditMode) {
+        if (tabBehavior === 'default') {
+          if (onCellKeyDownProp) onCellKeyDownProp(params, event, details);
+          return;
+        }
+
+        event.preventDefault();
+        const direction = getTabDirection(event.shiftKey);
+        const nextCell = getNextCellPosition(params, direction);
+        if (nextCell) {
+          apiRef.current.setCellFocus(nextCell.id, nextCell.field);
+          lastFocusedCell.current = nextCell;
+        }
+        return;
       }
+
+      // Delete/Backspace in view mode: clear cell and save immediately
+      // MUI's default enters edit with deleteValue — we override to clear+commit
+      if ((key === 'Delete' || key === 'Backspace') && !isInEditMode) {
+        const column = apiRef.current.getColumn(params.field);
+        if (!column || column.editable === false) {
+          if (onCellKeyDownProp) onCellKeyDownProp(params, event, details);
+          return;
+        }
+
+        // MUI's internal handler will publish cellEditStart with deleteKeyDown.
+        // We let that happen (entering edit mode with deleteValue), then
+        // immediately commit in a microtask to match Excel's clear-and-save.
+        setTimeout(() => {
+          try {
+            apiRef.current.stopCellEditMode({
+              id: params.id,
+              field: params.field,
+            });
+          } catch {
+            // Cell may already be in view mode if MUI processed faster
+          }
+        }, 0);
+        return;
+      }
+
+      // Pass everything else through
+      if (onCellKeyDownProp) onCellKeyDownProp(params, event, details);
     },
     [
       enableExcelNavigation,
-      autoCommitOnNavigation,
+      onCellKeyDownProp,
+      apiRef,
       tabBehavior,
-      enterBehavior,
-      onCellKeyDown,
+      getTabDirection,
       getNextCellPosition,
-      navigateToCell,
-      commitActiveCell,
     ],
   );
 
-  const handleCellDoubleClick: GridEventListener<'cellDoubleClick'> =
-    useCallback(
-      (params: GridCellParams, event, details) => {
-        const column = apiRef.current.getColumn(params.field);
-        if (column?.editable !== false) {
-          apiRef.current.startCellEditMode({
-            id: params.id,
-            field: params.field,
-          });
-          selectEditingCellInput();
-        }
-
-        if (onCellDoubleClick) {
-          onCellDoubleClick(params, event, details);
-        }
-      },
-      [apiRef, onCellDoubleClick, selectEditingCellInput],
-    );
+  // ---------------------------------------------------------------------------
+  //  processRowUpdate wrapper
+  // ---------------------------------------------------------------------------
 
   const processRowUpdate = useCallback(
     async (newRow: any, oldRow: any) => {
@@ -754,81 +769,12 @@ export const ExcelNavigationDataGrid = forwardRef<
     console.error('Error updating row:', error);
   }, []);
 
-  const handleCellEditStop: GridEventListener<'cellEditStop'> = useCallback(
-    async (params: GridCellEditStopParams, event, details) => {
-      if (onCellEditStop) {
-        onCellEditStop(params, event, details);
-      }
+  // ---------------------------------------------------------------------------
+  //  Restore focus after row/column data changes
+  // ---------------------------------------------------------------------------
 
-      if (skipEditStopNavigation.current) {
-        skipEditStopNavigation.current = false;
-        return;
-      }
-
-      if (!enableExcelNavigation) {
-        return;
-      }
-
-      const reason = params.reason;
-      const keyboardEvent = event as React.KeyboardEvent;
-      const shiftKey = keyboardEvent?.shiftKey ?? false;
-
-      let direction: 'up' | 'down' | 'left' | 'right' | null = null;
-
-      if (reason === GridCellEditStopReasons.enterKeyDown) {
-        if (enterBehavior === 'stay') {
-          await nextTick();
-          await navigateToCell({ id: params.id, field: params.field }, false);
-          return;
-        }
-
-        direction =
-          enterBehavior === 'next-cell'
-            ? shiftKey
-              ? 'left'
-              : 'right'
-            : shiftKey
-              ? 'up'
-              : 'down';
-      } else if (reason === GridCellEditStopReasons.tabKeyDown) {
-        if (tabBehavior === 'default') {
-          return;
-        }
-
-        direction =
-          tabBehavior === 'next-row'
-            ? shiftKey
-              ? 'up'
-              : 'down'
-            : shiftKey
-              ? 'left'
-              : 'right';
-      }
-
-      if (!direction) {
-        return;
-      }
-
-      await nextTick();
-      const currentCell = apiRef.current.getCellParams(params.id, params.field);
-      const nextCell = getNextCellPosition(currentCell, direction);
-      if (nextCell) {
-        await navigateToCell(nextCell, true);
-      }
-    },
-    [
-      onCellEditStop,
-      enableExcelNavigation,
-      enterBehavior,
-      tabBehavior,
-      apiRef,
-      getNextCellPosition,
-      navigateToCell,
-    ],
-  );
-
-  useEffect(() => {
-    if (lastFocusedCell.current && !isNavigating.current) {
+  React.useEffect(() => {
+    if (lastFocusedCell.current) {
       const { id, field } = lastFocusedCell.current;
       const rowExists = rows.some((row: any) => row.id === id);
       const columnExists = columns.some((col: any) => col.field === field);
@@ -841,6 +787,10 @@ export const ExcelNavigationDataGrid = forwardRef<
     }
   }, [rows, columns, apiRef]);
 
+  // ---------------------------------------------------------------------------
+  //  Render
+  // ---------------------------------------------------------------------------
+
   return (
     <StyledExcelGrid
       {...otherProps}
@@ -849,8 +799,8 @@ export const ExcelNavigationDataGrid = forwardRef<
       rows={rows}
       editMode='cell'
       onCellKeyDown={handleCellKeyDown}
-      onCellDoubleClick={handleCellDoubleClick}
-      onCellEditStop={handleCellEditStop}
+      onCellEditStop={handleCellEditStop as any}
+      onCellEditStart={handleCellEditStart as any}
       processRowUpdate={processRowUpdate}
       onProcessRowUpdateError={handleProcessRowUpdateError}
       experimentalFeatures={{
