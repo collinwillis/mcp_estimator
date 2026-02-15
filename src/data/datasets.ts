@@ -3,6 +3,7 @@ import laborV1 from './v1/labor_v1.json';
 import phasesV1 from './v1/phases_v1.json';
 import wbsV1 from './v1/wbs_v1.json';
 import equipmentV2 from './v2/equipment_v2.json';
+import laborV2 from './v2/labor_v2.json';
 
 import {
   DataType,
@@ -13,7 +14,7 @@ import {
 } from './dataset_types';
 
 const DATASETS: Record<DataType, Partial<Record<DataVersion, unknown>>> = {
-  labor: { v1: laborV1 },
+  labor: { v1: laborV1, v2: laborV2 },
   phases: { v1: phasesV1 },
   wbs: { v1: wbsV1 },
   equipment: { v1: equipmentV1, v2: equipmentV2 },

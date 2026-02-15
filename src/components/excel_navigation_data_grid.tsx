@@ -252,6 +252,27 @@ export const ExcelNavigationDataGrid = forwardRef<
   const isNavigating = useRef(false);
   const lastFocusedCell = useRef<{ id: GridRowId; field: string } | null>(null);
   const skipEditStopNavigation = useRef(false);
+  const suppressSelectOnEdit = useRef(false);
+
+  /**
+   * Selects all text in the currently-editing cell's input, giving Excel-like
+   * "type to replace" behaviour.  Uses requestAnimationFrame so MUI has time
+   * to mount the <input> element after startCellEditMode().
+   */
+  const selectEditingCellInput = useCallback(() => {
+    if (suppressSelectOnEdit.current) {
+      suppressSelectOnEdit.current = false;
+      return;
+    }
+    requestAnimationFrame(() => {
+      const input = document.querySelector(
+        '.MuiDataGrid-cell--editing input, .MuiDataGrid-cell--editing textarea',
+      ) as HTMLInputElement | HTMLTextAreaElement | null;
+      if (input) {
+        input.select();
+      }
+    });
+  }, []);
 
   React.useImperativeHandle(ref, () => apiRef.current, [apiRef]);
 
@@ -457,6 +478,7 @@ export const ExcelNavigationDataGrid = forwardRef<
               id: cellPosition.id,
               field: cellPosition.field,
             });
+            selectEditingCellInput();
           }
         }
       } finally {
@@ -465,7 +487,7 @@ export const ExcelNavigationDataGrid = forwardRef<
         }, 30);
       }
     },
-    [apiRef],
+    [apiRef, selectEditingCellInput],
   );
 
   const handleCellKeyDown: GridEventListener<'cellKeyDown'> = useCallback(
@@ -671,6 +693,7 @@ export const ExcelNavigationDataGrid = forwardRef<
         if (!isInEditMode) {
           const column = apiRef.current.getColumn(params.field);
           if (column?.editable !== false) {
+            suppressSelectOnEdit.current = true;
             apiRef.current.startCellEditMode({
               id: params.id,
               field: params.field,
@@ -707,13 +730,14 @@ export const ExcelNavigationDataGrid = forwardRef<
             id: params.id,
             field: params.field,
           });
+          selectEditingCellInput();
         }
 
         if (onCellDoubleClick) {
           onCellDoubleClick(params, event, details);
         }
       },
-      [apiRef, onCellDoubleClick],
+      [apiRef, onCellDoubleClick, selectEditingCellInput],
     );
 
   const processRowUpdate = useCallback(

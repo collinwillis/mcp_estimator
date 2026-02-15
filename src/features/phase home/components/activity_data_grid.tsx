@@ -971,18 +971,18 @@ function ActivityDataGrid() {
 
           // Check for over/under conditions
           if (params.field === 'craftConstant') {
-            if (activity.craftConstant > activity.constant?.craftConstant!) {
+            if (activity.craftConstant < activity.constant?.craftConstant!) {
               classes.push('over');
             } else if (
-              activity.craftConstant < activity.constant?.craftConstant!
+              activity.craftConstant > activity.constant?.craftConstant!
             ) {
               classes.push('under');
             }
           } else if (params.field === 'welderConstant') {
-            if (activity.welderConstant > activity.constant?.weldConstant!) {
+            if (activity.welderConstant < activity.constant?.weldConstant!) {
               classes.push('over');
             } else if (
-              activity.welderConstant < activity.constant?.weldConstant!
+              activity.welderConstant > activity.constant?.weldConstant!
             ) {
               classes.push('under');
             }
@@ -1026,18 +1026,18 @@ function ActivityDataGrid() {
 
           // Check for over/under conditions (custom labor can have constants too)
           if (params.field === 'craftConstant') {
-            if (activity.craftConstant > activity.constant?.craftConstant!) {
+            if (activity.craftConstant < activity.constant?.craftConstant!) {
               classes.push('over');
             } else if (
-              activity.craftConstant < activity.constant?.craftConstant!
+              activity.craftConstant > activity.constant?.craftConstant!
             ) {
               classes.push('under');
             }
           } else if (params.field === 'welderConstant') {
-            if (activity.welderConstant > activity.constant?.weldConstant!) {
+            if (activity.welderConstant < activity.constant?.weldConstant!) {
               classes.push('over');
             } else if (
-              activity.welderConstant < activity.constant?.weldConstant!
+              activity.welderConstant > activity.constant?.weldConstant!
             ) {
               classes.push('under');
             }
