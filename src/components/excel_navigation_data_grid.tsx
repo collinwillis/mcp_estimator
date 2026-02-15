@@ -537,12 +537,16 @@ export const ExcelNavigationDataGrid = forwardRef<
 
       const { id, field, reason } = params;
 
-      // Escape → discard modifications, stay on cell
+      // Escape → discard modifications, stay on cell in view mode
       if (reason === GridCellEditStopReasons.escapeKeyDown) {
         apiRef.current.stopCellEditMode({
           id,
           field,
           ignoreModifications: true,
+        });
+        // Restore focus (MUI's internal handler won't since we prevented it)
+        requestAnimationFrame(() => {
+          apiRef.current.setCellFocus(id, field);
         });
         return;
       }
@@ -638,9 +642,9 @@ export const ExcelNavigationDataGrid = forwardRef<
         return;
       }
 
-      // Double-click → MUI enters edit mode; we just add text selection
+      // Double-click → MUI enters edit mode natively.
+      // Let it handle cursor placement (Excel = cursor at click position).
       if (reason === GridCellEditStartReasons.cellDoubleClick) {
-        selectEditingCellInput();
         return;
       }
 
@@ -713,18 +717,15 @@ export const ExcelNavigationDataGrid = forwardRef<
         return;
       }
 
-      // Delete/Backspace in view mode: clear cell and save immediately
-      // MUI's default enters edit with deleteValue — we override to clear+commit
-      if ((key === 'Delete' || key === 'Backspace') && !isInEditMode) {
+      // Delete in view mode: clear cell content, stay in view mode (Excel behavior)
+      if (key === 'Delete' && !isInEditMode) {
         const column = apiRef.current.getColumn(params.field);
         if (!column || column.editable === false) {
           if (onCellKeyDownProp) onCellKeyDownProp(params, event, details);
           return;
         }
 
-        // MUI's internal handler will publish cellEditStart with deleteKeyDown.
-        // We let that happen (entering edit mode with deleteValue), then
-        // immediately commit in a microtask to match Excel's clear-and-save.
+        // MUI enters edit with deleteValue; we immediately commit to clear + stay in view
         setTimeout(() => {
           try {
             apiRef.current.stopCellEditMode({
@@ -732,9 +733,16 @@ export const ExcelNavigationDataGrid = forwardRef<
               field: params.field,
             });
           } catch {
-            // Cell may already be in view mode if MUI processed faster
+            // Cell may already be in view mode
           }
         }, 0);
+        return;
+      }
+
+      // Backspace in view mode: clear cell content and enter edit mode (Excel behavior)
+      // Let MUI handle it natively — it enters edit with deleteValue (empty input, ready to type)
+      if (key === 'Backspace' && !isInEditMode) {
+        // MUI's default deleteValue behavior is exactly what we want here
         return;
       }
 
