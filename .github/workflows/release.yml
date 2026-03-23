@@ -109,34 +109,54 @@ jobs:
           PUB_DATE=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
           REPO="collinwillis/mcp_estimator"
           GIST_ID="40b8751c25f6d48248e78aafb33cb638"
-
           DOWNLOAD_URL="https://github.com/${REPO}/releases/download/${TAG}/${ZIP_NAME}"
 
-          # Build the updater JSON
-          cat > ${RUNNER_TEMP}/updater.json << ENDOFFILE
-          {
-            "version": "${VERSION}",
-            "notes": "MCP Estimator ${TAG}",
-            "pub_date": "${PUB_DATE}",
-            "platforms": {
-              "windows-x86_64": {
-                "signature": "${SIGNATURE}",
-                "url": "${DOWNLOAD_URL}"
+          # Use node to build and send the gist update (avoids Python/Windows path issues)
+          node -e "
+            const https = require('https');
+            const gistContent = JSON.stringify({
+              version: '${VERSION}',
+              notes: 'MCP Estimator ${TAG}',
+              pub_date: '${PUB_DATE}',
+              platforms: {
+                'windows-x86_64': {
+                  signature: '${SIGNATURE}',
+                  url: '${DOWNLOAD_URL}'
+                }
               }
-            }
-          }
-          ENDOFFILE
+            }, null, 2);
 
-          echo "Updater JSON:"
-          cat ${RUNNER_TEMP}/updater.json
+            console.log('Updater JSON:', gistContent);
 
-          # Update the gist using GitHub API
-          # Escape the JSON for embedding in the API payload
-          CONTENT=$(python -c "import json,sys; print(json.dumps(open('${RUNNER_TEMP}/updater.json').read()))")
+            const payload = JSON.stringify({
+              files: { 'updater.json': { content: gistContent } }
+            });
 
-          curl -s -X PATCH \
-            -H "Authorization: token ${GH_TOKEN}" \
-            -H "Accept: application/vnd.github+json" \
-            "https://api.github.com/gists/${GIST_ID}" \
-            -d "{\"files\":{\"updater.json\":{\"content\":${CONTENT}}}}" \
-            | python -c "import json,sys; d=json.load(sys.stdin); print('Gist updated:', d.get('html_url', 'ERROR'))"
+            const req = https.request({
+              hostname: 'api.github.com',
+              path: '/gists/${GIST_ID}',
+              method: 'PATCH',
+              headers: {
+                'Authorization': 'token ' + process.env.GH_TOKEN,
+                'Accept': 'application/vnd.github+json',
+                'User-Agent': 'mcp-estimator-ci',
+                'Content-Type': 'application/json',
+                'Content-Length': Buffer.byteLength(payload),
+              }
+            }, (res) => {
+              let body = '';
+              res.on('data', (d) => body += d);
+              res.on('end', () => {
+                const data = JSON.parse(body);
+                if (data.html_url) {
+                  console.log('Gist updated:', data.html_url);
+                } else {
+                  console.error('Gist update failed:', body.substring(0, 500));
+                  process.exit(1);
+                }
+              });
+            });
+            req.on('error', (e) => { console.error(e); process.exit(1); });
+            req.write(payload);
+            req.end();
+          "
