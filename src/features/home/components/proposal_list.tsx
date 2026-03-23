@@ -68,7 +68,7 @@ const ProposalList: React.FC<ProposalListProps> = ({ onClick, proposals }) => {
               <Box sx={{ minWidth: 0, flex: 1 }}>
                 <Typography
                   sx={{
-                    fontSize: '0.775rem',
+                    fontSize: '0.85rem',
                     fontWeight: isActive ? 600 : 500,
                     color: isActive ? '#111827' : '#374151',
                     lineHeight: 1.3,
@@ -80,7 +80,7 @@ const ProposalList: React.FC<ProposalListProps> = ({ onClick, proposals }) => {
                 </Typography>
                 <Typography
                   sx={{
-                    fontSize: '0.675rem',
+                    fontSize: '0.75rem',
                     color: '#6b7280',
                     lineHeight: 1.3,
                     overflow: 'hidden',
@@ -95,7 +95,7 @@ const ProposalList: React.FC<ProposalListProps> = ({ onClick, proposals }) => {
         })
       ) : (
         <Box sx={{ px: 2, py: 3 }}>
-          <Typography sx={{ fontSize: '0.775rem', color: '#9ca3af' }}>
+          <Typography sx={{ fontSize: '0.85rem', color: '#9ca3af' }}>
             No proposals found.
           </Typography>
         </Box>

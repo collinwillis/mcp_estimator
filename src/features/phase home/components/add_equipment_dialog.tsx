@@ -169,13 +169,13 @@ export default function AddEquipmentDialog({
     <Dialog open={open} onClose={onClose}
       PaperProps={{ sx: { borderRadius: 2, border: '1px solid #e5e7eb', boxShadow: '0 8px 32px rgba(0,0,0,0.12)' } }}>
       <DialogTitle sx={{ pb: 1 }}>
-        <Typography sx={{ fontSize: '0.875rem', fontWeight: 600, color: '#111827', mb: 1 }}>
+        <Typography sx={{ fontSize: '0.925rem', fontWeight: 600, color: '#111827', mb: 1 }}>
           Add Equipment
         </Typography>
         <Input
           placeholder='Search equipment...'
           onChange={(e) => setSearch(e.target.value)}
-          sx={{ width: '100%', fontSize: '0.825rem' }}
+          sx={{ width: '100%', fontSize: '0.875rem' }}
           autoFocus
         />
       </DialogTitle>
@@ -212,11 +212,11 @@ export default function AddEquipmentDialog({
       </DialogContent>
       <DialogActions sx={{ px: 3, pb: 2 }}>
         <Button onClick={onClose}
-          sx={{ 'textTransform': 'none', 'fontSize': '0.775rem', 'fontWeight': 500, 'color': '#6b7280', 'borderRadius': 1, 'px': 1.5, 'border': '1px solid #e5e7eb', '&:hover': { backgroundColor: '#f3f4f6' } }}>
+          sx={{ 'textTransform': 'none', 'fontSize': '0.85rem', 'fontWeight': 500, 'color': '#6b7280', 'borderRadius': 1, 'px': 1.5, 'border': '1px solid #e5e7eb', '&:hover': { backgroundColor: '#f3f4f6' } }}>
           Cancel
         </Button>
         <Button onClick={addToDb}
-          sx={{ 'textTransform': 'none', 'fontSize': '0.775rem', 'fontWeight': 600, 'color': '#fff', 'backgroundColor': '#111827', 'borderRadius': 1, 'px': 2, '&:hover': { backgroundColor: '#1f2937' } }}>
+          sx={{ 'textTransform': 'none', 'fontSize': '0.85rem', 'fontWeight': 600, 'color': '#fff', 'backgroundColor': '#111827', 'borderRadius': 1, 'px': 2, '&:hover': { backgroundColor: '#1f2937' } }}>
           Add
         </Button>
       </DialogActions>

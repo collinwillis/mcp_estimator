@@ -40,13 +40,13 @@ function FormattedNumberInput({
       sx={{
         '& .MuiOutlinedInput-root': {
           'borderRadius': 1,
-          'fontSize': '0.8rem',
+          'fontSize': '0.875rem',
           'backgroundColor': '#f9fafb',
           '& fieldset': { borderColor: '#e5e7eb' },
           '&:hover fieldset': { borderColor: '#d1d5db' },
           '&.Mui-focused fieldset': { borderColor: '#9ca3af', borderWidth: 1 },
         },
-        '& .MuiInputLabel-root': { fontSize: '0.75rem', color: '#6b7280' },
+        '& .MuiInputLabel-root': { fontSize: '0.825rem', color: '#6b7280' },
       }}
     />
   );

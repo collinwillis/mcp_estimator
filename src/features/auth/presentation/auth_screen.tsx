@@ -25,7 +25,7 @@ export default function Welcome() {
           left: 24,
           color: '#111827',
           fontWeight: 700,
-          fontSize: '0.875rem',
+          fontSize: '0.925rem',
           letterSpacing: '0.04em',
         }}>
         MCP ESTIMATOR

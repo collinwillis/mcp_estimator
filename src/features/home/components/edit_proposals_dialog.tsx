@@ -79,7 +79,7 @@ const EditProposalsDialog: React.FC<EditProposalsDialogProps> = ({
           py: 1.5,
           borderBottom: '1px solid #e5e7eb',
         }}>
-        <Typography sx={{ fontSize: '0.825rem', fontWeight: 600, color: '#111827' }}>
+        <Typography sx={{ fontSize: '0.875rem', fontWeight: 600, color: '#111827' }}>
           Manage Proposals
         </Typography>
         <IconButton size='small' onClick={onClose} sx={{ color: '#6b7280' }}>
@@ -108,7 +108,7 @@ const EditProposalsDialog: React.FC<EditProposalsDialogProps> = ({
               'height': 32,
               'borderRadius': 1,
               'backgroundColor': '#f3f4f6',
-              'fontSize': '0.8rem',
+              'fontSize': '0.875rem',
               '& fieldset': { borderColor: 'transparent' },
               '&:hover fieldset': { borderColor: '#d1d5db' },
               '&.Mui-focused fieldset': { borderColor: '#9ca3af', borderWidth: 1 },
@@ -131,7 +131,7 @@ const EditProposalsDialog: React.FC<EditProposalsDialogProps> = ({
                   '&:hover': { backgroundColor: '#f9fafb' },
                 }}>
                 <Box sx={{ flex: 1, minWidth: 0 }}>
-                  <Typography sx={{ fontSize: '0.8rem', fontWeight: 500, color: '#111827', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  <Typography sx={{ fontSize: '0.875rem', fontWeight: 500, color: '#111827', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                     {proposal.proposalNumber} - {proposal.proposalDescription}
                   </Typography>
                 </Box>
@@ -161,13 +161,13 @@ const EditProposalsDialog: React.FC<EditProposalsDialogProps> = ({
       <DeleteConfirmationDialog
         title={
           <>
-            <Typography component='span' sx={{ fontSize: '0.825rem' }}>
+            <Typography component='span' sx={{ fontSize: '0.875rem' }}>
               Delete{' '}
             </Typography>
-            <Typography component='span' sx={{ fontSize: '0.825rem', fontWeight: 600 }}>
+            <Typography component='span' sx={{ fontSize: '0.875rem', fontWeight: 600 }}>
               {selectedProposal?.proposalNumber} - {selectedProposal?.proposalDescription}
             </Typography>
-            <Typography component='span' sx={{ fontSize: '0.825rem' }}>?</Typography>
+            <Typography component='span' sx={{ fontSize: '0.875rem' }}>?</Typography>
           </>
         }
         content='This action cannot be undone. All associated data will be permanently removed.'

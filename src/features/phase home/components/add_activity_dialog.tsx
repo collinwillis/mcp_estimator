@@ -139,13 +139,13 @@ export default function AddActivityDialog({
     <Dialog open={open} onClose={onClose}
       PaperProps={{ sx: { borderRadius: 2, border: '1px solid #e5e7eb', boxShadow: '0 8px 32px rgba(0,0,0,0.12)' } }}>
       <DialogTitle sx={{ pb: 1 }}>
-        <Typography sx={{ fontSize: '0.875rem', fontWeight: 600, color: '#111827', mb: 1 }}>
+        <Typography sx={{ fontSize: '0.925rem', fontWeight: 600, color: '#111827', mb: 1 }}>
           Add Activities
         </Typography>
         <Input
           placeholder='Search activities...'
           onChange={(e) => setSearch(e.target.value)}
-          sx={{ width: '100%', fontSize: '0.825rem' }}
+          sx={{ width: '100%', fontSize: '0.875rem' }}
           autoFocus
         />
       </DialogTitle>

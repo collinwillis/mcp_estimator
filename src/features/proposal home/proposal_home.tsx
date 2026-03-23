@@ -140,7 +140,7 @@ function ProposalHomeScreen() {
             '& .MuiTab-root': {
               'textTransform': 'none',
               'fontWeight': 500,
-              'fontSize': '0.8rem',
+              'fontSize': '0.875rem',
               'color': '#6b7280',
               'minHeight': 40,
               'py': 0,

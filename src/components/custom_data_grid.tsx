@@ -6,11 +6,11 @@ export const StyledDataGrid = styled(DataGridPro)(() => ({
   'color': '#111827',
   'fontFamily': '-apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, sans-serif',
   'WebkitFontSmoothing': 'antialiased',
-  'fontSize': '0.8rem',
+  'fontSize': '0.875rem',
   '& .MuiDataGrid-columnHeaders': {
     backgroundColor: '#f9fafb',
     borderBottom: '1px solid #e5e7eb',
-    fontSize: '0.675rem',
+    fontSize: '0.75rem',
     fontWeight: 600,
     color: '#6b7280',
     textTransform: 'uppercase',
@@ -50,7 +50,7 @@ export const StyledDataGrid = styled(DataGridPro)(() => ({
     minHeight: '36px !important',
   },
   '& .MuiTablePagination-displayedRows, & .MuiTablePagination-selectLabel': {
-    fontSize: '0.7rem',
+    fontSize: '0.8rem',
     color: '#6b7280',
   },
   '& .MuiCheckbox-root': {

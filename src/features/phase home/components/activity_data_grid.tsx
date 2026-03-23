@@ -157,7 +157,7 @@ function CustomActivityToolbar({
   const toolbarButtonSx = {
     'textTransform': 'none' as const,
     'fontWeight': 500,
-    'fontSize': '0.775rem',
+    'fontSize': '0.85rem',
     'borderRadius': 1,
     'px': 1.5,
     'py': 0.4,
@@ -174,21 +174,21 @@ function CustomActivityToolbar({
     'height': 30,
     'color': '#374151',
     'fontWeight': 500,
-    'fontSize': '0.75rem',
+    'fontSize': '0.825rem',
     '&:hover': { backgroundColor: '#f3f4f6', borderColor: '#d1d5db' },
   };
   const toolbarSelectSx = {
     'minWidth': 200,
     'flex': '1 1 220px',
     '& .MuiInputLabel-root': {
-      fontSize: '0.75rem',
+      fontSize: '0.825rem',
       fontWeight: 500,
       color: '#6b7280',
     },
     '& .MuiOutlinedInput-root': {
       'borderRadius': 1,
       'backgroundColor': '#f3f4f6',
-      'fontSize': '0.8rem',
+      'fontSize': '0.875rem',
       'fontWeight': 500,
       '& fieldset': { borderColor: 'transparent' },
       '&:hover fieldset': { borderColor: '#d1d5db' },
@@ -299,7 +299,7 @@ function CustomActivityToolbar({
               <Typography
                 sx={{
                   fontWeight: 500,
-                  fontSize: '0.75rem',
+                  fontSize: '0.825rem',
                   color: currentPhase?.completed ? '#111827' : '#6b7280',
                   whiteSpace: 'nowrap',
                 }}>
@@ -1155,33 +1155,25 @@ function ActivityDataGrid() {
         'flex': 1,
         'minHeight': 0,
         '& .under': {
-          backgroundColor: 'rgba(251, 191, 36, 0.45)',
-          color: '#7a4a00',
-          fontWeight: 600,
+          backgroundColor: 'rgba(251, 191, 36, 0.15)',
+          color: '#92400e',
         },
         '& .over': {
-          backgroundColor: 'rgba(239, 68, 68, 0.3)',
-          color: '#7f1d1d',
-          fontWeight: 600,
+          backgroundColor: 'rgba(239, 68, 68, 0.1)',
+          color: '#991b1b',
         },
         '& .not-used': {
           textDecoration: 'line-through',
-          backgroundColor: '#f4f4f5',
-          color: '#a0a0a5',
-          fontStyle: 'italic',
+          backgroundColor: '#f9fafb',
+          color: '#d1d5db',
         },
         '& .editable-cell': {
-          color: '#0f172a',
-          fontWeight: 600,
+          color: '#111827',
+          fontWeight: 500,
         },
         '& .completed-row': {
-          'backgroundColor': 'rgba(0, 255, 0, 0.1)', // Subtle green background
-          '& .editable-cell': {
-            color: 'white', // White text for editable cells
-          },
-          '& .true': {
-            color: 'black', // Black text for non-editable cells
-          },
+          'backgroundColor': '#f0fdf4 !important',
+          '& .MuiDataGrid-cell': { color: '#111827' },
         },
       }}>
       <ExcelNavigationDataGrid
@@ -1285,15 +1277,15 @@ function ActivityDataGrid() {
           flexWrap: 'wrap',
           gap: 1.5,
           px: 2,
-          py: 0.75,
+          py: 0.5,
           backgroundColor: '#f9fafb',
           borderTop: '1px solid #e5e7eb',
           flexShrink: 0,
-          minHeight: 44,
+          minHeight: 40,
         }}>
         <Typography
           sx={{
-            fontSize: '0.7rem',
+            fontSize: '0.8rem',
             fontWeight: 500,
             color: '#6b7280',
             mr: 'auto',
@@ -1332,7 +1324,7 @@ function ActivityDataGrid() {
           sx={{
             'textTransform': 'none',
             'fontWeight': 600,
-            'fontSize': '0.775rem',
+            'fontSize': '0.85rem',
             'borderRadius': 1,
             'px': 2,
             'py': 0.4,

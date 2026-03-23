@@ -35,13 +35,13 @@ import { UserPermission, UserProfile, UserRole } from '../../models/user';
 const fieldSx = {
   '& .MuiOutlinedInput-root': {
     'borderRadius': 1,
-    'fontSize': '0.8rem',
+    'fontSize': '0.875rem',
     'backgroundColor': '#f9fafb',
     '& fieldset': { borderColor: '#e5e7eb' },
     '&:hover fieldset': { borderColor: '#d1d5db' },
     '&.Mui-focused fieldset': { borderColor: '#9ca3af', borderWidth: 1 },
   },
-  '& .MuiInputLabel-root': { fontSize: '0.8rem', color: '#6b7280' },
+  '& .MuiInputLabel-root': { fontSize: '0.875rem', color: '#6b7280' },
 };
 
 const AdminDashboard: React.FC = () => {
@@ -75,7 +75,7 @@ const AdminDashboard: React.FC = () => {
   const btnSx = {
     'textTransform': 'none' as const,
     'fontWeight': 500,
-    'fontSize': '0.725rem',
+    'fontSize': '0.8rem',
     'borderRadius': 1,
     'px': 1.5,
     'py': 0.35,
@@ -98,14 +98,14 @@ const AdminDashboard: React.FC = () => {
         <IconButton size='small' onClick={() => navigate(-1)} sx={{ color: '#9ca3af', mr: 1.5 }}>
           <ArrowBack sx={{ fontSize: 18 }} />
         </IconButton>
-        <Typography sx={{ fontSize: '0.825rem', fontWeight: 600, color: '#f3f4f6' }}>
+        <Typography sx={{ fontSize: '0.875rem', fontWeight: 600, color: '#f3f4f6' }}>
           Admin Console
         </Typography>
       </Box>
 
       {/* Content */}
       <Box sx={{ flex: 1, overflow: 'auto', px: { xs: 2, sm: 3, md: 4 }, py: 3, maxWidth: 1200, mx: 'auto', width: '100%' }}>
-        <Typography sx={{ fontSize: '0.675rem', fontWeight: 700, color: '#374151', textTransform: 'uppercase', letterSpacing: '0.06em', mb: 2 }}>
+        <Typography sx={{ fontSize: '0.75rem', fontWeight: 700, color: '#374151', textTransform: 'uppercase', letterSpacing: '0.06em', mb: 2 }}>
           User Management
         </Typography>
 
@@ -131,7 +131,7 @@ const AdminDashboard: React.FC = () => {
               'height': 34,
               'borderRadius': 1,
               'backgroundColor': '#f3f4f6',
-              'fontSize': '0.8rem',
+              'fontSize': '0.875rem',
               '& fieldset': { borderColor: 'transparent' },
               '&:hover fieldset': { borderColor: '#d1d5db' },
               '&.Mui-focused fieldset': { borderColor: '#9ca3af', borderWidth: 1 },
@@ -145,7 +145,7 @@ const AdminDashboard: React.FC = () => {
             <TableHead>
               <TableRow sx={{ backgroundColor: '#f9fafb' }}>
                 {['Name', 'Email', 'Permission', 'Role', 'Actions'].map((h) => (
-                  <TableCell key={h} sx={{ fontSize: '0.675rem', fontWeight: 600, color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.05em', borderBottom: '1px solid #e5e7eb', py: 1 }}>
+                  <TableCell key={h} sx={{ fontSize: '0.75rem', fontWeight: 600, color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.05em', borderBottom: '1px solid #e5e7eb', py: 1 }}>
                     {h}
                   </TableCell>
                 ))}
@@ -156,10 +156,10 @@ const AdminDashboard: React.FC = () => {
                 .filter((user) => user.name.toLowerCase().includes(search.toLowerCase()) && !user.deleted)
                 .map((user) => (
                   <TableRow key={user.uid} sx={{ '&:hover': { backgroundColor: '#f9fafb' } }}>
-                    <TableCell sx={{ fontSize: '0.8rem', fontWeight: 500, color: '#111827', py: 1, borderBottom: '1px solid #f3f4f6' }}>
+                    <TableCell sx={{ fontSize: '0.875rem', fontWeight: 500, color: '#111827', py: 1, borderBottom: '1px solid #f3f4f6' }}>
                       {user.name}
                     </TableCell>
-                    <TableCell sx={{ fontSize: '0.775rem', color: '#6b7280', py: 1, borderBottom: '1px solid #f3f4f6' }}>
+                    <TableCell sx={{ fontSize: '0.85rem', color: '#6b7280', py: 1, borderBottom: '1px solid #f3f4f6' }}>
                       {user.email}
                     </TableCell>
                     <TableCell sx={{ py: 1, borderBottom: '1px solid #f3f4f6' }}>
@@ -167,9 +167,9 @@ const AdminDashboard: React.FC = () => {
                         <Select
                           value={user.permission}
                           onChange={(e) => updateUser(user.uid, { permission: e.target.value as UserPermission })}
-                          sx={{ fontSize: '0.775rem' }}>
-                          <MenuItem value={UserPermission.READ} sx={{ fontSize: '0.775rem' }}>Read</MenuItem>
-                          <MenuItem value={UserPermission.READ_WRITE} sx={{ fontSize: '0.775rem' }}>Read & Write</MenuItem>
+                          sx={{ fontSize: '0.85rem' }}>
+                          <MenuItem value={UserPermission.READ} sx={{ fontSize: '0.85rem' }}>Read</MenuItem>
+                          <MenuItem value={UserPermission.READ_WRITE} sx={{ fontSize: '0.85rem' }}>Read & Write</MenuItem>
                         </Select>
                       </FormControl>
                     </TableCell>
@@ -178,9 +178,9 @@ const AdminDashboard: React.FC = () => {
                         <Select
                           value={user.role}
                           onChange={(e) => updateUser(user.uid, { role: e.target.value as UserRole })}
-                          sx={{ fontSize: '0.775rem' }}>
-                          <MenuItem value={UserRole.USER} sx={{ fontSize: '0.775rem' }}>User</MenuItem>
-                          <MenuItem value={UserRole.ADMIN} sx={{ fontSize: '0.775rem' }}>Admin</MenuItem>
+                          sx={{ fontSize: '0.85rem' }}>
+                          <MenuItem value={UserRole.USER} sx={{ fontSize: '0.85rem' }}>User</MenuItem>
+                          <MenuItem value={UserRole.ADMIN} sx={{ fontSize: '0.85rem' }}>Admin</MenuItem>
                         </Select>
                       </FormControl>
                     </TableCell>

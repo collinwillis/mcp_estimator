@@ -54,7 +54,7 @@ export default function PhaseList({ onClick }: PhaseListProps) {
               'height': 32,
               'borderRadius': 1,
               'backgroundColor': '#f3f4f6',
-              'fontSize': '0.8rem',
+              'fontSize': '0.875rem',
               '& fieldset': { borderColor: 'transparent' },
               '&:hover fieldset': { borderColor: '#d1d5db' },
               '&.Mui-focused fieldset': { borderColor: '#9ca3af', borderWidth: 1 },
@@ -96,7 +96,7 @@ export default function PhaseList({ onClick }: PhaseListProps) {
                   <Box sx={{ minWidth: 0, flex: 1 }}>
                     <Typography
                       sx={{
-                        fontSize: '0.775rem',
+                        fontSize: '0.85rem',
                         fontWeight: isActive ? 600 : 500,
                         color: isActive ? '#111827' : '#374151',
                         lineHeight: 1.3,
@@ -108,7 +108,7 @@ export default function PhaseList({ onClick }: PhaseListProps) {
                     </Typography>
                     <Typography
                       sx={{
-                        fontSize: '0.675rem',
+                        fontSize: '0.75rem',
                         color: '#6b7280',
                         lineHeight: 1.3,
                         overflow: 'hidden',
@@ -123,7 +123,7 @@ export default function PhaseList({ onClick }: PhaseListProps) {
             })
           ) : (
             <Box sx={{ px: 2, py: 3 }}>
-              <Typography sx={{ fontSize: '0.775rem', color: '#9ca3af' }}>
+              <Typography sx={{ fontSize: '0.85rem', color: '#9ca3af' }}>
                 No phases found.
               </Typography>
             </Box>

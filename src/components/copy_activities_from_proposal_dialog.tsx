@@ -97,7 +97,7 @@ export default function CopyActivitiesFromProposalDialog({ open, onClose }: Prop
     <div>
       <Dialog open={open} onClose={handleClose}
         PaperProps={{ sx: { borderRadius: 2, border: '1px solid #e5e7eb', boxShadow: '0 8px 32px rgba(0,0,0,0.12)', minWidth: 420 } }}>
-        <DialogTitle sx={{ fontSize: '0.875rem', fontWeight: 600, color: '#111827', pb: 1 }}>
+        <DialogTitle sx={{ fontSize: '0.925rem', fontWeight: 600, color: '#111827', pb: 1 }}>
           Copy Activities From Phase
         </DialogTitle>
         <DialogContent sx={{ display: 'flex', flexDirection: 'column', gap: 2, pt: '8px !important' }}>
@@ -112,13 +112,13 @@ export default function CopyActivitiesFromProposalDialog({ open, onClose }: Prop
             }}
             renderInput={(params) => (
               <TextField {...params} label='From Phase' placeholder='Search...' variant='outlined' size='small'
-                sx={{ '& .MuiOutlinedInput-root': { borderRadius: 1, fontSize: '0.8rem', backgroundColor: '#f9fafb' }, '& .MuiInputLabel-root': { fontSize: '0.8rem' } }} />
+                sx={{ '& .MuiOutlinedInput-root': { borderRadius: 1, fontSize: '0.875rem', backgroundColor: '#f9fafb' }, '& .MuiInputLabel-root': { fontSize: '0.875rem' } }} />
             )}
             renderOption={(props, option) => (
               <li {...props} key={option.id}>
                 <div>
-                  <div style={{ fontWeight: 500, fontSize: '0.8rem' }}>{option.wbsName} - Phase {option.phaseNumber}</div>
-                  <div style={{ fontSize: '0.725rem', color: '#6b7280', marginTop: 1 }}>{option.description}</div>
+                  <div style={{ fontWeight: 500, fontSize: '0.875rem' }}>{option.wbsName} - Phase {option.phaseNumber}</div>
+                  <div style={{ fontSize: '0.8rem', color: '#6b7280', marginTop: 1 }}>{option.description}</div>
                 </div>
               </li>
             )}
@@ -126,16 +126,16 @@ export default function CopyActivitiesFromProposalDialog({ open, onClose }: Prop
             fullWidth
           />
           <FormControl variant='outlined' size='small' fullWidth>
-            <InputLabel sx={{ fontSize: '0.8rem' }}>To Phase</InputLabel>
+            <InputLabel sx={{ fontSize: '0.875rem' }}>To Phase</InputLabel>
             <Select label='To Phase' disabled value={currentPhase?.id ?? ''}
-              sx={{ borderRadius: 1, fontSize: '0.8rem', backgroundColor: '#f9fafb' }}>
-              <MenuItem value={currentPhase?.id} sx={{ fontSize: '0.8rem' }}>
+              sx={{ borderRadius: 1, fontSize: '0.875rem', backgroundColor: '#f9fafb' }}>
+              <MenuItem value={currentPhase?.id} sx={{ fontSize: '0.875rem' }}>
                 {currentPhase?.phaseNumber} - {currentPhase?.description}
               </MenuItem>
             </Select>
           </FormControl>
           <Button disabled={!selectedPhase} onClick={onSubmit}
-            sx={{ 'textTransform': 'none', 'fontWeight': 600, 'fontSize': '0.825rem', 'color': '#fff', 'backgroundColor': '#111827', 'borderRadius': 1, 'py': 0.75, 'alignSelf': 'flex-end', 'px': 3, '&:hover': { backgroundColor: '#1f2937' }, '&.Mui-disabled': { backgroundColor: '#e5e7eb', color: '#9ca3af' } }}>
+            sx={{ 'textTransform': 'none', 'fontWeight': 600, 'fontSize': '0.875rem', 'color': '#fff', 'backgroundColor': '#111827', 'borderRadius': 1, 'py': 0.75, 'alignSelf': 'flex-end', 'px': 3, '&:hover': { backgroundColor: '#1f2937' }, '&.Mui-disabled': { backgroundColor: '#e5e7eb', color: '#9ca3af' } }}>
             Copy Activities
           </Button>
         </DialogContent>

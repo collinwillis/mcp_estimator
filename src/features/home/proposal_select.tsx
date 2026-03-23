@@ -120,7 +120,7 @@ const ProposalOverviewDashboard: React.FC = () => {
                   onClick={() => setActiveFilter(activeFilter === s.label ? null : s.label)}
                   sx={{ 'display': 'flex', 'alignItems': 'center', 'gap': 0.5, 'cursor': 'pointer', 'opacity': activeFilter && activeFilter !== s.label ? 0.4 : 1 }}>
                   <Box sx={{ width: 6, height: 6, borderRadius: '50%', backgroundColor: s.color }} />
-                  <Typography sx={{ fontSize: '0.65rem', color: '#6b7280' }}>
+                  <Typography sx={{ fontSize: '0.75rem', color: '#6b7280' }}>
                     {s.label} ({s.count})
                   </Typography>
                 </Box>
@@ -128,7 +128,7 @@ const ProposalOverviewDashboard: React.FC = () => {
               {activeFilter && (
                 <Typography
                   onClick={() => setActiveFilter(null)}
-                  sx={{ 'fontSize': '0.65rem', 'color': '#9ca3af', 'cursor': 'pointer', 'ml': 'auto', '&:hover': { color: '#6b7280' } }}>
+                  sx={{ 'fontSize': '0.75rem', 'color': '#9ca3af', 'cursor': 'pointer', 'ml': 'auto', '&:hover': { color: '#6b7280' } }}>
                   Clear filter
                 </Typography>
               )}
@@ -153,11 +153,11 @@ const ProposalOverviewDashboard: React.FC = () => {
             backgroundColor: '#f9fafb',
             zIndex: 1,
           }}>
-          <Typography sx={{ fontSize: '0.625rem', fontWeight: 600, color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '0.06em' }}>#</Typography>
-          <Typography sx={{ fontSize: '0.625rem', fontWeight: 600, color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Description</Typography>
-          <Typography sx={{ fontSize: '0.625rem', fontWeight: 600, color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Owner</Typography>
-          <Typography sx={{ fontSize: '0.625rem', fontWeight: 600, color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Status</Typography>
-          <Typography sx={{ fontSize: '0.625rem', fontWeight: 600, color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '0.06em', textAlign: 'right' }}>Due</Typography>
+          <Typography sx={{ fontSize: '0.75rem', fontWeight: 600, color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '0.06em' }}>#</Typography>
+          <Typography sx={{ fontSize: '0.75rem', fontWeight: 600, color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Description</Typography>
+          <Typography sx={{ fontSize: '0.75rem', fontWeight: 600, color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Owner</Typography>
+          <Typography sx={{ fontSize: '0.75rem', fontWeight: 600, color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Status</Typography>
+          <Typography sx={{ fontSize: '0.75rem', fontWeight: 600, color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '0.06em', textAlign: 'right' }}>Due</Typography>
         </Box>
 
         {/* Table rows */}
@@ -182,13 +182,13 @@ const ProposalOverviewDashboard: React.FC = () => {
                 'alignItems': 'center',
                 '&:hover': { backgroundColor: '#f9fafb' },
               }}>
-              <Typography sx={{ fontSize: '0.775rem', fontWeight: 600, color: '#111827', fontVariantNumeric: 'tabular-nums' }}>
+              <Typography sx={{ fontSize: '0.85rem', fontWeight: 600, color: '#111827', fontVariantNumeric: 'tabular-nums' }}>
                 {p.proposalNumber}
               </Typography>
-              <Typography sx={{ fontSize: '0.775rem', fontWeight: 400, color: '#374151', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+              <Typography sx={{ fontSize: '0.85rem', fontWeight: 400, color: '#374151', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                 {p.proposalDescription || '\u2014'}
               </Typography>
-              <Typography sx={{ fontSize: '0.7rem', color: '#6b7280', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+              <Typography sx={{ fontSize: '0.8rem', color: '#6b7280', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                 {p.proposalOwner || '\u2014'}
               </Typography>
               <Chip
@@ -196,7 +196,7 @@ const ProposalOverviewDashboard: React.FC = () => {
                 size='small'
                 sx={{
                   height: 20,
-                  fontSize: '0.625rem',
+                  fontSize: '0.75rem',
                   fontWeight: 600,
                   color: sc.color,
                   backgroundColor: sc.bg,
@@ -207,7 +207,7 @@ const ProposalOverviewDashboard: React.FC = () => {
               />
               <Typography
                 sx={{
-                  fontSize: '0.7rem',
+                  fontSize: '0.8rem',
                   fontVariantNumeric: 'tabular-nums',
                   textAlign: 'right',
                   color: isOverdue ? '#dc2626' : isDueSoon ? '#d97706' : '#9ca3af',
@@ -221,7 +221,7 @@ const ProposalOverviewDashboard: React.FC = () => {
 
         {displayProposals.length === 0 && (
           <Box sx={{ px: 3, py: 4 }}>
-            <Typography sx={{ fontSize: '0.8rem', color: '#9ca3af' }}>
+            <Typography sx={{ fontSize: '0.875rem', color: '#9ca3af' }}>
               No proposals found.
             </Typography>
           </Box>
@@ -235,10 +235,10 @@ const ProposalOverviewDashboard: React.FC = () => {
 function StatInline({ label, value }: { label: string; value: string | number }) {
   return (
     <Box>
-      <Typography sx={{ fontSize: '0.6rem', fontWeight: 500, color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '0.04em', lineHeight: 1 }}>
+      <Typography sx={{ fontSize: '0.75rem', fontWeight: 500, color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '0.04em', lineHeight: 1 }}>
         {label}
       </Typography>
-      <Typography sx={{ fontSize: '1.1rem', fontWeight: 700, color: '#111827', fontVariantNumeric: 'tabular-nums', lineHeight: 1.3 }}>
+      <Typography sx={{ fontSize: '1.25rem', fontWeight: 700, color: '#111827', fontVariantNumeric: 'tabular-nums', lineHeight: 1.3 }}>
         {value}
       </Typography>
     </Box>

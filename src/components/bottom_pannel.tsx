@@ -60,10 +60,10 @@ const COLOR = {
 function Stat({ label, value }: { label: string; value: string }) {
   return (
     <Box sx={{ display: 'flex', alignItems: 'baseline', gap: 0.6, px: { xs: 0.75, sm: 1.25 }, whiteSpace: 'nowrap' }}>
-      <Typography sx={{ color: COLOR.label, fontWeight: 500, fontSize: '0.675rem', letterSpacing: '0.04em', textTransform: 'uppercase' }}>
+      <Typography sx={{ color: COLOR.label, fontWeight: 500, fontSize: '0.75rem', letterSpacing: '0.04em', textTransform: 'uppercase' }}>
         {label}
       </Typography>
-      <Typography sx={{ color: COLOR.value, fontWeight: 600, fontSize: '0.8rem', fontVariantNumeric: 'tabular-nums' }}>
+      <Typography sx={{ color: COLOR.value, fontWeight: 600, fontSize: '0.875rem', fontVariantNumeric: 'tabular-nums' }}>
         {value}
       </Typography>
     </Box>
@@ -74,38 +74,76 @@ function Stat({ label, value }: { label: string; value: string }) {
 //  Breakdown detail row — pure typography, no icons
 // ---------------------------------------------------------------------------
 
-function DetailRow({ label, value, bold }: { label: string; value: string; bold?: boolean }) {
-  return (
-    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', py: 0.25, minHeight: 24 }}>
-      <Typography sx={{ color: bold ? COLOR.sectionHead : COLOR.label, fontWeight: bold ? 600 : 400, fontSize: '0.775rem' }}>
-        {label}
-      </Typography>
-      <Typography sx={{ color: COLOR.value, fontWeight: bold ? 700 : 500, fontSize: '0.775rem', fontVariantNumeric: 'tabular-nums', ml: 2 }}>
-        {value}
-      </Typography>
-    </Box>
-  );
+// ---------------------------------------------------------------------------
+//  Mini table — Stripe-style detail panel
+// ---------------------------------------------------------------------------
+
+interface MiniTableRow {
+  label: string;
+  value: string;
 }
 
-// ---------------------------------------------------------------------------
-//  Section header for breakdown columns
-// ---------------------------------------------------------------------------
-
-function SectionHeader({ children }: { children: React.ReactNode }) {
+function MiniTable({ title, rows, footer }: { title: string; rows: MiniTableRow[]; footer?: MiniTableRow }) {
   return (
-    <Typography
+    <Box
       sx={{
-        color: COLOR.sectionHead,
-        fontWeight: 700,
-        fontSize: '0.675rem',
-        letterSpacing: '0.06em',
-        textTransform: 'uppercase',
-        mb: 0.75,
-        pb: 0.5,
-        borderBottom: `1px solid ${COLOR.border}`,
+        border: `1px solid ${COLOR.border}`,
+        borderRadius: 1.5,
+        overflow: 'hidden',
       }}>
-      {children}
-    </Typography>
+      {/* Header */}
+      <Box
+        sx={{
+          px: 1.5,
+          py: 0.5,
+          backgroundColor: '#f9fafb',
+          borderBottom: `1px solid ${COLOR.border}`,
+        }}>
+        <Typography sx={{ fontSize: '0.7rem', fontWeight: 600, color: COLOR.muted, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+          {title}
+        </Typography>
+      </Box>
+      {/* Rows */}
+      {rows.map((row, i) => (
+        <Box
+          key={row.label}
+          sx={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            px: 1.5,
+            py: 0.35,
+            backgroundColor: i % 2 === 1 ? '#f9fafb' : 'transparent',
+          }}>
+          <Typography sx={{ fontSize: '0.8rem', color: COLOR.label }}>
+            {row.label}
+          </Typography>
+          <Typography sx={{ fontSize: '0.8rem', fontWeight: 500, color: COLOR.value, fontVariantNumeric: 'tabular-nums' }}>
+            {row.value}
+          </Typography>
+        </Box>
+      ))}
+      {/* Optional footer/total row */}
+      {footer && (
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            px: 1.5,
+            py: 0.4,
+            borderTop: `1px solid ${COLOR.border}`,
+            backgroundColor: '#f9fafb',
+          }}>
+          <Typography sx={{ fontSize: '0.8rem', fontWeight: 600, color: COLOR.sectionHead }}>
+            {footer.label}
+          </Typography>
+          <Typography sx={{ fontSize: '0.8rem', fontWeight: 700, color: COLOR.value, fontVariantNumeric: 'tabular-nums' }}>
+            {footer.value}
+          </Typography>
+        </Box>
+      )}
+    </Box>
   );
 }
 
@@ -116,7 +154,17 @@ function SectionHeader({ children }: { children: React.ReactNode }) {
 function BottomPanel() {
   const { proposalId, wbsId, phaseId } = useParams();
 
-  const [detailsOpen, setDetailsOpen] = useState(false);
+  const [detailsOpen, setDetailsOpen] = useState(() => {
+    return localStorage.getItem('bottomPanelDetailsOpen') === 'true';
+  });
+
+  const toggleDetails = useCallback(() => {
+    setDetailsOpen((prev) => {
+      const next = !prev;
+      localStorage.setItem('bottomPanelDetailsOpen', String(next));
+      return next;
+    });
+  }, []);
   const [addMenuAnchor, setAddMenuAnchor] = useState<null | HTMLElement>(null);
 
   const activities = estimatorStore((s: StoreState) => s.activities[proposalId!] || []);
@@ -255,7 +303,7 @@ function BottomPanel() {
       <Box sx={{ flexShrink: 0, borderTop: `1px solid ${COLOR.border}`, backgroundColor: COLOR.surface }}>
 
         {/* ━━━ Status bar ━━━ */}
-        <Box sx={{ display: 'flex', alignItems: 'center', height: 40, px: { xs: 0.5, sm: 1.5 } }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', height: 36, px: { xs: 0.5, sm: 1.5 } }}>
           <Box
             sx={{
               display: 'flex', alignItems: 'center', flex: 1, minWidth: 0,
@@ -277,7 +325,7 @@ function BottomPanel() {
               <Tooltip title='Some hidden WBS items contain data not reflected in these totals. Use WBS Select to review.' enterDelay={200}>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.4, px: 1, py: 0.25, borderRadius: 1, backgroundColor: '#fffbeb', border: '1px solid #fde68a', cursor: 'help' }}>
                   <WarningAmberIcon sx={{ fontSize: 13, color: '#d97706' }} />
-                  <Typography sx={{ fontSize: '0.625rem', fontWeight: 600, color: '#92400e', whiteSpace: 'nowrap' }}>
+                  <Typography sx={{ fontSize: '0.75rem', fontWeight: 600, color: '#92400e', whiteSpace: 'nowrap' }}>
                     Hidden WBS data
                   </Typography>
                 </Box>
@@ -286,12 +334,12 @@ function BottomPanel() {
             <Tooltip title={detailsOpen ? 'Hide breakdown' : 'Show breakdown'} enterDelay={400}>
               <Button
                 size='small'
-                onClick={() => setDetailsOpen((p) => !p)}
+                onClick={toggleDetails}
                 disableElevation
                 disableRipple
                 sx={{
                   minWidth: 0, px: 1.25, py: 0.25, textTransform: 'none',
-                  fontWeight: 500, fontSize: '0.725rem', color: COLOR.label,
+                  fontWeight: 500, fontSize: '0.8rem', color: COLOR.label,
                   borderRadius: 1, border: `1px solid ${COLOR.border}`,
                   backgroundColor: detailsOpen ? alpha('#000', 0.03) : 'transparent',
                   '&:hover': { backgroundColor: alpha('#000', 0.04), borderColor: '#d1d5db' },
@@ -327,51 +375,44 @@ function BottomPanel() {
         <Collapse in={detailsOpen} timeout={200}>
           <Box
             sx={{
-              maxHeight: '32vh', overflowY: 'auto',
               borderTop: `1px solid ${COLOR.border}`,
-              px: { xs: 2, sm: 3 }, py: 1.5,
+              px: { xs: 1.5, sm: 2.5 }, py: 0.75,
               backgroundColor: COLOR.white,
             }}>
-            <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr 1fr' }, gap: { xs: 2, sm: 4 } }}>
-
+            <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: 'repeat(3, 1fr)' }, gap: { xs: 1, sm: 2 } }}>
               {/* Hours */}
-              <Box>
-                <SectionHeader>Hours</SectionHeader>
-                <DetailRow label='Direct Hours' value={fmt(totals.directHours)} bold />
-                <Box sx={{ pl: 1.5, borderLeft: `2px solid ${COLOR.border}`, ml: 0.5, my: 0.25 }}>
-                  <DetailRow label='Craft' value={fmt(totals.directCraftHours)} />
-                  <DetailRow label='Welder' value={fmt(totals.directWelderHours)} />
-                </Box>
+              <MiniTable
+                title='Hours'
+                rows={[
+                  { label: 'Craft', value: fmt(totals.directCraftHours) },
+                  { label: 'Welder', value: fmt(totals.directWelderHours) },
+                  { label: 'Support', value: fmt(totals.supportHours) },
+                  { label: 'Mobe / Demobe', value: fmt(Number((totals.mobeHours + totals.demobeHours).toFixed(2))) },
+                  { label: 'Specialty', value: fmt(totals.specialtyHours) },
+                  { label: 'Subcontractor', value: fmt(totals.subcontractorHours) },
+                ]}
+                footer={{ label: 'Total', value: fmt(totals.totalHours) }}
+              />
 
-                <Box sx={{ height: 8 }} />
+              {/* Costs */}
+              <MiniTable
+                title='Labor Costs'
+                rows={[
+                  { label: 'Craft', value: fmt(totals.craftCost, '$') },
+                  { label: 'Weld & Rig', value: fmt(totals.welderCost, '$') },
+                  { label: 'Subcontractor', value: fmt(totals.subcontractorCost, '$') },
+                ]}
+              />
 
-                <DetailRow label='Indirect Hours' value={fmt(totals.indirectHours)} bold />
-                <Box sx={{ pl: 1.5, borderLeft: `2px solid ${COLOR.border}`, ml: 0.5, my: 0.25 }}>
-                  <DetailRow label='Support' value={fmt(totals.supportHours)} />
-                  <DetailRow label='Mobilization' value={fmt(totals.mobeHours)} />
-                  <DetailRow label='Demobilization' value={fmt(totals.demobeHours)} />
-                  <DetailRow label='Specialty Services' value={fmt(totals.specialtyHours)} />
-                </Box>
-
-                <Box sx={{ height: 8 }} />
-                <DetailRow label='Subcontractor Hours' value={fmt(totals.subcontractorHours)} bold />
-              </Box>
-
-              {/* Cost Details */}
-              <Box>
-                <SectionHeader>Labor Costs</SectionHeader>
-                <DetailRow label='Craft Total' value={fmt(totals.craftCost, '$')} />
-                <DetailRow label='Weld & Rig Total' value={fmt(totals.welderCost, '$')} />
-                <DetailRow label='Subcontractor Total' value={fmt(totals.subcontractorCost, '$')} />
-              </Box>
-
-              {/* Additional Costs */}
-              <Box>
-                <SectionHeader>Other Costs</SectionHeader>
-                <DetailRow label='Equipment' value={fmt(totals.equipmentCost, '$')} />
-                <DetailRow label='Material' value={fmt(totals.materialCost, '$')} />
-                <DetailRow label='Cost Only' value={fmt(totals.costOnlyCost, '$')} />
-              </Box>
+              {/* Other Costs */}
+              <MiniTable
+                title='Other Costs'
+                rows={[
+                  { label: 'Equipment', value: fmt(totals.equipmentCost, '$') },
+                  { label: 'Material', value: fmt(totals.materialCost, '$') },
+                  { label: 'Cost Only', value: fmt(totals.costOnlyCost, '$') },
+                ]}
+              />
             </Box>
           </Box>
         </Collapse>
@@ -392,26 +433,26 @@ function BottomPanel() {
           },
         }}>
         <MenuItem disabled={!wbsId} onClick={() => { setAddPhaseDialogOpen(true); closeMenu(); }}>
-          <ListItemText primary='Phase' primaryTypographyProps={{ fontSize: '0.825rem', fontWeight: 600 }} />
+          <ListItemText primary='Phase' primaryTypographyProps={{ fontSize: '0.875rem', fontWeight: 600 }} />
         </MenuItem>
         <Divider sx={{ my: 0.25 }} />
         <MenuItem disabled={!phaseId} onClick={() => { setOpenAddActivityDialog(true); closeMenu(); }}>
-          <ListItemText primary='Activity' primaryTypographyProps={{ fontSize: '0.825rem' }} />
+          <ListItemText primary='Activity' primaryTypographyProps={{ fontSize: '0.875rem' }} />
         </MenuItem>
         <MenuItem disabled={!phaseId} onClick={() => { setOpenEquipmentDialog(true); closeMenu(); }}>
-          <ListItemText primary='Equipment' primaryTypographyProps={{ fontSize: '0.825rem' }} />
+          <ListItemText primary='Equipment' primaryTypographyProps={{ fontSize: '0.875rem' }} />
         </MenuItem>
         <MenuItem disabled={!phaseId} onClick={() => { createActivity({ description: 'NEW MATERIAL ITEM', activityType: ActivityType.materialItem }); closeMenu(); }}>
-          <ListItemText primary='Material' primaryTypographyProps={{ fontSize: '0.825rem' }} />
+          <ListItemText primary='Material' primaryTypographyProps={{ fontSize: '0.875rem' }} />
         </MenuItem>
         <MenuItem disabled={!phaseId} onClick={() => { createActivity({ description: 'NEW COST ONLY ITEM', activityType: ActivityType.costOnlyItem }); closeMenu(); }}>
-          <ListItemText primary='Cost Only' primaryTypographyProps={{ fontSize: '0.825rem' }} />
+          <ListItemText primary='Cost Only' primaryTypographyProps={{ fontSize: '0.875rem' }} />
         </MenuItem>
         <MenuItem disabled={!phaseId} onClick={() => { createActivity({ description: 'NEW CUSTOM LABOR ITEM', activityType: ActivityType.customLaborItem }); closeMenu(); }}>
-          <ListItemText primary='Custom Labor' primaryTypographyProps={{ fontSize: '0.825rem' }} />
+          <ListItemText primary='Custom Labor' primaryTypographyProps={{ fontSize: '0.875rem' }} />
         </MenuItem>
         <MenuItem disabled={!phaseId} onClick={() => { createActivity({ description: 'NEW SUBCONTRACTOR', activityType: ActivityType.subContractorItem, unit: 'HOURS' }); closeMenu(); }}>
-          <ListItemText primary='Subcontractor' primaryTypographyProps={{ fontSize: '0.825rem' }} />
+          <ListItemText primary='Subcontractor' primaryTypographyProps={{ fontSize: '0.875rem' }} />
         </MenuItem>
       </Menu>
 

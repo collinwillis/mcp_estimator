@@ -70,9 +70,9 @@ const StyledExcelGrid = styled(DataGridPro)(({ theme }) => {
       textTransform: 'uppercase',
       letterSpacing: '0.05em',
       color: textSecondary,
-      fontSize: '0.675rem',
+      fontSize: '0.75rem',
       fontWeight: 600,
-      minHeight: 36,
+      minHeight: 38,
     },
     '& .MuiDataGrid-columnHeader': {
       padding: '0 10px',
@@ -82,7 +82,7 @@ const StyledExcelGrid = styled(DataGridPro)(({ theme }) => {
       'alignItems': 'center',
       'padding': '0 10px',
       'lineHeight': 1.4,
-      'fontSize': '0.8rem',
+      'fontSize': '0.875rem',
       'fontVariantNumeric': 'tabular-nums',
       'color': textPrimary,
       'borderBottom': `1px solid #f3f4f6`,
@@ -144,7 +144,7 @@ const StyledExcelGrid = styled(DataGridPro)(({ theme }) => {
         height: '100%',
         backgroundColor: 'transparent',
         fontWeight: 500,
-        fontSize: '0.8rem',
+        fontSize: '0.875rem',
       },
     },
     '& .MuiDataGrid-cell.Mui-selected': {
@@ -157,10 +157,10 @@ const StyledExcelGrid = styled(DataGridPro)(({ theme }) => {
     '& .MuiDataGrid-footerContainer': {
       borderTop: `1px solid ${border}`,
       backgroundColor: headerBg,
-      minHeight: 36,
+      minHeight: 38,
     },
     '& .MuiTablePagination-displayedRows, & .MuiTablePagination-selectLabel': {
-      fontSize: '0.7rem',
+      fontSize: '0.8rem',
       letterSpacing: '0.04em',
       color: textSecondary,
     },

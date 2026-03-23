@@ -15,7 +15,7 @@ export default function WbsDropdown() {
     <Box sx={{ width: '100%' }}>
       <Typography
         sx={{
-          fontSize: '0.675rem',
+          fontSize: '0.75rem',
           fontWeight: 600,
           color: '#6b7280',
           textTransform: 'uppercase',
@@ -29,10 +29,10 @@ export default function WbsDropdown() {
           value={wbsId || ''}
           displayEmpty
           renderValue={(selected) => {
-            if (!selected) return <Typography sx={{ fontSize: '0.8rem', color: '#9ca3af' }}>Select WBS</Typography>;
+            if (!selected) return <Typography sx={{ fontSize: '0.875rem', color: '#9ca3af' }}>Select WBS</Typography>;
             const wbs = data.find((w) => w.id === selected);
             return (
-              <Typography sx={{ fontSize: '0.8rem', fontWeight: 500, color: '#111827', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+              <Typography sx={{ fontSize: '0.875rem', fontWeight: 500, color: '#111827', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                 {wbs ? `${wbs.wbsDatabaseId} ${wbs.name}` : selected}
               </Typography>
             );
@@ -40,7 +40,7 @@ export default function WbsDropdown() {
           sx={{
             'borderRadius': 1,
             'backgroundColor': '#f3f4f6',
-            'fontSize': '0.8rem',
+            'fontSize': '0.875rem',
             '& .MuiOutlinedInput-notchedOutline': { borderColor: 'transparent' },
             '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: '#d1d5db' },
             '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: '#9ca3af', borderWidth: 1 },
@@ -54,8 +54,8 @@ export default function WbsDropdown() {
                 key={item.id}
                 value={item.id}
                 onClick={() => navigate(`/proposal/${proposalId}/wbs/${item.id}`)}
-                sx={{ py: 0.75, fontSize: '0.8rem' }}>
-                <Typography sx={{ fontSize: '0.8rem', fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                sx={{ py: 0.75, fontSize: '0.875rem' }}>
+                <Typography sx={{ fontSize: '0.875rem', fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis' }}>
                   {item.wbsDatabaseId} {item.name}
                 </Typography>
               </MenuItem>

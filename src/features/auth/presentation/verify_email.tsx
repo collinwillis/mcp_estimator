@@ -58,11 +58,11 @@ const EmailVerificationScreen: React.FC<VerifyEmailProps> = ({ user }) => {
         <Typography sx={{ fontSize: '1rem', fontWeight: 600, color: '#111827', mb: 1 }}>
           Verify Your Email
         </Typography>
-        <Typography sx={{ fontSize: '0.825rem', color: '#6b7280', textAlign: 'center', mb: 2 }}>
+        <Typography sx={{ fontSize: '0.875rem', color: '#6b7280', textAlign: 'center', mb: 2 }}>
           A verification link has been sent to your email address. Please check your inbox and click the link to proceed.
         </Typography>
         {message && (
-          <Alert severity='success' sx={{ mb: 2, width: '100%', fontSize: '0.8rem' }}>
+          <Alert severity='success' sx={{ mb: 2, width: '100%', fontSize: '0.875rem' }}>
             {message}
           </Alert>
         )}
@@ -72,7 +72,7 @@ const EmailVerificationScreen: React.FC<VerifyEmailProps> = ({ user }) => {
           sx={{
             'textTransform': 'none',
             'fontWeight': 600,
-            'fontSize': '0.825rem',
+            'fontSize': '0.875rem',
             'color': '#ffffff',
             'backgroundColor': '#111827',
             'borderRadius': 1,
@@ -85,7 +85,7 @@ const EmailVerificationScreen: React.FC<VerifyEmailProps> = ({ user }) => {
           component='button'
           onClick={handleLogout}
           underline='hover'
-          sx={{ mt: 2, fontSize: '0.775rem', color: '#6b7280' }}>
+          sx={{ mt: 2, fontSize: '0.85rem', color: '#6b7280' }}>
           Logout
         </Link>
       </Box>

@@ -193,7 +193,7 @@ export default function EstimatorDrawer({ children }: EstimatorDrawerProps) {
               <Link
                 underline='none'
                 sx={{
-                  'color': '#d1d5db', 'cursor': 'pointer', 'fontSize': '0.8rem', 'fontWeight': 500,
+                  'color': '#d1d5db', 'cursor': 'pointer', 'fontSize': '0.875rem', 'fontWeight': 500,
                   'overflow': 'hidden', 'textOverflow': 'ellipsis', 'whiteSpace': 'nowrap', 'maxWidth': 300,
                   '&:hover': { color: '#ffffff' },
                 }}
@@ -205,7 +205,7 @@ export default function EstimatorDrawer({ children }: EstimatorDrawerProps) {
               <Link
                 underline='none'
                 sx={{
-                  'color': '#d1d5db', 'cursor': 'pointer', 'fontSize': '0.8rem', 'fontWeight': 500,
+                  'color': '#d1d5db', 'cursor': 'pointer', 'fontSize': '0.875rem', 'fontWeight': 500,
                   '&:hover': { color: '#ffffff' },
                 }}
                 onClick={() => navigate(`/proposal/${currentProposal?.id}/wbs/${currentWbs?.id}`)}>
@@ -213,7 +213,7 @@ export default function EstimatorDrawer({ children }: EstimatorDrawerProps) {
               </Link>
             )}
             {currentPhase && (
-              <Typography sx={{ color: '#f3f4f6', fontSize: '0.8rem', fontWeight: 600 }}>
+              <Typography sx={{ color: '#f3f4f6', fontSize: '0.875rem', fontWeight: 600 }}>
                 {`${currentPhase.phaseNumber} - ${currentPhase.description}`}
               </Typography>
             )}
@@ -243,16 +243,16 @@ export default function EstimatorDrawer({ children }: EstimatorDrawerProps) {
                 sx: { borderRadius: 1.5, border: '1px solid #e5e7eb', boxShadow: '0 4px 16px rgba(0,0,0,0.08)', minWidth: 160 },
               }}>
               {isAdmin && (
-                <MenuItem onClick={() => { setMainMenuAnchorEl(null); navigate('/admin'); }} sx={{ fontSize: '0.825rem' }}>
+                <MenuItem onClick={() => { setMainMenuAnchorEl(null); navigate('/admin'); }} sx={{ fontSize: '0.875rem' }}>
                   <ListItemIcon><AdminPanelSettings sx={{ fontSize: 16 }} /></ListItemIcon>
-                  <ListItemText primary='Admin Console' primaryTypographyProps={{ fontSize: '0.825rem' }} />
+                  <ListItemText primary='Admin Console' primaryTypographyProps={{ fontSize: '0.875rem' }} />
                 </MenuItem>
               )}
               <MenuItem
                 onClick={() => { setMainMenuAnchorEl(null); auth.signOut(); }}
-                sx={{ fontSize: '0.825rem', color: '#dc2626' }}>
+                sx={{ fontSize: '0.875rem', color: '#dc2626' }}>
                 <ListItemIcon><ExitToApp sx={{ fontSize: 16, color: '#dc2626' }} /></ListItemIcon>
-                <ListItemText primary='Logout' primaryTypographyProps={{ fontSize: '0.825rem' }} />
+                <ListItemText primary='Logout' primaryTypographyProps={{ fontSize: '0.875rem' }} />
               </MenuItem>
             </Menu>
           </Box>
@@ -295,7 +295,7 @@ export default function EstimatorDrawer({ children }: EstimatorDrawerProps) {
               <Typography
                 onClick={() => navigate(`/proposal/${currentProposal?.id}`)}
                 sx={{
-                  'flex': 1, 'fontSize': '0.8rem', 'fontWeight': 600, 'color': '#111827',
+                  'flex': 1, 'fontSize': '0.875rem', 'fontWeight': 600, 'color': '#111827',
                   'cursor': 'pointer', 'overflow': 'hidden', 'textOverflow': 'ellipsis',
                   'whiteSpace': 'nowrap', '&:hover': { color: '#374151' },
                 }}>
@@ -307,7 +307,7 @@ export default function EstimatorDrawer({ children }: EstimatorDrawerProps) {
             </>
           ) : (
             <>
-              <Typography sx={{ flex: 1, fontSize: '0.825rem', fontWeight: 600, color: '#111827', pl: 1 }}>
+              <Typography sx={{ flex: 1, fontSize: '0.875rem', fontWeight: 600, color: '#111827', pl: 1 }}>
                 MCP Estimator
               </Typography>
               {hasWritePermissions && (
@@ -346,7 +346,7 @@ export default function EstimatorDrawer({ children }: EstimatorDrawerProps) {
                     'height': 32,
                     'borderRadius': 1,
                     'backgroundColor': '#f3f4f6',
-                    'fontSize': '0.8rem',
+                    'fontSize': '0.875rem',
                     '& fieldset': { borderColor: 'transparent' },
                     '&:hover fieldset': { borderColor: '#d1d5db' },
                     '&.Mui-focused fieldset': { borderColor: '#9ca3af', borderWidth: 1 },
@@ -371,7 +371,7 @@ export default function EstimatorDrawer({ children }: EstimatorDrawerProps) {
             <Box sx={{ px: 1.5, pt: 1.5, pb: 1, flexShrink: 0 }}>
               <Typography
                 sx={{
-                  fontSize: '0.675rem', fontWeight: 600, color: '#9ca3af',
+                  fontSize: '0.75rem', fontWeight: 600, color: '#9ca3af',
                   textTransform: 'uppercase', letterSpacing: '0.05em', mb: 0.75, px: 0.5,
                 }}>
                 Navigate
@@ -402,7 +402,7 @@ export default function EstimatorDrawer({ children }: EstimatorDrawerProps) {
                 <Box sx={{ flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
                   <Typography
                     sx={{
-                      fontSize: '0.675rem', fontWeight: 600, color: '#9ca3af',
+                      fontSize: '0.75rem', fontWeight: 600, color: '#9ca3af',
                       textTransform: 'uppercase', letterSpacing: '0.05em', px: 2, pt: 1, pb: 0.5,
                     }}>
                     Phases
@@ -456,7 +456,7 @@ function NavItem({ label, disabled, onClick }: { label: string; disabled: boolea
       }}>
       <Typography
         sx={{
-          fontSize: '0.775rem',
+          fontSize: '0.85rem',
           fontWeight: 500,
           color: disabled ? '#9ca3af' : '#374151',
         }}>
@@ -488,13 +488,13 @@ const ProposalMenu: React.FC<ProposalMenuProps> = ({ anchorEl, setAnchorEl, open
       PaperProps={{
         sx: { borderRadius: 1.5, border: '1px solid #e5e7eb', boxShadow: '0 4px 16px rgba(0,0,0,0.08)', minWidth: 140 },
       }}>
-      <MenuItem onClick={() => { close(); openAddProposalDialog(); }} sx={{ fontSize: '0.825rem' }}>
+      <MenuItem onClick={() => { close(); openAddProposalDialog(); }} sx={{ fontSize: '0.875rem' }}>
         <ListItemIcon><AddRounded sx={{ fontSize: 16 }} /></ListItemIcon>
-        <ListItemText primary='Add' primaryTypographyProps={{ fontSize: '0.825rem' }} />
+        <ListItemText primary='Add' primaryTypographyProps={{ fontSize: '0.875rem' }} />
       </MenuItem>
-      <MenuItem onClick={() => { close(); onEditClicked(); }} sx={{ fontSize: '0.825rem' }}>
+      <MenuItem onClick={() => { close(); onEditClicked(); }} sx={{ fontSize: '0.875rem' }}>
         <ListItemIcon><EditRounded sx={{ fontSize: 16 }} /></ListItemIcon>
-        <ListItemText primary='Edit' primaryTypographyProps={{ fontSize: '0.825rem' }} />
+        <ListItemText primary='Edit' primaryTypographyProps={{ fontSize: '0.875rem' }} />
       </MenuItem>
     </Menu>
   );
