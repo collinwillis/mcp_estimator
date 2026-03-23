@@ -45,48 +45,40 @@ export default function AddProposalDialog({
   };
   return (
     <div>
-      <Dialog open={open} onClose={toggleAddDialog}>
-        <DialogTitle>New Proposal</DialogTitle>
-        <DialogContent sx={{ height: '200px', width: '300px' }}>
-          <div
-            style={{
-              width: '100%',
-              height: '95%',
-              display: 'flex',
-              flexDirection: 'column',
-              justifyContent: 'space-around',
-            }}>
-            <TextField
-              variant='standard'
-              label='Proposal Number'
-              type='number'
-              value={proposalNumber}
-              onChange={(e) => setProposalNumber(e.target.value)}
-              placeholder='Proposal Number'
-            />
-            <TextField
-              variant='standard'
-              label='Proposal Description'
-              onChange={(e) => setProposalDescription(e.target.value)}
-              placeholder='Ex. Proposal'
-            />
-
-            <Button
-              disabled={
-                proposalDescription.length === 0 || proposalNumber.length === 0
-              }
-              variant='contained'
-              onClick={() => {
-                if (
-                  proposalDescription.length > 0 &&
-                  proposalNumber.length > 0
-                ) {
-                  handleProposalCreate();
-                }
-              }}>
-              Add
-            </Button>
-          </div>
+      <Dialog
+        open={open}
+        onClose={toggleAddDialog}
+        PaperProps={{ sx: { borderRadius: 2, border: '1px solid #e5e7eb', boxShadow: '0 8px 32px rgba(0,0,0,0.12)', minWidth: 340 } }}>
+        <DialogTitle sx={{ fontSize: '0.875rem', fontWeight: 600, color: '#111827', pb: 1 }}>
+          New Proposal
+        </DialogTitle>
+        <DialogContent sx={{ display: 'flex', flexDirection: 'column', gap: 2, pt: '8px !important' }}>
+          <TextField
+            variant='outlined'
+            size='small'
+            label='Proposal Number'
+            type='number'
+            value={proposalNumber}
+            onChange={(e) => setProposalNumber(e.target.value)}
+            sx={{ '& .MuiOutlinedInput-root': { borderRadius: 1, fontSize: '0.825rem', backgroundColor: '#f9fafb' }, '& .MuiInputLabel-root': { fontSize: '0.8rem' } }}
+          />
+          <TextField
+            variant='outlined'
+            size='small'
+            label='Proposal Description'
+            onChange={(e) => setProposalDescription(e.target.value)}
+            placeholder='Ex. Proposal'
+            sx={{ '& .MuiOutlinedInput-root': { borderRadius: 1, fontSize: '0.825rem', backgroundColor: '#f9fafb' }, '& .MuiInputLabel-root': { fontSize: '0.8rem' } }}
+          />
+          <Button
+            disabled={proposalDescription.length === 0 || proposalNumber.length === 0}
+            fullWidth
+            onClick={() => {
+              if (proposalDescription.length > 0 && proposalNumber.length > 0) handleProposalCreate();
+            }}
+            sx={{ 'textTransform': 'none', 'fontWeight': 600, 'fontSize': '0.825rem', 'color': '#fff', 'backgroundColor': '#111827', 'borderRadius': 1, 'py': 0.75, '&:hover': { backgroundColor: '#1f2937' }, '&.Mui-disabled': { backgroundColor: '#e5e7eb', color: '#9ca3af' } }}>
+            Add Proposal
+          </Button>
         </DialogContent>
       </Dialog>
     </div>

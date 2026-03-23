@@ -155,64 +155,59 @@ function CustomActivityToolbar({
   handlePhaseCompletionChange,
 }: CustomActivityToolbarProps) {
   const toolbarButtonSx = {
-    textTransform: 'none',
-    fontWeight: 600,
-    letterSpacing: '0.02em',
-    borderRadius: 8,
-    px: 1.5,
-    py: 0.5,
-    minWidth: 140,
-    justifyContent: 'center',
+    'textTransform': 'none' as const,
+    'fontWeight': 500,
+    'fontSize': '0.775rem',
+    'borderRadius': 1,
+    'px': 1.5,
+    'py': 0.4,
+    'minWidth': 0,
+    'border': '1px solid #e5e7eb',
+    'color': '#374151',
+    '&:hover': { backgroundColor: '#f3f4f6', borderColor: '#d1d5db' },
+    '&.Mui-disabled': { opacity: 0.4 },
   };
   const toolbarIconButtonSx = {
-    borderRadius: 8,
-    border: '1px solid rgba(15,23,42,0.12)',
-    px: 1,
-    height: 34,
-    color: '#0f172a',
-    fontWeight: 600,
-    letterSpacing: '0.02em',
+    'borderRadius': 1,
+    'border': '1px solid #e5e7eb',
+    'px': 1,
+    'height': 30,
+    'color': '#374151',
+    'fontWeight': 500,
+    'fontSize': '0.75rem',
+    '&:hover': { backgroundColor: '#f3f4f6', borderColor: '#d1d5db' },
   };
   const toolbarSelectSx = {
-    'minWidth': 220,
-    'flex': '1 1 240px',
+    'minWidth': 200,
+    'flex': '1 1 220px',
     '& .MuiInputLabel-root': {
-      letterSpacing: '0.05em',
-      fontWeight: 600,
-      textTransform: 'uppercase',
-      color: '#475467',
+      fontSize: '0.75rem',
+      fontWeight: 500,
+      color: '#6b7280',
     },
     '& .MuiOutlinedInput-root': {
-      'borderRadius': 12,
-      'backgroundColor': '#f4f5f7',
-      'textTransform': 'uppercase',
-      'fontWeight': 600,
-      'letterSpacing': '0.04em',
-      '& fieldset': {
-        borderColor: 'rgba(15,23,42,0.08)',
-      },
-      '&:hover fieldset': {
-        borderColor: 'rgba(15,23,42,0.25)',
-      },
-      '&.Mui-focused fieldset': {
-        borderColor: '#2563eb',
-        boxShadow: '0 0 0 2px rgba(37,99,235,0.25)',
-      },
+      'borderRadius': 1,
+      'backgroundColor': '#f3f4f6',
+      'fontSize': '0.8rem',
+      'fontWeight': 500,
+      '& fieldset': { borderColor: 'transparent' },
+      '&:hover fieldset': { borderColor: '#d1d5db' },
+      '&.Mui-focused fieldset': { borderColor: '#9ca3af', borderWidth: 1 },
     },
   };
 
   return (
     <GridToolbarContainer
       sx={{
-        'mb': 1,
         'borderRadius': 0,
-        'borderBottom': '1px solid rgba(15,23,42,0.12)',
-        'backgroundColor': '#fff',
+        'borderBottom': '1px solid #e5e7eb',
+        'backgroundColor': '#ffffff',
         'boxShadow': 'none',
         'px': 1.5,
-        'py': 1,
+        'py': 0.75,
         '& .MuiButton-startIcon': {
-          mr: 1,
+          mr: 0.5,
+          '& svg': { fontSize: '14px !important' },
         },
       }}>
       <Box
@@ -283,18 +278,12 @@ function CustomActivityToolbar({
               sx={{
                 display: 'flex',
                 alignItems: 'center',
-                gap: 1,
-                px: 1.5,
-                py: 0.45,
-                borderRadius: 999,
-                border: `1px solid ${
-                  currentPhase?.completed
-                    ? 'rgba(34,197,94,0.65)'
-                    : 'rgba(15,23,42,0.12)'
-                }`,
-                backgroundColor: currentPhase?.completed
-                  ? 'rgba(34,197,94,0.1)'
-                  : 'rgba(15,23,42,0.03)',
+                gap: 0.5,
+                px: 1,
+                py: 0.25,
+                borderRadius: 1,
+                border: '1px solid #e5e7eb',
+                backgroundColor: currentPhase?.completed ? '#f0fdf4' : 'transparent',
               }}>
               <Switch
                 checked={currentPhase?.completed || false}
@@ -302,12 +291,16 @@ function CustomActivityToolbar({
                   handlePhaseCompletionChange(!currentPhase?.completed)
                 }
                 size='small'
+                sx={{
+                  '& .MuiSwitch-switchBase.Mui-checked': { color: '#111827' },
+                  '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': { backgroundColor: '#111827' },
+                }}
               />
               <Typography
                 sx={{
-                  fontWeight: 600,
-                  letterSpacing: '0.04em',
-                  color: currentPhase?.completed ? '#15803d' : '#475467',
+                  fontWeight: 500,
+                  fontSize: '0.75rem',
+                  color: currentPhase?.completed ? '#111827' : '#6b7280',
                   whiteSpace: 'nowrap',
                 }}>
                 {currentPhase?.completed ? 'Complete' : 'Incomplete'}
@@ -330,8 +323,12 @@ function CustomActivityToolbar({
               disabled={selectedRows == null || selectedRows.length <= 0}
               variant='outlined'
               size='small'
-              color='error'
-              sx={toolbarButtonSx}
+              sx={{
+                ...toolbarButtonSx,
+                'color': '#dc2626',
+                'borderColor': '#fecaca',
+                '&:hover': { backgroundColor: '#fef2f2', borderColor: '#f87171' },
+              }}
               onClick={() => setDeleteDialogOpen(true)}
               startIcon={<TrashIcon />}>
               Delete
@@ -350,7 +347,7 @@ function CustomActivityToolbar({
                 recalculatePhase(phaseId!);
               }}
               startIcon={<RefreshIcon />}>
-              Constants / Units
+              Reset Constants
             </Button>
             <Button
               disabled={selectedRows.length === 0}
@@ -364,16 +361,15 @@ function CustomActivityToolbar({
               Edit Rates
             </Button>
             <Button
-              variant='contained'
+              variant='outlined'
               size='small'
               sx={{
                 ...toolbarButtonSx,
-                'minWidth': 170,
-                'backgroundColor': '#0f172a',
-                'color': '#fff',
-                '&:hover': {
-                  backgroundColor: '#111827',
-                },
+                'fontWeight': 600,
+                'backgroundColor': '#111827',
+                'color': '#ffffff',
+                'borderColor': '#111827',
+                '&:hover': { backgroundColor: '#1f2937', borderColor: '#1f2937' },
               }}
               onClick={() => {
                 setOpenCopyFromProposalDialog(true);
@@ -606,7 +602,11 @@ function ActivityDataGrid() {
     if (selectedRows.length === 0 || rateEditingDisabled) return;
 
     const activityIds = selectedRows.map((row) => row.toString());
-    await updateActivityRates(activityIds, baseRate ?? 0, subsistence ?? 0);
+    const effectiveBaseRate =
+      baseRate ?? currentProposal?.craftBaseRate ?? 0;
+    const effectiveSubsistence =
+      subsistence ?? currentProposal?.subsistenceRate ?? 0;
+    await updateActivityRates(activityIds, effectiveBaseRate, effectiveSubsistence);
     recalculatePhase(phaseId!);
   };
 
@@ -1150,7 +1150,10 @@ function ActivityDataGrid() {
   return (
     <Box
       sx={{
-        'height': '93%',
+        'display': 'flex',
+        'flexDirection': 'column',
+        'flex': 1,
+        'minHeight': 0,
         '& .under': {
           backgroundColor: 'rgba(251, 191, 36, 0.45)',
           color: '#7a4a00',
@@ -1278,76 +1281,72 @@ function ActivityDataGrid() {
         sx={{
           display: 'flex',
           alignItems: 'center',
-          justifyContent: 'end',
-          padding: '15px 20px',
-          backgroundColor: 'white',
-          borderTop: '1px solid #e0e0e0',
-          height: '60px',
+          justifyContent: 'flex-end',
+          flexWrap: 'wrap',
+          gap: 1.5,
+          px: 2,
+          py: 0.75,
+          backgroundColor: '#f9fafb',
+          borderTop: '1px solid #e5e7eb',
+          flexShrink: 0,
+          minHeight: 44,
         }}>
-        <Box
+        <Typography
           sx={{
-            display: 'flex',
-            flexDirection: 'column',
-            mr: 4,
+            fontSize: '0.7rem',
+            fontWeight: 500,
+            color: '#6b7280',
+            mr: 'auto',
           }}>
-          <Typography
-            variant='subtitle1'
-            sx={{ fontWeight: 'bold', color: '#424242' }}>
-            Quick Edit Rates:
-          </Typography>
-          <Typography variant='caption' sx={{ color: '#757575' }}>
-            {selectedRows.length} {selectedRows.length === 1 ? 'row' : 'rows'}{' '}
-            selected
-          </Typography>
-        </Box>
+          {selectedRows.length > 0
+            ? `${selectedRows.length} ${selectedRows.length === 1 ? 'row' : 'rows'} selected`
+            : 'Select rows to edit rates'}
+        </Typography>
 
-        <Box
-          sx={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'end',
-            gap: 3,
-
-            backgroundColor: 'transparent',
-            padding: '10px 15px',
-          }}>
-          <Box
-            sx={{ display: 'flex', flexDirection: 'column', width: '180px' }}>
-            <FormattedNumberInput
-              label='Base Rate'
-              disabled={rateEditingDisabled}
-              value={baseRate?.toString()}
-              prefix='$'
-              setValue={(_) => setBaseRate(parseFloat(_))}
-            />
-          </Box>
-
-          <Box
-            sx={{ display: 'flex', flexDirection: 'column', width: '180px' }}>
-            <FormattedNumberInput
-              disabled={rateEditingDisabled}
-              value={subsistence?.toString()}
-              prefix='$'
-              setValue={(_) => setSubsistence(parseFloat(_))}
-              label='Subsistence'
-            />
-          </Box>
-
-          <Button
-            variant='contained'
+        <Box sx={{ width: { xs: 120, sm: 140 } }}>
+          <FormattedNumberInput
+            label='Base Rate'
             disabled={rateEditingDisabled}
-            onClick={handleSaveRates}
-            sx={{
-              'height': '36px',
-              'ml': 2,
-              'backgroundColor': rateEditingDisabled ? '#e0e0e0' : '#1976d2',
-              '&:hover': {
-                backgroundColor: rateEditingDisabled ? '#e0e0e0' : '#1565c0',
-              },
-            }}>
-            Save Rates
-          </Button>
+            value={baseRate?.toString()}
+            prefix='$'
+            setValue={(_) => setBaseRate(parseFloat(_))}
+          />
         </Box>
+
+        <Box sx={{ width: { xs: 120, sm: 140 } }}>
+          <FormattedNumberInput
+            disabled={rateEditingDisabled}
+            value={subsistence?.toString()}
+            prefix='$'
+            setValue={(_) => setSubsistence(parseFloat(_))}
+            label='Subsistence'
+          />
+        </Box>
+
+        <Button
+          variant='outlined'
+          disabled={rateEditingDisabled}
+          onClick={handleSaveRates}
+          disableElevation
+          size='small'
+          sx={{
+            'textTransform': 'none',
+            'fontWeight': 600,
+            'fontSize': '0.775rem',
+            'borderRadius': 1,
+            'px': 2,
+            'py': 0.4,
+            'backgroundColor': rateEditingDisabled ? 'transparent' : '#111827',
+            'color': rateEditingDisabled ? '#9ca3af' : '#ffffff',
+            'borderColor': rateEditingDisabled ? '#e5e7eb' : '#111827',
+            '&:hover': {
+              backgroundColor: rateEditingDisabled ? 'transparent' : '#1f2937',
+              borderColor: rateEditingDisabled ? '#e5e7eb' : '#1f2937',
+            },
+            '&.Mui-disabled': { opacity: 0.5 },
+          }}>
+          Save Rates
+        </Button>
       </Box>
       <EditBaseRateDialog
         open={openBaseRateDialog}

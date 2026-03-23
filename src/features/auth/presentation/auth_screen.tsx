@@ -1,33 +1,33 @@
 import React, { useState } from 'react';
-import { Stack, Typography } from '@mui/material';
+import { Box, Stack, Typography } from '@mui/material';
 
 import AuthCard from './components/auth_card';
 import Header from './components/header';
 import LoginForm from './components/login_form';
 import RegisterForm from './components/register_form';
 
-const styles = {
-  root: {
-    width: '100vw',
-    height: '100vh',
-    alignItems: 'center',
-    justifyContent: 'center',
-    display: 'flex',
-  },
-};
 export default function Welcome() {
   const [formValue, setFormValue] = useState(1);
   return (
-    <div style={styles.root}>
+    <Box
+      sx={{
+        width: '100vw',
+        height: '100vh',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: '#f9fafb',
+      }}>
       <Typography
         sx={{
-          top: '20px',
           position: 'absolute',
-          left: '20px',
-          color: 'primary.main',
-          fontWeight: '700',
-        }}
-        variant='h5'>
+          top: 20,
+          left: 24,
+          color: '#111827',
+          fontWeight: 700,
+          fontSize: '0.875rem',
+          letterSpacing: '0.04em',
+        }}>
         MCP ESTIMATOR
       </Typography>
       <Stack spacing={2}>
@@ -40,6 +40,6 @@ export default function Welcome() {
           )}
         </AuthCard>
       </Stack>
-    </div>
+    </Box>
   );
 }

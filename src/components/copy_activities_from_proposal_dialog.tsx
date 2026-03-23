@@ -95,91 +95,49 @@ export default function CopyActivitiesFromProposalDialog({ open, onClose }: Prop
 
   return (
     <div>
-      <Dialog open={open} onClose={handleClose}>
-        <DialogTitle>Copy Activities From Phase</DialogTitle>
-        <DialogContent sx={{ height: '350px', width: '450px', padding: '20px' }}>
-          <div
-            style={{
-              width: '100%',
-              height: '100%',
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '20px',
-            }}>
-            <Autocomplete
-              options={availablePhases}
-              value={selectedPhase}
-              onChange={(_, newValue) => setSelectedPhase(newValue)}
-              getOptionLabel={(option) => 
-                `${option.wbsName} - ${option.phaseNumber} - ${option.description}`
-              }
-              filterOptions={(options, { inputValue }) => {
-                const searchTerm = inputValue.toLowerCase();
-                return options.filter((option) => 
-                  option.wbsName?.toLowerCase().includes(searchTerm) ||
-                  option.description?.toLowerCase().includes(searchTerm) ||
-                  option.phaseNumber?.toString().includes(searchTerm)
-                );
-              }}
-              renderInput={(params) => (
-                <TextField
-                  {...params}
-                  label="From Phase"
-                  placeholder="Search by WBS, phase number, or description..."
-                  variant="outlined"
-                />
-              )}
-              renderOption={(props, option) => (
-                <li {...props} key={option.id}>
-                  <div>
-                    <div style={{ fontWeight: 500 }}>
-                      {option.wbsName} - Phase {option.phaseNumber}
-                    </div>
-                    <div style={{ fontSize: '0.85em', color: '#666', marginTop: '2px' }}>
-                      {option.description}
-                    </div>
-                  </div>
-                </li>
-              )}
-              noOptionsText="No phases found"
-              fullWidth
-            />
-            
-            <FormControl variant='filled' fullWidth>
-              <InputLabel id='to-phase-select-label' shrink>
-                To Phase
-              </InputLabel>
-              <Select
-                labelId='to-phase-select-label'
-                disabled
-                id='to-phase-select'
-                value={currentPhase?.id ?? ''}>
-                <MenuItem key={currentPhase?.id} value={currentPhase?.id}>
-                  <ListItemText
-                    primary={`${currentPhase?.phaseNumber} - ${
-                      currentPhase?.description
-                    }`}
-                    primaryTypographyProps={{
-                      style: {
-                        overflow: 'hidden',
-                        whiteSpace: 'nowrap',
-                        textOverflow: 'ellipsis',
-                        maxWidth: '280px',
-                      },
-                    }}
-                  />
-                </MenuItem>
-              </Select>
-            </FormControl>
-
-            <Button
-              variant='contained'
-              disabled={!selectedPhase}
-              onClick={onSubmit}
-              sx={{ alignSelf: 'flex-end', minWidth: '140px' }}>
-              Copy Activities
-            </Button>
-          </div>
+      <Dialog open={open} onClose={handleClose}
+        PaperProps={{ sx: { borderRadius: 2, border: '1px solid #e5e7eb', boxShadow: '0 8px 32px rgba(0,0,0,0.12)', minWidth: 420 } }}>
+        <DialogTitle sx={{ fontSize: '0.875rem', fontWeight: 600, color: '#111827', pb: 1 }}>
+          Copy Activities From Phase
+        </DialogTitle>
+        <DialogContent sx={{ display: 'flex', flexDirection: 'column', gap: 2, pt: '8px !important' }}>
+          <Autocomplete
+            options={availablePhases}
+            value={selectedPhase}
+            onChange={(_, newValue) => setSelectedPhase(newValue)}
+            getOptionLabel={(option) => `${option.wbsName} - ${option.phaseNumber} - ${option.description}`}
+            filterOptions={(options, { inputValue }) => {
+              const s = inputValue.toLowerCase();
+              return options.filter((o) => o.wbsName?.toLowerCase().includes(s) || o.description?.toLowerCase().includes(s) || o.phaseNumber?.toString().includes(s));
+            }}
+            renderInput={(params) => (
+              <TextField {...params} label='From Phase' placeholder='Search...' variant='outlined' size='small'
+                sx={{ '& .MuiOutlinedInput-root': { borderRadius: 1, fontSize: '0.8rem', backgroundColor: '#f9fafb' }, '& .MuiInputLabel-root': { fontSize: '0.8rem' } }} />
+            )}
+            renderOption={(props, option) => (
+              <li {...props} key={option.id}>
+                <div>
+                  <div style={{ fontWeight: 500, fontSize: '0.8rem' }}>{option.wbsName} - Phase {option.phaseNumber}</div>
+                  <div style={{ fontSize: '0.725rem', color: '#6b7280', marginTop: 1 }}>{option.description}</div>
+                </div>
+              </li>
+            )}
+            noOptionsText='No phases found'
+            fullWidth
+          />
+          <FormControl variant='outlined' size='small' fullWidth>
+            <InputLabel sx={{ fontSize: '0.8rem' }}>To Phase</InputLabel>
+            <Select label='To Phase' disabled value={currentPhase?.id ?? ''}
+              sx={{ borderRadius: 1, fontSize: '0.8rem', backgroundColor: '#f9fafb' }}>
+              <MenuItem value={currentPhase?.id} sx={{ fontSize: '0.8rem' }}>
+                {currentPhase?.phaseNumber} - {currentPhase?.description}
+              </MenuItem>
+            </Select>
+          </FormControl>
+          <Button disabled={!selectedPhase} onClick={onSubmit}
+            sx={{ 'textTransform': 'none', 'fontWeight': 600, 'fontSize': '0.825rem', 'color': '#fff', 'backgroundColor': '#111827', 'borderRadius': 1, 'py': 0.75, 'alignSelf': 'flex-end', 'px': 3, '&:hover': { backgroundColor: '#1f2937' }, '&.Mui-disabled': { backgroundColor: '#e5e7eb', color: '#9ca3af' } }}>
+            Copy Activities
+          </Button>
         </DialogContent>
       </Dialog>
     </div>

@@ -72,16 +72,20 @@ exports.duplicateProposal = functions
     }
 
     const newProposalNumber = (baseProposalNumber + nextDecimal);
+    const revisionNumber = Math.round(nextDecimal * 10);
     const newProposalRef = firestore.collection("proposals").doc();
     const newProposalId = newProposalRef.id;
 
     if (proposalDoc.exists) {
       const proposalData = proposalDoc.data();
       if (proposalData) {
+        // Strip any existing " - Rev N" suffix to prevent stacking
+        const baseDescription = proposalData.proposalDescription
+          .replace(/\s*-\s*Rev\s+\d+$/i, "");
         const newProposalData = {
           ...proposalData,
           createdAt: new Date(),
-          proposalDescription: `${proposalData.proposalDescription}`,
+          proposalDescription: `${baseDescription} - Rev ${revisionNumber}`,
           proposalNumber: newProposalNumber,
         };
         batch.set(newProposalRef, newProposalData);

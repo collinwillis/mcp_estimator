@@ -69,35 +69,40 @@ function CustomToolbar({
   setDeleteDialogOpen,
 }: CustomToolbarProps) {
   const toolbarButtonSx = {
-    textTransform: 'none',
-    fontWeight: 600,
-    letterSpacing: '0.02em',
-    borderRadius: 8,
-    px: 1.8,
-    py: 0.75,
-    minWidth: 140,
+    'textTransform': 'none' as const,
+    'fontWeight': 500,
+    'fontSize': '0.775rem',
+    'borderRadius': 1,
+    'px': 1.5,
+    'py': 0.4,
+    'minWidth': 0,
+    'border': '1px solid #e5e7eb',
+    'color': '#374151',
+    '&:hover': { backgroundColor: '#f3f4f6', borderColor: '#d1d5db' },
+    '&.Mui-disabled': { opacity: 0.4 },
   };
   const toolbarIconButtonSx = {
-    borderRadius: 8,
-    border: '1px solid rgba(15,23,42,0.12)',
-    px: 1.25,
-    height: 34,
-    color: '#0f172a',
-    fontWeight: 600,
-    letterSpacing: '0.02em',
+    'borderRadius': 1,
+    'border': '1px solid #e5e7eb',
+    'px': 1,
+    'height': 30,
+    'color': '#374151',
+    'fontWeight': 500,
+    'fontSize': '0.75rem',
+    '&:hover': { backgroundColor: '#f3f4f6', borderColor: '#d1d5db' },
   };
   return (
     <GridToolbarContainer
       sx={{
-        'mb': 1,
         'borderRadius': 0,
-        'borderBottom': '1px solid rgba(15,23,42,0.12)',
-        'backgroundColor': '#f9fafc',
+        'borderBottom': '1px solid #e5e7eb',
+        'backgroundColor': '#ffffff',
         'boxShadow': 'none',
         'px': 1.5,
-        'py': 1,
+        'py': 0.75,
         '& .MuiButton-startIcon': {
-          mr: 1,
+          mr: 0.5,
+          '& svg': { fontSize: '14px !important' },
         },
       }}>
       <Box
@@ -132,11 +137,7 @@ function CustomToolbar({
             }}>
             <Button
               disabled={selectedRows == null || selectedRows.length <= 0}
-              sx={{
-                ...toolbarButtonSx,
-                color: '#0f172a',
-                border: '1px solid rgba(15,23,42,0.15)',
-              }}
+              sx={toolbarButtonSx}
               onClick={async () => {
                 const ids: string[] = [];
                 selectedRows.forEach((row) => {
@@ -151,8 +152,9 @@ function CustomToolbar({
               disabled={selectedRows == null || selectedRows.length <= 0}
               sx={{
                 ...toolbarButtonSx,
-                border: '1px solid rgba(239,68,68,0.4)',
-                color: '#b91c1c',
+                'color': '#dc2626',
+                'borderColor': '#fecaca',
+                '&:hover': { backgroundColor: '#fef2f2', borderColor: '#f87171' },
               }}
               onClick={() => setDeleteDialogOpen(true)}
               startIcon={<TrashIcon />}>

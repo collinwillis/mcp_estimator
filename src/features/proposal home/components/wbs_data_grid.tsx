@@ -43,49 +43,34 @@ function WbsDataGrid({
   }, [wbs]);
 
   function CustomToolbar() {
+    const btnSx = {
+      'borderRadius': 1,
+      'border': '1px solid #e5e7eb',
+      'px': 1,
+      'height': 30,
+      'color': '#374151',
+      'fontWeight': 500,
+      'fontSize': '0.75rem',
+      'textTransform': 'none' as const,
+      '&:hover': { backgroundColor: '#f3f4f6', borderColor: '#d1d5db' },
+    };
     return (
       <GridToolbarContainer
-        sx={{ marginBottom: '14px', borderBottom: '1px solid lightgray' }}>
-        <div
-          style={{
-            display: 'flex',
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            width: '100%',
-          }}>
-          <div
-            style={{
-              display: 'flex',
-              flexDirection: 'row',
-              gap: 15,
-            }}>
-            <GridToolbarColumnsButton
-              sx={{ color: '#424242' }}
-              onResize={undefined}
-              nonce={undefined}
-              onResizeCapture={undefined}
-            />
-            <GridToolbarDensitySelector
-              sx={{ color: '#424242' }}
-              onResize={undefined}
-              nonce={undefined}
-              onResizeCapture={undefined}
-            />
-            <ExportMenu
-              proposalId={proposalId!}
-              proposalPreferences={proposalPreferences!}
-            />
-          </div>
-          <div
-            style={{
-              display: 'flex',
-              flexDirection: 'row',
-            }}>
-            <Button sx={{ color: '#424242' }} onClick={openSelectWbsDialog}>
-              WBS Select
-            </Button>
-          </div>
-        </div>
+        sx={{
+          'borderBottom': '1px solid #e5e7eb',
+          'backgroundColor': '#ffffff',
+          'px': 1.5,
+          'py': 0.75,
+          '& .MuiButton-startIcon svg': { fontSize: '14px !important' },
+        }}>
+        <Box sx={{ display: 'flex', width: '100%', justifyContent: 'space-between', alignItems: 'center', gap: 1 }}>
+          <Box sx={{ display: 'flex', gap: 0.75 }}>
+            <GridToolbarColumnsButton sx={btnSx} onResize={undefined} nonce={undefined} onResizeCapture={undefined} />
+            <GridToolbarDensitySelector sx={btnSx} onResize={undefined} nonce={undefined} onResizeCapture={undefined} />
+            <ExportMenu proposalId={proposalId!} proposalPreferences={proposalPreferences!} />
+          </Box>
+          <Button sx={btnSx} onClick={openSelectWbsDialog}>WBS Select</Button>
+        </Box>
       </GridToolbarContainer>
     );
   }
@@ -97,43 +82,29 @@ function WbsDataGrid({
         'width': '100%',
 
         '& .under': {
-          backgroundColor: '#ff525240',
-          color: 'primary.dark',
+          backgroundColor: 'rgba(251, 191, 36, 0.12)',
+          color: '#92400e',
         },
         '& .over': {
-          backgroundColor: '#ffeb3b40',
-          color: 'primary.dark',
+          backgroundColor: 'rgba(239, 68, 68, 0.08)',
+          color: '#991b1b',
         },
         '& .not-used': {
-          backgroundColor: '#2d2d2d',
-          color: '#2d2d2d',
+          backgroundColor: '#f9fafb',
+          color: '#d1d5db',
+          textDecoration: 'line-through',
         },
         '& .editable-cell': {
-          color: 'steelblue',
+          color: '#111827',
+          fontWeight: 500,
         },
         '& .completed-row-light': {
-          'backgroundColor': '#c0e8d4 !important', // Light green background for completed rows
-          '& .editable-cell': {
-            color: 'white', // White text for editable cells
-          },
-          '& .MuiDataGrid-cell--editable': {
-            color: 'white', // White text for editable cells
-          },
-          '& .MuiDataGrid-cell': {
-            color: 'black', // Black text for non-editable cells
-          },
+          'backgroundColor': '#f0fdf4 !important',
+          '& .MuiDataGrid-cell': { color: '#111827' },
         },
         '& .completed-row-dark': {
-          'backgroundColor': '#9fcbb9 !important', // Darker green background for completed rows
-          '& .editable-cell': {
-            color: 'white', // White text for editable cells
-          },
-          '& .MuiDataGrid-cell--editable': {
-            color: 'white', // White text for editable cells
-          },
-          '& .MuiDataGrid-cell': {
-            color: 'black', // Black text for non-editable cells
-          },
+          'backgroundColor': '#ecfdf5 !important',
+          '& .MuiDataGrid-cell': { color: '#111827' },
         },
       }}>
       <StyledDataGrid

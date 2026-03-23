@@ -8,7 +8,6 @@ import {
   Dialog,
   Alert,
   SelectChangeEvent,
-  Button,
 } from '@mui/material';
 
 import { getCraftLoadedRate } from '../../api/totals';
@@ -29,7 +28,7 @@ function ProposalHomeScreen() {
   const [isEditMode, setIsEditMode] = useState(false);
   const [editData, setEditData] = useState<Partial<Proposal>>({});
   const [successDialogOpen, setSuccessDialogOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState(0); // State for active tab
+  const [activeTab, setActiveTab] = useState(0);
 
   const currentProposal = useCurrentProposal({ proposalId: proposalId ?? '' });
   const prefs = estimatorStore(
@@ -51,7 +50,6 @@ function ProposalHomeScreen() {
   }, [currentProposal]);
 
   useEffect(() => {
-    // Restore the last selected tab from sessionStorage
     const savedTab = sessionStorage.getItem('activeTab');
     if (savedTab !== null) {
       setActiveTab(parseInt(savedTab, 10));
@@ -102,7 +100,7 @@ function ProposalHomeScreen() {
     event: SelectChangeEvent<unknown>,
     child: React.ReactNode,
   ) => {
-    const value = event.target.value as string; // safely cast to string
+    const value = event.target.value as string;
     setEditData((prevData) => ({
       ...prevData,
       [event.target.name]: value,
@@ -111,35 +109,62 @@ function ProposalHomeScreen() {
 
   const handleTabChange = (event: React.ChangeEvent<{}>, newValue: number) => {
     setActiveTab(newValue);
-    sessionStorage.setItem('activeTab', newValue.toString()); // Save the selected tab in sessionStorage
+    sessionStorage.setItem('activeTab', newValue.toString());
   };
 
   return (
     <Box
       sx={{
-        height: '96%',
         display: 'flex',
         flexDirection: 'column',
-        backgroundColor: '#f4f4f4',
+        height: '100%',
         width: '100%',
         overflow: 'hidden',
-        position: 'relative', // Ensure content is relative to this box
+        backgroundColor: '#ffffff',
       }}>
-      <Paper square>
+      {/* Tab bar */}
+      <Paper
+        square
+        elevation={0}
+        sx={{
+          flexShrink: 0,
+          borderBottom: '1px solid #e5e7eb',
+          backgroundColor: '#ffffff',
+        }}>
         <Tabs
           value={activeTab}
           onChange={handleTabChange}
           variant='fullWidth'
-          indicatorColor='primary'
-          textColor='primary'>
-          <Tab label='Proposal Details' />
+          sx={{
+            'minHeight': 40,
+            '& .MuiTab-root': {
+              'textTransform': 'none',
+              'fontWeight': 500,
+              'fontSize': '0.8rem',
+              'color': '#6b7280',
+              'minHeight': 40,
+              'py': 0,
+              '&.Mui-selected': {
+                color: '#111827',
+                fontWeight: 600,
+              },
+            },
+            '& .MuiTabs-indicator': {
+              backgroundColor: '#111827',
+              height: 2,
+            },
+          }}>
+          <Tab label='Details' />
           <Tab label='Rates' />
           <Tab label='WBS Data Grid' />
         </Tabs>
       </Paper>
+
+      {/* Scrollable tab content */}
       <Box
         sx={{
-          height: '100%',
+          flex: 1,
+          minHeight: 0,
           display: 'flex',
           flexDirection: 'column',
           overflowY: 'auto',
@@ -172,23 +197,15 @@ function ProposalHomeScreen() {
           />
         )}
       </Box>
+
       <SelectWbsDialog
         isOpen={isSelectWbsDialogOpen}
         onClose={() => setIsSelectWbsDialogOpen(false)}
         proposalPreferences={prefs}
       />
 
-      <Box
-        sx={{
-          py: 4,
-          bottom: 0,
-          width: '100%',
-          boxShadow: '0px -2px 10px rgba(0, 0, 0, 0.1)',
-          zIndex: 1,
-          backgroundColor: 'white', // Ensure it covers content below
-        }}>
-        <BottomPanel />
-      </Box>
+      {/* Bottom panel — fixed at bottom */}
+      <BottomPanel />
 
       <Dialog
         open={successDialogOpen}

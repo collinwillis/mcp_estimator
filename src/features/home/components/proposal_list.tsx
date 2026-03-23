@@ -1,15 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import {
-  Box,
-  List,
-  ListItem,
-  ListItemText,
-  Typography,
-  styled,
-  useTheme,
-  Tooltip,
-} from '@mui/material';
+import { Box, List, Typography } from '@mui/material';
 
 import { Proposal } from '../../../models/proposal';
 
@@ -18,50 +9,20 @@ interface ProposalListProps {
   proposals: Proposal[];
 }
 
-const StyledList = styled(List)(({ theme }) => ({
-  width: '100%',
-  backgroundColor: theme.palette.background.default,
-}));
-
-const StyledListItem = styled(ListItem)(({ theme }) => ({
-  'cursor': 'pointer',
-  'transition': 'background-color 0.3s',
-  'paddingTop': theme.spacing(0.75),
-  'paddingBottom': theme.spacing(0.75),
-  'paddingLeft': theme.spacing(2),
-  'paddingRight': theme.spacing(2),
-  '&:hover': {
-    backgroundColor: theme.palette.action.hover,
-  },
-  '&.Mui-selected': {
-    'backgroundColor': theme.palette.action.selected,
-    '&:hover': {
-      backgroundColor: theme.palette.action.selected,
-    },
-  },
-}));
-
 const ProposalList: React.FC<ProposalListProps> = ({ onClick, proposals }) => {
   const navigate = useNavigate();
   const listRef = useRef<HTMLUListElement>(null);
   const { proposalId } = useParams();
-  const theme = useTheme();
 
   useEffect(() => {
     const savedProposalId = sessionStorage.getItem('selectedProposalId');
-
     if (savedProposalId && listRef.current) {
-      const selectedElement = listRef.current.querySelector(
-        `[data-proposal-id="${savedProposalId}"]`,
-      );
-
-      if (selectedElement) {
-        selectedElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      }
+      const el = listRef.current.querySelector(`[data-proposal-id="${savedProposalId}"]`);
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
   }, [proposalId]);
 
-  const handleProposalClick = (item: Proposal) => {
+  const handleClick = (item: Proposal) => {
     sessionStorage.setItem('selectedProposalId', item.id!);
     onClick(item);
     navigate(`/proposal/${item.id}`);
@@ -69,98 +30,77 @@ const ProposalList: React.FC<ProposalListProps> = ({ onClick, proposals }) => {
 
   const savedProposalId = sessionStorage.getItem('selectedProposalId');
 
-  const sortedProposals = proposals.slice().sort((a, b) => {
-    // Handle cases where proposalNumber might be undefined or empty
+  const sorted = proposals.slice().sort((a, b) => {
     if (!a.proposalNumber && !b.proposalNumber) return 0;
     if (!a.proposalNumber) return 1;
     if (!b.proposalNumber) return -1;
-    
-    // Extract numeric parts (including decimals) for comparison
     const numA = parseFloat(a.proposalNumber.toString());
     const numB = parseFloat(b.proposalNumber.toString());
-    
-    // If both are valid numbers, compare them
-    if (!isNaN(numA) && !isNaN(numB)) {
-      return numB - numA; // Sort descending
-    }
-    
-    // Fallback to string comparison if numbers are invalid
+    if (!isNaN(numA) && !isNaN(numB)) return numB - numA;
     return b.proposalNumber.toString().localeCompare(a.proposalNumber.toString());
   });
 
-  console.log(sortedProposals);
-
   return (
-    <StyledList ref={listRef}>
-      {sortedProposals.length > 0 ? (
-        sortedProposals.map((item) => (
-          <Tooltip
-            key={item.id}
-            title={
-              <Box>
-                <Typography variant='body2' sx={{ fontWeight: 600 }}>
+    <List ref={listRef} disablePadding sx={{ px: 0.75 }}>
+      {sorted.length > 0 ? (
+        sorted.map((item) => {
+          const isActive = savedProposalId === item.id;
+          return (
+            <Box
+              key={item.id}
+              data-proposal-id={item.id}
+              onClick={() => handleClick(item)}
+              sx={{
+                'display': 'flex',
+                'alignItems': 'center',
+                'px': 1.25,
+                'py': 0.6,
+                'mx': 0.5,
+                'my': 0.2,
+                'cursor': 'pointer',
+                'borderRadius': 1,
+                'borderLeft': isActive ? '2px solid #111827' : '2px solid transparent',
+                'backgroundColor': isActive ? '#f3f4f6' : 'transparent',
+                '&:hover': {
+                  backgroundColor: isActive ? '#f3f4f6' : '#f9fafb',
+                },
+              }}>
+              <Box sx={{ minWidth: 0, flex: 1 }}>
+                <Typography
+                  sx={{
+                    fontSize: '0.775rem',
+                    fontWeight: isActive ? 600 : 500,
+                    color: isActive ? '#111827' : '#374151',
+                    lineHeight: 1.3,
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    whiteSpace: 'nowrap',
+                  }}>
                   {item.proposalNumber}
                 </Typography>
-                <Typography variant='body2'>
+                <Typography
+                  sx={{
+                    fontSize: '0.675rem',
+                    color: '#6b7280',
+                    lineHeight: 1.3,
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    whiteSpace: 'nowrap',
+                  }}>
                   {item.proposalDescription}
                 </Typography>
-                <Typography variant='caption' color='text.secondary'>
-                  Owner: {item.proposalOwner}
-                </Typography>
               </Box>
-            }
-            placement='right'>
-            <StyledListItem
-              data-proposal-id={item.id}
-              selected={savedProposalId === item.id}
-              onClick={() => handleProposalClick(item)}>
-              <ListItemText
-                primary={
-                  <Typography
-                    variant='subtitle2'
-                    sx={{
-                      fontWeight: 600,
-                      fontSize: '0.875rem',
-                      color:
-                        savedProposalId === item.id
-                          ? theme.palette.primary.main
-                          : theme.palette.text.primary,
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis',
-                      whiteSpace: 'nowrap',
-                    }}>
-                    {item.proposalNumber}
-                  </Typography>
-                }
-                secondary={
-                  <Typography
-                    variant='caption'
-                    color='text.secondary'
-                    sx={{ 
-                      mt: 0.25,
-                      fontSize: '0.75rem',
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis',
-                      whiteSpace: 'nowrap',
-                      display: 'block'
-                    }}>
-                    {item.proposalDescription && item.proposalDescription.length > 25 
-                      ? `${item.proposalDescription.substring(0, 25)}...` 
-                      : item.proposalDescription}
-                  </Typography>
-                }
-              />
-            </StyledListItem>
-          </Tooltip>
-        ))
+            </Box>
+          );
+        })
       ) : (
-        <Box sx={{ p: 2 }}>
-          <Typography variant='body1' color='text.secondary'>
+        <Box sx={{ px: 2, py: 3 }}>
+          <Typography sx={{ fontSize: '0.775rem', color: '#9ca3af' }}>
             No proposals found.
           </Typography>
         </Box>
       )}
-    </StyledList>
+    </List>
   );
 };
 

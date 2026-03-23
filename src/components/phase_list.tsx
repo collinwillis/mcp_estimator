@@ -1,17 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import {
-  Box,
-  List,
-  ListItem,
-  ListItemText,
-  Tooltip,
-  Typography,
-  TextField,
-  InputAdornment,
-} from '@mui/material';
+import { Box, InputAdornment, List, TextField, Typography } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
-import { styled, useTheme } from '@mui/material/styles';
 
 import { Phase } from '../models/phase';
 import { StoreState, estimatorStore } from '../utils/store';
@@ -19,39 +9,6 @@ import { StoreState, estimatorStore } from '../utils/store';
 interface PhaseListProps {
   onClick: (phase: Phase) => void;
 }
-
-const StyledListItem = styled(ListItem)(({ theme }) => ({
-  'cursor': 'pointer',
-  'transition': 'background-color 0.3s',
-  '&:hover': {
-    backgroundColor: theme.palette.action.hover,
-  },
-  '&.Mui-selected': {
-    'backgroundColor': theme.palette.action.selected,
-    '&:hover': {
-      backgroundColor: theme.palette.action.selected,
-    },
-  },
-}));
-
-const StyledTextField = styled(TextField)(({ theme }) => ({
-  '& .MuiOutlinedInput-root': {
-    'borderRadius': theme.shape.borderRadius,
-    'backgroundColor': theme.palette.background.paper,
-    '& fieldset': {
-      borderColor: theme.palette.divider,
-    },
-    '&:hover fieldset': {
-      borderColor: theme.palette.text.primary,
-    },
-    '&.Mui-focused fieldset': {
-      borderColor: theme.palette.primary.main,
-    },
-  },
-  '& .MuiInputBase-input': {
-    padding: theme.spacing(1.5),
-  },
-}));
 
 export default function PhaseList({ onClick }: PhaseListProps) {
   const { proposalId, wbsId, phaseId } = useParams();
@@ -61,17 +18,12 @@ export default function PhaseList({ onClick }: PhaseListProps) {
   const navigate = useNavigate();
   const [data, setData] = useState<Phase[]>([]);
   const [searchInput, setSearchInput] = useState('');
-  const theme = useTheme();
 
   useEffect(() => {
     const temp = phases.filter((phase) => phase.wbsId === wbsId);
     temp.sort((a, b) => a.phaseNumber! - b.phaseNumber!);
     setData(temp);
   }, [phases, wbsId]);
-
-  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchInput(event.target.value);
-  };
 
   const filteredData = data.filter(
     (phase) =>
@@ -80,83 +32,104 @@ export default function PhaseList({ onClick }: PhaseListProps) {
   );
 
   return (
-    <Box
-      sx={{
-        backgroundColor: theme.palette.background.default,
-        height: '100%',
-        overflow: 'auto',
-      }}>
-      {/* Search Bar */}
-      <Box
-        sx={{
-          position: 'sticky',
-          top: 0,
-          zIndex: 1,
-          backgroundColor: theme.palette.background.default,
-          p: 2,
-          borderBottom: `1px solid ${theme.palette.divider}`,
-        }}>
-        <StyledTextField
+    <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden' }}>
+      {/* Search */}
+      <Box sx={{ px: 1.5, py: 1, flexShrink: 0 }}>
+        <TextField
           fullWidth
           variant='outlined'
           size='small'
-          placeholder='Search Phases...'
+          placeholder='Search phases...'
           value={searchInput}
-          onChange={handleSearchChange}
+          onChange={(e) => setSearchInput(e.target.value)}
           InputProps={{
             startAdornment: (
               <InputAdornment position='start'>
-                <SearchIcon />
+                <SearchIcon sx={{ fontSize: 16, color: '#9ca3af' }} />
               </InputAdornment>
             ),
           }}
+          sx={{
+            '& .MuiOutlinedInput-root': {
+              'height': 32,
+              'borderRadius': 1,
+              'backgroundColor': '#f3f4f6',
+              'fontSize': '0.8rem',
+              '& fieldset': { borderColor: 'transparent' },
+              '&:hover fieldset': { borderColor: '#d1d5db' },
+              '&.Mui-focused fieldset': { borderColor: '#9ca3af', borderWidth: 1 },
+            },
+            '& .MuiInputBase-input': { py: 0.5 },
+          }}
         />
       </Box>
-      {/* Phase List */}
-      <List sx={{ p: 0 }}>
-        {filteredData.length > 0 ? (
-          filteredData.map((phase) => (
-            <Tooltip
-              title={`${phase.phaseNumber} - ${phase.description}`}
-              key={phase.id}
-              placement='right'>
-              <StyledListItem
-                selected={phase.id === phaseId}
-                onClick={() => {
-                  onClick(phase);
-                  navigate(
-                    `/proposal/${proposalId}/wbs/${wbsId}/phase/${phase.id}`,
-                  );
-                }}>
-                <ListItemText
-                  primaryTypographyProps={{
-                    sx: {
-                      fontWeight: 500,
-                      color:
-                        phase.id === phaseId
-                          ? theme.palette.primary.main
-                          : theme.palette.text.primary,
-                    },
+
+      {/* Phase items */}
+      <Box sx={{ flex: 1, overflowY: 'auto', px: 0.75 }}>
+        <List disablePadding>
+          {filteredData.length > 0 ? (
+            filteredData.map((phase) => {
+              const isActive = phase.id === phaseId;
+              return (
+                <Box
+                  key={phase.id}
+                  onClick={() => {
+                    onClick(phase);
+                    navigate(`/proposal/${proposalId}/wbs/${wbsId}/phase/${phase.id}`);
                   }}
-                  secondaryTypographyProps={{
-                    sx: {
-                      color: theme.palette.text.secondary,
+                  sx={{
+                    'display': 'flex',
+                    'alignItems': 'center',
+                    'gap': 1,
+                    'px': 1.25,
+                    'py': 0.6,
+                    'mx': 0.5,
+                    'my': 0.2,
+                    'cursor': 'pointer',
+                    'borderRadius': 1,
+                    'borderLeft': isActive ? '2px solid #111827' : '2px solid transparent',
+                    'backgroundColor': isActive ? '#f3f4f6' : 'transparent',
+                    '&:hover': {
+                      backgroundColor: isActive ? '#f3f4f6' : '#f9fafb',
                     },
-                  }}
-                  primary={`Phase ${phase.phaseNumber}`}
-                  secondary={phase.description}
-                />
-              </StyledListItem>
-            </Tooltip>
-          ))
-        ) : (
-          <Box sx={{ p: 2 }}>
-            <Typography variant='body1' color='text.secondary'>
-              No phases found.
-            </Typography>
-          </Box>
-        )}
-      </List>
+                  }}>
+                  <Box sx={{ minWidth: 0, flex: 1 }}>
+                    <Typography
+                      sx={{
+                        fontSize: '0.775rem',
+                        fontWeight: isActive ? 600 : 500,
+                        color: isActive ? '#111827' : '#374151',
+                        lineHeight: 1.3,
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        whiteSpace: 'nowrap',
+                      }}>
+                      {phase.phaseNumber}
+                    </Typography>
+                    <Typography
+                      sx={{
+                        fontSize: '0.675rem',
+                        color: '#6b7280',
+                        lineHeight: 1.3,
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        whiteSpace: 'nowrap',
+                      }}>
+                      {phase.description}
+                    </Typography>
+                  </Box>
+                </Box>
+              );
+            })
+          ) : (
+            <Box sx={{ px: 2, py: 3 }}>
+              <Typography sx={{ fontSize: '0.775rem', color: '#9ca3af' }}>
+                No phases found.
+              </Typography>
+            </Box>
+          )}
+        </List>
+      </Box>
     </Box>
   );
 }

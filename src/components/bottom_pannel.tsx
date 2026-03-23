@@ -1,27 +1,22 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
-import AccessTimeIcon from '@mui/icons-material/AccessTime';
-import BuildIcon from '@mui/icons-material/Build';
-import GroupIcon from '@mui/icons-material/Group';
-import LocalShippingIcon from '@mui/icons-material/LocalShipping';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import AddIcon from '@mui/icons-material/Add';
+import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
+import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 import {
-  Avatar,
   Box,
   Button,
-  Card,
-  CardContent,
   Collapse,
   Divider,
-  Grid,
-  Paper,
-  Stack,
+  IconButton,
+  ListItemText,
+  Menu,
+  MenuItem,
+  Tooltip,
   Typography,
-  useMediaQuery,
 } from '@mui/material';
-import { useTheme } from '@mui/material/styles';
-import { blue, green, orange, purple, red } from '@mui/material/colors';
+import { alpha } from '@mui/material/styles';
 
 import AddActivityDialog from '../features/phase home/components/add_activity_dialog';
 import AddEquipmentDialog from '../features/phase home/components/add_equipment_dialog';
@@ -33,139 +28,215 @@ import { Wbs } from '../models/wbs';
 import { StoreState, estimatorStore } from '../utils/store';
 import AddPhaseDialog from './add_phase_dialog';
 
-const metricCardStyles = {
-  display: 'flex',
-  alignItems: 'center',
-  gap: 1.5,
-  py: 1.5,
-  px: 1.5,
+// ---------------------------------------------------------------------------
+//  Constants & formatting
+// ---------------------------------------------------------------------------
+
+const INDIRECT_WBS_IDS = new Set([10000, 190000, 200000, 180000]);
+
+const fmt = (value: number, prefix = ''): string =>
+  prefix +
+  value.toLocaleString(undefined, {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
+
+// Monochrome palette — one neutral, two subtle accents for semantic distinction
+const COLOR = {
+  label: '#6b7280',       // gray-500
+  value: '#111827',       // gray-900
+  sectionHead: '#374151', // gray-700
+  muted: '#9ca3af',       // gray-400
+  border: '#e5e7eb',      // gray-200
+  surface: '#f9fafb',     // gray-50
+  white: '#ffffff',
+  accent: '#2563eb',      // blue-600 (primary accent, used sparingly)
 } as const;
+
+// ---------------------------------------------------------------------------
+//  Inline metric for status bar
+// ---------------------------------------------------------------------------
+
+function Stat({ label, value }: { label: string; value: string }) {
+  return (
+    <Box sx={{ display: 'flex', alignItems: 'baseline', gap: 0.6, px: { xs: 0.75, sm: 1.25 }, whiteSpace: 'nowrap' }}>
+      <Typography sx={{ color: COLOR.label, fontWeight: 500, fontSize: '0.675rem', letterSpacing: '0.04em', textTransform: 'uppercase' }}>
+        {label}
+      </Typography>
+      <Typography sx={{ color: COLOR.value, fontWeight: 600, fontSize: '0.8rem', fontVariantNumeric: 'tabular-nums' }}>
+        {value}
+      </Typography>
+    </Box>
+  );
+}
+
+// ---------------------------------------------------------------------------
+//  Breakdown detail row — pure typography, no icons
+// ---------------------------------------------------------------------------
+
+function DetailRow({ label, value, bold }: { label: string; value: string; bold?: boolean }) {
+  return (
+    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', py: 0.25, minHeight: 24 }}>
+      <Typography sx={{ color: bold ? COLOR.sectionHead : COLOR.label, fontWeight: bold ? 600 : 400, fontSize: '0.775rem' }}>
+        {label}
+      </Typography>
+      <Typography sx={{ color: COLOR.value, fontWeight: bold ? 700 : 500, fontSize: '0.775rem', fontVariantNumeric: 'tabular-nums', ml: 2 }}>
+        {value}
+      </Typography>
+    </Box>
+  );
+}
+
+// ---------------------------------------------------------------------------
+//  Section header for breakdown columns
+// ---------------------------------------------------------------------------
+
+function SectionHeader({ children }: { children: React.ReactNode }) {
+  return (
+    <Typography
+      sx={{
+        color: COLOR.sectionHead,
+        fontWeight: 700,
+        fontSize: '0.675rem',
+        letterSpacing: '0.06em',
+        textTransform: 'uppercase',
+        mb: 0.75,
+        pb: 0.5,
+        borderBottom: `1px solid ${COLOR.border}`,
+      }}>
+      {children}
+    </Typography>
+  );
+}
+
+// ---------------------------------------------------------------------------
+//  Main component
+// ---------------------------------------------------------------------------
 
 function BottomPanel() {
   const { proposalId, wbsId, phaseId } = useParams();
-  const theme = useTheme();
-  const isCompact = useMediaQuery(theme.breakpoints.down('lg'));
 
-  const [dataset, setDataset] = useState<Activity[] | Phase[] | Wbs[]>([]);
-  const [detailsExpanded, setDetailsExpanded] = useState(!isCompact);
-  const [totalCost, setTotalCost] = useState(0);
-  const [totalHours, setTotalHours] = useState(0);
-  const [craftHours, setCraftHours] = useState(0);
-  const [welderHours, setWelderHours] = useState(0);
-  const [subcontractorHours, setSubcontractorHours] = useState(0);
-  const [craftCost, setCraftCost] = useState(0);
-  const [welderCost, setWelderCost] = useState(0);
-  const [subcontractorCost, setSubcontractorCost] = useState(0);
-  const [equipmentCost, setEquipmentCost] = useState(0);
-  const [materialCost, setMaterialCost] = useState(0);
-  const [costOnlyCost, setCostOnlyCost] = useState(0);
+  const [detailsOpen, setDetailsOpen] = useState(false);
+  const [addMenuAnchor, setAddMenuAnchor] = useState<null | HTMLElement>(null);
 
-  const activities = estimatorStore(
-    (state: StoreState) => state.activities[proposalId!] || [],
-  );
-  const phases = estimatorStore(
-    (state: StoreState) => state.phases[proposalId!] || [],
-  );
-  const wbs = estimatorStore(
-    (state: StoreState) => state.wbs[proposalId!] || [],
-  );
+  const activities = estimatorStore((s: StoreState) => s.activities[proposalId!] || []);
+  const phases = estimatorStore((s: StoreState) => s.phases[proposalId!] || []);
+  const allWbsItems = estimatorStore((s: StoreState) => s.wbs[proposalId!] || []);
+  const visibleWbsItems = estimatorStore((s: StoreState) => s.visibleWbs[proposalId!] || []);
 
-  useEffect(() => {
-    if (phaseId) {
-      setDataset(activities.filter((item) => item.phaseId === phaseId));
-    } else if (wbsId) {
-      setDataset(phases.filter((item) => item.wbsId === wbsId));
-    } else {
-      setDataset(wbs);
-    }
-  }, [activities, phases, wbs, wbsId, phaseId]);
+  // Set of visible WBS IDs for filtering
+  const visibleWbsIds = useMemo(() => {
+    const set = new Set<string>();
+    visibleWbsItems.forEach((w) => { if (w.id) set.add(w.id); });
+    return set;
+  }, [visibleWbsItems]);
 
-  useEffect(() => {
-    setDetailsExpanded(!isCompact);
-  }, [isCompact]);
+  // WBS database ID lookup (needs ALL wbs for phase/activity-level views)
+  const wbsLookup = useMemo(() => {
+    const map = new Map<string, number>();
+    allWbsItems.forEach((w) => {
+      if (w.id && w.wbsDatabaseId !== undefined) map.set(w.id, w.wbsDatabaseId);
+    });
+    return map;
+  }, [allWbsItems]);
 
-  useEffect(() => {
-    let tempCost = 0;
-    let tempHours = 0;
-    let tempCraftHours = 0;
-    let tempWelderHours = 0;
-    let tempSubHours = 0;
-    let tempCraftCost = 0;
-    let tempWelderCost = 0;
-    let tempSubCost = 0;
-    let tempEquipmentCost = 0;
-    let tempMaterialCost = 0;
-    let tempCostOnly = 0;
+  // At proposal level, only include data from VISIBLE WBS items
+  // At WBS/Phase level, show scoped data as before
+  const dataset = useMemo<(Activity | Phase | Wbs)[]>(() => {
+    if (phaseId) return activities.filter((item) => item.phaseId === phaseId);
+    if (wbsId) return phases.filter((item) => item.wbsId === wbsId);
+    return visibleWbsItems;
+  }, [activities, phases, visibleWbsItems, wbsId, phaseId]);
+
+  // Detect hidden WBS items that contain non-zero data
+  const hasHiddenData = useMemo(() => {
+    if (wbsId || phaseId) return false; // Only relevant at proposal level
+    const hiddenWbs = allWbsItems.filter((w) => w.id && !visibleWbsIds.has(w.id));
+    return hiddenWbs.some((w) => (w.totalCost || 0) > 0 || (w.craftManHours || 0) > 0 || (w.welderManHours || 0) > 0);
+  }, [allWbsItems, visibleWbsIds, wbsId, phaseId]);
+
+  // ---------------------------------------------------------------------------
+  //  Compute totals
+  // ---------------------------------------------------------------------------
+
+  const totals = useMemo(() => {
+    let totalCost = 0, directCraftHours = 0, directWelderHours = 0;
+    let mobeHours = 0, demobeHours = 0, supportHours = 0, specialtyHours = 0;
+    let subcontractorHours = 0, craftCost = 0, welderCost = 0;
+    let subcontractorCost = 0, equipmentCost = 0, materialCost = 0, costOnlyCost = 0;
 
     dataset.forEach((record) => {
       const base = record as Activity;
-      tempCost += base.totalCost || 0;
-      tempHours += (base.craftManHours || 0) + (base.welderManHours || 0);
-      tempCraftHours += base.craftManHours || 0;
-      tempWelderHours += base.welderManHours || 0;
+      totalCost += base.totalCost || 0;
+      craftCost += base.craftCost || 0;
+      welderCost += base.welderCost || 0;
+      subcontractorCost += base.subContractorCost || 0;
+      equipmentCost += base.equipmentCost || 0;
+      materialCost += base.materialCost || 0;
+      costOnlyCost += base.costOnlyCost || 0;
+
       if (base.activityType === ActivityType.subContractorItem) {
-        const qty = Number(base.quantity) || 0;
-        const duration = Number(base.time) || 0;
-        tempSubHours += qty * duration;
+        subcontractorHours += (Number(base.quantity) || 0) * (Number(base.time) || 0);
       }
-      tempCraftCost += base.craftCost || 0;
-      tempWelderCost += base.welderCost || 0;
-      tempSubCost += base.subContractorCost || 0;
-      tempEquipmentCost += base.equipmentCost || 0;
-      tempMaterialCost += base.materialCost || 0;
-      tempCostOnly += base.costOnlyCost || 0;
+
+      const hours = (base.craftManHours || 0) + (base.welderManHours || 0);
+      const wbsDbId = base.wbsId ? wbsLookup.get(base.wbsId) : undefined;
+      const effectiveWbsDbId = wbsDbId ?? (record as Wbs).wbsDatabaseId ?? undefined;
+
+      if (effectiveWbsDbId !== undefined && INDIRECT_WBS_IDS.has(effectiveWbsDbId)) {
+        switch (effectiveWbsDbId) {
+          case 10000: mobeHours += hours; break;
+          case 190000: demobeHours += hours; break;
+          case 200000: supportHours += hours; break;
+          case 180000: specialtyHours += hours; break;
+        }
+      } else {
+        directCraftHours += base.craftManHours || 0;
+        directWelderHours += base.welderManHours || 0;
+      }
     });
 
-    setTotalCost(Number(tempCost.toFixed(2)));
-    setTotalHours(Number(tempHours.toFixed(2)));
-    setCraftHours(Number(tempCraftHours.toFixed(2)));
-    setWelderHours(Number(tempWelderHours.toFixed(2)));
-    setSubcontractorHours(Number(tempSubHours.toFixed(2)));
-    setCraftCost(Number(tempCraftCost.toFixed(2)));
-    setWelderCost(Number(tempWelderCost.toFixed(2)));
-    setSubcontractorCost(Number(tempSubCost.toFixed(2)));
-    setEquipmentCost(Number(tempEquipmentCost.toFixed(2)));
-    setMaterialCost(Number(tempMaterialCost.toFixed(2)));
-    setCostOnlyCost(Number(tempCostOnly.toFixed(2)));
-  }, [dataset]);
+    const indirectHours = mobeHours + demobeHours + supportHours + specialtyHours;
+    const directHours = directCraftHours + directWelderHours;
+    const fix = (n: number) => Number(n.toFixed(2));
+
+    return {
+      totalCost: fix(totalCost), totalHours: fix(directHours + indirectHours),
+      directHours: fix(directHours), directCraftHours: fix(directCraftHours),
+      directWelderHours: fix(directWelderHours), indirectHours: fix(indirectHours),
+      mobeHours: fix(mobeHours), demobeHours: fix(demobeHours),
+      supportHours: fix(supportHours), specialtyHours: fix(specialtyHours),
+      subcontractorHours: fix(subcontractorHours), craftCost: fix(craftCost),
+      welderCost: fix(welderCost), subcontractorCost: fix(subcontractorCost),
+      equipmentCost: fix(equipmentCost), materialCost: fix(materialCost),
+      costOnlyCost: fix(costOnlyCost),
+    };
+  }, [dataset, wbsLookup]);
+
+  // ---------------------------------------------------------------------------
+  //  Quick Actions
+  // ---------------------------------------------------------------------------
 
   const { hasWritePermissions } = useUserProfile();
   const [openEquipmentDialog, setOpenEquipmentDialog] = useState(false);
   const [openAddActivityDialog, setOpenAddActivityDialog] = useState(false);
   const [addPhaseDialogOpen, setAddPhaseDialogOpen] = useState(false);
 
-  const addActivities = estimatorStore(
-    (state: StoreState) => state.addActivities,
-  );
-  const recalculatePhase = estimatorStore(
-    (state: StoreState) => state.recalculatePhase,
-  );
+  const addActivities = estimatorStore((s: StoreState) => s.addActivities);
+  const recalculatePhase = estimatorStore((s: StoreState) => s.recalculatePhase);
 
   const createActivity = useCallback(
     async (payload: Partial<FirestoreActivity>) => {
       if (!phaseId) return;
-      const { activityType, ...restPayload } = payload;
+      const { activityType, ...rest } = payload;
       const activity = new FirestoreActivity({
-        proposalId,
-        wbsId,
-        phaseId,
-        constant: null,
-        equipment: null,
-        craftConstant: 0,
-        welderConstant: 0,
-        time: 0,
-        quantity: 0,
-        price: 0,
-        craftBaseRate: null,
-        subsistenceRate: null,
-        craftCost: null,
-        equipmentCost: null,
-        materialCost: null,
-        equipmentOwnership: null,
-        dateAdded: Date.now(),
-        sortOrder: null,
-        ...restPayload,
-        activityType: activityType ?? null,
+        proposalId, wbsId, phaseId,
+        constant: null, equipment: null,
+        craftConstant: 0, welderConstant: 0, time: 0, quantity: 0, price: 0,
+        craftBaseRate: null, subsistenceRate: null,
+        craftCost: null, equipmentCost: null, materialCost: null,
+        equipmentOwnership: null, dateAdded: Date.now(), sortOrder: null,
+        ...rest, activityType: activityType ?? null,
       });
       await addActivities([activity]);
       recalculatePhase(phaseId);
@@ -173,303 +244,181 @@ function BottomPanel() {
     [addActivities, recalculatePhase, phaseId, proposalId, wbsId],
   );
 
-  const quickActions = useMemo(
-    () => [
-      {
-        label: 'Add Activity',
-        handler: () => setOpenAddActivityDialog(true),
-      },
-      {
-        label: 'Add Equipment',
-        handler: () => setOpenEquipmentDialog(true),
-      },
-      {
-        label: 'Add Material',
-        handler: () =>
-          createActivity({
-            description: 'NEW MATERIAL ITEM',
-            activityType: ActivityType.materialItem,
-          }),
-      },
-      {
-        label: 'Add Cost Only',
-        handler: () =>
-          createActivity({
-            description: 'NEW COST ONLY ITEM',
-            activityType: ActivityType.costOnlyItem,
-          }),
-      },
-      {
-        label: 'Add Custom Labor',
-        handler: () =>
-          createActivity({
-            description: 'NEW CUSTOM LABOR ITEM',
-            activityType: ActivityType.customLaborItem,
-          }),
-      },
-      {
-        label: 'Add Subcontractor',
-        handler: () =>
-          createActivity({
-            description: 'NEW SUBCONTRACTOR',
-            activityType: ActivityType.subContractorItem,
-            unit: 'HOURS',
-          }),
-      },
-    ],
-    [createActivity],
-  );
+  const closeMenu = () => setAddMenuAnchor(null);
+
+  // ---------------------------------------------------------------------------
+  //  Render
+  // ---------------------------------------------------------------------------
 
   return (
-    <Paper
-      elevation={0}
-      square
-      sx={{
-        position: 'sticky',
-        bottom: 0,
-        left: 0,
-        right: 0,
-        borderTop: '1px solid rgba(15,23,42,0.08)',
-        backgroundColor:
-          theme.palette.mode === 'dark'
-            ? 'rgba(20,20,20,0.9)'
-            : 'rgba(255,255,255,0.96)',
-        backdropFilter: 'blur(18px)',
-        px: { xs: 1.5, md: 4 },
-        py: { xs: 1, md: 2.5 },
-        zIndex: 5,
-      }}>
-      <Stack
-        direction={{ xs: 'column', lg: 'row' }}
-        spacing={3}
-        alignItems='stretch'>
-        <Box flex={1} minWidth={0}>
-          <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
-            <Card
-              elevation={0}
-              sx={{
-                flex: 1,
-                borderRadius: 3,
-                boxShadow: '0px 1px 3px rgba(15,23,42,0.08)',
-                border: '1px solid rgba(15,23,42,0.05)',
-              }}>
-              <CardContent sx={metricCardStyles}>
-                <Avatar sx={{ backgroundColor: green[500] }}>
-                  <AttachMoneyIcon />
-                </Avatar>
-                <Box>
-                  <Typography variant='subtitle2' color='textSecondary'>
-                    Total Cost
-                  </Typography>
-                  <Typography variant='h6'>
-                    $
-                    {totalCost.toLocaleString(undefined, {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 2,
-                    })}
-                  </Typography>
-                </Box>
-              </CardContent>
-            </Card>
-            <Card
-              elevation={0}
-              sx={{
-                flex: 1,
-                borderRadius: 3,
-                boxShadow: '0px 1px 3px rgba(15,23,42,0.08)',
-                border: '1px solid rgba(15,23,42,0.05)',
-              }}>
-              <CardContent sx={metricCardStyles}>
-                <Avatar sx={{ backgroundColor: blue[500] }}>
-                  <AccessTimeIcon />
-                </Avatar>
-                <Box>
-                  <Typography variant='subtitle2' color='textSecondary'>
-                    Total Hours
-                  </Typography>
-                  <Typography variant='h6'>
-                    {totalHours.toLocaleString(undefined, {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 2,
-                    })}
-                  </Typography>
-                </Box>
-              </CardContent>
-            </Card>
-          </Stack>
+    <>
+      <Box sx={{ flexShrink: 0, borderTop: `1px solid ${COLOR.border}`, backgroundColor: COLOR.surface }}>
 
-          <Box mt={isCompact ? 1 : 2}>
-            <Divider sx={{ mb: 1, borderColor: 'rgba(15,23,42,0.08)' }} />
-            <Box
-              sx={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                mb: 1,
-              }}>
-              <Typography variant='subtitle1' fontWeight={600}>
-                Breakdown
-              </Typography>
+        {/* ━━━ Status bar ━━━ */}
+        <Box sx={{ display: 'flex', alignItems: 'center', height: 40, px: { xs: 0.5, sm: 1.5 } }}>
+          <Box
+            sx={{
+              display: 'flex', alignItems: 'center', flex: 1, minWidth: 0,
+              overflow: 'auto', '&::-webkit-scrollbar': { display: 'none' }, scrollbarWidth: 'none',
+            }}>
+            <Stat label='Total Cost' value={fmt(totals.totalCost, '$')} />
+            <Box sx={{ width: '1px', height: 16, backgroundColor: COLOR.border, flexShrink: 0, mx: 0.25 }} />
+            <Stat label='Total Hrs' value={fmt(totals.totalHours)} />
+            <Box sx={{ width: '1px', height: 16, backgroundColor: COLOR.border, flexShrink: 0, mx: 0.25 }} />
+            <Stat label='Direct' value={fmt(totals.directHours)} />
+            <Box sx={{ width: '1px', height: 16, backgroundColor: COLOR.border, flexShrink: 0, mx: 0.25 }} />
+            <Stat label='Indirect' value={fmt(totals.indirectHours)} />
+            <Box sx={{ width: '1px', height: 16, backgroundColor: COLOR.border, flexShrink: 0, mx: 0.25 }} />
+            <Stat label='Sub Hrs' value={fmt(totals.subcontractorHours)} />
+          </Box>
+
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, ml: 1, flexShrink: 0 }}>
+            {hasHiddenData && (
+              <Tooltip title='Some hidden WBS items contain data not reflected in these totals. Use WBS Select to review.' enterDelay={200}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.4, px: 1, py: 0.25, borderRadius: 1, backgroundColor: '#fffbeb', border: '1px solid #fde68a', cursor: 'help' }}>
+                  <WarningAmberIcon sx={{ fontSize: 13, color: '#d97706' }} />
+                  <Typography sx={{ fontSize: '0.625rem', fontWeight: 600, color: '#92400e', whiteSpace: 'nowrap' }}>
+                    Hidden WBS data
+                  </Typography>
+                </Box>
+              </Tooltip>
+            )}
+            <Tooltip title={detailsOpen ? 'Hide breakdown' : 'Show breakdown'} enterDelay={400}>
               <Button
                 size='small'
-                sx={{ textTransform: 'none', fontWeight: 500 }}
-                startIcon={
-                  <ExpandMoreIcon
-                    sx={{
-                      transform: detailsExpanded
-                        ? 'rotate(180deg)'
-                        : 'rotate(0deg)',
-                      transition: 'transform 0.2s ease',
-                    }}
-                  />
-                }
-                onClick={() => setDetailsExpanded((prev) => !prev)}>
-                {detailsExpanded ? 'Hide Details' : 'Show Details'}
+                onClick={() => setDetailsOpen((p) => !p)}
+                disableElevation
+                disableRipple
+                sx={{
+                  minWidth: 0, px: 1.25, py: 0.25, textTransform: 'none',
+                  fontWeight: 500, fontSize: '0.725rem', color: COLOR.label,
+                  borderRadius: 1, border: `1px solid ${COLOR.border}`,
+                  backgroundColor: detailsOpen ? alpha('#000', 0.03) : 'transparent',
+                  '&:hover': { backgroundColor: alpha('#000', 0.04), borderColor: '#d1d5db' },
+                }}
+                endIcon={
+                  detailsOpen
+                    ? <KeyboardArrowDownIcon sx={{ fontSize: '14px !important', color: COLOR.muted }} />
+                    : <KeyboardArrowUpIcon sx={{ fontSize: '14px !important', color: COLOR.muted }} />
+                }>
+                Details
               </Button>
-            </Box>
-            <Collapse in={detailsExpanded} timeout='auto' unmountOnExit>
-              <Grid container spacing={2}>
-                <Grid item xs={12} md={4}>
-                  <Typography variant='subtitle2' gutterBottom fontWeight={600}>
-                    Hours Details
-                  </Typography>
-                  <Box sx={{ display: 'flex', mb: 1 }}>
-                    <GroupIcon sx={{ color: blue[500], mr: 1 }} />
-                    <Typography variant='body2'>
-                      Craft Hours: {craftHours.toFixed(2)}
-                    </Typography>
-                  </Box>
-                  <Box sx={{ display: 'flex', mb: 1 }}>
-                    <BuildIcon sx={{ color: orange[500], mr: 1 }} />
-                    <Typography variant='body2'>
-                      Welder Hours: {welderHours.toFixed(2)}
-                    </Typography>
-                  </Box>
-                  <Box sx={{ display: 'flex' }}>
-                    <LocalShippingIcon sx={{ color: red[500], mr: 1 }} />
-                    <Typography variant='body2'>
-                      Subcontractor Hours: {subcontractorHours.toFixed(2)}
-                    </Typography>
-                  </Box>
-                </Grid>
-                <Grid item xs={12} md={4}>
-                  <Typography variant='subtitle2' gutterBottom fontWeight={600}>
-                    Cost Details
-                  </Typography>
-                  <Box sx={{ display: 'flex', mb: 1 }}>
-                    <AttachMoneyIcon sx={{ color: green[500], mr: 1 }} />
-                    <Typography variant='body2'>
-                      Craft Total: ${craftCost.toFixed(2)}
-                    </Typography>
-                  </Box>
-                  <Box sx={{ display: 'flex', mb: 1 }}>
-                    <AttachMoneyIcon sx={{ color: purple[500], mr: 1 }} />
-                    <Typography variant='body2'>
-                      Weld & Rig Total: ${welderCost.toFixed(2)}
-                    </Typography>
-                  </Box>
-                  <Box sx={{ display: 'flex' }}>
-                    <AttachMoneyIcon sx={{ color: red[500], mr: 1 }} />
-                    <Typography variant='body2'>
-                      Subcontractor Total: ${subcontractorCost.toFixed(2)}
-                    </Typography>
-                  </Box>
-                </Grid>
-                <Grid item xs={12} md={4}>
-                  <Typography variant='subtitle2' gutterBottom fontWeight={600}>
-                    Additional Costs
-                  </Typography>
-                  <Box sx={{ display: 'flex', mb: 1 }}>
-                    <AttachMoneyIcon sx={{ color: blue[500], mr: 1 }} />
-                    <Typography variant='body2'>
-                      Equipment Total: ${equipmentCost.toFixed(2)}
-                    </Typography>
-                  </Box>
-                  <Box sx={{ display: 'flex', mb: 1 }}>
-                    <AttachMoneyIcon sx={{ color: orange[500], mr: 1 }} />
-                    <Typography variant='body2'>
-                      Material Total: ${materialCost.toFixed(2)}
-                    </Typography>
-                  </Box>
-                  <Box sx={{ display: 'flex' }}>
-                    <AttachMoneyIcon sx={{ color: green[500], mr: 1 }} />
-                    <Typography variant='body2'>
-                      Cost Only Total: ${costOnlyCost.toFixed(2)}
-                    </Typography>
-                  </Box>
-                </Grid>
-              </Grid>
-            </Collapse>
+            </Tooltip>
+
+            {hasWritePermissions && (
+              <Tooltip title='Add item' enterDelay={400}>
+                <IconButton
+                  size='small'
+                  onClick={(e) => setAddMenuAnchor(e.currentTarget)}
+                  sx={{
+                    width: 28, height: 28, borderRadius: 1,
+                    border: `1px solid ${COLOR.border}`, backgroundColor: COLOR.white,
+                    color: COLOR.sectionHead,
+                    '&:hover': { backgroundColor: alpha('#000', 0.04), borderColor: '#d1d5db' },
+                  }}>
+                  <AddIcon sx={{ fontSize: 16 }} />
+                </IconButton>
+              </Tooltip>
+            )}
           </Box>
         </Box>
 
-        {hasWritePermissions && (
-          <Box width={{ xs: '100%', lg: 320 }} flexShrink={0}>
-            <Card
-              elevation={0}
-              sx={{
-                height: '100%',
-                borderRadius: 3,
-                border: '1px solid rgba(15,23,42,0.08)',
-                boxShadow: '0px 1px 3px rgba(15,23,42,0.08)',
-              }}>
-              <CardContent>
-                <Typography variant='subtitle1' gutterBottom fontWeight={600}>
-                  Quick Actions
-                </Typography>
-                <Grid container spacing={1.2} columns={12}>
-                  <Grid item xs={12}>
-                    <Button
-                      disabled={!wbsId}
-                      variant='contained'
-                      fullWidth
-                      disableElevation
-                      sx={{
-                        borderRadius: 2,
-                        fontWeight: 600,
-                        py: 1.2,
-                      }}
-                      onClick={() => setAddPhaseDialogOpen(true)}>
-                      Add Phase
-                    </Button>
-                  </Grid>
-                  {quickActions.map((action) => (
-                    <Grid item xs={6} key={action.label}>
-                      <Button
-                        disabled={!phaseId}
-                        variant='outlined'
-                        fullWidth
-                        sx={{
-                          borderRadius: 2,
-                          py: 1,
-                          textTransform: 'none',
-                          fontWeight: 500,
-                        }}
-                        onClick={action.handler}>
-                        {action.label.replace('Add ', '')}
-                      </Button>
-                    </Grid>
-                  ))}
-                </Grid>
-              </CardContent>
-            </Card>
-          </Box>
-        )}
-      </Stack>
+        {/* ━━━ Expandable breakdown ━━━ */}
+        <Collapse in={detailsOpen} timeout={200}>
+          <Box
+            sx={{
+              maxHeight: '32vh', overflowY: 'auto',
+              borderTop: `1px solid ${COLOR.border}`,
+              px: { xs: 2, sm: 3 }, py: 1.5,
+              backgroundColor: COLOR.white,
+            }}>
+            <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr 1fr' }, gap: { xs: 2, sm: 4 } }}>
 
-      <AddPhaseDialog
-        open={addPhaseDialogOpen}
-        onClose={() => setAddPhaseDialogOpen(false)}
-      />
-      <AddEquipmentDialog
-        open={openEquipmentDialog}
-        onClose={() => setOpenEquipmentDialog(false)}
-      />
-      <AddActivityDialog
-        open={openAddActivityDialog}
-        onClose={() => setOpenAddActivityDialog(false)}
-      />
-    </Paper>
+              {/* Hours */}
+              <Box>
+                <SectionHeader>Hours</SectionHeader>
+                <DetailRow label='Direct Hours' value={fmt(totals.directHours)} bold />
+                <Box sx={{ pl: 1.5, borderLeft: `2px solid ${COLOR.border}`, ml: 0.5, my: 0.25 }}>
+                  <DetailRow label='Craft' value={fmt(totals.directCraftHours)} />
+                  <DetailRow label='Welder' value={fmt(totals.directWelderHours)} />
+                </Box>
+
+                <Box sx={{ height: 8 }} />
+
+                <DetailRow label='Indirect Hours' value={fmt(totals.indirectHours)} bold />
+                <Box sx={{ pl: 1.5, borderLeft: `2px solid ${COLOR.border}`, ml: 0.5, my: 0.25 }}>
+                  <DetailRow label='Support' value={fmt(totals.supportHours)} />
+                  <DetailRow label='Mobilization' value={fmt(totals.mobeHours)} />
+                  <DetailRow label='Demobilization' value={fmt(totals.demobeHours)} />
+                  <DetailRow label='Specialty Services' value={fmt(totals.specialtyHours)} />
+                </Box>
+
+                <Box sx={{ height: 8 }} />
+                <DetailRow label='Subcontractor Hours' value={fmt(totals.subcontractorHours)} bold />
+              </Box>
+
+              {/* Cost Details */}
+              <Box>
+                <SectionHeader>Labor Costs</SectionHeader>
+                <DetailRow label='Craft Total' value={fmt(totals.craftCost, '$')} />
+                <DetailRow label='Weld & Rig Total' value={fmt(totals.welderCost, '$')} />
+                <DetailRow label='Subcontractor Total' value={fmt(totals.subcontractorCost, '$')} />
+              </Box>
+
+              {/* Additional Costs */}
+              <Box>
+                <SectionHeader>Other Costs</SectionHeader>
+                <DetailRow label='Equipment' value={fmt(totals.equipmentCost, '$')} />
+                <DetailRow label='Material' value={fmt(totals.materialCost, '$')} />
+                <DetailRow label='Cost Only' value={fmt(totals.costOnlyCost, '$')} />
+              </Box>
+            </Box>
+          </Box>
+        </Collapse>
+      </Box>
+
+      {/* ━━━ Quick Actions popover ━━━ */}
+      <Menu
+        anchorEl={addMenuAnchor}
+        open={Boolean(addMenuAnchor)}
+        onClose={closeMenu}
+        anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+        transformOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+        PaperProps={{
+          sx: {
+            mt: -0.5, minWidth: 180, borderRadius: 1.5,
+            border: `1px solid ${COLOR.border}`,
+            boxShadow: '0 4px 16px rgba(0,0,0,0.08), 0 1px 3px rgba(0,0,0,0.06)',
+          },
+        }}>
+        <MenuItem disabled={!wbsId} onClick={() => { setAddPhaseDialogOpen(true); closeMenu(); }}>
+          <ListItemText primary='Phase' primaryTypographyProps={{ fontSize: '0.825rem', fontWeight: 600 }} />
+        </MenuItem>
+        <Divider sx={{ my: 0.25 }} />
+        <MenuItem disabled={!phaseId} onClick={() => { setOpenAddActivityDialog(true); closeMenu(); }}>
+          <ListItemText primary='Activity' primaryTypographyProps={{ fontSize: '0.825rem' }} />
+        </MenuItem>
+        <MenuItem disabled={!phaseId} onClick={() => { setOpenEquipmentDialog(true); closeMenu(); }}>
+          <ListItemText primary='Equipment' primaryTypographyProps={{ fontSize: '0.825rem' }} />
+        </MenuItem>
+        <MenuItem disabled={!phaseId} onClick={() => { createActivity({ description: 'NEW MATERIAL ITEM', activityType: ActivityType.materialItem }); closeMenu(); }}>
+          <ListItemText primary='Material' primaryTypographyProps={{ fontSize: '0.825rem' }} />
+        </MenuItem>
+        <MenuItem disabled={!phaseId} onClick={() => { createActivity({ description: 'NEW COST ONLY ITEM', activityType: ActivityType.costOnlyItem }); closeMenu(); }}>
+          <ListItemText primary='Cost Only' primaryTypographyProps={{ fontSize: '0.825rem' }} />
+        </MenuItem>
+        <MenuItem disabled={!phaseId} onClick={() => { createActivity({ description: 'NEW CUSTOM LABOR ITEM', activityType: ActivityType.customLaborItem }); closeMenu(); }}>
+          <ListItemText primary='Custom Labor' primaryTypographyProps={{ fontSize: '0.825rem' }} />
+        </MenuItem>
+        <MenuItem disabled={!phaseId} onClick={() => { createActivity({ description: 'NEW SUBCONTRACTOR', activityType: ActivityType.subContractorItem, unit: 'HOURS' }); closeMenu(); }}>
+          <ListItemText primary='Subcontractor' primaryTypographyProps={{ fontSize: '0.825rem' }} />
+        </MenuItem>
+      </Menu>
+
+      <AddPhaseDialog open={addPhaseDialogOpen} onClose={() => setAddPhaseDialogOpen(false)} />
+      <AddEquipmentDialog open={openEquipmentDialog} onClose={() => setOpenEquipmentDialog(false)} />
+      <AddActivityDialog open={openAddActivityDialog} onClose={() => setOpenAddActivityDialog(false)} />
+    </>
   );
 }
 

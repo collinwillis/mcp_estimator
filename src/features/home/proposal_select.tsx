@@ -1,364 +1,248 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Box,
   Typography,
-  Grid,
-  Card,
-  Button,
-  Avatar,
-  List,
-  ListItem,
-  ListItemAvatar,
-  ListItemText,
-  Divider,
   CircularProgress,
-  Tooltip,
-  IconButton,
+  Chip,
 } from '@mui/material';
-import {
-  Description as DescriptionIcon,
-  Add as AddIcon,
-  Schedule as ScheduleIcon,
-  PendingActions as PendingActionsIcon,
-  ThumbUp as ThumbUpIcon,
-  AccessTime as AccessTimeIcon,
-  NotificationsActive as NotificationsActiveIcon,
-  Info as InfoIcon,
-} from '@mui/icons-material';
-import { styled, useTheme } from '@mui/material/styles';
 import { useProposals } from '../../hooks/proposals_hook';
 import { Proposal, ProposalStatus } from '../../models/proposal';
-import { format, addDays, isValid, parseISO } from 'date-fns';
-import {
-  PieChart,
-  Pie,
-  Cell,
-  Tooltip as RechartsTooltip,
-  ResponsiveContainer,
-} from 'recharts';
+import { format, addDays, isValid, parseISO, differenceInDays } from 'date-fns';
 
-const DashboardContainer = styled(Box)(({ theme }) => ({
-  padding: theme.spacing(3),
-  backgroundColor: theme.palette.background.default,
-  minHeight: '100vh',
-}));
+// Status config — single source of truth for colors and labels
+const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string }> = {
+  [ProposalStatus.Bidding]: { label: 'Bidding', color: '#92400e', bg: '#fef3c7' },
+  [ProposalStatus.Open]: { label: 'Open', color: '#1e40af', bg: '#dbeafe' },
+  [ProposalStatus.Submitted]: { label: 'Submitted', color: '#1e3a5f', bg: '#e0e7ff' },
+  [ProposalStatus.Awarded]: { label: 'Awarded', color: '#065f46', bg: '#d1fae5' },
+  [ProposalStatus.Rejected]: { label: 'Rejected', color: '#991b1b', bg: '#fee2e2' },
+  [ProposalStatus.Declined]: { label: 'Declined', color: '#6b7280', bg: '#f3f4f6' },
+};
 
-const StatsCard = styled(Card)(({ theme }) => ({
-  display: 'flex',
-  alignItems: 'center',
-  padding: theme.spacing(2),
-  boxShadow: theme.shadows[1],
-  backgroundColor: theme.palette.background.paper,
-  height: '100%',
-}));
+const getStatusConfig = (status?: ProposalStatus | string) => {
+  if (!status) return { label: '\u2014', color: '#6b7280', bg: '#f3f4f6' };
+  return STATUS_CONFIG[status] || { label: status, color: '#6b7280', bg: '#f3f4f6' };
+};
 
 const ProposalOverviewDashboard: React.FC = () => {
-  const theme = useTheme();
   const navigate = useNavigate();
   const { data: proposals, loading } = useProposals();
-  const [recentProposals, setRecentProposals] = useState<Proposal[]>([]);
-  const [upcomingProposals, setUpcomingProposals] = useState<Proposal[]>([]);
-  const [statusData, setStatusData] = useState<any[]>([]);
-  const [hitRate, setHitRate] = useState<number>(0);
-  const [pendingProposalsCount, setPendingProposalsCount] = useState<number>(0);
-  const [submittedProposalsCount, setSubmittedProposalsCount] =
-    useState<number>(0);
-  const [awardedProposalsCount, setAwardedProposalsCount] = useState<number>(0);
-  const [rejectedProposalsCount, setRejectedProposalsCount] =
-    useState<number>(0);
+  const [activeFilter, setActiveFilter] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (proposals) {
-      // Recent Activities
-      const sortedProposals = proposals.slice().sort((a, b) => {
-        const numA = a.proposalNumber ? a.proposalNumber : 0;
-        const numB = b.proposalNumber ? b.proposalNumber : 0;
-        return numB - numA; // Sort in descending order
-      });
-      setRecentProposals(sortedProposals.slice(0, 3)); // Latest 5 proposals
-
-      // Upcoming Deadlines
-      const today = new Date();
-      const nextWeek = addDays(today, 7);
-      const upcoming = proposals.filter((proposal) => {
-        const dueDate = parseISO(proposal.proposalDateDue || '');
-        return (
-          isValid(dueDate) &&
-          dueDate >= today &&
-          dueDate <= nextWeek &&
-          proposal.proposalStatus === ProposalStatus.Bidding
-        );
-      });
-      setUpcomingProposals(upcoming);
-
-      // Proposal Status Counts
-      const pending = proposals.filter(
-        (proposal) =>
-          proposal.proposalStatus === ProposalStatus.Bidding ||
-          proposal.proposalStatus === ProposalStatus.Open,
-      ).length;
-
-      const submitted = proposals.filter(
-        (proposal) => proposal.proposalStatus === ProposalStatus.Submitted,
-      ).length;
-
-      const awarded = proposals.filter(
-        (proposal) => proposal.proposalStatus === ProposalStatus.Awarded,
-      ).length;
-
-      const rejected = proposals.filter(
-        (proposal) =>
-          proposal.proposalStatus === ProposalStatus.Rejected ||
-          proposal.proposalStatus === ProposalStatus.Declined,
-      ).length;
-
-      setPendingProposalsCount(pending);
-      setSubmittedProposalsCount(submitted);
-      setAwardedProposalsCount(awarded);
-      setRejectedProposalsCount(rejected);
-
-      // Hit Rate Calculation
-      const totalDecided = awarded + rejected;
-      const calculatedHitRate =
-        totalDecided > 0 ? (awarded / totalDecided) * 100 : 0;
-      setHitRate(parseFloat(calculatedHitRate.toFixed(2)));
-
-      // Proposal Status Data for Chart
-      const statusDataArray = [
-        { name: 'Pending', value: pending },
-        { name: 'Submitted', value: submitted },
-        { name: 'Awarded', value: awarded },
-        { name: 'Rejected', value: rejected },
-      ];
-      setStatusData(statusDataArray);
-    }
+  const stats = useMemo(() => {
+    if (!proposals) return { total: 0, pending: 0, submitted: 0, awarded: 0, rejected: 0, hitRate: 0 };
+    const pending = proposals.filter((p) => p.proposalStatus === ProposalStatus.Bidding || p.proposalStatus === ProposalStatus.Open).length;
+    const submitted = proposals.filter((p) => p.proposalStatus === ProposalStatus.Submitted).length;
+    const awarded = proposals.filter((p) => p.proposalStatus === ProposalStatus.Awarded).length;
+    const rejected = proposals.filter((p) => p.proposalStatus === ProposalStatus.Rejected || p.proposalStatus === ProposalStatus.Declined).length;
+    const totalDecided = awarded + rejected;
+    return {
+      total: proposals.length,
+      pending,
+      submitted,
+      awarded,
+      rejected,
+      hitRate: totalDecided > 0 ? parseFloat(((awarded / totalDecided) * 100).toFixed(1)) : 0,
+    };
   }, [proposals]);
 
-  const COLORS = [
-    theme.palette.warning.main,
-    theme.palette.info.main,
-    theme.palette.success.main,
-    theme.palette.error.main,
-  ];
+  // Status bar segments
+  const segments = useMemo(() => {
+    if (!stats.total) return [];
+    const items = [
+      { label: 'Pending', count: stats.pending, color: '#f59e0b' },
+      { label: 'Submitted', count: stats.submitted, color: '#3b82f6' },
+      { label: 'Awarded', count: stats.awarded, color: '#10b981' },
+      { label: 'Rejected', count: stats.rejected, color: '#ef4444' },
+    ];
+    return items.filter((s) => s.count > 0).map((s) => ({ ...s, pct: (s.count / stats.total) * 100 }));
+  }, [stats]);
+
+  // Sorted + filtered proposals for the main table
+  const displayProposals = useMemo(() => {
+    if (!proposals) return [];
+    let filtered = proposals.slice();
+    if (activeFilter) {
+      const filterStatuses: string[] = activeFilter === 'Pending'
+        ? [ProposalStatus.Bidding, ProposalStatus.Open]
+        : activeFilter === 'Rejected'
+          ? [ProposalStatus.Rejected, ProposalStatus.Declined]
+          : [activeFilter === 'Submitted' ? ProposalStatus.Submitted : ProposalStatus.Awarded];
+      filtered = filtered.filter((p) => filterStatuses.includes(p.proposalStatus?.toString() || ''));
+    }
+    return filtered.sort((a, b) => (b.proposalNumber || 0) - (a.proposalNumber || 0)).slice(0, 50);
+  }, [proposals, activeFilter]);
+
+  if (loading) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
+        <CircularProgress size={20} sx={{ color: '#9ca3af' }} />
+      </Box>
+    );
+  }
 
   return (
-    <DashboardContainer>
-      {/* Welcome Message */}
-      <Typography variant='h4' gutterBottom>
-        Welcome Back!
-      </Typography>
-      <Typography variant='subtitle1' color='textSecondary' gutterBottom>
-        Here's an overview of your proposals.
-      </Typography>
-
-      {loading ? (
-        <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
-          <CircularProgress />
+    <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+      {/* Header + stats */}
+      <Box sx={{ flexShrink: 0, px: { xs: 2, sm: 3 }, pt: 2.5, pb: 2, borderBottom: '1px solid #e5e7eb' }}>
+        {/* Stats row */}
+        <Box sx={{ display: 'flex', gap: { xs: 2, md: 4 }, mb: 2, flexWrap: 'wrap' }}>
+          <StatInline label='Proposals' value={stats.total} />
+          <StatInline label='In Progress' value={stats.pending} />
+          <StatInline label='Submitted' value={stats.submitted} />
+          <StatInline label='Awarded' value={stats.awarded} />
+          <StatInline label='Hit Rate' value={`${stats.hitRate}%`} />
         </Box>
-      ) : (
-        <>
-          {/* Statistics Cards */}
-          <Grid container spacing={2} sx={{ mt: 2 }}>
-            <Grid item xs={12} sm={6} md={3}>
-              <Tooltip title='Total number of proposals in the system'>
-                <StatsCard>
-                  <Avatar sx={{ bgcolor: theme.palette.primary.main, mr: 2 }}>
-                    <DescriptionIcon />
-                  </Avatar>
-                  <Box>
-                    <Typography variant='h6'>
-                      {proposals?.length || 0}
-                    </Typography>
-                    <Typography variant='body2' color='textSecondary'>
-                      Total Proposals
-                    </Typography>
-                  </Box>
-                </StatsCard>
-              </Tooltip>
-            </Grid>
-            <Grid item xs={12} sm={6} md={3}>
-              <Tooltip title='Proposals that are currently in progress'>
-                <StatsCard>
-                  <Avatar sx={{ bgcolor: theme.palette.warning.main, mr: 2 }}>
-                    <PendingActionsIcon />
-                  </Avatar>
-                  <Box>
-                    <Typography variant='h6'>
-                      {pendingProposalsCount}
-                    </Typography>
-                    <Typography variant='body2' color='textSecondary'>
-                      Proposals In Progress
-                    </Typography>
-                  </Box>
-                </StatsCard>
-              </Tooltip>
-            </Grid>
-            <Grid item xs={12} sm={6} md={3}>
-              <Tooltip title='Proposals that have been awarded'>
-                <StatsCard>
-                  <Avatar sx={{ bgcolor: theme.palette.success.main, mr: 2 }}>
-                    <ThumbUpIcon />
-                  </Avatar>
-                  <Box>
-                    <Typography variant='h6'>
-                      {awardedProposalsCount}
-                    </Typography>
-                    <Typography variant='body2' color='textSecondary'>
-                      Proposals Awarded
-                    </Typography>
-                  </Box>
-                </StatsCard>
-              </Tooltip>
-            </Grid>
-            <Grid item xs={12} sm={6} md={3}>
-              <Tooltip title='Percentage of awarded proposals out of all decided proposals (awarded or rejected)'>
-                <StatsCard>
-                  <Avatar sx={{ bgcolor: theme.palette.info.main, mr: 2 }}>
-                    <AccessTimeIcon />
-                  </Avatar>
-                  <Box>
-                    <Typography variant='h6'>{hitRate}%</Typography>
-                    <Typography variant='body2' color='textSecondary'>
-                      Hit Rate
-                    </Typography>
-                  </Box>
-                </StatsCard>
-              </Tooltip>
-            </Grid>
-          </Grid>
 
-          {/* Actions */}
-          {/*<Box sx={{ mt: 4, display: 'flex', justifyContent: 'flex-end' }}>*/}
-          {/*  <Button*/}
-          {/*    variant='contained'*/}
-          {/*    color='primary'*/}
-          {/*    startIcon={<AddIcon />}*/}
-          {/*    onClick={() => navigate('/create-proposal')}>*/}
-          {/*    Create New Proposal*/}
-          {/*  </Button>*/}
-          {/*</Box>*/}
-
-          {/* Proposal Status Chart */}
-          <Box sx={{ mt: 4 }}>
-            <Typography variant='h6' gutterBottom>
-              Proposal Status Overview
-            </Typography>
-            <Divider />
-            <Box sx={{ width: '100%', height: 300 }}>
-              <ResponsiveContainer>
-                <PieChart>
-                  <Pie
-                    data={statusData}
-                    dataKey='value'
-                    nameKey='name'
-                    cx='50%'
-                    cy='50%'
-                    innerRadius={60}
-                    outerRadius={100}
-                    fill={theme.palette.primary.main}
-                    label>
-                    {statusData.map((entry, index) => (
-                      <Cell
-                        key={`cell-${index}`}
-                        fill={COLORS[index % COLORS.length]}
-                      />
-                    ))}
-                  </Pie>
-                  <RechartsTooltip />
-                </PieChart>
-              </ResponsiveContainer>
+        {/* Status distribution bar */}
+        {segments.length > 0 && (
+          <Box>
+            <Box sx={{ display: 'flex', height: 6, borderRadius: 3, overflow: 'hidden', backgroundColor: '#f3f4f6' }}>
+              {segments.map((s) => (
+                <Box
+                  key={s.label}
+                  onClick={() => setActiveFilter(activeFilter === s.label ? null : s.label)}
+                  sx={{
+                    width: `${s.pct}%`,
+                    backgroundColor: s.color,
+                    cursor: 'pointer',
+                    opacity: activeFilter && activeFilter !== s.label ? 0.3 : 1,
+                    transition: 'opacity 150ms',
+                  }}
+                />
+              ))}
+            </Box>
+            <Box sx={{ display: 'flex', gap: 2, mt: 0.75 }}>
+              {segments.map((s) => (
+                <Box
+                  key={s.label}
+                  onClick={() => setActiveFilter(activeFilter === s.label ? null : s.label)}
+                  sx={{ 'display': 'flex', 'alignItems': 'center', 'gap': 0.5, 'cursor': 'pointer', 'opacity': activeFilter && activeFilter !== s.label ? 0.4 : 1 }}>
+                  <Box sx={{ width: 6, height: 6, borderRadius: '50%', backgroundColor: s.color }} />
+                  <Typography sx={{ fontSize: '0.65rem', color: '#6b7280' }}>
+                    {s.label} ({s.count})
+                  </Typography>
+                </Box>
+              ))}
+              {activeFilter && (
+                <Typography
+                  onClick={() => setActiveFilter(null)}
+                  sx={{ 'fontSize': '0.65rem', 'color': '#9ca3af', 'cursor': 'pointer', 'ml': 'auto', '&:hover': { color: '#6b7280' } }}>
+                  Clear filter
+                </Typography>
+              )}
             </Box>
           </Box>
+        )}
+      </Box>
 
-          {/* Proposals Needing Attention */}
-          <Box sx={{ mt: 4 }}>
-            <Box sx={{ display: 'flex', alignItems: 'center' }}>
-              <Typography variant='h6' gutterBottom>
-                Proposals Needing Attention
+      {/* Proposal table */}
+      <Box sx={{ flex: 1, overflow: 'auto' }}>
+        {/* Table header */}
+        <Box
+          sx={{
+            display: 'grid',
+            gridTemplateColumns: '80px 1fr 160px 100px 80px',
+            gap: 1,
+            px: { xs: 2, sm: 3 },
+            py: 0.75,
+            borderBottom: '1px solid #e5e7eb',
+            position: 'sticky',
+            top: 0,
+            backgroundColor: '#f9fafb',
+            zIndex: 1,
+          }}>
+          <Typography sx={{ fontSize: '0.625rem', fontWeight: 600, color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '0.06em' }}>#</Typography>
+          <Typography sx={{ fontSize: '0.625rem', fontWeight: 600, color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Description</Typography>
+          <Typography sx={{ fontSize: '0.625rem', fontWeight: 600, color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Owner</Typography>
+          <Typography sx={{ fontSize: '0.625rem', fontWeight: 600, color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Status</Typography>
+          <Typography sx={{ fontSize: '0.625rem', fontWeight: 600, color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '0.06em', textAlign: 'right' }}>Due</Typography>
+        </Box>
+
+        {/* Table rows */}
+        {displayProposals.map((p) => {
+          const sc = getStatusConfig(p.proposalStatus);
+          const dueDate = parseISO(p.proposalDateDue || '');
+          const isOverdue = isValid(dueDate) && differenceInDays(dueDate, new Date()) < 0 && (p.proposalStatus === ProposalStatus.Bidding || p.proposalStatus === ProposalStatus.Open);
+          const isDueSoon = isValid(dueDate) && differenceInDays(dueDate, new Date()) <= 7 && differenceInDays(dueDate, new Date()) >= 0 && (p.proposalStatus === ProposalStatus.Bidding);
+
+          return (
+            <Box
+              key={p.id}
+              onClick={() => navigate(`/proposal/${p.id}`)}
+              sx={{
+                'display': 'grid',
+                'gridTemplateColumns': '80px 1fr 160px 100px 80px',
+                'gap': 1,
+                'px': { xs: 2, sm: 3 },
+                'py': 0.75,
+                'cursor': 'pointer',
+                'borderBottom': '1px solid #f3f4f6',
+                'alignItems': 'center',
+                '&:hover': { backgroundColor: '#f9fafb' },
+              }}>
+              <Typography sx={{ fontSize: '0.775rem', fontWeight: 600, color: '#111827', fontVariantNumeric: 'tabular-nums' }}>
+                {p.proposalNumber}
               </Typography>
-              <Tooltip title='Proposals that are due within the next 7 days and are still in Bidding status'>
-                <IconButton size='small' sx={{ ml: 1 }}>
-                  <InfoIcon fontSize='small' />
-                </IconButton>
-              </Tooltip>
+              <Typography sx={{ fontSize: '0.775rem', fontWeight: 400, color: '#374151', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                {p.proposalDescription || '\u2014'}
+              </Typography>
+              <Typography sx={{ fontSize: '0.7rem', color: '#6b7280', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                {p.proposalOwner || '\u2014'}
+              </Typography>
+              <Chip
+                label={sc.label}
+                size='small'
+                sx={{
+                  height: 20,
+                  fontSize: '0.625rem',
+                  fontWeight: 600,
+                  color: sc.color,
+                  backgroundColor: sc.bg,
+                  border: 'none',
+                  borderRadius: 0.75,
+                  width: 'fit-content',
+                }}
+              />
+              <Typography
+                sx={{
+                  fontSize: '0.7rem',
+                  fontVariantNumeric: 'tabular-nums',
+                  textAlign: 'right',
+                  color: isOverdue ? '#dc2626' : isDueSoon ? '#d97706' : '#9ca3af',
+                  fontWeight: isOverdue || isDueSoon ? 600 : 400,
+                }}>
+                {isValid(dueDate) ? format(dueDate, 'MM/dd') : '\u2014'}
+              </Typography>
             </Box>
-            <Divider />
-            <List>
-              {upcomingProposals.length > 0 ? (
-                upcomingProposals.map((proposal) => {
-                  const dueDate = parseISO(proposal.proposalDateDue || '');
-                  const formattedDueDate = isValid(dueDate)
-                    ? format(dueDate, 'MM/dd/yyyy')
-                    : 'N/A';
-                  return (
-                    <ListItem
-                      key={proposal.id}
-                      button
-                      onClick={() => navigate(`/proposal/${proposal.id}`)}>
-                      <ListItemAvatar>
-                        <Avatar sx={{ bgcolor: theme.palette.error.main }}>
-                          <NotificationsActiveIcon />
-                        </Avatar>
-                      </ListItemAvatar>
-                      <ListItemText
-                        primary={`${proposal.proposalNumber} - ${proposal.proposalDescription}`}
-                        secondary={`Due Date: ${formattedDueDate}`}
-                      />
-                    </ListItem>
-                  );
-                })
-              ) : (
-                <Typography variant='body1' color='textSecondary' sx={{ p: 2 }}>
-                  No proposals need immediate attention.
-                </Typography>
-              )}
-            </List>
-          </Box>
+          );
+        })}
 
-          {/* Recent Activities */}
-          <Box sx={{ mt: 4 }}>
-            <Typography variant='h6' gutterBottom>
-              Recent Proposals
+        {displayProposals.length === 0 && (
+          <Box sx={{ px: 3, py: 4 }}>
+            <Typography sx={{ fontSize: '0.8rem', color: '#9ca3af' }}>
+              No proposals found.
             </Typography>
-            <Divider />
-            <List>
-              {recentProposals.length > 0 ? (
-                recentProposals.map((proposal) => {
-                  const receivedDate = parseISO(
-                    proposal.proposalDateReceived || '',
-                  );
-                  const formattedReceivedDate = isValid(receivedDate)
-                    ? format(receivedDate, 'MM/dd/yyyy')
-                    : 'N/A';
-                  return (
-                    <ListItem
-                      key={proposal.id}
-                      button
-                      onClick={() => navigate(`/proposal/${proposal.id}`)}>
-                      <ListItemAvatar>
-                        <Avatar sx={{ bgcolor: theme.palette.primary.main }}>
-                          <DescriptionIcon />
-                        </Avatar>
-                      </ListItemAvatar>
-                      <ListItemText
-                        primary={`${proposal.proposalNumber} - ${proposal.proposalDescription}`}
-                        secondary={`Last Updated: ${formattedReceivedDate}`}
-                      />
-                    </ListItem>
-                  );
-                })
-              ) : (
-                <Typography variant='body1' color='textSecondary' sx={{ p: 2 }}>
-                  No recent activities found.
-                </Typography>
-              )}
-            </List>
           </Box>
-        </>
-      )}
-    </DashboardContainer>
+        )}
+      </Box>
+    </Box>
   );
 };
+
+// Inline stat — no cards, just label + value
+function StatInline({ label, value }: { label: string; value: string | number }) {
+  return (
+    <Box>
+      <Typography sx={{ fontSize: '0.6rem', fontWeight: 500, color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '0.04em', lineHeight: 1 }}>
+        {label}
+      </Typography>
+      <Typography sx={{ fontSize: '1.1rem', fontWeight: 700, color: '#111827', fontVariantNumeric: 'tabular-nums', lineHeight: 1.3 }}>
+        {value}
+      </Typography>
+    </Box>
+  );
+}
 
 export default ProposalOverviewDashboard;

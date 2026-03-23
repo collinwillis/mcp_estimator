@@ -67,79 +67,36 @@ export default function CopyFromPhaseDialog({ open, onClose }: Props) {
 
   return (
     <div>
-      <Dialog open={open} onClose={onClose}>
-        <DialogTitle>Copy From Phase</DialogTitle>
-        <DialogContent sx={{ height: '300px', width: '300px' }}>
-          <div
-            style={{
-              width: '100%',
-              height: '95%',
-              display: 'flex',
-              flexDirection: 'column',
-              justifyContent: 'space-around',
-            }}>
-            <FormControl variant='filled' fullWidth>
-              <InputLabel id='demo-simple-select-filled-label' shrink>
-                From
-              </InputLabel>
-              <Select
-                labelId='demo-simple-select-filled-label'
-                id='demo-simple-select-filled'
-                value={fromPhase ?? ''}
-                onChange={(e) => setFromPhase(e.target.value)}>
-                {availablePhases.map((item) => (
-                  <MenuItem key={item.id} value={item.id}>
-                    <ListItemText
-                      primary={`${item.phaseNumber} - ${item.description}`}
-                      primaryTypographyProps={{
-                        style: {
-                          overflow: 'hidden',
-                          whiteSpace: 'nowrap',
-                          textOverflow: 'ellipsis',
-                          maxWidth: '200px', // Adjust the width as needed
-                        },
-                      }}
-                    />
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-            <FormControl variant='filled' fullWidth>
-              <InputLabel id='demo-simple-select-filled-label' shrink>
-                To
-              </InputLabel>
-              <Select
-                labelId='demo-simple-select-filled-label'
-                disabled
-                id='demo-simple-select-filled'
-                value={currentPhase?.id ?? ''}
-                // onChange={(e) => setFromPhase(e.target.value)}
-              >
-                <MenuItem key={currentPhase?.id} value={currentPhase?.id}>
-                  <ListItemText
-                    primary={`${currentPhase?.phaseNumber} - ${
-                      currentPhase?.description
-                    }`}
-                    primaryTypographyProps={{
-                      style: {
-                        overflow: 'hidden',
-                        whiteSpace: 'nowrap',
-                        textOverflow: 'ellipsis',
-                        maxWidth: '200px', // Adjust the width as needed
-                      },
-                    }}
-                  />
+      <Dialog open={open} onClose={onClose}
+        PaperProps={{ sx: { borderRadius: 2, border: '1px solid #e5e7eb', boxShadow: '0 8px 32px rgba(0,0,0,0.12)', minWidth: 360 } }}>
+        <DialogTitle sx={{ fontSize: '0.875rem', fontWeight: 600, color: '#111827', pb: 1 }}>
+          Copy From Phase
+        </DialogTitle>
+        <DialogContent sx={{ display: 'flex', flexDirection: 'column', gap: 2, pt: '8px !important' }}>
+          <FormControl variant='outlined' size='small' fullWidth>
+            <InputLabel sx={{ fontSize: '0.8rem' }}>From</InputLabel>
+            <Select label='From' value={fromPhase ?? ''} onChange={(e) => setFromPhase(e.target.value)}
+              sx={{ borderRadius: 1, fontSize: '0.8rem', backgroundColor: '#f9fafb' }}>
+              {availablePhases.map((item) => (
+                <MenuItem key={item.id} value={item.id} sx={{ fontSize: '0.8rem' }}>
+                  {item.phaseNumber} - {item.description}
                 </MenuItem>
-              </Select>
-            </FormControl>
-
-            <Button
-              variant='contained'
-              disabled={fromPhase.length == 0}
-              onClick={onSubmit}>
-              Copy
-            </Button>
-          </div>
+              ))}
+            </Select>
+          </FormControl>
+          <FormControl variant='outlined' size='small' fullWidth>
+            <InputLabel sx={{ fontSize: '0.8rem' }}>To</InputLabel>
+            <Select label='To' disabled value={currentPhase?.id ?? ''}
+              sx={{ borderRadius: 1, fontSize: '0.8rem', backgroundColor: '#f9fafb' }}>
+              <MenuItem value={currentPhase?.id} sx={{ fontSize: '0.8rem' }}>
+                {currentPhase?.phaseNumber} - {currentPhase?.description}
+              </MenuItem>
+            </Select>
+          </FormControl>
+          <Button disabled={fromPhase.length == 0} onClick={onSubmit}
+            sx={{ 'textTransform': 'none', 'fontWeight': 600, 'fontSize': '0.825rem', 'color': '#fff', 'backgroundColor': '#111827', 'borderRadius': 1, 'py': 0.75, 'alignSelf': 'flex-end', 'px': 3, '&:hover': { backgroundColor: '#1f2937' }, '&.Mui-disabled': { backgroundColor: '#e5e7eb', color: '#9ca3af' } }}>
+            Copy
+          </Button>
         </DialogContent>
       </Dialog>
     </div>

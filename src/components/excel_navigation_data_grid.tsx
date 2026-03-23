@@ -39,24 +39,22 @@ import { styled, alpha } from '@mui/material';
  */
 
 const StyledExcelGrid = styled(DataGridPro)(({ theme }) => {
-  const surface =
-    theme.palette.mode === 'dark'
-      ? alpha(theme.palette.background.paper, 0.8)
-      : theme.palette.common.white;
-  const borderColor = alpha('#0f172a', 0.12);
-  const headerColor = '#f6f7fa';
-  const zebraEven = alpha('#0f172a', 0.015);
-  const zebraOdd = alpha('#0f172a', 0.035);
-  const focusRing = alpha(theme.palette.primary.main, 0.45);
+  const surface = '#ffffff';
+  const border = '#e5e7eb';
+  const headerBg = '#f9fafb';
+  const zebraStripe = '#fafafa';
+  const textPrimary = '#111827';
+  const textSecondary = '#6b7280';
+  const focusColor = '#2563eb';
 
   return {
-    'border': `1px solid ${borderColor}`,
+    'border': 'none',
     'borderRadius': 0,
     'backgroundColor': surface,
-    'boxShadow': '0 12px 24px rgba(15, 23, 42, 0.08)',
+    'boxShadow': 'none',
     'overflow': 'hidden',
-    'fontFamily': '"Barlow","Inter","Roboto","Helvetica",sans-serif',
-    'color': '#0f172a',
+    'fontFamily': '-apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, sans-serif',
+    'color': textPrimary,
     'WebkitFontSmoothing': 'antialiased',
     'MozOsxFontSmoothing': 'grayscale',
     'transition': 'none !important',
@@ -67,98 +65,74 @@ const StyledExcelGrid = styled(DataGridPro)(({ theme }) => {
       backgroundColor: surface,
     },
     '& .MuiDataGrid-columnHeaders': {
-      backgroundColor: headerColor,
-      borderBottom: `1px solid ${borderColor}`,
+      backgroundColor: headerBg,
+      borderBottom: `1px solid ${border}`,
       textTransform: 'uppercase',
-      letterSpacing: '0.08em',
-      color: '#475467',
-      fontSize: '0.75rem',
+      letterSpacing: '0.05em',
+      color: textSecondary,
+      fontSize: '0.675rem',
       fontWeight: 600,
-      minHeight: 52,
+      minHeight: 36,
     },
-    '& .MuiDataGrid-columnHeader, & .MuiDataGrid-cell': {
-      padding: '0 12px',
-    },
-    '& .MuiDataGrid-columnHeaderTitleContainer': {
-      paddingLeft: 4,
-    },
-    '& .MuiDataGrid-virtualScrollerRenderZone': {
-      '& .MuiDataGrid-row': {
-        transition: 'transform 80ms ease-out',
-      },
-    },
-    '& .MuiDataGrid-columnSeparator': {
-      'width': 12,
-      'maxWidth': 12,
-      'right': -6,
-      'transform': 'translateX(6px)',
-      'cursor': 'col-resize',
-      'color': alpha('#0f172a', 0.4),
-      'opacity': 1,
-      '& svg': {
-        display: 'block',
-        color: alpha('#0f172a', 0.4),
-      },
-      '&:hover svg': {
-        color: theme.palette.primary.main,
-      },
+    '& .MuiDataGrid-columnHeader': {
+      padding: '0 10px',
     },
     '& .MuiDataGrid-cell': {
       'display': 'flex',
       'alignItems': 'center',
-      'padding': '0 12px',
+      'padding': '0 10px',
       'lineHeight': 1.4,
-      'fontSize': '0.95rem',
+      'fontSize': '0.8rem',
       'fontVariantNumeric': 'tabular-nums',
-      'color': '#0f172a',
-      'borderBottom': `1px solid ${alpha('#0f172a', 0.05)}`,
+      'color': textPrimary,
+      'borderBottom': `1px solid #f3f4f6`,
       'backgroundColor': 'transparent',
-      'transition':
-        'background-color 80ms ease-out, color 80ms ease-out, box-shadow 120ms ease-out',
       '&:focus': {
-        transition: 'none !important',
-        outline: `2px solid ${theme.palette.primary.main}`,
-        outlineOffset: '-1px',
-        backgroundColor: alpha(theme.palette.primary.main, 0.04),
+        outline: `2px solid ${focusColor}`,
+        outlineOffset: '-2px',
+        backgroundColor: alpha(focusColor, 0.04),
       },
       '&:focus-within': {
-        transition: 'none !important',
-        outline: `2px solid ${theme.palette.primary.main}`,
-        outlineOffset: '-1px',
-        backgroundColor: alpha(theme.palette.primary.main, 0.04),
+        outline: `2px solid ${focusColor}`,
+        outlineOffset: '-2px',
+        backgroundColor: alpha(focusColor, 0.04),
       },
+    },
+    '& .MuiDataGrid-columnHeaderTitleContainer': {
+      paddingLeft: 0,
+    },
+    '& .MuiDataGrid-columnSeparator': {
+      'color': alpha('#0f172a', 0.15),
+      '&:hover': { color: alpha('#0f172a', 0.4) },
     },
     '& .MuiDataGrid-row': {
       'position': 'relative',
       'borderRadius': 0,
       '&.row-even .MuiDataGrid-cell:not(.over):not(.under):not(.not-used)': {
-        backgroundColor: zebraEven,
+        backgroundColor: 'transparent',
       },
       '&.row-odd .MuiDataGrid-cell:not(.over):not(.under):not(.not-used)': {
-        backgroundColor: zebraOdd,
+        backgroundColor: zebraStripe,
       },
       '&:hover .MuiDataGrid-cell:not(.over):not(.under):not(.not-used)': {
-        backgroundColor: alpha(theme.palette.primary.main, 0.08),
+        backgroundColor: '#f3f4f6',
       },
     },
     '& .MuiDataGrid-row.Mui-hovered': {
-      boxShadow: `inset 0 0 0 1px ${alpha(theme.palette.primary.main, 0.2)}`,
+      backgroundColor: '#f9fafb',
     },
     '& .MuiDataGrid-row.Mui-selected': {
-      'boxShadow': `inset 0 0 0 1px ${alpha(theme.palette.primary.main, 0.25)}`,
+      'backgroundColor': alpha(focusColor, 0.04),
       '& .MuiDataGrid-cell': {
-        backgroundColor: `${alpha(theme.palette.primary.main, 0.05)} !important`,
+        backgroundColor: `${alpha(focusColor, 0.04)} !important`,
       },
     },
     '& .MuiDataGrid-cell--editing': {
-      'transition': 'none !important',
       'padding': '0 !important',
       'backgroundColor': '#ffffff !important',
-      'borderRadius': 2,
-      'outline': `2px solid ${focusRing}`,
-      'outlineOffset': '-1px',
-      'border': 'none !important',
-      'boxShadow': '0 8px 20px rgba(15, 23, 42, 0.12)',
+      'outline': `2px solid ${focusColor}`,
+      'outlineOffset': '-2px',
+      'boxShadow': '0 2px 8px rgba(0, 0, 0, 0.08)',
       '& .MuiInputBase-root': {
         backgroundColor: 'transparent !important',
         padding: 0,
@@ -169,30 +143,29 @@ const StyledExcelGrid = styled(DataGridPro)(({ theme }) => {
         padding: '0 8px',
         height: '100%',
         backgroundColor: 'transparent',
-        fontWeight: 600,
-        letterSpacing: '0.04em',
+        fontWeight: 500,
+        fontSize: '0.8rem',
       },
     },
     '& .MuiDataGrid-cell.Mui-selected': {
-      backgroundColor: `${alpha(theme.palette.primary.main, 0.08)} !important`,
+      backgroundColor: `${alpha(focusColor, 0.06)} !important`,
     },
     '& .MuiDataGrid-cell[data-editable="false"]': {
-      backgroundColor: alpha(theme.palette.action.disabled, 0.04),
+      color: textSecondary,
       cursor: 'default',
     },
     '& .MuiDataGrid-footerContainer': {
-      borderTop: `1px solid ${borderColor}`,
-      backgroundColor: headerColor,
-      minHeight: 52,
+      borderTop: `1px solid ${border}`,
+      backgroundColor: headerBg,
+      minHeight: 36,
     },
     '& .MuiTablePagination-displayedRows, & .MuiTablePagination-selectLabel': {
-      fontSize: '0.8rem',
-      letterSpacing: '0.08em',
-      textTransform: 'uppercase',
-      color: '#475467',
+      fontSize: '0.7rem',
+      letterSpacing: '0.04em',
+      color: textSecondary,
     },
     '& .MuiTablePagination-actions button': {
-      color: '#475467',
+      color: textSecondary,
     },
   };
 });
@@ -551,9 +524,11 @@ export const ExcelNavigationDataGrid = forwardRef<
         return;
       }
 
-      // Focus out (click away) → commit, no navigation
+      // Focus out (click away) → commit, no navigation.
+      // Do NOT let MUI restore focus — the user's click target should win.
       if (reason === ('cellFocusOut' as GridCellEditStopReasons)) {
         apiRef.current.stopCellEditMode({ id, field });
+        lastFocusedCell.current = null;
         return;
       }
 
@@ -815,16 +790,25 @@ export const ExcelNavigationDataGrid = forwardRef<
         ...(otherProps.experimentalFeatures || {}),
         newEditingApi: true,
       }}
-      sx={{
-        ...otherProps.sx,
-        '& .MuiDataGrid-cell[data-editable="true"]:hover': {
-          backgroundColor: (theme) => alpha(theme.palette.primary.main, 0.04),
-          cursor: 'text',
+      sx={[
+        {
+          flex: 1,
+          minHeight: 0,
+          '& .MuiDataGrid-cell[data-editable="true"]:hover': {
+            backgroundColor: (theme: any) =>
+              alpha(theme.palette.primary.main, 0.04),
+            cursor: 'text',
+          },
+          '& .MuiDataGrid-cell[data-editable="false"]:hover': {
+            cursor: 'default',
+          },
         },
-        '& .MuiDataGrid-cell[data-editable="false"]:hover': {
-          cursor: 'default',
-        },
-      }}
+        ...(Array.isArray(otherProps.sx)
+          ? otherProps.sx
+          : otherProps.sx
+            ? [otherProps.sx]
+            : []),
+      ] as any}
     />
   );
 });

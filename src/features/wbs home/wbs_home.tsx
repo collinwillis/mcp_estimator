@@ -26,24 +26,31 @@ function WbsHomeScreen() {
       .filter((phase) => phase.wbsId === wbsId)
       .sort((a, b) => a.phaseNumber! - b.phaseNumber!);
     setFiltered(temp);
-    console.log(temp);
   }, [data, wbsId]);
 
   return (
     <Box
       sx={{
-        height: '95%',
         display: 'flex',
-        overflow: 'auto',
         flexDirection: 'column',
-        justifyContent: 'space-between',
+        height: '100%',
+        overflow: 'hidden',
       }}>
-      <PhaseDataGrid
-        phaseList={filtered}
-        isLoading={false}
-        wbsDatabaseId={currentWbs?.wbsDatabaseId}
-      />
+      {/* Scrollable content area */}
+      <Box
+        sx={{
+          flex: 1,
+          minHeight: 0,
+          overflow: 'auto',
+        }}>
+        <PhaseDataGrid
+          phaseList={filtered}
+          isLoading={false}
+          wbsDatabaseId={currentWbs?.wbsDatabaseId}
+        />
+      </Box>
 
+      {/* Fixed bottom panel */}
       <BottomPanel />
     </Box>
   );

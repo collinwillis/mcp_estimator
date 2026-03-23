@@ -5,6 +5,7 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
+import { Typography } from '@mui/material';
 
 interface DeleteConfirmationDialogProps {
   title: React.ReactNode;
@@ -15,29 +16,33 @@ interface DeleteConfirmationDialogProps {
 }
 
 const DeleteConfirmationDialog: React.FC<DeleteConfirmationDialogProps> = ({
-  title,
-  content,
-  open,
-  onClose,
-  onConfirm,
+  title, content, open, onClose, onConfirm,
 }) => {
   return (
     <Dialog
       open={open}
       onClose={onClose}
-      aria-labelledby='alert-dialog-title'
-      aria-describedby='alert-dialog-description'>
-      <DialogTitle id='alert-dialog-title'>{title}</DialogTitle>
+      PaperProps={{
+        sx: { borderRadius: 2, border: '1px solid #e5e7eb', boxShadow: '0 8px 32px rgba(0,0,0,0.12)', maxWidth: 400 },
+      }}>
+      <DialogTitle sx={{ fontSize: '0.875rem', fontWeight: 600, color: '#111827', pb: 0.5 }}>
+        {title}
+      </DialogTitle>
       <DialogContent>
-        <DialogContentText id='alert-dialog-description'>
+        <DialogContentText sx={{ fontSize: '0.8rem', color: '#6b7280' }}>
           {content}
         </DialogContentText>
       </DialogContent>
-      <DialogActions>
-        <Button onClick={onClose} color='primary'>
+      <DialogActions sx={{ px: 3, pb: 2 }}>
+        <Button
+          onClick={onClose}
+          sx={{ 'textTransform': 'none', 'fontSize': '0.775rem', 'fontWeight': 500, 'color': '#6b7280', 'borderRadius': 1, 'px': 1.5, 'border': '1px solid #e5e7eb', '&:hover': { backgroundColor: '#f3f4f6' } }}>
           Cancel
         </Button>
-        <Button onClick={onConfirm} color='error' variant='outlined' autoFocus>
+        <Button
+          onClick={onConfirm}
+          autoFocus
+          sx={{ 'textTransform': 'none', 'fontSize': '0.775rem', 'fontWeight': 600, 'color': '#ffffff', 'backgroundColor': '#dc2626', 'borderRadius': 1, 'px': 2, '&:hover': { backgroundColor: '#b91c1c' } }}>
           Delete
         </Button>
       </DialogActions>

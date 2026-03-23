@@ -1,0 +1,142 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+env:
+  TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
+  TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
+
+jobs:
+  release:
+    runs-on: windows-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Get version from tag
+        id: version
+        shell: bash
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "tag=$GITHUB_REF_NAME" >> "$GITHUB_OUTPUT"
+
+      - name: Update tauri.conf.json version
+        shell: bash
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+          # Use node to safely update JSON without breaking formatting
+          node -e "
+            const fs = require('fs');
+            const conf = JSON.parse(fs.readFileSync('src-tauri/tauri.conf.json', 'utf8'));
+            conf.package.version = '$VERSION';
+            fs.writeFileSync('src-tauri/tauri.conf.json', JSON.stringify(conf, null, 2) + '\n');
+          "
+          echo "Updated tauri.conf.json to version $VERSION"
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: yarn
+
+      - name: Install Rust stable
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Rust cache
+        uses: swatinem/rust-cache@v2
+        with:
+          workspaces: src-tauri -> target
+
+      - name: Install frontend dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Build Tauri app
+        uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
+          TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
+        with:
+          tagName: ${{ steps.version.outputs.tag }}
+          releaseName: 'MCP Estimator v${{ steps.version.outputs.version }}'
+          releaseBody: 'See the assets below to download and install.'
+          releaseDraft: false
+          prerelease: false
+
+      - name: Read signature file
+        id: signature
+        shell: bash
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+
+          # Find the .sig file (MSI format)
+          SIG_FILE=$(find src-tauri/target/release/bundle/msi -name "*.msi.zip.sig" 2>/dev/null | head -1)
+
+          if [ -z "$SIG_FILE" ]; then
+            echo "ERROR: No .sig file found in msi bundle"
+            find src-tauri/target/release/bundle/ -name "*.sig" 2>/dev/null
+            exit 1
+          fi
+
+          echo "Found signature file: $SIG_FILE"
+          SIGNATURE=$(cat "$SIG_FILE")
+          echo "signature=$SIGNATURE" >> "$GITHUB_OUTPUT"
+
+          # Also find the zip file name for the URL
+          ZIP_FILE=$(find src-tauri/target/release/bundle/msi -name "*.msi.zip" ! -name "*.sig" 2>/dev/null | head -1)
+          ZIP_NAME=$(basename "$ZIP_FILE")
+          # URL-encode spaces as dots (GitHub release asset naming)
+          URL_NAME=$(echo "$ZIP_NAME" | sed 's/ /./g')
+          echo "zip_name=$URL_NAME" >> "$GITHUB_OUTPUT"
+          echo "Found zip: $ZIP_NAME -> URL: $URL_NAME"
+
+      - name: Update updater gist
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GIST_TOKEN }}
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+          TAG="${{ steps.version.outputs.tag }}"
+          SIGNATURE="${{ steps.signature.outputs.signature }}"
+          ZIP_NAME="${{ steps.signature.outputs.zip_name }}"
+          PUB_DATE=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+          REPO="collinwillis/mcp_estimator"
+          GIST_ID="40b8751c25f6d48248e78aafb33cb638"
+
+          DOWNLOAD_URL="https://github.com/${REPO}/releases/download/${TAG}/${ZIP_NAME}"
+
+          # Build the updater JSON
+          cat > /tmp/updater.json << ENDOFFILE
+          {
+            "version": "${VERSION}",
+            "notes": "MCP Estimator ${TAG}",
+            "pub_date": "${PUB_DATE}",
+            "platforms": {
+              "windows-x86_64": {
+                "signature": "${SIGNATURE}",
+                "url": "${DOWNLOAD_URL}"
+              }
+            }
+          }
+          ENDOFFILE
+
+          echo "Updater JSON:"
+          cat /tmp/updater.json
+
+          # Update the gist using GitHub API
+          # Escape the JSON for embedding in the API payload
+          CONTENT=$(python -c "import json,sys; print(json.dumps(open('/tmp/updater.json').read()))")
+
+          curl -s -X PATCH \
+            -H "Authorization: token ${GH_TOKEN}" \
+            -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/gists/${GIST_ID}" \
+            -d "{\"files\":{\"updater.json\":{\"content\":${CONTENT}}}}" \
+            | python -c "import json,sys; d=json.load(sys.stdin); print('Gist updated:', d.get('html_url', 'ERROR'))"

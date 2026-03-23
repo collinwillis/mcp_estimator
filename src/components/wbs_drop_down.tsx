@@ -1,14 +1,6 @@
 import React from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import {
-  Box,
-  Divider,
-  FormControl,
-  InputLabel,
-  ListItemText,
-  MenuItem,
-  Select,
-} from '@mui/material';
+import { Box, FormControl, MenuItem, Select, Typography } from '@mui/material';
 
 import { StoreState, estimatorStore } from '../utils/store';
 
@@ -18,58 +10,56 @@ export default function WbsDropdown() {
     (state: StoreState) => state.visibleWbs[proposalId!] || [],
   );
   const navigate = useNavigate();
+
   return (
-    <Box sx={{ width: '100%', pt: '20px' }}>
-      <FormControl variant='standard' sx={{ display: 'flex' }}>
-        <InputLabel id='demo-simple-select-filled-label' sx={{ pl: '10px' }}>
-          Select WBS
-        </InputLabel>
+    <Box sx={{ width: '100%' }}>
+      <Typography
+        sx={{
+          fontSize: '0.675rem',
+          fontWeight: 600,
+          color: '#6b7280',
+          textTransform: 'uppercase',
+          letterSpacing: '0.05em',
+          mb: 0.5,
+        }}>
+        WBS
+      </Typography>
+      <FormControl fullWidth size='small'>
         <Select
-          labelId='demo-simple-select-filled-label'
-          id='demo-simple-select-filled'
           value={wbsId || ''}
+          displayEmpty
+          renderValue={(selected) => {
+            if (!selected) return <Typography sx={{ fontSize: '0.8rem', color: '#9ca3af' }}>Select WBS</Typography>;
+            const wbs = data.find((w) => w.id === selected);
+            return (
+              <Typography sx={{ fontSize: '0.8rem', fontWeight: 500, color: '#111827', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                {wbs ? `${wbs.wbsDatabaseId} ${wbs.name}` : selected}
+              </Typography>
+            );
+          }}
           sx={{
-            '& .MuiSelect-select': {
-              textOverflow: 'ellipsis',
-              overflow: 'hidden',
-              textAlign: 'center',
-            },
-            '& .MuiSelect-root': {
-              'minWidth': '200px',
-              'borderRadius': '20px',
-              'boxShadow': '0 2px 4px rgba(0,0,0,0.2)',
-              'backgroundColor': 'white',
-              '&:hover': {
-                backgroundColor: '#f5f5f5',
-              },
-            },
+            'borderRadius': 1,
+            'backgroundColor': '#f3f4f6',
+            'fontSize': '0.8rem',
+            '& .MuiOutlinedInput-notchedOutline': { borderColor: 'transparent' },
+            '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: '#d1d5db' },
+            '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: '#9ca3af', borderWidth: 1 },
+            '& .MuiSelect-select': { py: 0.75, px: 1.25 },
+            '& .MuiSelect-icon': { color: '#6b7280', fontSize: 18 },
           }}>
-          <MenuItem value='' disabled>
-            Select Wbs
-          </MenuItem>
           {[...data]
-            ?.sort((a, b) => {
-              return a.wbsDatabaseId! - b.wbsDatabaseId!;
-            })
+            .sort((a, b) => a.wbsDatabaseId! - b.wbsDatabaseId!)
             .map((item) => (
               <MenuItem
                 key={item.id}
                 value={item.id}
-                onClick={() => {
-                  navigate(`/proposal/${proposalId}/wbs/${item.id}`);
-                }}
-                sx={{
-                  padding: '5px 10px',
-                  minWidth: '200px',
-                  textAlign: 'center',
-                }}>
-                <ListItemText
-                  primary={`${item.wbsDatabaseId} ${item.name}`}
-                  sx={{ overflow: 'hidden', textOverflow: 'ellipsis' }}
-                />
+                onClick={() => navigate(`/proposal/${proposalId}/wbs/${item.id}`)}
+                sx={{ py: 0.75, fontSize: '0.8rem' }}>
+                <Typography sx={{ fontSize: '0.8rem', fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                  {item.wbsDatabaseId} {item.name}
+                </Typography>
               </MenuItem>
             ))}
-          <Divider />
         </Select>
       </FormControl>
     </Box>

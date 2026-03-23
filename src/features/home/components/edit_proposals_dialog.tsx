@@ -1,22 +1,18 @@
 import React, { useState } from 'react';
-import { ArrowBackIcon, SearchIcon } from '@chakra-ui/icons';
 import DeleteIcon from '@mui/icons-material/Delete';
 import {
   CircularProgress,
   Dialog,
-  DialogTitle,
   Divider,
   IconButton,
-  InputBase,
+  InputAdornment,
   List,
-  ListItem,
-  ListItemText,
-  Paper,
+  TextField,
   Typography,
+  Box,
 } from '@mui/material';
-import { styled } from '@mui/system';
 import { getFunctions, httpsCallable } from 'firebase/functions';
-import { CopyAllRounded } from '@mui/icons-material';
+import { CopyAllRounded, Close, Search } from '@mui/icons-material';
 
 import { Proposal } from '../../../models/proposal';
 import { useProposals } from '../../../hooks/proposals_hook';
@@ -29,87 +25,6 @@ interface EditProposalsDialogProps {
   onDelete: (proposalId: string) => void;
 }
 
-const StyledDialog = styled(Dialog)(({ theme }) => ({
-  '& .MuiDialogTitle-root': {
-    backgroundColor: 'steelblue',
-    color: 'white',
-    padding: theme.spacing(2),
-    position: 'sticky',
-    top: 0,
-    zIndex: 2,
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  '& .MuiTypography-h6': {
-    color: 'white',
-  },
-  '& .MuiListItem-root': {
-    '&:hover': {
-      backgroundColor: 'rgba(0, 0, 0, 0.04)', // Adjust the background color
-    },
-  },
-}));
-
-const overlayStyle: React.CSSProperties = {
-  position: 'fixed',
-  top: 0,
-  left: 0,
-  width: '100%',
-  height: '100%',
-  background: 'rgba(0, 0, 0, 0.2)', // Adjust opacity as needed
-  zIndex: 9999, // Ensure it's above the dialog
-};
-
-const centeredProgressStyle: React.CSSProperties = {
-  position: 'fixed',
-  top: '50%',
-  left: '50%',
-  transform: 'translate(-50%, -50%)',
-  zIndex: 10000, // Ensure it's above the dim overlay
-};
-
-const ScrollableContent = styled('div')(({ theme }) => ({
-  overflowY: 'auto',
-  height: '55vh', // You can adjust this value as needed
-}));
-
-const SearchBar = styled('div')(({ theme }) => ({
-  backgroundColor: theme.palette.background.default,
-  padding: theme.spacing(1, 2),
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'space-between',
-  position: 'sticky',
-  top: '64px', // Adjust this value as needed to match the header height
-  zIndex: 1, // Ensure it's above the scrollable content
-  elevation: 0, // Remove elevation
-}));
-
-const StyledIconButton = styled(IconButton)(({ theme }) => ({
-  'backgroundColor': 'transparent',
-  'color': theme.palette.error.main,
-  'transition': 'color 0.3s',
-  'pointerEvents': 'none', // Disable pointer events on the button
-  '&:hover': {
-    color: theme.palette.error.dark,
-    backgroundColor: 'transparent',
-    pointerEvents: 'auto', // Re-enable pointer events on hover
-  },
-}));
-
-const StyledIconButton2 = styled(IconButton)(({ theme }) => ({
-  'backgroundColor': 'transparent',
-  'color': theme.palette.primary.main,
-  'transition': 'color 0.3s',
-  'pointerEvents': 'none', // Disable pointer events on the button
-  '&:hover': {
-    color: theme.palette.primary.dark,
-    backgroundColor: 'transparent',
-    pointerEvents: 'auto', // Re-enable pointer events on hover
-  },
-}));
-
 const EditProposalsDialog: React.FC<EditProposalsDialogProps> = ({
   open,
   onClose,
@@ -117,138 +32,155 @@ const EditProposalsDialog: React.FC<EditProposalsDialogProps> = ({
 }) => {
   const { data, loading } = useProposals();
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [selectedProposal, setSelectedProposal] = useState<Proposal | null>(
-    null,
-  );
+  const [selectedProposal, setSelectedProposal] = useState<Proposal | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [isDeleting, setIsDeleting] = useState(false);
-  const [isDuplicating, setIsDuplicating] = useState(false); // Add state for duplicating
-  const [showOverlay, setShowOverlay] = useState(false);
+  const [isDuplicating, setIsDuplicating] = useState(false);
+
   const filteredData = data.filter((proposal: Proposal) => {
-    const searchText =
-      `${proposal.proposalNumber} - ${proposal.proposalDescription}`.toLowerCase();
+    const searchText = `${proposal.proposalNumber} - ${proposal.proposalDescription}`.toLowerCase();
     return searchText.includes(searchTerm.toLowerCase());
   });
 
   const handleDuplicate = async (proposal: Proposal) => {
     setIsDuplicating(true);
-    setShowOverlay(true);
     try {
       const functions = getFunctions();
       const duplicateProposal = httpsCallable(functions, 'duplicateProposal');
       await duplicateProposal({ proposalId: proposal.id });
-      // Optionally add success feedback here
     } catch (error) {
       console.error('Error duplicating proposal: ', error);
-      // Add user feedback here
     } finally {
       setIsDuplicating(false);
-      setShowOverlay(false);
     }
   };
 
   return (
-    <StyledDialog open={open} onClose={onClose} maxWidth='sm' fullWidth>
-      <DialogTitle>
-        <IconButton
-          edge='start'
-          aria-label='back'
-          onClick={onClose}
-          sx={{ marginRight: 2, color: 'white' }}>
-          <ArrowBackIcon />
-        </IconButton>
-        <Typography variant='h6' sx={{ flex: 1, textAlign: 'center' }}>
-          Edit Proposals
+    <Dialog
+      open={open}
+      onClose={onClose}
+      maxWidth='sm'
+      fullWidth
+      PaperProps={{
+        sx: {
+          borderRadius: 2,
+          border: '1px solid #e5e7eb',
+          boxShadow: '0 8px 32px rgba(0,0,0,0.12)',
+          overflow: 'hidden',
+        },
+      }}>
+      {/* Header */}
+      <Box
+        sx={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          px: 2.5,
+          py: 1.5,
+          borderBottom: '1px solid #e5e7eb',
+        }}>
+        <Typography sx={{ fontSize: '0.825rem', fontWeight: 600, color: '#111827' }}>
+          Manage Proposals
         </Typography>
-      </DialogTitle>
-      <SearchBar>
-        <InputBase
-          placeholder='Search...'
+        <IconButton size='small' onClick={onClose} sx={{ color: '#6b7280' }}>
+          <Close sx={{ fontSize: 18 }} />
+        </IconButton>
+      </Box>
+
+      {/* Search */}
+      <Box sx={{ px: 2, py: 1, borderBottom: '1px solid #f3f4f6' }}>
+        <TextField
+          fullWidth
+          variant='outlined'
+          size='small'
+          placeholder='Search proposals...'
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position='start'>
+                <Search sx={{ fontSize: 16, color: '#9ca3af' }} />
+              </InputAdornment>
+            ),
+          }}
+          sx={{
+            '& .MuiOutlinedInput-root': {
+              'height': 32,
+              'borderRadius': 1,
+              'backgroundColor': '#f3f4f6',
+              'fontSize': '0.8rem',
+              '& fieldset': { borderColor: 'transparent' },
+              '&:hover fieldset': { borderColor: '#d1d5db' },
+              '&.Mui-focused fieldset': { borderColor: '#9ca3af', borderWidth: 1 },
+            },
+          }}
         />
-        <IconButton aria-label='search'>
-          <SearchIcon />
-        </IconButton>
-      </SearchBar>
-      <ScrollableContent>
-        <List component={Paper} elevation={0}>
+      </Box>
+
+      {/* List */}
+      <Box sx={{ overflowY: 'auto', maxHeight: '55vh' }}>
+        <List disablePadding>
           {filteredData.map((proposal: Proposal, index: number) => (
             <React.Fragment key={proposal.id}>
-              <ListItem disableRipple button>
-                <ListItemText
-                  primary={
-                    <Typography variant='body1' color='textPrimary'>
-                      {`${proposal.proposalNumber} - ${
-                        proposal.proposalDescription
-                      }`}
-                    </Typography>
-                  }
-                />
-                <StyledIconButton2
-                  style={{ marginRight: '15px' }}
-                  edge='end'
-                  aria-label='duplicate'
-                  onClick={() => handleDuplicate(proposal)}
-                  sx={{ pointerEvents: 'auto' }}>
-                  {isDuplicating ? (
-                    <CircularProgress size={20} />
-                  ) : (
-                    <CopyAllRounded />
-                  )}
-                </StyledIconButton2>
-
-                <StyledIconButton
-                  edge='end'
-                  aria-label='delete'
-                  onClick={() => {
-                    setSelectedProposal(proposal);
-                    setDeleteDialogOpen(true);
-                  }}
-                  sx={{ pointerEvents: 'auto' }}>
-                  {isDeleting ? <CircularProgress size={20} /> : <DeleteIcon />}
-                </StyledIconButton>
-              </ListItem>
-              {index < filteredData.length - 1 && <Divider />}
+              <Box
+                sx={{
+                  'display': 'flex',
+                  'alignItems': 'center',
+                  'px': 2.5,
+                  'py': 1,
+                  '&:hover': { backgroundColor: '#f9fafb' },
+                }}>
+                <Box sx={{ flex: 1, minWidth: 0 }}>
+                  <Typography sx={{ fontSize: '0.8rem', fontWeight: 500, color: '#111827', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    {proposal.proposalNumber} - {proposal.proposalDescription}
+                  </Typography>
+                </Box>
+                <Box sx={{ display: 'flex', gap: 0.5, flexShrink: 0, ml: 1 }}>
+                  <IconButton
+                    size='small'
+                    onClick={() => handleDuplicate(proposal)}
+                    disabled={isDuplicating}
+                    sx={{ 'color': '#6b7280', '&:hover': { color: '#111827', backgroundColor: '#f3f4f6' } }}>
+                    {isDuplicating ? <CircularProgress size={14} /> : <CopyAllRounded sx={{ fontSize: 16 }} />}
+                  </IconButton>
+                  <IconButton
+                    size='small'
+                    onClick={() => { setSelectedProposal(proposal); setDeleteDialogOpen(true); }}
+                    disabled={isDeleting}
+                    sx={{ 'color': '#9ca3af', '&:hover': { color: '#dc2626', backgroundColor: '#fef2f2' } }}>
+                    {isDeleting ? <CircularProgress size={14} /> : <DeleteIcon sx={{ fontSize: 16 }} />}
+                  </IconButton>
+                </Box>
+              </Box>
+              {index < filteredData.length - 1 && <Divider sx={{ borderColor: '#f3f4f6' }} />}
             </React.Fragment>
           ))}
         </List>
-      </ScrollableContent>
+      </Box>
+
       <DeleteConfirmationDialog
         title={
           <>
-            <Typography component='span'>
-              {'Are you sure you would like to delete: '}
+            <Typography component='span' sx={{ fontSize: '0.825rem' }}>
+              Delete{' '}
             </Typography>
-            <Typography
-              component='span'
-              sx={{ color: (theme) => theme.palette.primary.dark }}>
-              {`${selectedProposal?.proposalNumber} - ${
-                selectedProposal?.proposalDescription
-              }`}
+            <Typography component='span' sx={{ fontSize: '0.825rem', fontWeight: 600 }}>
+              {selectedProposal?.proposalNumber} - {selectedProposal?.proposalDescription}
             </Typography>
+            <Typography component='span' sx={{ fontSize: '0.825rem' }}>?</Typography>
           </>
         }
-        content='Once deleted, this proposal and all of its data cannot be recovered.'
+        content='This action cannot be undone. All associated data will be permanently removed.'
         open={deleteDialogOpen}
         onClose={() => setDeleteDialogOpen(false)}
         onConfirm={async () => {
           setDeleteDialogOpen(false);
-          setIsDeleting(true); // Set loading state to true
+          setIsDeleting(true);
           await deleteProposalAndAssociatedData(selectedProposal!.id!);
-          setIsDeleting(false); // Set loading state to false when delete is complete
+          setIsDeleting(false);
         }}
       />
-      {/* Dim overlay */}
-      {(isDeleting || isDuplicating) && <div style={overlayStyle} />}
-
-      {/* Centered CircularProgress */}
-      {isDuplicating && (
-        <div style={centeredProgressStyle}>
-          <CircularProgress size={100} />
-        </div>
-      )}
-    </StyledDialog>
+    </Dialog>
   );
 };
 

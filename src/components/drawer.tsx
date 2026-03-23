@@ -2,26 +2,18 @@ import * as React from 'react';
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import {
-  Accordion,
-  AccordionSummary,
-  AccordionDetails,
   TextField,
   InputAdornment,
   Breadcrumbs,
-  Button,
   Link,
   ListItemIcon,
   ListItemText,
-  Stack,
 } from '@mui/material';
 import {
   AdminPanelSettings,
   ArrowBack,
-  ExpandMore,
   ExitToApp,
-  Settings,
   EditRounded,
-  ContentCopy,
   AddRounded,
   DownloadForOffline,
   ChevronLeftRounded,
@@ -40,8 +32,6 @@ import MenuItem from '@mui/material/MenuItem';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import { styled, useTheme } from '@mui/material/styles';
-import { HStack } from '@chakra-ui/react';
-
 
 import ProposalList from '../features/home/components/proposal_list';
 import EditProposalsDialog from '../features/home/components/edit_proposals_dialog';
@@ -61,17 +51,19 @@ import DrawerIcon from './drawer_icon';
 import PhaseList from './phase_list';
 import WbsDropdown from './wbs_drop_down';
 
-const drawerWidth = 300;
+const drawerWidth = 280;
 
 const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })<{
   open?: boolean;
   proposalId?: string;
-}>(({ theme, open, proposalId }) => ({
+}>(({ theme, open }) => ({
+  display: 'flex',
+  flexDirection: 'column' as const,
   overflow: 'hidden',
   backgroundColor: '#f5f5f5',
-  height: `100vh`,
+  height: '100vh',
   flexGrow: 1,
-  padding: proposalId ? theme.spacing(0) : 0,
+  minWidth: 0,
   transition: theme.transitions.create('margin', {
     easing: theme.transitions.easing.sharp,
     duration: theme.transitions.duration.leavingScreen,
@@ -86,14 +78,16 @@ const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })<{
   }),
 }));
 
-interface AppBarProps extends MuiAppBarProps {
+interface AppBarStyleProps extends MuiAppBarProps {
   open?: boolean;
 }
 
 const AppBar = styled(MuiAppBar, {
   shouldForwardProp: (prop) => prop !== 'open',
-})<AppBarProps>(({ theme, open }) => ({
-  backgroundColor: 'primary',
+})<AppBarStyleProps>(({ theme, open }) => ({
+  backgroundColor: '#1f2937',
+  boxShadow: 'none',
+  borderBottom: '1px solid #374151',
   transition: theme.transitions.create(['margin', 'width'], {
     easing: theme.transitions.easing.sharp,
     duration: theme.transitions.duration.leavingScreen,
@@ -123,31 +117,26 @@ interface EstimatorDrawerProps {
 export default function EstimatorDrawer({ children }: EstimatorDrawerProps) {
   const { isAdmin, hasWritePermissions } = useUserProfile();
   const theme = useTheme();
-  const [addProposalDialogOpen, setAddProposalDialogOpen] =
-    React.useState(false);
+  const [addProposalDialogOpen, setAddProposalDialogOpen] = React.useState(false);
   const { proposalId, wbsId, phaseId } = useParams();
   const [open, setOpen] = React.useState(proposalId === undefined);
   const [addPhaseDialogOpen, setAddPhaseDialogOpen] = React.useState(false);
   const currentProposal = useCurrentProposal({ proposalId: proposalId ?? '' });
   const currentWbs: Wbs | undefined = useCurrentWbs({ wbsId: wbsId ?? '' });
-  const currentPhase: Phase | undefined = useCurrentPhase({
-    phaseId: phaseId ?? '',
-  });
+  const currentPhase: Phase | undefined = useCurrentPhase({ phaseId: phaseId ?? '' });
   const { data } = useProposals();
   const [proposalSearchInput, setProposalSearchInput] = useState('');
 
   useEffect(() => {
-    return () => {
-      sessionStorage.removeItem('selectedProposalId');
-    };
+    return () => { sessionStorage.removeItem('selectedProposalId'); };
   }, []);
 
   const filteredProposals: Proposal[] =
     data?.filter((proposal) => {
       const searchKey = proposalSearchInput.toLowerCase();
-      const proposalFieldsCombined = [
+      const fields = [
         proposal.proposalNumber?.toString().toLowerCase(),
-        proposal.job?.toString().toString().toLowerCase(),
+        proposal.job?.toString().toLowerCase(),
         proposal.coNumber?.toString().toLowerCase(),
         proposal.proposalDescription?.toLowerCase(),
         proposal.proposalOwner?.toLowerCase(),
@@ -168,70 +157,45 @@ export default function EstimatorDrawer({ children }: EstimatorDrawerProps) {
         proposal.contactZip?.toString().toLowerCase(),
         proposal.contactPhone?.toLowerCase(),
         proposal.contactEmail?.toLowerCase(),
-      ]
-        .filter(Boolean)
-        .join(' ');
-      return proposalFieldsCombined.includes(searchKey);
+      ].filter(Boolean).join(' ');
+      return fields.includes(searchKey);
     }) || [];
 
-  const [menuAnchorEl, setMenuAnchorEl] = React.useState<null | HTMLElement>(
-    null,
-  );
-  const handleDrawerOpen = () => {
-    setOpen(true);
-  };
-  const loadFullProposalData = estimatorStore(
-    (state: StoreState) => state.loadFullProposalData,
-  );
-  const handleDrawerClose = () => {
-    setOpen(false);
-  };
+  const [menuAnchorEl, setMenuAnchorEl] = React.useState<null | HTMLElement>(null);
+  const loadFullProposalData = estimatorStore((s: StoreState) => s.loadFullProposalData);
   const navigate = useNavigate();
-  const [isEditProposals, setIsEditProposals] = React.useState<boolean>(false);
-  const [mainMenuAnchorEl, setMainMenuAnchorEl] =
-    React.useState<null | HTMLElement>(null);
-  const handleMenuOpen = (event: React.MouseEvent<HTMLButtonElement>) => {
-    setMainMenuAnchorEl(event.currentTarget);
-  };
-  const handleMenuClose = () => {
-    setMainMenuAnchorEl(null);
-  };
+  const [isEditProposals, setIsEditProposals] = React.useState(false);
+  const [mainMenuAnchorEl, setMainMenuAnchorEl] = React.useState<null | HTMLElement>(null);
 
   return (
     <Box sx={{ display: 'flex', overflow: 'hidden' }}>
       <CssBaseline />
+
+      {/* ━━━ App Bar ━━━ */}
       <AppBar position='fixed' open={open}>
-        <Toolbar
-          sx={{
-            display: 'flex',
-            flexDirection: 'row',
-            width: 'full',
-            justifyContent: 'space-between',
-          }}>
+        <Toolbar sx={{ display: 'flex', justifyContent: 'space-between', minHeight: '48px !important', px: 2 }}>
           <IconButton
             color='inherit'
-            aria-label='open drawer'
-            onClick={handleDrawerOpen}
+            onClick={() => setOpen(true)}
             edge='start'
-            sx={{ mr: 2, ...(open && { display: 'none' }) }}>
+            sx={{ mr: 1.5, ...(open && { display: 'none' }), p: 0.75 }}>
             <DrawerIcon color='white' />
           </IconButton>
-          <Breadcrumbs 
-            aria-label='breadcrumb' 
-            aria-activedescendant=''
+
+          <Breadcrumbs
+            aria-label='breadcrumb'
             sx={{
-              '& .MuiBreadcrumbs-separator': {
-                color: 'white'
-              }
+              flex: 1,
+              '& .MuiBreadcrumbs-separator': { color: '#6b7280', mx: 0.75 },
+              '& .MuiBreadcrumbs-ol': { flexWrap: 'nowrap' },
             }}>
             {currentProposal && (
               <Link
-                underline='hover'
-                color='white'
+                underline='none'
                 sx={{
-                  '&:hover': {
-                    color: 'rgba(255, 255, 255, 0.8)'
-                  }
+                  'color': '#d1d5db', 'cursor': 'pointer', 'fontSize': '0.8rem', 'fontWeight': 500,
+                  'overflow': 'hidden', 'textOverflow': 'ellipsis', 'whiteSpace': 'nowrap', 'maxWidth': 300,
+                  '&:hover': { color: '#ffffff' },
                 }}
                 onClick={() => navigate(`/proposal/${currentProposal?.id}`)}>
                 {`${currentProposal?.proposalNumber} - ${currentProposal?.proposalDescription}`}
@@ -239,373 +203,272 @@ export default function EstimatorDrawer({ children }: EstimatorDrawerProps) {
             )}
             {currentWbs && (
               <Link
-                underline='hover'
-                color='white'
+                underline='none'
                 sx={{
-                  '&:hover': {
-                    color: 'rgba(255, 255, 255, 0.8)'
-                  }
+                  'color': '#d1d5db', 'cursor': 'pointer', 'fontSize': '0.8rem', 'fontWeight': 500,
+                  '&:hover': { color: '#ffffff' },
                 }}
-                onClick={() =>
-                  navigate(
-                    `/proposal/${currentProposal?.id}/wbs/${currentWbs?.id}`,
-                  )
-                }>
+                onClick={() => navigate(`/proposal/${currentProposal?.id}/wbs/${currentWbs?.id}`)}>
                 {currentWbs?.name}
               </Link>
             )}
             {currentPhase && (
-              <Link
-                underline='hover'
-                color='white'
-                sx={{
-                  '&:hover': {
-                    color: 'rgba(255, 255, 255, 0.8)'
-                  }
-                }}
-                onClick={() =>
-                  navigate(
-                    `/proposal/${currentProposal?.id}/wbs/${currentWbs?.id}phase/${currentPhase?.id}`,
-                  )
-                }>
+              <Typography sx={{ color: '#f3f4f6', fontSize: '0.8rem', fontWeight: 600 }}>
                 {`${currentPhase.phaseNumber} - ${currentPhase.description}`}
-              </Link>
+              </Typography>
             )}
           </Breadcrumbs>
-          <HStack gap={3}>
-            <IconButton
-              aria-label='menu'
-              onClick={handleMenuOpen}
-              edge='end'
-              sx={{ 
-                ml: 'auto',
-                color: 'white',
-                '&:hover': {
-                  backgroundColor: 'rgba(255, 255, 255, 0.1)'
-                }
-              }}
-            >
-              <MenuRounded />
-            </IconButton>
 
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
             {proposalId && (
               <IconButton
-                aria-label='download'
+                size='small'
                 onClick={() => loadFullProposalData(proposalId)}
-                edge='end'
-                sx={{
-                  color: 'white',
-                  '&:hover': {
-                    backgroundColor: 'rgba(255, 255, 255, 0.1)'
-                  }
-                }}>
-                <DownloadForOffline />
+                sx={{ color: '#9ca3af', '&:hover': { color: '#d1d5db', backgroundColor: 'rgba(255,255,255,0.06)' } }}>
+                <DownloadForOffline sx={{ fontSize: 18 }} />
               </IconButton>
             )}
+            <IconButton
+              size='small'
+              onClick={(e) => setMainMenuAnchorEl(e.currentTarget)}
+              sx={{ color: '#9ca3af', '&:hover': { color: '#d1d5db', backgroundColor: 'rgba(255,255,255,0.06)' } }}>
+              <MenuRounded sx={{ fontSize: 18 }} />
+            </IconButton>
 
-            {/* New Menu for admin console and logout options */}
             <Menu
               anchorEl={mainMenuAnchorEl}
               open={Boolean(mainMenuAnchorEl)}
-              onClose={handleMenuClose}>
+              onClose={() => setMainMenuAnchorEl(null)}
+              PaperProps={{
+                sx: { borderRadius: 1.5, border: '1px solid #e5e7eb', boxShadow: '0 4px 16px rgba(0,0,0,0.08)', minWidth: 160 },
+              }}>
               {isAdmin && (
-                <MenuItem
-                  onClick={() => {
-                    handleMenuClose();
-                    navigate('/admin');
-                  }}>
-                  <ListItemIcon>
-                    <AdminPanelSettings fontSize='small' />
-                  </ListItemIcon>
-                  <ListItemText primary='Admin Console' />
+                <MenuItem onClick={() => { setMainMenuAnchorEl(null); navigate('/admin'); }} sx={{ fontSize: '0.825rem' }}>
+                  <ListItemIcon><AdminPanelSettings sx={{ fontSize: 16 }} /></ListItemIcon>
+                  <ListItemText primary='Admin Console' primaryTypographyProps={{ fontSize: '0.825rem' }} />
                 </MenuItem>
               )}
               <MenuItem
-                onClick={() => {
-                  handleMenuClose();
-                  auth.signOut();
-                }}
-                sx={{ color: 'red' }} // This line changes the text color to red
-              >
-                <ListItemIcon>
-                  <ExitToApp fontSize='small' sx={{ color: 'inherit' }} />
-                </ListItemIcon>
-                <ListItemText primary='Logout' />
+                onClick={() => { setMainMenuAnchorEl(null); auth.signOut(); }}
+                sx={{ fontSize: '0.825rem', color: '#dc2626' }}>
+                <ListItemIcon><ExitToApp sx={{ fontSize: 16, color: '#dc2626' }} /></ListItemIcon>
+                <ListItemText primary='Logout' primaryTypographyProps={{ fontSize: '0.825rem' }} />
               </MenuItem>
             </Menu>
-          </HStack>
+          </Box>
         </Toolbar>
       </AppBar>
+
+      {/* ━━━ Sidebar Drawer ━━━ */}
       <Drawer
         sx={{
           'width': drawerWidth,
           'flexShrink': 0,
           'zIndex': 999,
-
           '& .MuiDrawer-paper': {
-            backgroundColor: 'white',
+            backgroundColor: '#ffffff',
             width: drawerWidth,
             boxSizing: 'border-box',
+            borderRight: '1px solid #e5e7eb',
+            boxShadow: 'none',
           },
         }}
         variant='persistent'
         anchor='left'
         open={open}>
-        <DrawerHeader>
-          <div
-            style={{
-              width: '100%',
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-            }}>
-            {proposalId && currentProposal && (
-              <IconButton onClick={() => navigate('/')}>
-                <ArrowBack />
+
+        {/* Drawer header */}
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            height: 48,
+            px: 1,
+            flexShrink: 0,
+            borderBottom: '1px solid #e5e7eb',
+          }}>
+          {proposalId && currentProposal ? (
+            <>
+              <IconButton size='small' onClick={() => navigate('/')} sx={{ color: '#6b7280', mr: 0.5 }}>
+                <ArrowBack sx={{ fontSize: 16 }} />
               </IconButton>
-            )}
-            {proposalId && currentProposal && (
               <Typography
                 onClick={() => navigate(`/proposal/${currentProposal?.id}`)}
                 sx={{
-                  'alignSelf': 'center',
-                  'textAlign': 'center',
-                  'overflow': 'hidden',
-                  'textOverflow': 'ellipsis',
-                  'whiteSpace': 'nowrap',
-                  'color': 'primary.main',
-                  'cursor': 'pointer',
-                  'width': '100%',
-                  ':hover': { color: 'primary.dark' },
-                }}
-                variant='h5'>
+                  'flex': 1, 'fontSize': '0.8rem', 'fontWeight': 600, 'color': '#111827',
+                  'cursor': 'pointer', 'overflow': 'hidden', 'textOverflow': 'ellipsis',
+                  'whiteSpace': 'nowrap', '&:hover': { color: '#374151' },
+                }}>
                 {currentProposal?.proposalDescription}
               </Typography>
-            )}
-            {proposalId && currentProposal && (
-              <IconButton
-                onClick={handleDrawerClose}
-                sx={{
-                  alignSelf: 'flex-end',
-                  textAlign: 'flex-end',
-                  marginLeft: 'auto',
-                }}>
-                {theme.direction === 'ltr' ? (
-                  <ChevronLeftRounded />
-                ) : (
-                  <ChevronRightRounded />
-                )}
+              <IconButton size='small' onClick={() => setOpen(false)} sx={{ color: '#9ca3af', ml: 0.5 }}>
+                <ChevronLeftRounded sx={{ fontSize: 18 }} />
               </IconButton>
-            )}
-            {!proposalId && !currentProposal && (
-              <Box sx={{ display: 'flex', width: '100%' }}>
-                <Typography
-                  variant='h6'
-                  color='inherit'
-                  component='div'
-                  sx={{
-                    flexGrow: 1,
-                    textAlign: 'center',
-                    justifySelf: 'center',
-                    alignSelf: 'center',
-                  }}>
-                  {!proposalId && 'MCP Estimator'}
-                </Typography>
-                {!proposalId && !currentProposal && hasWritePermissions && (
-                  <Box sx={{ marginLeft: 'auto' }}>
-                    <IconButton
-                      onClick={(e) => setMenuAnchorEl(e.currentTarget)}>
-                      <Settings />
-                    </IconButton>
-                  </Box>
-                )}
-              </Box>
-            )}
-          </div>
+            </>
+          ) : (
+            <>
+              <Typography sx={{ flex: 1, fontSize: '0.825rem', fontWeight: 600, color: '#111827', pl: 1 }}>
+                MCP Estimator
+              </Typography>
+              {hasWritePermissions && (
+                <IconButton size='small' onClick={(e) => setMenuAnchorEl(e.currentTarget)} sx={{ color: '#6b7280' }}>
+                  <MenuRounded sx={{ fontSize: 16 }} />
+                </IconButton>
+              )}
+            </>
+          )}
           <ProposalMenu
             anchorEl={menuAnchorEl}
             setAnchorEl={setMenuAnchorEl}
             openAddProposalDialog={() => setAddProposalDialogOpen(true)}
             onEditClicked={() => setIsEditProposals(true)}
           />
-        </DrawerHeader>
-        <Divider />
-        {proposalId == null && (
-          <Box sx={{ padding: '16px' }}>
-            <TextField
-              fullWidth
-              variant='outlined'
-              size='small'
-              placeholder='Search Proposals...'
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position='start'>
-                    <SearchRounded />
-                  </InputAdornment>
-                ),
-              }}
-              sx={{
-                '.MuiOutlinedInput-root': {
-                  'borderRadius': '20px',
-                  'height': '40px',
-                  '.MuiInputBase-input': {
-                    height: '20px',
-                    padding: '10px 14px',
-                  },
-                },
-              }}
-              value={proposalSearchInput}
-              onChange={(e) => setProposalSearchInput(e.target.value)}
-            />
-          </Box>
-        )}
+        </Box>
+
+        {/* ── Home view: search + proposals ── */}
         {proposalId == null && (
           <>
-            <Divider />
-            <Box sx={{ height: 'calc(100% - 64px)', overflowY: 'auto' }}>
-              <ProposalList
-                onClick={(proposal: Proposal) => {}}
-                proposals={filteredProposals}
+            <Box sx={{ px: 1.5, py: 1 }}>
+              <TextField
+                fullWidth
+                variant='outlined'
+                size='small'
+                placeholder='Search proposals...'
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position='start'>
+                      <SearchRounded sx={{ fontSize: 16, color: '#9ca3af' }} />
+                    </InputAdornment>
+                  ),
+                }}
+                sx={{
+                  '& .MuiOutlinedInput-root': {
+                    'height': 32,
+                    'borderRadius': 1,
+                    'backgroundColor': '#f3f4f6',
+                    'fontSize': '0.8rem',
+                    '& fieldset': { borderColor: 'transparent' },
+                    '&:hover fieldset': { borderColor: '#d1d5db' },
+                    '&.Mui-focused fieldset': { borderColor: '#9ca3af', borderWidth: 1 },
+                  },
+                  '& .MuiInputBase-input': { py: 0.5 },
+                }}
+                value={proposalSearchInput}
+                onChange={(e) => setProposalSearchInput(e.target.value)}
               />
+            </Box>
+            <Divider sx={{ borderColor: '#f3f4f6' }} />
+            <Box sx={{ flex: 1, overflowY: 'auto' }}>
+              <ProposalList onClick={() => {}} proposals={filteredProposals} />
             </Box>
           </>
         )}
+
+        {/* ── Proposal view: navigation + WBS + phases ── */}
         {proposalId != null && (
-          <Accordion
-            defaultExpanded
-            sx={{
-              'margin': 0,
-              'boxShadow': 'none',
-              '&:before': {
-                display: 'none',
-              },
-            }}>
-            <AccordionSummary expandIcon={<ExpandMore />}>
-              <Typography>Navigation</Typography>
-            </AccordionSummary>
-            <AccordionDetails>
-              <Stack direction='column' spacing={1}>
-                <Button
-                  onClick={() => navigate(`/proposal/${currentProposal?.id}`)}
-                  disabled={wbsId == null}
-                  disableElevation
-                  color='primary'
-                  sx={{
-                    'height': '40px',
-                    'width': '80%',
-                    'alignSelf': 'center',
-                    'borderRadius': '4px',
-                    'backgroundColor': 'primary.main',
-                    'color': '#fff',
-                    'boxShadow': '0 2px 4px rgba(0, 0, 0, 0.1)',
-                    'transition': 'background-color 0.3s, box-shadow 0.3s',
-                    '&:hover': {
-                      backgroundColor: 'primary.dark',
-                      boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
-                    },
-                    '&:disabled': {
-                      backgroundColor: '#e0e0e0',
-                      borderColor: 'transparent',
-                    },
-                    '& .MuiButton-startIcon': {
-                      marginLeft: 0,
-                    },
-                    '& .MuiTypography-root': {
-                      fontSize: '14px',
-                      fontWeight: 500,
-                    },
-                  }}
-                  startIcon={<ArrowBack />}>
-                  <Typography sx={{ color: wbsId == null ? '' : 'white' }}>
-                    Proposal Home
+          <Box sx={{ display: 'flex', flexDirection: 'column', flex: 1, overflow: 'hidden' }}>
+            {/* Navigation links */}
+            <Box sx={{ px: 1.5, pt: 1.5, pb: 1, flexShrink: 0 }}>
+              <Typography
+                sx={{
+                  fontSize: '0.675rem', fontWeight: 600, color: '#9ca3af',
+                  textTransform: 'uppercase', letterSpacing: '0.05em', mb: 0.75, px: 0.5,
+                }}>
+                Navigate
+              </Typography>
+              <NavItem
+                label='Proposal Home'
+                disabled={wbsId == null}
+                onClick={() => navigate(`/proposal/${currentProposal?.id}`)}
+              />
+              <NavItem
+                label='WBS Home'
+                disabled={phaseId == null}
+                onClick={() => navigate(`/proposal/${currentProposal?.id}/wbs/${currentWbs?.id}`)}
+              />
+            </Box>
+
+            <Divider sx={{ borderColor: '#f3f4f6', mx: 1.5 }} />
+
+            {/* WBS selector */}
+            <Box sx={{ px: 1.5, py: 1, flexShrink: 0 }}>
+              <WbsDropdown />
+            </Box>
+
+            {/* Phase list */}
+            {wbsId != null && (
+              <>
+                <Divider sx={{ borderColor: '#f3f4f6', mx: 1.5 }} />
+                <Box sx={{ flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+                  <Typography
+                    sx={{
+                      fontSize: '0.675rem', fontWeight: 600, color: '#9ca3af',
+                      textTransform: 'uppercase', letterSpacing: '0.05em', px: 2, pt: 1, pb: 0.5,
+                    }}>
+                    Phases
                   </Typography>
-                </Button>
-                <Button
-                  onClick={() =>
-                    navigate(
-                      `/proposal/${currentProposal?.id}/wbs/${currentWbs?.id}`,
-                    )
-                  }
-                  disabled={phaseId == null}
-                  disableElevation
-                  color='primary'
-                  sx={{
-                    'height': '40px',
-                    'width': '80%',
-                    'alignSelf': 'center',
-                    'borderRadius': '4px',
-                    'backgroundColor': 'primary.main',
-                    'color': '#fff',
-                    'boxShadow': '0 2px 4px rgba(0, 0, 0, 0.1)',
-                    'transition': 'background-color 0.3s, box-shadow 0.3s',
-                    '&:hover': {
-                      backgroundColor: 'primary.dark',
-                      boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
-                    },
-                    '&:disabled': {
-                      backgroundColor: '#e0e0e0',
-                      borderColor: 'transparent',
-                    },
-                    '& .MuiButton-startIcon': {
-                      marginLeft: 0,
-                    },
-                    '& .MuiTypography-root': {
-                      fontSize: '14px',
-                      fontWeight: 500,
-                    },
-                  }}
-                  startIcon={<ArrowBack />}>
-                  <Typography sx={{ color: phaseId == null ? '' : 'white' }}>
-                    WBS Home
-                  </Typography>
-                </Button>
-                <WbsDropdown />
-              </Stack>
-            </AccordionDetails>
-          </Accordion>
-        )}
-        {wbsId != null && (
-          <Box
-            sx={{
-              pt: '5px',
-              display: 'flex',
-              flexDirection: 'column',
-              justifyContent: 'center',
-              w: '100%',
-              alignItems: 'center',
-              justifyItems: 'center',
-            }}>
-            {/*{hasWritePermissions && (*/}
-            {/*  <AddPhaseButton*/}
-            {/*    toggleAddDialog={() => setAddPhaseDialogOpen(true)}*/}
-            {/*  />*/}
-            {/*)}*/}
+                  <PhaseList onClick={() => {}} />
+                </Box>
+              </>
+            )}
           </Box>
         )}
-        {wbsId != null && <PhaseList onClick={(_) => {}} />}
       </Drawer>
+
+      {/* ━━━ Main content ━━━ */}
       <Main open={open} proposalId={proposalId}>
         <DrawerHeader />
-        {children}
+        <Box sx={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+          {children}
+        </Box>
       </Main>
+
+      {/* Dialogs */}
       <AddProposalDialog
         open={addProposalDialogOpen}
         toggleAddDialog={() => setAddProposalDialogOpen(!addProposalDialogOpen)}
       />
       {wbsId != undefined && (
-        <AddPhaseDialog
-          open={addPhaseDialogOpen}
-          onClose={() => setAddPhaseDialogOpen(false)}
-        />
+        <AddPhaseDialog open={addPhaseDialogOpen} onClose={() => setAddPhaseDialogOpen(false)} />
       )}
-      <EditProposalsDialog
-        open={isEditProposals}
-        onClose={() => setIsEditProposals(false)}
-        onDelete={() => {}}
-      />
+      <EditProposalsDialog open={isEditProposals} onClose={() => setIsEditProposals(false)} onDelete={() => {}} />
     </Box>
   );
 }
+
+// ---------------------------------------------------------------------------
+//  Sidebar nav item — compact text link with left indicator
+// ---------------------------------------------------------------------------
+
+function NavItem({ label, disabled, onClick }: { label: string; disabled: boolean; onClick: () => void }) {
+  return (
+    <Box
+      onClick={disabled ? undefined : onClick}
+      sx={{
+        'px': 1.25,
+        'py': 0.5,
+        'mx': 0.5,
+        'my': 0.15,
+        'borderRadius': 1,
+        'cursor': disabled ? 'default' : 'pointer',
+        'opacity': disabled ? 0.4 : 1,
+        '&:hover': disabled ? {} : { backgroundColor: '#f3f4f6' },
+      }}>
+      <Typography
+        sx={{
+          fontSize: '0.775rem',
+          fontWeight: 500,
+          color: disabled ? '#9ca3af' : '#374151',
+        }}>
+        {label}
+      </Typography>
+    </Box>
+  );
+}
+
+// ---------------------------------------------------------------------------
+//  Proposal management menu (add/edit)
+// ---------------------------------------------------------------------------
 
 interface ProposalMenuProps {
   anchorEl: null | HTMLElement;
@@ -614,49 +477,24 @@ interface ProposalMenuProps {
   onEditClicked: () => void;
 }
 
-const ProposalMenu: React.FC<ProposalMenuProps> = ({
-  anchorEl,
-  setAnchorEl,
-  openAddProposalDialog,
-  onEditClicked,
-}) => {
-  const open = Boolean(anchorEl);
-
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
+const ProposalMenu: React.FC<ProposalMenuProps> = ({ anchorEl, setAnchorEl, openAddProposalDialog, onEditClicked }) => {
+  const close = () => setAnchorEl(null);
 
   return (
     <Menu
-      id='basic-menu'
       anchorEl={anchorEl}
-      open={open}
-      onClose={handleClose}
-      MenuListProps={{
-        'aria-labelledby': 'basic-button',
+      open={Boolean(anchorEl)}
+      onClose={close}
+      PaperProps={{
+        sx: { borderRadius: 1.5, border: '1px solid #e5e7eb', boxShadow: '0 4px 16px rgba(0,0,0,0.08)', minWidth: 140 },
       }}>
-      <MenuItem
-        sx={{ gap: 2 }}
-        onClick={() => {
-          handleClose();
-          openAddProposalDialog();
-        }}>
-        <AddRounded>
-          <ContentCopy fontSize='small' />
-        </AddRounded>
-        <ListItemText>Add</ListItemText>
+      <MenuItem onClick={() => { close(); openAddProposalDialog(); }} sx={{ fontSize: '0.825rem' }}>
+        <ListItemIcon><AddRounded sx={{ fontSize: 16 }} /></ListItemIcon>
+        <ListItemText primary='Add' primaryTypographyProps={{ fontSize: '0.825rem' }} />
       </MenuItem>
-      <MenuItem
-        sx={{ gap: 2 }}
-        disabled={false}
-        onClick={() => {
-          handleClose();
-          onEditClicked();
-        }}>
-        <EditRounded>
-          <ContentCopy fontSize='small' />
-        </EditRounded>
-        <ListItemText>Edit</ListItemText>
+      <MenuItem onClick={() => { close(); onEditClicked(); }} sx={{ fontSize: '0.825rem' }}>
+        <ListItemIcon><EditRounded sx={{ fontSize: 16 }} /></ListItemIcon>
+        <ListItemText primary='Edit' primaryTypographyProps={{ fontSize: '0.825rem' }} />
       </MenuItem>
     </Menu>
   );

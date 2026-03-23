@@ -7,17 +7,10 @@ import {
   InputLabel,
   Select,
   MenuItem,
-  Card,
-  CardContent,
-  Divider,
-  IconButton,
-  InputAdornment,
+  Button,
   SelectChangeEvent,
   Box,
 } from '@mui/material';
-import EditIcon from '@mui/icons-material/Edit';
-import SaveIcon from '@mui/icons-material/Save';
-import CancelIcon from '@mui/icons-material/Cancel';
 import { parseISO, format, isValid } from 'date-fns';
 import { PatternFormat } from 'react-number-format';
 
@@ -31,60 +24,67 @@ import {
 interface ProposalDetailsProps {
   editData: Partial<Proposal>;
   isEditMode: boolean;
-  handleChange: (
-    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-  ) => void;
-  handleSelectChange: (
-    event: SelectChangeEvent<unknown>,
-    child: React.ReactNode,
-  ) => void;
+  handleChange: (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
+  handleSelectChange: (event: SelectChangeEvent<unknown>, child: React.ReactNode) => void;
   handleValueChange: (field: keyof Proposal, value: string) => void;
   handleSaveClick: () => void;
   handleCancelClick: () => void;
   handleEditClick: () => void;
 }
 
-const ProposalDetails: React.FC<ProposalDetailsProps> = ({
-  editData,
-  isEditMode,
-  handleChange,
-  handleSelectChange,
-  handleValueChange,
-  handleSaveClick,
-  handleCancelClick,
-  handleEditClick,
-}) => {
+// Shared field display component
+function FieldDisplay({ label, value }: { label: string; value: string }) {
+  return (
+    <Box sx={{ minHeight: 44 }}>
+      <Typography sx={{ fontSize: '0.675rem', fontWeight: 500, color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.04em', mb: 0.25 }}>
+        {label}
+      </Typography>
+      <Typography sx={{ fontSize: '0.825rem', fontWeight: 500, color: '#111827', lineHeight: 1.4 }}>
+        {value || '\u2014'}
+      </Typography>
+    </Box>
+  );
+}
 
+// Shared edit field styling
+const fieldSx = {
+  '& .MuiOutlinedInput-root': {
+    'borderRadius': 1,
+    'fontSize': '0.825rem',
+    'backgroundColor': '#f9fafb',
+    '& fieldset': { borderColor: '#e5e7eb' },
+    '&:hover fieldset': { borderColor: '#d1d5db' },
+    '&.Mui-focused fieldset': { borderColor: '#9ca3af', borderWidth: 1 },
+  },
+  '& .MuiInputLabel-root': { fontSize: '0.8rem', color: '#6b7280' },
+};
+
+const ProposalDetails: React.FC<ProposalDetailsProps> = ({
+  editData, isEditMode, handleChange, handleSelectChange,
+  handleValueChange, handleSaveClick, handleCancelClick, handleEditClick,
+}) => {
   const sanitizePhoneDigits = (value?: string) => {
-    if (!value) {
-      return '';
-    }
+    if (!value) return '';
     const digits = value.replace(/\D/g, '');
-    if (digits.length === 11 && digits.startsWith('1')) {
-      return digits.slice(1, 11);
-    }
+    if (digits.length === 11 && digits.startsWith('1')) return digits.slice(1, 11);
     return digits.slice(0, 10);
   };
 
-  const formatPhoneNumberForDisplay = (value?: string) => {
-    if (!value) {
-      return '-';
-    }
-    const digits = sanitizePhoneDigits(value);
-    if (digits.length === 10) {
-      return `(${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6)}`;
-    }
-    return value || '-';
+  const formatPhone = (value?: string) => {
+    if (!value) return '\u2014';
+    const d = sanitizePhoneDigits(value);
+    if (d.length === 10) return `(${d.slice(0, 3)}) ${d.slice(3, 6)}-${d.slice(6)}`;
+    return value || '\u2014';
   };
 
-
-  const formatDisplayValue = (
-    value?: Proposal[keyof Proposal] | string | number | null,
-  ) => {
-    if (value === undefined || value === null || value === '') {
-      return '-';
-    }
+  const fmtVal = (value?: Proposal[keyof Proposal] | string | number | null) => {
+    if (value === undefined || value === null || value === '') return '\u2014';
     return value.toString().toUpperCase();
+  };
+
+  const fmtDate = (value?: string) => {
+    if (!value) return '\u2014';
+    return isValid(parseISO(value)) ? format(parseISO(value), 'MM/dd/yyyy') : value;
   };
 
   const proposalFields = [
@@ -97,6 +97,14 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = ({
     { label: 'City', field: 'projectCity' },
   ];
 
+  const dateFields = [
+    { label: 'Estimator(s)', field: 'proposalEstimators' },
+    { label: 'Date Received', field: 'proposalDateReceived', type: 'date' },
+    { label: 'Due Date', field: 'proposalDateDue', type: 'date' },
+    { label: 'Project Start', field: 'projectStartDate', type: 'date' },
+    { label: 'Project End', field: 'projectEndDate', type: 'date' },
+  ];
+
   const contactFields = [
     { label: 'Contact Name', field: 'contactName' },
     { label: 'Phone', field: 'contactPhone' },
@@ -106,310 +114,147 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = ({
     { label: 'Zip', field: 'contactZip' },
   ];
 
-  // New fields to be added
-  const additionalProposalFields = [
-    { label: 'Estimator(s)', field: 'proposalEstimators' },
-    { label: 'Date Received', field: 'proposalDateReceived', type: 'date' },
-    { label: 'Due Date', field: 'proposalDateDue', type: 'date' },
-    { label: 'Project Start Date', field: 'projectStartDate', type: 'date' },
-    { label: 'Project End Date', field: 'projectEndDate', type: 'date' },
-  ];
-
   return (
-    <Box sx={{ padding: 2, width: '100%' }}>
-      <Box
-        display='flex'
-        justifyContent='space-between'
-        alignItems='center'
-        sx={{ mb: 2 }}>
-        <Typography variant='h5'>Proposal Details</Typography>
+    <Box sx={{ px: { xs: 2, sm: 3 }, py: 2, maxWidth: 1100 }}>
+      {/* Header with edit controls */}
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2.5 }}>
+        <Typography sx={{ fontSize: '0.675rem', fontWeight: 700, color: '#374151', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+          Proposal Details
+        </Typography>
         {isEditMode ? (
-          <Box>
-            <IconButton color='primary' onClick={handleSaveClick}>
-              <SaveIcon />
-            </IconButton>
-            <IconButton color='secondary' onClick={handleCancelClick}>
-              <CancelIcon />
-            </IconButton>
+          <Box sx={{ display: 'flex', gap: 1 }}>
+            <Button size='small' onClick={handleCancelClick}
+              sx={{ 'textTransform': 'none', 'fontSize': '0.775rem', 'fontWeight': 500, 'color': '#6b7280', 'borderRadius': 1, 'px': 1.5, 'border': '1px solid #e5e7eb', '&:hover': { backgroundColor: '#f3f4f6' } }}>
+              Cancel
+            </Button>
+            <Button size='small' onClick={handleSaveClick}
+              sx={{ 'textTransform': 'none', 'fontSize': '0.775rem', 'fontWeight': 600, 'color': '#fff', 'backgroundColor': '#111827', 'borderRadius': 1, 'px': 2, '&:hover': { backgroundColor: '#1f2937' } }}>
+              Save
+            </Button>
           </Box>
         ) : (
-          <IconButton color='primary' onClick={handleEditClick}>
-            <EditIcon />
-          </IconButton>
+          <Button size='small' onClick={handleEditClick}
+            sx={{ 'textTransform': 'none', 'fontSize': '0.775rem', 'fontWeight': 500, 'color': '#374151', 'borderRadius': 1, 'px': 1.5, 'border': '1px solid #e5e7eb', '&:hover': { backgroundColor: '#f3f4f6' } }}>
+            Edit
+          </Button>
         )}
       </Box>
 
       {/* Proposal Information */}
-      <Card sx={{ mb: 2 }}>
-        <CardContent>
-          <Typography variant='h6' gutterBottom>
-            Proposal Information
-          </Typography>
-          <Grid container spacing={2}>
-            {proposalFields.map(({ label, field }) => (
-              <Grid item xs={12} sm={6} md={4} key={field}>
-                {isEditMode ? (
-                  <TextField
-                    label={label}
-                    variant='outlined'
-                    size='small'
-                    fullWidth
-                    name={field}
-                    value={editData[field as keyof Proposal] || ''}
-                    onChange={handleChange}
-                  />
-                ) : (
-                  <>
-                    <Typography variant='subtitle2' color='textSecondary'>
-                      {label}
-                    </Typography>
-                    <Typography variant='body1'>
-                      {formatDisplayValue(editData[field as keyof Proposal])}
-                    </Typography>
-                  </>
-                )}
-              </Grid>
-            ))}
-
-            {/* State Field */}
-            <Grid item xs={12} sm={6} md={4}>
+      <Box sx={{ mb: 3, pb: 2.5, borderBottom: '1px solid #e5e7eb' }}>
+        <Typography sx={{ fontSize: '0.675rem', fontWeight: 600, color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '0.05em', mb: 1.5 }}>
+          Project Information
+        </Typography>
+        <Grid container spacing={2}>
+          {proposalFields.map(({ label, field }) => (
+            <Grid item xs={12} sm={6} md={4} key={field}>
               {isEditMode ? (
-                <FormControl variant='outlined' size='small' fullWidth>
-                  <InputLabel>State</InputLabel>
-                  <Select
-                    label='State'
-                    name='projectState'
-                    value={editData.projectState || ''}
-                    onChange={handleSelectChange}>
-                    {Object.values(UnitedStatesStates).map((item) => (
-                      <MenuItem key={item} value={item}>
-                        {item}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
+                <TextField label={label} variant='outlined' size='small' fullWidth name={field}
+                  value={editData[field as keyof Proposal] || ''} onChange={handleChange} sx={fieldSx} />
               ) : (
-                <>
-                  <Typography variant='subtitle2' color='textSecondary'>
-                    State
-                  </Typography>
-                    <Typography variant='body1'>
-                      {formatDisplayValue(editData.projectState)}
-                    </Typography>
-                </>
+                <FieldDisplay label={label} value={fmtVal(editData[field as keyof Proposal])} />
               )}
             </Grid>
+          ))}
 
-            {/* Additional Proposal Fields */}
-            {additionalProposalFields.map(({ label, field, type }) => (
-              <Grid item xs={12} sm={6} md={4} key={field}>
-                {isEditMode ? (
-                  <TextField
-                    label={label}
-                    variant='outlined'
-                    size='small'
-                    fullWidth
-                    name={field}
-                    type={type || 'text'}
-                    value={
-                      type === 'date'
-                        ? editData[field as keyof Proposal]
-                          ? (editData[field as keyof Proposal] as string).slice(
-                              0,
-                              10,
-                            )
-                          : ''
-                        : editData[field as keyof Proposal] || ''
-                    }
-                    onChange={handleChange}
-                    InputLabelProps={{
-                      shrink: true,
-                    }}
-                  />
-                ) : (
-                  <>
-                    <Typography variant='subtitle2' color='textSecondary'>
-                      {label}
-                    </Typography>
-                    <Typography variant='body1'>
-                      {editData[field as keyof Proposal]
-                        ? type === 'date'
-                          ? formatDisplayValue(
-                              isValid(
-                                parseISO(
-                                  editData[field as keyof Proposal] as string,
-                                ),
-                              )
-                                ? format(
-                                    parseISO(
-                                      editData[field as keyof Proposal] as string,
-                                    ),
-                                    'MM/dd/yyyy',
-                                  )
-                                : 'Invalid Date',
-                            )
-                          : formatDisplayValue(editData[field as keyof Proposal])
-                        : '-'}
-                    </Typography>
-                  </>
-                )}
-              </Grid>
-            ))}
-
-            {/* Bid Type Field */}
-            <Grid item xs={12} sm={6} md={4}>
-              {isEditMode ? (
-                <FormControl variant='outlined' size='small' fullWidth>
-                  <InputLabel>Bid Type</InputLabel>
-                  <Select
-                    label='Bid Type'
-                    name='bidType'
-                    value={editData.bidType || ''}
-                    onChange={handleSelectChange}>
-                    {Object.values(BidType).map((item) => (
-                      <MenuItem key={item} value={item}>
-                        {item}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              ) : (
-                <>
-                  <Typography variant='subtitle2' color='textSecondary'>
-                    Bid Type
-                  </Typography>
-                  <Typography variant='body1'>
-                    {formatDisplayValue(editData.bidType)}
-                  </Typography>
-                </>
-              )}
-            </Grid>
-
-            {/* Status Field */}
-            <Grid item xs={12} sm={6} md={4}>
-              {isEditMode ? (
-                <FormControl variant='outlined' size='small' fullWidth>
-                  <InputLabel>Status</InputLabel>
-                  <Select
-                    label='Status'
-                    name='proposalStatus'
-                    value={editData.proposalStatus || ''}
-                    onChange={handleSelectChange}>
-                    {Object.values(ProposalStatus).map((item) => (
-                      <MenuItem key={item} value={item}>
-                        {item}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              ) : (
-                <>
-                  <Typography variant='subtitle2' color='textSecondary'>
-                    Status
-                  </Typography>
-                  <Typography variant='body1'>
-                    {formatDisplayValue(editData.proposalStatus)}
-                  </Typography>
-                </>
-              )}
-            </Grid>
+          {/* State */}
+          <Grid item xs={12} sm={6} md={4}>
+            {isEditMode ? (
+              <FormControl variant='outlined' size='small' fullWidth sx={fieldSx}>
+                <InputLabel>State</InputLabel>
+                <Select label='State' name='projectState' value={editData.projectState || ''} onChange={handleSelectChange}>
+                  {Object.values(UnitedStatesStates).map((s) => <MenuItem key={s} value={s}>{s}</MenuItem>)}
+                </Select>
+              </FormControl>
+            ) : (
+              <FieldDisplay label='State' value={fmtVal(editData.projectState)} />
+            )}
           </Grid>
-        </CardContent>
-      </Card>
+
+          {dateFields.map(({ label, field, type }) => (
+            <Grid item xs={12} sm={6} md={4} key={field}>
+              {isEditMode ? (
+                <TextField label={label} variant='outlined' size='small' fullWidth name={field}
+                  type={type || 'text'}
+                  value={type === 'date' ? (editData[field as keyof Proposal] as string)?.slice(0, 10) || '' : editData[field as keyof Proposal] || ''}
+                  onChange={handleChange} InputLabelProps={{ shrink: true }} sx={fieldSx} />
+              ) : (
+                <FieldDisplay label={label} value={type === 'date' ? fmtDate(editData[field as keyof Proposal] as string) : fmtVal(editData[field as keyof Proposal])} />
+              )}
+            </Grid>
+          ))}
+
+          {/* Bid Type */}
+          <Grid item xs={12} sm={6} md={4}>
+            {isEditMode ? (
+              <FormControl variant='outlined' size='small' fullWidth sx={fieldSx}>
+                <InputLabel>Bid Type</InputLabel>
+                <Select label='Bid Type' name='bidType' value={editData.bidType || ''} onChange={handleSelectChange}>
+                  {Object.values(BidType).map((b) => <MenuItem key={b} value={b}>{b}</MenuItem>)}
+                </Select>
+              </FormControl>
+            ) : (
+              <FieldDisplay label='Bid Type' value={fmtVal(editData.bidType)} />
+            )}
+          </Grid>
+
+          {/* Status */}
+          <Grid item xs={12} sm={6} md={4}>
+            {isEditMode ? (
+              <FormControl variant='outlined' size='small' fullWidth sx={fieldSx}>
+                <InputLabel>Status</InputLabel>
+                <Select label='Status' name='proposalStatus' value={editData.proposalStatus || ''} onChange={handleSelectChange}>
+                  {Object.values(ProposalStatus).map((s) => <MenuItem key={s} value={s}>{s}</MenuItem>)}
+                </Select>
+              </FormControl>
+            ) : (
+              <FieldDisplay label='Status' value={fmtVal(editData.proposalStatus)} />
+            )}
+          </Grid>
+        </Grid>
+      </Box>
 
       {/* Contact Information */}
-      <Card sx={{ mb: 2 }}>
-        <CardContent>
-          <Typography variant='h6' gutterBottom>
-            Contact Information
-          </Typography>
-          <Grid container spacing={2}>
-            {contactFields.map(({ label, field }) => (
-              <Grid item xs={12} sm={6} md={4} key={field}>
-                {isEditMode ? (
-                  field === 'contactPhone' ? (
-                    <PatternFormat
-                      format='(###) ###-####'
-                      mask='_'
-                      allowEmptyFormatting
-                      valueIsNumericString
-                      isAllowed={({ value }) => value.length <= 10}
-                      value={sanitizePhoneDigits(
-                        (editData.contactPhone as string) || '',
-                      )}
-                      onValueChange={({ value }) =>
-                        handleValueChange('contactPhone', sanitizePhoneDigits(value))
-                      }
-                      customInput={TextField}
-                      label={label}
-                      variant='outlined'
-                      size='small'
-                      fullWidth
-                      name={field}
-                      placeholder='(555) 123-4567'
-                      InputProps={{ inputMode: 'tel' }}
-                    />
-                  ) : (
-                    <TextField
-                      label={label}
-                      variant='outlined'
-                      size='small'
-                      fullWidth
-                      name={field}
-                      value={editData[field as keyof Proposal] || ''}
-                      onChange={handleChange}
-                    />
-                  )
-                ) : (
-                  <>
-                    <Typography variant='subtitle2' color='textSecondary'>
-                      {label}
-                    </Typography>
-                    <Typography variant='body1'>
-                      {field === 'contactPhone'
-                        ? formatPhoneNumberForDisplay(
-                            editData[field as keyof Proposal] as string,
-                          )
-                        : formatDisplayValue(editData[field as keyof Proposal])}
-                    </Typography>
-                  </>
-                )}
-              </Grid>
-            ))}
-
-            {/* Contact State Field */}
-            <Grid item xs={12} sm={6} md={4}>
+      <Box>
+        <Typography sx={{ fontSize: '0.675rem', fontWeight: 600, color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '0.05em', mb: 1.5 }}>
+          Contact Information
+        </Typography>
+        <Grid container spacing={2}>
+          {contactFields.map(({ label, field }) => (
+            <Grid item xs={12} sm={6} md={4} key={field}>
               {isEditMode ? (
-                <FormControl variant='outlined' size='small' fullWidth>
-                  <InputLabel>State</InputLabel>
-                  <Select
-                    label='State'
-                    name='contactState'
-                    value={editData.contactState || ''}
-                    onChange={handleSelectChange}>
-                    {Object.values(UnitedStatesStates).map((item) => (
-                      <MenuItem key={item} value={item}>
-                        {item}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
+                field === 'contactPhone' ? (
+                  <PatternFormat format='(###) ###-####' mask='_' allowEmptyFormatting valueIsNumericString
+                    isAllowed={({ value }) => value.length <= 10}
+                    value={sanitizePhoneDigits((editData.contactPhone as string) || '')}
+                    onValueChange={({ value }) => handleValueChange('contactPhone', sanitizePhoneDigits(value))}
+                    customInput={TextField} label={label} variant='outlined' size='small' fullWidth name={field}
+                    placeholder='(555) 123-4567' InputProps={{ inputMode: 'tel' }} sx={fieldSx} />
+                ) : (
+                  <TextField label={label} variant='outlined' size='small' fullWidth name={field}
+                    value={editData[field as keyof Proposal] || ''} onChange={handleChange} sx={fieldSx} />
+                )
               ) : (
-                <>
-                  <Typography variant='subtitle2' color='textSecondary'>
-                    State
-                  </Typography>
-                  <Typography variant='body1'>
-                    {formatDisplayValue(editData.contactState)}
-                  </Typography>
-                </>
+                <FieldDisplay label={label} value={field === 'contactPhone' ? formatPhone(editData[field as keyof Proposal] as string) : fmtVal(editData[field as keyof Proposal])} />
               )}
             </Grid>
+          ))}
+
+          {/* Contact State */}
+          <Grid item xs={12} sm={6} md={4}>
+            {isEditMode ? (
+              <FormControl variant='outlined' size='small' fullWidth sx={fieldSx}>
+                <InputLabel>State</InputLabel>
+                <Select label='State' name='contactState' value={editData.contactState || ''} onChange={handleSelectChange}>
+                  {Object.values(UnitedStatesStates).map((s) => <MenuItem key={s} value={s}>{s}</MenuItem>)}
+                </Select>
+              </FormControl>
+            ) : (
+              <FieldDisplay label='State' value={fmtVal(editData.contactState)} />
+            )}
           </Grid>
-        </CardContent>
-      </Card>
-
-
+        </Grid>
+      </Box>
     </Box>
   );
 };
