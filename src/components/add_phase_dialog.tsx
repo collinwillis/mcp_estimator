@@ -200,7 +200,7 @@ export default function AddPhaseDialog({ open, onClose }: Props) {
                     value={option.description}
                     key={option.phaseDatabaseId}
                     sx={{ paddingTop: 2, paddingBottom: 2 }}
-                    onClick={() => handleOptionSelect(option)}>
+                    onClick={() => handleOptionSelect(option as PhaseOption)}>
                     {option?.description}
                   </MenuItem>
                 ))}

@@ -113,7 +113,7 @@ export default function ProposalInfoAccordion({
   const onSubmit = async () => {
     console.log('TEST');
     const newProposal: FirestoreProposal = new FirestoreProposal({
-      ...currentProposal,
+      ...currentProposal as any,
       proposalNumber: parseInt(proposalNumber),
       job,
       coNumber: parseInt(coNumber),

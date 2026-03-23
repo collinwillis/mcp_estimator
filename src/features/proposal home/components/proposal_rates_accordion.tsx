@@ -74,7 +74,7 @@ export default function ProposalRatesAccordion({
 
   const onSubmit = async () => {
     const updatedProposal: FirestoreProposal = new FirestoreProposal({
-      ...currentProposal,
+      ...currentProposal as any,
       craftBaseRate: parseFloat(craftbaseState),
       weldBaseRate: parseFloat(weldbaseState),
       burdenRate: parseFloat(burdenState),

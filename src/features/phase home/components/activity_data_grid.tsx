@@ -620,7 +620,7 @@ function ActivityDataGrid() {
       (phase) => phase.wbsDatabaseId === currentWbs?.wbsDatabaseId,
     );
 
-    setPhaseDatabaseOptions(filteredPhasesForWbs);
+    setPhaseDatabaseOptions(filteredPhasesForWbs as any);
   }, [currentWbs, wbsId, currentPhase, localPhaseArray]);
 
   const onChangePhaseDatabase = React.useCallback(

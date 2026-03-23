@@ -5,6 +5,8 @@ export class Phase {
 
   proposalId?: string;
 
+  wbsDatabaseId?: number;
+
   phaseDatabaseId?: number | string;
 
   phaseDatabaseName?: string;
