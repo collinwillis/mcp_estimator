@@ -113,7 +113,7 @@ jobs:
           DOWNLOAD_URL="https://github.com/${REPO}/releases/download/${TAG}/${ZIP_NAME}"
 
           # Build the updater JSON
-          cat > /tmp/updater.json << ENDOFFILE
+          cat > ${RUNNER_TEMP}/updater.json << ENDOFFILE
           {
             "version": "${VERSION}",
             "notes": "MCP Estimator ${TAG}",
@@ -128,11 +128,11 @@ jobs:
           ENDOFFILE
 
           echo "Updater JSON:"
-          cat /tmp/updater.json
+          cat ${RUNNER_TEMP}/updater.json
 
           # Update the gist using GitHub API
           # Escape the JSON for embedding in the API payload
-          CONTENT=$(python -c "import json,sys; print(json.dumps(open('/tmp/updater.json').read()))")
+          CONTENT=$(python -c "import json,sys; print(json.dumps(open('${RUNNER_TEMP}/updater.json').read()))")
 
           curl -s -X PATCH \
             -H "Authorization: token ${GH_TOKEN}" \
