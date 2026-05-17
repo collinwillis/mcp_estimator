@@ -1,16 +1,8 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import AddIcon from '@mui/icons-material/Add';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import WarningAmberIcon from '@mui/icons-material/WarningAmber';
-import EngineeringOutlinedIcon from '@mui/icons-material/EngineeringOutlined';
-import LocalShippingOutlinedIcon from '@mui/icons-material/LocalShippingOutlined';
-import Inventory2OutlinedIcon from '@mui/icons-material/Inventory2Outlined';
-import PaymentsOutlinedIcon from '@mui/icons-material/PaymentsOutlined';
-import PersonAddAltOutlinedIcon from '@mui/icons-material/PersonAddAltOutlined';
-import HandshakeOutlinedIcon from '@mui/icons-material/HandshakeOutlined';
-import LayersOutlinedIcon from '@mui/icons-material/LayersOutlined';
 import {
   Box,
   Button,
@@ -300,7 +292,6 @@ function BottomPanel() {
   type QuickAdd = {
     key: string;
     label: string;
-    icon: React.ReactNode;
     primary?: boolean;
     onClick: () => void;
   };
@@ -312,19 +303,16 @@ function BottomPanel() {
           key: 'activity',
           label: 'Activity',
           primary: true,
-          icon: <EngineeringOutlinedIcon sx={{ fontSize: 15 }} />,
           onClick: () => setOpenAddActivityDialog(true),
         },
         {
           key: 'equipment',
           label: 'Equipment',
-          icon: <LocalShippingOutlinedIcon sx={{ fontSize: 15 }} />,
           onClick: () => setOpenEquipmentDialog(true),
         },
         {
           key: 'material',
           label: 'Material',
-          icon: <Inventory2OutlinedIcon sx={{ fontSize: 15 }} />,
           onClick: () =>
             createActivity({
               description: 'NEW MATERIAL ITEM',
@@ -334,7 +322,6 @@ function BottomPanel() {
         {
           key: 'cost-only',
           label: 'Cost Only',
-          icon: <PaymentsOutlinedIcon sx={{ fontSize: 15 }} />,
           onClick: () =>
             createActivity({
               description: 'NEW COST ONLY ITEM',
@@ -344,7 +331,6 @@ function BottomPanel() {
         {
           key: 'custom-labor',
           label: 'Custom Labor',
-          icon: <PersonAddAltOutlinedIcon sx={{ fontSize: 15 }} />,
           onClick: () =>
             createActivity({
               description: 'NEW CUSTOM LABOR ITEM',
@@ -354,7 +340,6 @@ function BottomPanel() {
         {
           key: 'subcontractor',
           label: 'Subcontractor',
-          icon: <HandshakeOutlinedIcon sx={{ fontSize: 15 }} />,
           onClick: () =>
             createActivity({
               description: 'NEW SUBCONTRACTOR',
@@ -370,7 +355,6 @@ function BottomPanel() {
           key: 'phase',
           label: 'Phase',
           primary: true,
-          icon: <LayersOutlinedIcon sx={{ fontSize: 15 }} />,
           onClick: () => setAddPhaseDialogOpen(true),
         },
       ];
@@ -386,7 +370,7 @@ function BottomPanel() {
     fontSize: '0.78rem',
     letterSpacing: '0.005em',
     borderRadius: 999,
-    px: 1.25,
+    px: 1.5,
     py: 0.25,
     minHeight: 26,
     lineHeight: 1.2,
@@ -395,15 +379,9 @@ function BottomPanel() {
     backgroundColor: COLOR.white,
     boxShadow: '0 1px 0 rgba(17, 24, 39, 0.02)',
     transition: 'background-color 120ms ease, border-color 120ms ease',
-    '& .MuiButton-startIcon': {
-      mr: 0.5,
-      ml: -0.25,
-      color: COLOR.muted,
-    },
     '&:hover': {
       backgroundColor: alpha('#000', 0.035),
       borderColor: '#d1d5db',
-      '& .MuiButton-startIcon': { color: COLOR.sectionHead },
     },
   };
 
@@ -412,11 +390,9 @@ function BottomPanel() {
     color: COLOR.white,
     backgroundColor: '#111827',
     borderColor: '#111827',
-    '& .MuiButton-startIcon': { color: alpha('#ffffff', 0.85), mr: 0.5, ml: -0.25 },
     '&:hover': {
       backgroundColor: '#1f2937',
       borderColor: '#1f2937',
-      '& .MuiButton-startIcon': { color: '#ffffff' },
     },
   };
 
@@ -443,27 +419,19 @@ function BottomPanel() {
               '&::-webkit-scrollbar': { display: 'none' },
               scrollbarWidth: 'none',
             }}>
-            <Box
+            <Typography
               sx={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 0.4,
-                pr: 0.5,
+                fontSize: '0.7rem',
+                fontWeight: 600,
+                color: COLOR.muted,
+                textTransform: 'uppercase',
+                letterSpacing: '0.06em',
+                whiteSpace: 'nowrap',
+                pr: 1,
                 flexShrink: 0,
               }}>
-              <AddIcon sx={{ fontSize: 14, color: COLOR.muted }} />
-              <Typography
-                sx={{
-                  fontSize: '0.7rem',
-                  fontWeight: 600,
-                  color: COLOR.muted,
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.06em',
-                  whiteSpace: 'nowrap',
-                }}>
-                Add
-              </Typography>
-            </Box>
+              Add
+            </Typography>
             <Box
               sx={{
                 width: '1px',
@@ -480,7 +448,6 @@ function BottomPanel() {
                   onClick={item.onClick}
                   disableElevation
                   disableRipple
-                  startIcon={item.icon}
                   sx={item.primary ? quickAddPrimarySx : quickAddButtonSx}>
                   {item.label}
                 </Button>
