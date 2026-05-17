@@ -591,6 +591,8 @@ function PhaseDataGrid({
 
   const notEditableCells = React.useMemo(
     () => [
+      'craftManHours',
+      'welderManHours',
       'craftCost',
       'welderCost',
       'materialCost',
