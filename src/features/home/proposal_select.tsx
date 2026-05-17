@@ -185,10 +185,10 @@ const ProposalOverviewDashboard: React.FC = () => {
               <Typography sx={{ fontSize: '0.85rem', fontWeight: 600, color: '#111827', fontVariantNumeric: 'tabular-nums' }}>
                 {p.proposalNumber}
               </Typography>
-              <Typography sx={{ fontSize: '0.85rem', fontWeight: 400, color: '#374151', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+              <Typography sx={{ fontSize: '0.85rem', fontWeight: 400, color: '#374151', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', textTransform: 'uppercase' }}>
                 {p.proposalDescription || '\u2014'}
               </Typography>
-              <Typography sx={{ fontSize: '0.8rem', color: '#6b7280', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+              <Typography sx={{ fontSize: '0.8rem', color: '#6b7280', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', textTransform: 'uppercase' }}>
                 {p.proposalOwner || '\u2014'}
               </Typography>
               <Chip
