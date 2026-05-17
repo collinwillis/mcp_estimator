@@ -86,6 +86,7 @@ const ProposalList: React.FC<ProposalListProps> = ({ onClick, proposals }) => {
                     overflow: 'hidden',
                     textOverflow: 'ellipsis',
                     whiteSpace: 'nowrap',
+                    textTransform: 'uppercase',
                   }}>
                   {item.proposalDescription}
                 </Typography>

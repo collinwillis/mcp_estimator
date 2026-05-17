@@ -39,7 +39,7 @@ function FieldDisplay({ label, value }: { label: string; value: string }) {
       <Typography sx={{ fontSize: '0.75rem', fontWeight: 500, color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.04em', mb: 0.25 }}>
         {label}
       </Typography>
-      <Typography sx={{ fontSize: '0.875rem', fontWeight: 500, color: '#111827', lineHeight: 1.4 }}>
+      <Typography sx={{ fontSize: '0.875rem', fontWeight: 500, color: '#111827', lineHeight: 1.4, textTransform: 'uppercase' }}>
         {value || '\u2014'}
       </Typography>
     </Box>
