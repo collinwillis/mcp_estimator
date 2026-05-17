@@ -76,8 +76,18 @@ export const usePhases = ({
             updatedPhase.quantity = phase.customQuantity;
           }
 
-          updatedPhase.unit =
-            phase.unit ?? getQuantityAndUnit(activities, wbsDatabaseId).unit;
+          if (phase.customUnit != null && phase.customUnit !== '') {
+            updatedPhase.unit = phase.customUnit;
+          } else if (phase.unit == null || phase.unit === '') {
+            updatedPhase.unit = getQuantityAndUnit(
+              activities,
+              wbsDatabaseId,
+            ).unit;
+          }
+          // else: legacy override still living in `unit`; keep it as-is until
+          // the user's next edit, which routes through updatePhase and
+          // migrates it into customUnit.
+
           return {
             ...updatedPhase,
             ...costs,

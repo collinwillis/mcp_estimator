@@ -116,7 +116,7 @@ export const useWbs = ({
 
           const unit = unitMap.get(updatedWbs.wbsDatabaseId!) || '';
           const phasesWithCustomQuantities = phases.filter(
-            (phase) => phase.customQuantity !== null,
+            (phase) => phase.customQuantity != null,
           );
           const sumOfCustomQuantities = phasesWithCustomQuantities.reduce(
             (acc, phase) =>

@@ -56,36 +56,34 @@ export const updateSingleProposal = async ({
 };
 
 export const updatePhase = async (id: string, field: string, value: string) => {
-  console.log(field, value);
-  let newField = field;
-  let newValue;
-  if (
-    isNumber(value) &&
-    field != 'area' &&
-    field != 'quantity' &&
-    field != 'description'
-  ) {
+  if (field === 'quantity') {
+    const newCustom = isNumber(value) ? parseFloat(value) : null;
+    await updateDoc(doc(firestore, 'phase', id), {
+      customQuantity: newCustom,
+    });
+    return;
+  }
+
+  if (field === 'unit') {
+    // Route unit edits to the override field. Also clear the legacy `unit`
+    // field so older docs (which stored overrides there before customUnit
+    // was wired up) no longer compete with customUnit.
+    const newCustom = value != null && value !== '' ? value : null;
+    await updateDoc(doc(firestore, 'phase', id), {
+      customUnit: newCustom,
+      unit: null,
+    });
+    return;
+  }
+
+  let newValue: number | string;
+  if (isNumber(value) && field !== 'area' && field !== 'description') {
     newValue = parseFloat(value);
-  } else if (field == 'quantity') {
-    newField = 'customQuantity';
-    newValue = parseFloat(value);
-    if (!isNumber(value)) {
-      newValue = null;
-    }
   } else {
     newValue = value;
   }
 
-  const data = {
-    [newField]: newValue,
-  };
-  await updateDoc(doc(firestore, 'phase', id), data)
-    .then((docRef) => {
-      console.log('Value of an Existing Document Field has been updated');
-    })
-    .catch((error) => {
-      console.log(error);
-    });
+  await updateDoc(doc(firestore, 'phase', id), { [field]: newValue });
 };
 
 function isNumber(value: string | number): boolean {
@@ -283,12 +281,16 @@ export async function getPhasesForWbs(
         return accum;
       }, initialCosts);
 
+      const computed = getQuantityAndUnit(
+        activities,
+        currentWbs?.wbsDatabaseId!,
+      );
       phase.quantity =
-        phase.quantity ??
-        getQuantityAndUnit(activities, currentWbs?.wbsDatabaseId!).quantity;
-      phase.unit =
-        phase.unit ??
-        getQuantityAndUnit(activities, currentWbs?.wbsDatabaseId!).unit;
+        phase.customQuantity ?? phase.quantity ?? computed.quantity;
+      // `phase.unit ?? ...` is the legacy fallback for docs written before
+      // customUnit was wired up; updatePhase migrates these into customUnit
+      // on the user's next edit.
+      phase.unit = phase.customUnit ?? phase.unit ?? computed.unit;
 
       return {
         ...phase,

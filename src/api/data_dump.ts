@@ -383,7 +383,10 @@ const fetchDDPhases = async (
             sortedActivities,
             wbs && wbs.wbsDatabaseId ? wbs.wbsDatabaseId : 0,
           ).quantity,
+        // `phase.unit ?? ...` is the legacy fallback for docs written before
+        // customUnit was wired up; updatePhase migrates these on next edit.
         unit:
+          phase.customUnit ??
           phase.unit ??
           getDDQuantityAndUnit(
             sortedActivities,
