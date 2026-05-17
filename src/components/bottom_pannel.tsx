@@ -4,15 +4,17 @@ import AddIcon from '@mui/icons-material/Add';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import WarningAmberIcon from '@mui/icons-material/WarningAmber';
+import EngineeringOutlinedIcon from '@mui/icons-material/EngineeringOutlined';
+import LocalShippingOutlinedIcon from '@mui/icons-material/LocalShippingOutlined';
+import Inventory2OutlinedIcon from '@mui/icons-material/Inventory2Outlined';
+import PaymentsOutlinedIcon from '@mui/icons-material/PaymentsOutlined';
+import PersonAddAltOutlinedIcon from '@mui/icons-material/PersonAddAltOutlined';
+import HandshakeOutlinedIcon from '@mui/icons-material/HandshakeOutlined';
+import LayersOutlinedIcon from '@mui/icons-material/LayersOutlined';
 import {
   Box,
   Button,
   Collapse,
-  Divider,
-  IconButton,
-  ListItemText,
-  Menu,
-  MenuItem,
   Tooltip,
   Typography,
 } from '@mui/material';
@@ -165,7 +167,6 @@ function BottomPanel() {
       return next;
     });
   }, []);
-  const [addMenuAnchor, setAddMenuAnchor] = useState<null | HTMLElement>(null);
 
   const activities = estimatorStore((s: StoreState) => s.activities[proposalId!] || []);
   const phases = estimatorStore((s: StoreState) => s.phases[proposalId!] || []);
@@ -292,7 +293,132 @@ function BottomPanel() {
     [addActivities, recalculatePhase, phaseId, proposalId, wbsId],
   );
 
-  const closeMenu = () => setAddMenuAnchor(null);
+  // ---------------------------------------------------------------------------
+  //  Quick-add button definitions (Silicon Valley-style row above totals)
+  // ---------------------------------------------------------------------------
+
+  type QuickAdd = {
+    key: string;
+    label: string;
+    icon: React.ReactNode;
+    primary?: boolean;
+    onClick: () => void;
+  };
+
+  const quickAdds: QuickAdd[] = useMemo(() => {
+    if (phaseId) {
+      return [
+        {
+          key: 'activity',
+          label: 'Activity',
+          primary: true,
+          icon: <EngineeringOutlinedIcon sx={{ fontSize: 15 }} />,
+          onClick: () => setOpenAddActivityDialog(true),
+        },
+        {
+          key: 'equipment',
+          label: 'Equipment',
+          icon: <LocalShippingOutlinedIcon sx={{ fontSize: 15 }} />,
+          onClick: () => setOpenEquipmentDialog(true),
+        },
+        {
+          key: 'material',
+          label: 'Material',
+          icon: <Inventory2OutlinedIcon sx={{ fontSize: 15 }} />,
+          onClick: () =>
+            createActivity({
+              description: 'NEW MATERIAL ITEM',
+              activityType: ActivityType.materialItem,
+            }),
+        },
+        {
+          key: 'cost-only',
+          label: 'Cost Only',
+          icon: <PaymentsOutlinedIcon sx={{ fontSize: 15 }} />,
+          onClick: () =>
+            createActivity({
+              description: 'NEW COST ONLY ITEM',
+              activityType: ActivityType.costOnlyItem,
+            }),
+        },
+        {
+          key: 'custom-labor',
+          label: 'Custom Labor',
+          icon: <PersonAddAltOutlinedIcon sx={{ fontSize: 15 }} />,
+          onClick: () =>
+            createActivity({
+              description: 'NEW CUSTOM LABOR ITEM',
+              activityType: ActivityType.customLaborItem,
+            }),
+        },
+        {
+          key: 'subcontractor',
+          label: 'Subcontractor',
+          icon: <HandshakeOutlinedIcon sx={{ fontSize: 15 }} />,
+          onClick: () =>
+            createActivity({
+              description: 'NEW SUBCONTRACTOR',
+              activityType: ActivityType.subContractorItem,
+              unit: 'HOURS',
+            }),
+        },
+      ];
+    }
+    if (wbsId) {
+      return [
+        {
+          key: 'phase',
+          label: 'Phase',
+          primary: true,
+          icon: <LayersOutlinedIcon sx={{ fontSize: 15 }} />,
+          onClick: () => setAddPhaseDialogOpen(true),
+        },
+      ];
+    }
+    return [];
+  }, [phaseId, wbsId, createActivity]);
+
+  const showQuickAddBar = hasWritePermissions && quickAdds.length > 0;
+
+  const quickAddButtonSx = {
+    textTransform: 'none' as const,
+    fontWeight: 500,
+    fontSize: '0.78rem',
+    letterSpacing: '0.005em',
+    borderRadius: 999,
+    px: 1.25,
+    py: 0.25,
+    minHeight: 26,
+    lineHeight: 1.2,
+    border: `1px solid ${COLOR.border}`,
+    color: COLOR.sectionHead,
+    backgroundColor: COLOR.white,
+    boxShadow: '0 1px 0 rgba(17, 24, 39, 0.02)',
+    transition: 'background-color 120ms ease, border-color 120ms ease',
+    '& .MuiButton-startIcon': {
+      mr: 0.5,
+      ml: -0.25,
+      color: COLOR.muted,
+    },
+    '&:hover': {
+      backgroundColor: alpha('#000', 0.035),
+      borderColor: '#d1d5db',
+      '& .MuiButton-startIcon': { color: COLOR.sectionHead },
+    },
+  };
+
+  const quickAddPrimarySx = {
+    ...quickAddButtonSx,
+    color: COLOR.white,
+    backgroundColor: '#111827',
+    borderColor: '#111827',
+    '& .MuiButton-startIcon': { color: alpha('#ffffff', 0.85), mr: 0.5, ml: -0.25 },
+    '&:hover': {
+      backgroundColor: '#1f2937',
+      borderColor: '#1f2937',
+      '& .MuiButton-startIcon': { color: '#ffffff' },
+    },
+  };
 
   // ---------------------------------------------------------------------------
   //  Render
@@ -301,6 +427,67 @@ function BottomPanel() {
   return (
     <>
       <Box sx={{ flexShrink: 0, borderTop: `1px solid ${COLOR.border}`, backgroundColor: COLOR.surface }}>
+
+        {/* ━━━ Quick-add bar (above totals) ━━━ */}
+        {showQuickAddBar && (
+          <Box
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 0.75,
+              px: { xs: 1, sm: 1.5 },
+              py: 0.6,
+              borderBottom: `1px solid ${COLOR.border}`,
+              backgroundColor: COLOR.white,
+              overflowX: 'auto',
+              '&::-webkit-scrollbar': { display: 'none' },
+              scrollbarWidth: 'none',
+            }}>
+            <Box
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 0.4,
+                pr: 0.5,
+                flexShrink: 0,
+              }}>
+              <AddIcon sx={{ fontSize: 14, color: COLOR.muted }} />
+              <Typography
+                sx={{
+                  fontSize: '0.7rem',
+                  fontWeight: 600,
+                  color: COLOR.muted,
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.06em',
+                  whiteSpace: 'nowrap',
+                }}>
+                Add
+              </Typography>
+            </Box>
+            <Box
+              sx={{
+                width: '1px',
+                height: 16,
+                backgroundColor: COLOR.border,
+                flexShrink: 0,
+                mr: 0.25,
+              }}
+            />
+            {quickAdds.map((item) => (
+              <Tooltip key={item.key} title={`Add ${item.label}`} enterDelay={400}>
+                <Button
+                  size='small'
+                  onClick={item.onClick}
+                  disableElevation
+                  disableRipple
+                  startIcon={item.icon}
+                  sx={item.primary ? quickAddPrimarySx : quickAddButtonSx}>
+                  {item.label}
+                </Button>
+              </Tooltip>
+            ))}
+          </Box>
+        )}
 
         {/* ━━━ Status bar ━━━ */}
         <Box sx={{ display: 'flex', alignItems: 'center', height: 36, px: { xs: 0.5, sm: 1.5 } }}>
@@ -352,22 +539,6 @@ function BottomPanel() {
                 Details
               </Button>
             </Tooltip>
-
-            {hasWritePermissions && (
-              <Tooltip title='Add item' enterDelay={400}>
-                <IconButton
-                  size='small'
-                  onClick={(e) => setAddMenuAnchor(e.currentTarget)}
-                  sx={{
-                    width: 28, height: 28, borderRadius: 1,
-                    border: `1px solid ${COLOR.border}`, backgroundColor: COLOR.white,
-                    color: COLOR.sectionHead,
-                    '&:hover': { backgroundColor: alpha('#000', 0.04), borderColor: '#d1d5db' },
-                  }}>
-                  <AddIcon sx={{ fontSize: 16 }} />
-                </IconButton>
-              </Tooltip>
-            )}
           </Box>
         </Box>
 
@@ -417,44 +588,6 @@ function BottomPanel() {
           </Box>
         </Collapse>
       </Box>
-
-      {/* ━━━ Quick Actions popover ━━━ */}
-      <Menu
-        anchorEl={addMenuAnchor}
-        open={Boolean(addMenuAnchor)}
-        onClose={closeMenu}
-        anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-        transformOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-        PaperProps={{
-          sx: {
-            mt: -0.5, minWidth: 180, borderRadius: 1.5,
-            border: `1px solid ${COLOR.border}`,
-            boxShadow: '0 4px 16px rgba(0,0,0,0.08), 0 1px 3px rgba(0,0,0,0.06)',
-          },
-        }}>
-        <MenuItem disabled={!wbsId} onClick={() => { setAddPhaseDialogOpen(true); closeMenu(); }}>
-          <ListItemText primary='Phase' primaryTypographyProps={{ fontSize: '0.875rem', fontWeight: 600 }} />
-        </MenuItem>
-        <Divider sx={{ my: 0.25 }} />
-        <MenuItem disabled={!phaseId} onClick={() => { setOpenAddActivityDialog(true); closeMenu(); }}>
-          <ListItemText primary='Activity' primaryTypographyProps={{ fontSize: '0.875rem' }} />
-        </MenuItem>
-        <MenuItem disabled={!phaseId} onClick={() => { setOpenEquipmentDialog(true); closeMenu(); }}>
-          <ListItemText primary='Equipment' primaryTypographyProps={{ fontSize: '0.875rem' }} />
-        </MenuItem>
-        <MenuItem disabled={!phaseId} onClick={() => { createActivity({ description: 'NEW MATERIAL ITEM', activityType: ActivityType.materialItem }); closeMenu(); }}>
-          <ListItemText primary='Material' primaryTypographyProps={{ fontSize: '0.875rem' }} />
-        </MenuItem>
-        <MenuItem disabled={!phaseId} onClick={() => { createActivity({ description: 'NEW COST ONLY ITEM', activityType: ActivityType.costOnlyItem }); closeMenu(); }}>
-          <ListItemText primary='Cost Only' primaryTypographyProps={{ fontSize: '0.875rem' }} />
-        </MenuItem>
-        <MenuItem disabled={!phaseId} onClick={() => { createActivity({ description: 'NEW CUSTOM LABOR ITEM', activityType: ActivityType.customLaborItem }); closeMenu(); }}>
-          <ListItemText primary='Custom Labor' primaryTypographyProps={{ fontSize: '0.875rem' }} />
-        </MenuItem>
-        <MenuItem disabled={!phaseId} onClick={() => { createActivity({ description: 'NEW SUBCONTRACTOR', activityType: ActivityType.subContractorItem, unit: 'HOURS' }); closeMenu(); }}>
-          <ListItemText primary='Subcontractor' primaryTypographyProps={{ fontSize: '0.875rem' }} />
-        </MenuItem>
-      </Menu>
 
       <AddPhaseDialog open={addPhaseDialogOpen} onClose={() => setAddPhaseDialogOpen(false)} />
       <AddEquipmentDialog open={openEquipmentDialog} onClose={() => setOpenEquipmentDialog(false)} />

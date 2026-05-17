@@ -131,9 +131,11 @@ function CustomToolbar({
         {hasWritePermissions && (
           <Box
             sx={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))',
+              display: 'flex',
+              flexDirection: 'row',
               gap: 1,
+              flexWrap: 'nowrap',
+              alignItems: 'center',
             }}>
             <Button
               disabled={selectedRows == null || selectedRows.length <= 0}
