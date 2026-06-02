@@ -100,6 +100,7 @@ function LoginForm(props: LoginFormProps) {
       <TextField
         error={Boolean(error)}
         sx={styles.textField}
+        type='email'
         placeholder='email'
         value={userName}
         onChange={(e) => setUserName(e.target.value)}
@@ -107,6 +108,7 @@ function LoginForm(props: LoginFormProps) {
       <TextField
         error={Boolean(error)}
         sx={styles.textField}
+        type='password'
         placeholder='password'
         value={password}
         onChange={(e) => setPassword(e.target.value)}

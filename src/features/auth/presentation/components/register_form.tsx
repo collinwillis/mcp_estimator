@@ -82,6 +82,7 @@ export default function RegisterForm(props: RegisterFormProps) {
       <TextField
         error={Boolean(error)}
         sx={styles.textField}
+        inputProps={{ className: 'normal-case' }}
         placeholder='Full Name'
         value={fullName}
         onChange={(e) => setFullName(e.target.value)}
@@ -89,6 +90,7 @@ export default function RegisterForm(props: RegisterFormProps) {
       <TextField
         error={Boolean(error)}
         sx={styles.textField}
+        type='email'
         placeholder='email'
         value={email}
         onChange={(e) => setEmail(e.target.value)}
@@ -96,6 +98,7 @@ export default function RegisterForm(props: RegisterFormProps) {
       <TextField
         error={Boolean(error)}
         sx={styles.textField}
+        type='password'
         placeholder='password'
         value={password}
         onChange={(e) => setPassword(e.target.value)}

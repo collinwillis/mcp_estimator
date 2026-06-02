@@ -12,12 +12,13 @@
   -webkit-text-size-adjust: 100%;
 }
 
-/* Uppercase text inputs (business requirement) */
-* input:not([type="password"]):not([type="email"]):not([type="url"]):not([type="number"]):not([type="tel"]):not([type="date"]):not([type="time"]):not([type="datetime-local"]):not([type="search"]),
-* textarea,
+/* Uppercase text inputs (business requirement).
+   Add the class "normal-case" to an input/textarea to opt out (e.g. auth fields). */
+* input:not([type="password"]):not([type="email"]):not([type="url"]):not([type="number"]):not([type="tel"]):not([type="date"]):not([type="time"]):not([type="datetime-local"]):not([type="search"]):not(.normal-case),
+* textarea:not(.normal-case),
 * [contenteditable="true"],
-html body .MuiInputBase-input:not([type="password"]):not([type="email"]):not([type="url"]):not([type="number"]):not([type="tel"]):not([type="date"]):not([type="time"]):not([type="datetime-local"]):not([type="search"]),
-html body .MuiDataGrid-root .MuiInputBase-input:not([type="password"]):not([type="email"]):not([type="url"]):not([type="number"]):not([type="tel"]):not([type="date"]):not([type="time"]):not([type="datetime-local"]):not([type="search"]) {
+html body .MuiInputBase-input:not([type="password"]):not([type="email"]):not([type="url"]):not([type="number"]):not([type="tel"]):not([type="date"]):not([type="time"]):not([type="datetime-local"]):not([type="search"]):not(.normal-case),
+html body .MuiDataGrid-root .MuiInputBase-input:not([type="password"]):not([type="email"]):not([type="url"]):not([type="number"]):not([type="tel"]):not([type="date"]):not([type="time"]):not([type="datetime-local"]):not([type="search"]):not(.normal-case) {
   text-transform: uppercase !important;
 }
 
