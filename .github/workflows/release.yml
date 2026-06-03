@@ -128,8 +128,15 @@ jobs:
 
             console.log('Updater JSON:', gistContent);
 
+            // Write the manifest to BOTH gist files. The Tauri updater polls the
+            // gist's bare /raw URL, which serves the alphabetically-first file
+            // (mcp_estimator_current_release.json) -- not updater.json. Keeping both
+            // in sync is what actually delivers updates to installed apps.
             const payload = JSON.stringify({
-              files: { 'updater.json': { content: gistContent } }
+              files: {
+                'updater.json': { content: gistContent },
+                'mcp_estimator_current_release.json': { content: gistContent }
+              }
             });
 
             const req = https.request({
